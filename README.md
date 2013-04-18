@@ -26,8 +26,11 @@ This code has been developed mostly under the auspices of The University of Auck
 successfully by us. The University does not, however, otherwise endorse it or commit to any support
 of other users.
 
-Feel free to download the software, as it is, and try it out. If you find it useful, use it! If you
-have any suggestions or improvements, feel free to contact me.
+Feel free to download the software, as it is, and try it out. If you find it useful, use it!
+Right now it's missing install instructions and database setup scripts, so it may not be usable until
+I've added those.
+
+If you have any suggestions or improvements, feel free to contact me.
 
 Colin Coghill
  ( colin@colincoghill.com )
