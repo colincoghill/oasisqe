@@ -15,7 +15,7 @@ In 2012 it became clear that the code needed some work - it is still very succes
 been unable to find anything else that does its job - to bring it up to modern security standards, with
 a more palatable look and feel.
 
-I have taken the OASIS v3.6 code base, developed mostly in 2001-2004, and gone through, removing old
+I have taken the OASIS v3.6 code base, developed mostly in 2001-2004 (by me), and gone through, removing old
 components, refreshing the look and feel, and fixing security issues. This has been a major piece
 of work, requiring a rewrite of approximately 1/3 of the code.
 
