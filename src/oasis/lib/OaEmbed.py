@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 
+# This code is under the GNU Affero General Public License
+# http://www.gnu.org/licenses/agpl-3.0.html
+
 """ OaEmbed.py
 
     Allow us to embed OASIS questions into pages from other places, eg. web tutorials.

@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 
+# This code is under the GNU Affero General Public License
+# http://www.gnu.org/licenses/agpl-3.0.html
+
 """ Contains database access functions for users, groups, permissions, and courses """
 
 from oasis.lib.OaDB import run_sql, MC

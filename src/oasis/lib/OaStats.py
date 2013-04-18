@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 
+# This code is under the GNU Affero General Public License
+# http://www.gnu.org/licenses/agpl-3.0.html
+
 """ OaStats.py
     This provides a collection of methods for generating statistics from
     the database. Most results will be placed back into the database for

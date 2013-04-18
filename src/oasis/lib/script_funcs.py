@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+# This code is under the GNU Affero General Public License
+# http://www.gnu.org/licenses/agpl-3.0.html
 
 """ A collection of functions that may be called by
     scripts. eg. the __marker.py and __results.py scripts.

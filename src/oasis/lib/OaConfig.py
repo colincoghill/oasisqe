@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 
+# This code is under the GNU Affero General Public License
+# http://www.gnu.org/licenses/agpl-3.0.html
+
 # Controls various configuration setups in Oasis.
 # defaults are read from "defaults.ini" in the same directory as this file.
 

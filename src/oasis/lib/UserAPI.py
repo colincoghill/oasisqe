@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 
+# This code is under the GNU Affero General Public License
+# http://www.gnu.org/licenses/agpl-3.0.html
+
 """ Interface for access to User information.
     All access to User info should come through here, and not through
     the db.Users or OaDB interface any more.

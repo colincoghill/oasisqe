@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 
+# This code is under the GNU Affero General Public License
+# http://www.gnu.org/licenses/agpl-3.0.html
+
 """OaAttachment.py
  Send a question attachment
  This is a little more advanced than OaQuestionAtt, as we need to be aware of different kinds of attachment.

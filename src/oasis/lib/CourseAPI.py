@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 
+# This code is under the GNU Affero General Public License
+# http://www.gnu.org/licenses/agpl-3.0.html
+
 """ Fast interface for access to Course information.
     List of courses is small, so we can load it all into memory for speed
     and to take some pressure off the database layer.

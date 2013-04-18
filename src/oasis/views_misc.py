@@ -1,18 +1,8 @@
 # -*- coding: utf-8 -*-
 
-#
-#  oasis.wsgi
-#
-""" This is the main request handler for Oasis. It is called for every
-    URL in the Oasis system and looks after dispatching requests to the
-    correct python objects and making sure session management happens.
+# This code is under the GNU Affero General Public License
+# http://www.gnu.org/licenses/agpl-3.0.html
 
-    It implements the WSGI protocol so should be able to run with most
-    web servers.
-
-    Oasis was already large when we moved it to Flask, so a lot of it isn't
-    in typical Flask style.
-"""
 
 import os
 import StringIO
