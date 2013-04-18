@@ -3,6 +3,8 @@ oasisqe
 
 OASIS Question Engine
 
+Current Status:  "In Development, a few days from the first release"
+
 The "OASIS" Online Assessment system was developed by The University of Auckland, New Zealand, to assist
 in the teaching of large undergraduate engineering courses. The original system began in 1998, but it
 has been updated over time. We gained permission to release the code as Open Source, but lacked the
