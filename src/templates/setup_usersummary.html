@@ -1,0 +1,67 @@
+{% extends "page_nav.html" %}
+{% block body %}
+    <br/>
+    <p>Return to <a href="{{ cf.url }}setup/usersearch">Setup</a></p>
+
+    <div class="container-fluid">
+        <div class="well">
+
+            <FORM METHOD='post' ACTION='{{ cf.url }}setup/usersearch'>
+                <label>Search for: <INPUT TYPE='text' NAME='usersearch_name' VALUE=''></label>
+            </FORM>
+
+            <h2>User Account Summary</h2>
+
+            <p>For {{ user.uname }} ({{ user.fullname }})</p>
+
+            <p>Email: {{ user.email }}</p>
+
+            <p>Student ID: {{ user.student_id }}</p>
+
+            <p><A class='btn btn-small' HREF='{{ cf.url }}setup/useraudit/{{ user.id }}'>View History</A>
+                <A class='btn btn-small btn-danger' HREF='{{ cf.url }}setup/otherpasswd/{{ user.id }}'>Change
+                    Password</A>
+            </p>
+        <br/>
+
+            <h2>Courses</h2>
+
+            <div>
+                {% for course in courses %}
+                    {{ course.name }}
+                {% else %}none
+                {% endfor %}
+            </div>
+        <br/>
+         <p>Course membership can be managed from the course administration section.</p>
+
+        <!--
+            <h2>Assessments</h2>
+            <table class='table table-bordered' id='examresults'>
+                <tr>
+                    <th>Course</th>
+                    <th>Title</th>
+                    <th>Started</th>
+                </tr>
+                {% for exam in exams %}
+                    <tr>
+                        <th>{{ exam.course.name }}</th>
+                        <td>{{ exam.started }}</td>
+                        <th>{{ exam.title }}</th>
+                        <td>
+                            {% if exam.viewable %}
+                                <a href='{{ cf.url }}setup/viewexam/{{ exam.cid }}/{{ user.id }}/{{ exam.id }}'>View</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+            -->
+        </div>
+    </div>
+
+    <br/>
+    <p>Return to <a href="{{ cf.url }}setup/setup_usersearch">Setup</a></p>
+
+{% endblock body %}
+{% block pagetitle %}User Admin{% endblock %}

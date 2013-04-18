@@ -1,0 +1,41 @@
+{% extends "page_nav.html" %}
+{% block body %}
+    <h2>{{ course.title }} ({{ topictitle }})</h2>
+
+    <h3>{{ q_pos }} : {{ q_title }}</h3>
+
+    <p>{{ mesg }}</p>
+{% endblock body %}
+{% block lpane %}
+    <table class='lpane'>
+        <TR>
+            <Th>
+                <a name='course_{{ course.id }}'
+                   href='{{ cf.url }}practice/coursequestions/{{ course.id }}'>{{ course.name }} </a>
+            </Th>
+        </TR>
+        <TR>
+            <Th>
+                <a name='topic_{{ topic_id }}'
+                   href='{{ cf.url }}practice/subcategory/{{ topic_id }}'>{{ topictitle }} </a>
+            </Th>
+        </TR>
+        {% for question in questions %}
+            <tr>
+                {% if question.position < 1 %}
+                    <td>
+                        <a name='question_{{ question.name }}'
+                           href='{{ cf.url }}practice/question/{{ topic_id }}/{{ question.qtid }}'>{{ question.name }}</a>
+                        <span style='color: red;'><sub>(hidden)</sub></span>
+                    </td>
+                {% else %}
+                    <td>
+                        <a name='question_{{ question.name }}'
+                           href='{{ cf.url }}practice/question/{{ topic_id }}/{{ question.qtid }}'>{{ question.name }}</a>
+                    </td>
+                {% endif %}
+            </tr>
+        {% endfor %}
+
+    </TABLE>
+{% endblock lpane %}

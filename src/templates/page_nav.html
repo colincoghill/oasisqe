@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block page %}
+    {% block topnav %}
+        <!-- (AUTHENTICATED VIA {{ cf.auth_type }} ) -->
+        <div id="page">
+        <div id="head">
+            <a href="" id="logolink"></a>
+            <!-- The logo itself is a link -->
+            <div id="headerright">
+                <div id='whoami'>{{ cf.userfullname }}</div>
+                <span id="page_title">{% block pagetitle %}Home{% endblock pagetitle %}</span>
+            </div>
+        </div>
+        <div id="navigation">
+            <ul class='navbar'>
+                <li class='page'><A NAME='nav_home' CLASS='topmenu' HREF='{{ cf.url }}main/top'>Home</A></li>
+                <li class="page"><A NAME='nav_news' CLASS='topmenu' HREF='{{ cf.url }}main/news'>News</A></li>
+                <li class="page"><A NAME='nav_practice' CLASS='topmenu' HREF='{{ cf.url }}practice/top'>Practice</A>
+                </li>
+       <!-- <li class="page"><A NAME='nav_assess' CLASS='topmenu' HREF='{{ cf.url }}assess/top'>Assess</A></li> -->
+                <li class="page"><A NAME='nav_setup' CLASS='topmenu' HREF='{{ cf.url }}setup/top'>Setup</A></li>
+                <li class="page"><A id='nav_logout' CLASS='topmenu' HREF="{{ cf.url }}logout">Logout</A></li>
+            </ul>
+        </div>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+
+                {% for message in messages %}
+                    <div class="alert-error alert">{{ message }}</div>
+                {% endfor %}
+
+            {% endif %}
+        {% endwith %}
+    {% endblock topnav %}
+<div class="container-fluid">
+    {% block body %}
+
+    {% endblock body %}
+</div>
+
+<div id="foot">
+    OASIS v3.8.0 is an Open Source project, created at the <a href='http://www.auckland.ac.nz'>University of Auckland</a>.<br/>
+    Please contact <a href='mailto:C.Coghill@auckland.ac.nz'>C.Coghill@auckland.ac.nz</a> if you have any questions.
+</div>
+</div>
+{% endblock page %}
+{% block js %}
+    <script>
+        if ("{{ cf.auth_type }}" == "httpauth") {
+            $("#nav_logout").click(function (ev) {
+                $.ajax({
+                    url: "{{ cf.url }}login/webauth/flush",
+                    complete: function () {
+                        document.location = "{{ cf.url }}login/webauth/flush";
+                    }
+                });
+
+                ev.preventDefault();
+                return false;
+            });
+        }
+    </script>
+{% endblock js %}

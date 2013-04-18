@@ -1,0 +1,4 @@
+# restore database from backup
+
+# don't go running this by accident!
+# pg_restore -Uoasisdb -W  --no-owner -x -c -O -d oasisdb  $1

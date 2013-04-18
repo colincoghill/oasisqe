@@ -1,0 +1,18 @@
+
+
+    WSGIDaemonProcess oasis user=oasis group=www-data threads=5
+    WSGIScriptAlias /oasis /opt/OasisQE/4.0/oasis/oasis.wsgi
+
+    <Directory /opt/OasisQE/4.0/oasis>
+        WSGIProcessGroup oasis
+        WSGIApplicationGroup %{GLOBAL}
+        Order deny,allow
+        Allow from all
+    </Directory>
+
+    Alias /oasis/static /opt/OasisQE/4.0/oasis/static
+    <Location /oasis/static>
+       Options Indexes FollowSymLinks MultiViews
+       SetHandler default-handler
+    </Location>
+

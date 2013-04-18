@@ -1,0 +1,16 @@
+
+Hello,
+
+You are being sent this email because someone has used your email
+address to register an account on our OASIS System.
+
+If this is not you, please discard this email.
+
+If you would like to continue setting up your account on OASIS,
+please visit this link in your web browser.
+
+This will confirm to us that your email address is valid,
+and we will activate your account.
+
+{{ cf.url }}login/confirm/{{ code }}
+

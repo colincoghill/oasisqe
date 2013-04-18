@@ -1,0 +1,109 @@
+{% extends "page_courseadmin.html" %}
+{%  block js %}
+<script>
+    $("#enrol_type").change(function () {
+        var etype = $(this).val();
+        if (etype == 'manual') {
+            $("#enrol_location_box").hide();
+        } else {
+            $("#enrol_location_box").show();
+        }
+    });
+
+
+    // On load
+    $(function (){
+        var etype = $("#enrol_type").val();
+        if (etype == 'manual') {
+            $("#enrol_location_box").hide();
+        } else {
+            $("#enrol_location_box").show();
+        }
+    });
+
+</script>
+{% endblock %}
+{% block body %}
+    <br>
+    <p>Return to <a href="{{ cf.url }}admin/courses">Course Choice</a></p>
+    <h2>Server Administration</h2>
+    <h3>{{ course.name }} ({{ course.title }})</h3>
+     <form method='post' action='{{ cf.url }}admin/course/save/{{ course.id }}'>
+    <div class="container-fluid well">
+        <h4>Course</h4>
+
+
+            <div class='input'>
+                <label>Status: <select name='course_active' class='select'>
+                    <option value='1' {% if course.active %}SELECTED{% endif %}>Active</option>
+                    <option value='0' {% if not course.active %}SELECTED{% endif %}>Inactive</option>
+                </select>
+                    (Inactive courses will be hidden)</label>
+            </div>
+            <div class='input'>
+                <label>Name: <input type='text' name='course_name' value='{{ course.name }}'></label>
+            </div>
+            <div class='input'>
+                <label>Title: <input type='text' name='course_title' value='{{ course.title }}'></label>
+            </div>
+        <p><a class='btn' href="{{ cf.url }}courseadmin/perms/{{ course.id }}">Permissions</a></p>
+    </div>
+    <div class="container-fluid well">
+                <h4>Enrolment</h4>
+<p>{{ course.name }} currently has {{ course.size }} members.</p>
+<br/>
+<h4>Membership</h4>
+    <div>
+    <p>Is access to this course open to anyone, or is it controlled?</p>
+    <select name='registration'>
+        <option value='open' {% if course.registration == 'open' %}SELECTED{% endif %}>Open (Anyone can add themselves)</option>
+        <option value='controlled' {% if course.registration == 'controlled' %}SELECTED{% endif %}>Controlled (Managed by course administrator)</option>
+    </select>
+
+    </div>
+    <!--
+        <div class='alert alert-danger'>WARNING: Changing these settings could un-enrol existing
+students from the course.</div>
+            <p>Where to get information on which students are in the course.</p>
+                <select name='enrol_type' id='enrol_type' value='{{ course.enrol_type }}'>
+                    <option value='manual' {% if course.enrol_type == 'manual' %}SELECTED{% endif %}>Manual (Upload
+                        spreadsheets)
+                    </option>
+                    <option value='file' {% if course.enrol_type == 'file' %}SELECTED{% endif %}>File (spreadsheet on
+                        server)
+                    </option>
+                </select>
+    <div id='enrol_location_box'>
+                <label>Directory:</label> <input type='text' readonly value='{{ cf.enrol_file_path }}'> <i>(set in server configuration file)</i>
+                <label>File Name:</label><input id='enrol_location' type='text' name='enrol_location' value='{{ course.enrol_location }}'> (recommend something like {{ course.name }}.csv)
+        <label>Refresh enrolment every <input class='input-mini' type='number' name='enrol_freq' value='{{ course.enrol_freq / 60 }}'>
+           Hours.
+         </label>
+        </div>
+    <p>Expects a text file with one line per user. The first word (up to a comma or space) will be read as the username:</p>
+    <pre>
+        fred
+        john
+        colin</pre>
+       <p> This allows text files, one user name per line, <i>or</i> CSV spreadsheets, with the first field being username:
+        </p>
+        <pre>
+        fred,Fred Jones
+        john,John Smith
+        colin,Only the first field is read, the rest are ignored.</pre>
+        </div>
+
+--><br/></div>
+    <br/>
+    <div class='pull-right'>
+        <input type="submit" name="save_changes" value="Apply Changes" class='btn btn-primary'>
+        <input type="submit" name="cancel_edit" value="Cancel" class='btn btn-danger'>
+    </div>
+
+        </form>
+    <br>
+    <br/>
+    <p>Return to <a href="{{ cf.url }}admin/courses">Course Choice</a></p>
+
+{% endblock body %}
+{% block pagetitle %}Server Admin{% endblock %}

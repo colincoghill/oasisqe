@@ -1,0 +1,100 @@
+{% extends "page_courseadmin.html" %}
+{% block body %}
+    <br>
+    <p>Return to <a href="{{ cf.url }}setup/courses">Course Choice</a></p>
+
+    <h2>{{ course.name }} ({{ course.title }})</h2>
+
+    <div class="container-fluid well">
+        <h5>Active Practice Topics</h5>
+
+        <table class="table">
+            <thead>
+            <tr>
+                <th></th>
+                <th>Questions</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for topic in topics %}
+                {% if topic.visibility >= 2 %}
+                    <tr>
+                        <td><a href="{{ cf.url }}courseadmin/topic/{{ topic.id }}">{{ topic.title }}</a></td>
+                        <td>{{ topic.numquestions }}</td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+            </tbody>
+        </table>
+        <br/>
+        <a href="{{ cf.url }}courseadmin/topics/{{ course.id }}">Edit Topics</a>
+    </div>
+    <br/>
+    <!--
+    <div class="container-fluid well">
+        <h5>Current Assessments</h5>
+
+        <p>Assessments scheduled this year:</p>
+        <table class="table">
+            <thead>
+            <tr>
+                <th>When</th>
+                <th></th>
+                <th>Code</th>
+                <th>State</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for exam in exams %}
+                {% if exam.end.year >= cf.today.year %}
+                    <tr {% if exam.active %} class='alert-success'{% endif %}>
+                        <td>{{ exam.start_human }}</td>
+                        <td><b>{{ exam.title }}</b></td>
+                        <td>{% if exam.code %}{{ exam.code }}{% endif %}</td>
+                        <td>{% if exam.future %}Upcoming{% elif exam.past %}Finished
+                            {% elif exam.active %}<b>Active</b>{% endif %}</td>
+                        <td><a href="{{ cf.url }}assess/startexam/{{ course.id }}/{{ exam.id }}"><sub>preview</sub></a>
+                            | <a
+                                    href="{{ cf.url }}courseadmin/editexam/{{ course.id }}/{{ exam.id }}"><sub>edit</sub></a>
+                            | <a
+                                    href="{{ cf.url }}courseadmin/examstatus/{{ exam.id }}"><sub>results</sub></a></td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+
+            </tbody>
+        </table>
+        <br/>
+
+        <a class='btn' href="{{ cf.url }}courseadmin/createexam/{{ course.id }}"><i class="icon-plus"> </i>Create
+            Assessment</a>
+
+        <div class='pull-right'><a href="{{ cf.url }}courseadmin/previousassessments/{{ course.id }}">Older
+            Assessments</a></div>
+        <br>
+
+    </div>
+
+-->
+    <br>
+    <div class="container-fluid well">
+        <h5>People</h5>
+        <!--    <p><a href="{{cf.url}}setup/studentsearch/{{course.id}}">Student Search</a></p>   -->
+        <p><a href="{{ cf.url }}courseadmin/perms/{{ course.id }}">Permissions</a></p>
+        <!--     <p><a href="{{cf.url}}api/course/{{course.name}}/{{course.id}}/members?format=csv">Class List</a> as a CSV file.</p>
+
+            <div style='border: solid 1px black dashed;'>
+            <a href="{{cf.url}}setup/uploadclass/{{course.id}}">Upload new</a> class list as a .csv file. (Not required for Faculty of Engineering)
+            </div>
+-->
+
+    </div>
+
+    <br>
+
+
+    <br/>
+    <p>Return to <a href="{{ cf.url }}setup/courses">Course Choice</a></p>
+
+{% endblock body %}

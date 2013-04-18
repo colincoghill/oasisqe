@@ -1,0 +1,89 @@
+{% extends "page_courseadmin.html" %}
+{% block js %}
+    <script>
+        $("#target_cmd").change(function () {
+            var tcmd = $(this).val();
+            if (tcmd == "hide" || tcmd == "show" || tcmd == "--") {
+                $("#target_topic").hide();
+            } else {
+                $("#target_topic").show();
+            }
+        })
+    </script>
+
+{% endblock js %}
+{% block body %}
+    <br/>
+    Back to <a href="{{ cf.url }}courseadmin/top/{{ course.id }}">Course Page</a>
+    <h4>{{ course.name }} ({{ course.title }})</h4>
+    <h2>Permissions</h2>
+    <p>From here you can set who can administer parts of this course.</p>
+
+
+    <div class="container-fluid well">
+
+        <form method='post' action='{{ cf.url }}courseadmin/perms_save/{{ course.id }}'>
+            <br/>
+            <table id='permstable' class='checks'>
+                <colgroup>
+                    <col span='2'>
+                    <col span='2'>
+                    <col span='2'>
+                    <col span='2'>
+                    <col span='2'>
+                    <col span='2'>
+                    <col span='1'>
+                </colgroup>
+                    <thead>
+                    <tr>
+                        <th colspan='2'></th>
+                        <th colspan='2'>Question</th>
+                        <th colspan='2'>Assessment</th>
+                        <th colspan='2'>Marks</th>
+                        <th colspan='2'>Students</th>
+                    </tr>
+                    <tr style='background-color: #a0c0f8;'>
+                        <th style='background-color: rgb(240, 245, 255); border: solid 1px blue;'>Account</th>
+                        <th style='background-color: rgb(240, 245, 255); border: solid 1px blue;'>Full Name</th>
+                        <td>Edit</td>
+                        <td>Preview</td>
+                        <td>Edit</td>
+                        <td>Preview</td>
+                        <td>View</td>
+                        <td>Alter</td>
+                        <td>View</td>
+                        <td>Details</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for uid,user in perms.items() %}
+                        <tr>
+                            <td>{{ user.uname }}</td>
+                            <td>{{ user.fullname }}</td>
+                            {% for pid in pids %}
+                                <td>
+                                    {% if pid in user.pids %}
+                                        <input name='perm_{{ user.uname }}_{{ pid }}' type='checkbox' checked='checked'>
+                                    {% else %}
+                                        <input name='perm_{{ user.uname }}_{{ pid }}' type='checkbox'>
+                                    {% endif %}
+
+                                </td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+            </table>
+            <p>* If an account has no permissions checked, it will be removed from this list upon Save.</p>
+
+            <p>Username: <input type='text' name='adduser'></p>
+
+
+            <div class='pull-right'>
+                <input type="submit" name="save_changes" value="Apply Changes" class='btn btn-primary'>
+                <input type="submit" name="cancel_edit" value="Cancel" class='btn btn-danger'>
+            </div>
+        </form>
+    </div>
+
+{% endblock body %}

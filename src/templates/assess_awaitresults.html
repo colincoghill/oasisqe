@@ -1,0 +1,32 @@
+{% extends "page_assess.html" %}
+{% block body %}
+    <br/>
+    <div class="container-fluid well ">
+        <h2>{{ course.name }}({{ course.title }})</h2>
+
+        <H3>{{ exam.title }}</H3>
+
+        <FORM METHOD='post' ACTION='{{ cf.url }}assess/presubmit/{{ course_id }}/{{ exam.id }}'>
+            <h2>Your Answers</h2>
+            {% for q in questions %}
+                <h5>Page {{ q.pos }}</h5>
+                {% for p in q.guesses %}
+                    <p>{{ p.part }}
+                        {% if p.guess %}
+                            {{ p.guess }}
+                        {% else %}
+                            <span style='color: brown;'>-none-</span>
+                        {% endif %}</p>
+                {% else %}
+                    <p><span style='color: brown;'>-none-</span></p>
+                {% endfor %}
+
+            {% endfor %}
+
+            <div class='alert alert-info'><h2>Your answers have been submitted and results will be available later.</h2>
+            </div>
+            <br/>
+
+        </FORM>
+    </div>
+{% endblock body %}

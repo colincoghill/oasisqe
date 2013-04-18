@@ -1,0 +1,101 @@
+# -*- coding: utf-8 -*-
+
+""" Audit.py
+    Handle storing and searching audit messages
+"""
+
+from oasis.lib.OaDB import run_sql
+
+
+# """CREATE TABLE audit (
+#                       "id" SERIAL,
+#                       "time" TIMESTAMP,
+#                       "class" INT DEFAULT 1,      # 1 = object is user account, 2 = object is course id, 3 = object is question template
+#                       "instigator" INT DEFAULT 0,
+#                       "object" INT DEFAULT 0,
+#                       "module" VARCHAR(200),
+#                       "longmesg" TEXT
+#                                    );"""
+
+
+def audit(aclass, instigator, obj, module, message):
+    """Record the message in the audit system."""
+    sql = """INSERT INTO audit ("time", "class", "instigator", "object", "module", "longmesg")
+            VALUES (NOW(), %s, %s, %s, %s, %s);"""
+    params = (aclass, instigator, obj, module, message)
+    run_sql(sql, params)
+
+
+def getRecordsByObject(obj_id, aclass, limit=100, offset=0):
+    """ Return audit records created by (or on behalf of) the given object."""
+    obj_id = int(obj_id)
+    aclass = int(aclass)
+    sql = """SELECT "id", "instigator", "module", "longmesg", "time", "object", "message"
+                FROM audit
+                WHERE ("object" = %s or "instigator" = %s)
+                AND ("class" = %s)
+                ORDER BY "time" DESC
+                LIMIT %s OFFSET %s;"""
+    params = (obj_id, obj_id, aclass, limit, offset)
+
+    ret = run_sql(sql, params)
+    results = []
+    if ret:
+        for row in ret:
+            entry = {'id': row[0],
+                     'instigator': row[1],
+                     'module': row[2],
+                     'message': row[3],
+                     'time': row[4],
+                     'object': row[5]}
+            if not row[3]:
+                entry['message'] = row[6]
+            results.append(entry)
+    return results
+
+
+def getRecordsByUser(uid, start=None, end=None, limit=100, offset=0):
+    """ Return audit records created by (or on behalf of) the user.
+        If start is provided, only searches for records after start.
+        If end is also provided, only searches between start and end.
+        start and end should be datetime or None
+        uid should be a user ID integer.
+        limit is the maximum number of rows returned, offset is starting from result n
+    """
+    uid = int(uid)
+    if end:
+        sql = """SELECT "id", "instigator", "module", "longmesg", "time", "object", "message"
+                FROM audit
+                WHERE ("object" = %s or "instigator" = %s) AND "time" > %s AND "time" < %s
+                ORDER BY "time" DESC
+                LIMIT %s OFFSET %s;"""
+        params = (uid, uid, start, end, limit, offset)
+    elif start:
+        sql = """SELECT "id", "instigator", "module", "longmesg", "time", "object", "message"
+                FROM audit
+                WHERE ("object" = %s or "instigator" = %s) AND "time" > %s
+                ORDER BY "time" DESC
+                LIMIT %s OFFSET %s;"""
+        params = (uid, uid, start, limit, offset)
+    else:
+        sql = """SELECT "id", "instigator", "module", "longmesg", "time", "object", "message"
+                FROM audit
+                WHERE ("object" = %s or "instigator" = %s)
+                ORDER BY "time" DESC
+                LIMIT %s OFFSET %s;"""
+        params = (uid, uid, limit, offset)
+
+    ret = run_sql(sql, params)
+    results = []
+    if ret:
+        for row in ret:
+            entry = {'id': row[0],
+                     'instigator': row[1],
+                     'module': row[2],
+                     'message': row[3],
+                     'time': row[4],
+                     'object': row[5]}
+            if not row[3]:
+                entry['message'] = row[6]
+            results.append(entry)
+    return results

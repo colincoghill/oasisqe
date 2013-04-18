@@ -1,0 +1,96 @@
+{% extends "page_practice.html" %}
+{% block body %}
+
+
+    <div class="row">
+        <div class="span2">
+            <br/>
+            <ul class="nav nav-list">
+                <li class='nav-header'>
+                    <a href="{{ cf.url }}practice/coursequestions/{{ course.id }}">{{ course.name }}</a>
+                </li>
+                {% for topic in topics %}
+                    {% if topic.visibility >= 2 %}
+                        <li>
+                            <a name='topic_{{ topic.id }}'
+                               href='{{ cf.url }}practice/statsfortopic/{{ topic.id }}'>{{ topic.title }}</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+
+
+            </ul>
+        </div>
+        <div class="span8">
+            <br/>
+
+            <h2>{{ course.name }} ({{ course.title }})</h2>
+
+            <h2>How Am I Doing?</h2>
+
+            <h3>{{ topictitle }}</h3>
+
+            <div class='well'>
+                {% if questions %}
+                    <table class='stripetable'>
+                        <thead>
+                        <tr>
+                            <th>Question</th>
+                            <th>No of Practices</th>
+                            <th>Last Practice</th>
+                            <th>Last 3 Scores</th>
+                            <th>Individual Avg.</th>
+                            <th>Class Avg.</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for q in questions %}
+                            <tr>
+                                <td>
+                                    <a name='question_{{ q.name }}'
+                                       href='{{ cf.url }}practice/question/{{ topic_id }}/{{ q.qtid }}'>{{ q.name }}</a>
+                                </td>
+                                <td>{{ q.done }}</td>
+                                {% if q.stats %}
+                                    <td>
+                                        {% if q.ageseconds > (86400 * 61) %}
+                                            <span style='color:#e56717;'>{{ q.age }}</span>
+                                        {% elif q.ageseconds < (86400 * 14) %}
+                                            <span style='color:darkgreen;'>{{ q.age }}</span>
+                                        {% else %}
+                                            {{ q.age }}
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% for attempt in q.stats %}
+                                            {% if attempt.rating == 3 %}
+                                                <span style='color:darkgreen;'>{{ attempt.score }}</span>
+                                            {% elif attempt.rating == 1 %}
+                                                <span style='color:#E56717;'>{{ attempt.score }}</span>
+                                            {% else %}
+                                                {{ attempt.score }}
+                                            {% endif %}
+                                        {% endfor %}
+                                    </td>
+                                {% else %}
+                                    <td><span style='color: #E56717; text-align: center;'>never</span></td>
+                                    <td><span style='text-align: center;'>-</span></td>
+                                {% endif %}
+
+                                <td><span style='text-align: center;'>{{ q.indivpercent }}</span></td>
+                                <td><span style='text-align: center;'>{{ q.classpercent }}</span></td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p><i>This category appears to be empty.</i></p>
+                {% endif %}
+
+            </div>
+
+            <p><a href='{{ cf.url }}practice/coursequestions/{{ course.id }}'>Return</a> to subcategory selection.</p>
+        </div>
+    </div>
+
+{% endblock body %}

@@ -1,0 +1,54 @@
+# -*- coding: utf-8 -*-
+
+# Controls various configuration setups in Oasis.
+# defaults are read from "defaults.ini" in the same directory as this file.
+
+# Site installation info should be put in an .INI file in /etc/oasis3.ini
+# (whichever exists)
+
+
+import os
+import sys
+from ConfigParser import SafeConfigParser
+
+cp = SafeConfigParser()
+
+mydir = os.path.dirname(os.path.realpath(__file__))
+
+if not cp.read("%s/defaults.ini" % mydir):
+    sys.exit("Unable to read configuration defaults %s/defaults.ini" % mydir)
+
+cp.read(['%s/defaults.ini' % mydir, '/etc/oasis3.ini'])
+
+
+parentURL = cp.get("web", "url")
+statichost = cp.get("web", "statichost")
+staticpath = cp.get("web", "staticpath")
+staticURL = statichost + "/" + staticpath
+homedir = cp.get("app", "homedir")
+secretkey = cp.get("app", "secretkey")
+admin_list = cp.get("app", "email_admins")
+smtp_server = cp.get("app", "smtp_server")
+
+if len(admin_list):
+    email_admins = admin_list
+else:
+    email_admins = ()
+cachedir = cp.get("cache", "cachedir")
+
+dbhost = cp.get("db", "host")
+dbuname = cp.get("db", "uname")
+dbname = cp.get("db", "dbname")
+dbpass = cp.get("db", "pass")
+dbport = cp.get("db", "port")
+
+oasisdbconnectstring = "host=%s port=%s dbname=%s user=%s password='%s'" % (dbhost, dbport, dbname, dbuname, dbpass)
+
+email = cp.get("web", "email")
+enableMemcache = cp.getboolean("cache", "memcache_enable")
+uniqueKey = cp.get("cache", "cachekey")
+logfile = cp.get("app", "logfile")
+profile_log = cp.get("app", "profile_log")
+enrol_file_path = cp.get("app", "enrol_file_path")
+open_registration = cp.getboolean("web", "open_registration")
+

@@ -1,0 +1,17 @@
+{% extends "page_nav.html" %}
+{% block body %}
+    <H3>Error</H3>
+    <br>
+    {{ mesg }}
+    <br>
+    Return to <a href="{{ cf.url }}{{ prev }}">Previous Page</a>
+{% endblock body %}
+{% block lpane %}
+    <table class='lpane'>
+        <TR>
+            <Th>
+                Error
+            </Th>
+        </TR>
+    </TABLE>
+{% endblock lpane %}

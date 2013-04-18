@@ -1,0 +1,16 @@
+{% extends "page_courseadmin.html" %}
+{% block body %}
+    <H3>Assessment Saved!</H3>
+    <h4>{{ course.name }} ({{ course.title }})</h4>
+
+    <p><b>Title:</b>{{ exam.title }}</p>
+    <p><b>Starts:</b>{{ exam.start }}</p>
+    <p><b>Ends:</b>{{ exam.end }}</p>
+    <p><b>Duration:</b>{{ exam.duration }}</p>
+    <p><b>Status:</b>{{ exam.archived }}</p>
+    <p><b>Questions:</b>{{ exam.num_questions }}</p>
+
+    <p>Continue to <a href="{{ cf.url }}courseadmin/top/{{ course.id }}">Course Page</a></p>
+    <p>Go back and <a href="{{ cf.url }}courseadmin/editexam/{{ course.id }}/{{ exam.id }}">Edit Assessment</a></p>
+
+{% endblock body %}

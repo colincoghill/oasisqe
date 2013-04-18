@@ -1,0 +1,37 @@
+{% extends "page_assess.html" %}
+{% block body %}
+    <br/>
+    <p>or return to <a href="{{ cf.url }}assess/top">Assessment List</a></p>
+    <div class="container-fluid well">
+        <br>
+
+        <h3>Past Assessments</h3>
+
+        <div class="table">
+            {% for year in years %}
+                <h4>{{ year }}</h4>
+                {% for exam in exams if exam.start.year == year %}
+
+                    <div class="row">{% if exam.is_done %}
+                        <a href="{{ cf.url }}assess/viewmarked/{{ exam.cid }}/{{ exam.id }}">{% endif %}
+
+                    <div class="span2"><b>{{ exam.title }}</b></div>
+                    <div class="span5">{{ exam.start_human }}</div>
+                    {% if exam.is_done %}
+                        <div class="span1 btn">results</div></a>{% endif %}
+                    </div>
+                {% else %}
+
+                    <div>None.</div>
+
+                {% endfor %}
+            {% endfor %}
+        </div>
+        <br/></div>
+    <p>or return to <a href="{{ cf.url }}assess/top">Assessment List</a></p>
+
+
+{% endblock body %}
+{% block lpane %}
+
+{% endblock lpane %}

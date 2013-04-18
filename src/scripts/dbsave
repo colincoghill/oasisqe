@@ -1,0 +1,9 @@
+#!/bin/sh
+
+# First we dump the schema so we can rebuild from scratch if needed.
+# Save it as SQL so we can fiddle with it if need be.
+pg_dump -C -D -s -U oasisdb -W oasisdb > oasis3.8db.`date +"%d%b%Y-%H%M"`.schema
+
+# Now we dump the data.
+# Do a binary format otherwise it just gets too big
+pg_dump -C -Fc -b -Z3 -U oasisdb -W oasisdb > oasis3.8db.`date +"%d%b%Y-%H%M"`.dump

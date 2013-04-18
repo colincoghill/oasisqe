@@ -1,0 +1,136 @@
+{% extends "page_courseadmin.html" %}
+{% block js %}
+{% endblock js %}
+{% block body %}
+    <br/>
+    Back to <a href="{{ cf.url }}courseadmin/edittopic/{{ topic.id }}">Topic Page</a>
+    <h4>{{ course.name }} ({{ course.title }})</h4>
+    <h2>"Raw" Question Editor</h2>
+    <p>This question editor allows you to access the raw data that OASIS uses to generate questions. All other
+        question editors produce this raw data. Working with this directly is very low-level but grants a lot of
+        flexibility.</p>
+    <div class="container-fluid well" style='padding:1em; background-color: #fff8f8; border: solid darkred 1px;'>
+        <div>
+            <form method='post' ENCTYPE='multipart/form-data'
+                  ACTION='{{ cf.url }}qedit_raw/save/{{ topic.id }}/{{ qtemplate.id }}'>
+                <div class='pull-right'><INPUT type='submit' class='btn btn-primary' name='save' value='Save Changes'>
+                    <INPUT type='submit' class='btn btn-danger' name='cancel' value='Cancel'></div>
+
+                <h4>Question Name:</h4>
+
+                <div style='padding-left: 1em;'>
+                    <INPUT TYPE='text' id='qtitle' NAME='qtitle' class='input-xlarge' VALUE='{{ qtemplate.title }}'>
+                </div>
+                <h4>Embed ID:</h4>
+
+                <div style='padding-left: 1em;'>
+                    <INPUT TYPE='text' id='embed_id' NAME='embed_id' VALUE='{{ qtemplate.embed_id }}'>
+
+                    <p>{% if qtemplate.embed_id %}Embeddable at:
+                        {{ cf.url }}embed/question/<span style='text-color: darkgreen;'>{{ qtemplate.embed_id }}</span>
+                        /question.html
+                        {{ qtemplate.embedurl }}{% else %}Enter an embed value
+                        to be able to embed this
+                        question in an external web site. It may make the question publically accessible.{% endif %}</p>
+                </div>
+                <h4>Marking Type:</h4>
+
+                <div style='padding-left: 1em;'>
+                    <select name='newmodule'>
+                        <option value='1' {% if qtemplate.marker == 1 %}SELECTED{% endif %}>Standard</option>
+                        <option value='2' {% if qtemplate.marker == 2 %}SELECTED{% endif %}>"Smart"</option>
+                    </select>
+
+                    <p>With "Smart" marking, you must also provide a script to mark the question.</p>
+
+                </div>
+
+                <h4>Maximum Score:</h4>
+
+                <div style='padding-left: 1em;'>
+                    <input type='text' id='maxscore' name='newmaxscore'
+                           value='{% if qtemplate.scoremax %}{{ qtemplate.scoremax }}{% endif %}'>
+
+                    <p>Maximum Score
+                        is the maximum number of points the question can score. Optional if you are not using Smart
+                        marking.</p>
+                </div>
+
+                <H4>HTML Template (qtemplate.html):</H4>
+
+                <div style='padding-left: 1em;'>
+                    <TEXTAREA NAME='newhtml' CLASS='input-xxlarge' rows='20'>{{ qtemplate.html }}</TEXTAREA>
+                </div>
+                <H4>Attachments:</H4>
+
+                <p>OASIS questions <i>require</i> an attachment called <b>datfile.dat</b> with question values and
+                    answers.
+                    <b>image.gif</b> is a special image attachment that will have values from the datfile written on to
+                    it
+                    when generating quesitons. For convenience, the <b>qtemplate.html</b> file may be edited above.</p>
+
+                <div style='padding-left: 1em;'>
+                    <table class='table table-condensed att_table'>
+                        <tr>
+                            <th>OASIS Attachments:</th>
+
+                        </tr>
+                        <tr>
+                            <td>qtemplate.html</td>
+
+                            <td style='width: 100px;'>OASIS Template</td>
+                            <td><a href='{{ cf.url }}qedit_raw/att/{{ qtemplate.id }}/qtemplate.html' target='_new'>View/Download</a>
+                                or
+                                Upload New: <input type='file' name='newindex'></td>
+                        </tr>
+                        <tr>
+                            <td>datfile.txt</td>
+
+                            <td>OASIS DATA</td>
+                            <td><a href='{{ cf.url }}qedit_raw/att/{{ qtemplate.id }}/datfile.txt' target='_new'>View/Download</a>
+                                or
+                                Upload New: <input type='file' name='newdatfile'></td>
+                        </tr>
+                        <tr>
+                            <td>image.gif</td>
+                            <td>Dynamic Image</td>
+                            <td><a href='{{ cf.url }}qedit_raw/att/{{ qtemplate.id }}/image.gif' target='_new'>View/Download</a>
+                                or
+                                Upload New: <input type='file' name='newimgfile'></td>
+                        </tr>
+                        <tr>
+                            <th>Extra Attachments:</th>
+
+                        </tr>
+                        {% for att in attachments %}
+                            <tr>
+                                <td style='width:20%;'>{{ att.name }}</td>
+                                <td style='width:20%;'>{{ att.mimetype }}</td>
+                                <td style='width:20%;'>
+                                    <a href='{{ cf.url }}qedit_raw/att/{{ qtemplate.id }}/{{ att.name }}'>View/Download</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                    <br/><br/>
+                    <table border='0'>
+                        <tr>
+                            <td>Attachment Name: <input type='text' name='newattachmentname' value=''/></td>
+                            <td>Upload/Replace:<input type='file' name='newattachment'/></td>
+                        </tr>
+                    </table>
+                </div>
+                <br/>
+
+                <div class='pull-right'><INPUT type='submit' class='btn btn-primary' name='save' value='Save Changes'>
+                    <INPUT type='submit' class='btn btn-danger' name='cancel' value='Cancel'></div>
+
+            </form>
+        </div>
+
+        <a class='btn btn-small' href='{{ cf.url }}/qedit_raw/qtlog/{{ topic.id }}/{{ qtemplate.id }}'>Show Log</a>
+
+
+    </div>
+
+{% endblock body %}
