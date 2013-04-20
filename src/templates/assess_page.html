@@ -5,8 +5,6 @@
     <h2>{{ course.name }}({{ course.title }})</h2>
     <H3>{{ exam.title }}</H3>
     <div class="container-fluid well ">
-
-
         <FORM METHOD='post' ACTION='{{ cf.url }}assess/assessmentpage/{{ course_id }}/{{ exam.id }}/{{ page }}'>
 
             <div class='navbar'>
@@ -27,8 +25,6 @@
                     </ul>
                 </div>
             </div>
-
-
             <center>
                 <table border='0' style='width:95%;'>
                     <tr>
@@ -40,14 +36,11 @@
                 </table>
             </center>
             <br/>
-
         </FORM>
     </div>
 {% endblock body %}
 {% block js %}
     <script>
-
-
         $(".auto_save").change(function (ev) {
             alert("Changed to " + ev.val());
         });

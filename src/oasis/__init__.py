@@ -3,6 +3,9 @@
 # This code is under the GNU Affero General Public License
 # http://www.gnu.org/licenses/agpl-3.0.html
 
+""" Main entry point. This uses Flask to provide a WSGI app, it should be
+run from a WSGI web server such as Apache or Nginx. """
+
 
 from flask import Flask, session, redirect, url_for, request, \
     render_template, flash, abort
