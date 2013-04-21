@@ -5,6 +5,9 @@
 
 """ Assessment related pages """
 
+# Currently disabled until further testing has happened. Mostly complete and 
+# functional but it's really important this be right.
+
 import os
 import re
 import time

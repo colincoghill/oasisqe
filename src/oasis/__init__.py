@@ -261,8 +261,6 @@ def login_webauth_submit():
     return redirect(url_for("main_top"))
 
 
-
-
 def send_email(to_addr, from_addr=None, subject = "Message from OASIS", text_body=None, html_body=None):
     """ Send an email to the given address.
             You must provide both an html body and a text body.
