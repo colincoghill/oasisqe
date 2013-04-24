@@ -37,8 +37,6 @@ Colin Coghill
  
 
 
-
-
 Things still To Do
 ------------------
 
@@ -52,7 +50,6 @@ Accounts:
  * Enrol in (open) course
  * Forgotten password process
  * User account management from Course Admin section
- * Way to delete/deactivate an account
 
 Management
  * Scheduled task runner/monitor - stats, enrolment, etc
@@ -86,6 +83,7 @@ Focus:   Integration with external auth/enrolment information
  * Configurable login page
  * Use Apache web server for auth
  * Use uploadable spreadsheets, or spreadsheets in a nominated location for class lists
+ * Way to delete/deactivate an account
 
 
 3.9.3 OSS Release
