@@ -160,6 +160,13 @@ def login_signup():
     return render_template("login_signup.html")
 
 
+@app.route("/login/forgot_pass")
+def login_forgot_pass():
+    """ Ask them for their username to begin forgotten password process."""
+
+    return render_template("login_forgot_pass.html")
+
+
 @app.route("/login/confirm/<string:code>")
 def login_confirm(code):
     """ They've clicked on a confirmation link."""

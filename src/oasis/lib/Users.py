@@ -91,7 +91,7 @@ def getUserRecord(user_id):
                     'source': ret[0][8],
                     'confirmed': ret[0][9]
         }
-        if ret[0][9] == True or ret[0][9] == "true" or ret[0][9] == "TRUE" or ret[0][9] == "" or ret[0][9] is None:
+        if ret[0][9] is True or ret[0][9] == "true" or ret[0][9] == "TRUE" or ret[0][9] == "" or ret[0][9] is None:
             user_rec['confirmed'] = True
         else:
             user_rec['confirmed'] = False
@@ -154,11 +154,13 @@ def verifyPass(uname, clearpass):
 def create(uname, passwd, givenname, familyname, acctstatus, studentid, email=None,
            expiry=None, source="local", confirm_code=None, confirm=True):
     """ Add a user to the database. """
-    log(INFO, "Users.py:create(%s)" %uname)
+    log(INFO, "Users.py:create(%s)" % uname)
     if not confirm_code:
         confirm_code = ""
-    run_sql("""INSERT INTO users (uname, passwd, givenname, familyname, acctstatus, student_id, email, expiry, source, confirmation_code, confirmed)
-               VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);""",
+    run_sql("""INSERT INTO users (uname, passwd, givenname, familyname, acctstatus, student_id,
+                                  email, expiry, source, confirmation_code, confirmed)
+               VALUES (%s, %s, %s, %s, %s, %s,
+                       %s, %s, %s, %s, %s);""",
             (uname, passwd, givenname, familyname, acctstatus, studentid, email, expiry, source, confirm_code, confirm ))
     incrementVersion()
     uid = getUidByUname(uname)
@@ -229,7 +231,7 @@ def verifyConfirmationCode(code):
 
 def setConfirmed(uid):
     """ The user has confirmed, mark their record."""
-    ret = run_sql("""UPDATE "users" SET confirmed='TRUE' WHERE id=%s;""", (uid,))
+    run_sql("""UPDATE "users" SET confirmed='TRUE' WHERE id=%s;""", (uid,))
 
 
 def generateConfirmationCode(user_id):
@@ -240,16 +242,15 @@ def generateConfirmationCode(user_id):
 
 
 # Human readable symbols
-UUID_ALPHABET = "23456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
 def generate_uuid_readable(length=9):
     """ Create a new random uuid suitable for acting as a unique key in the database
         Use this when it's an ID a user will see as it's a bit shorter.
         Duplicates are still very unlikely, but don't use this in situations where
-	        a duplicate might cause problems (check for them!)
+        a duplicate might cause problems (check for them!)
 
         :param length: The number of characters we want in the UUID
     """
-
+    UUID_ALPHABET = "23456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
     # 57^n possibilities - about 6 million billion options for n=9. Hopefully pretty good.
     return "".join([random.choice(UUID_ALPHABET) for _dummy in xrange(length)])
 
