@@ -223,6 +223,8 @@ def getCourses(user_id):
 def verifyConfirmationCode(code):
     """ Given an email confirmation code, return the user_id it was given to, otherwise False.
     """
+    if len(code) < 5:  # don't want to match if we get an empty one
+        return False
     ret = run_sql("""SELECT id FROM "users" WHERE confirmation_code=%s;""", (code,))
     if ret:
         return ret[0][0]

@@ -214,7 +214,36 @@ def login_confirm(code):
     if not uid:
         abort(404)
     Users.setConfirmed(uid)
+    Users.setConfirmationCode(uid, "")
     return render_template("login_signup_confirmed.html")
+
+
+@app.route("/login/email_passreset/<string:code>")
+def login_email_passreset(code):
+    """ They've clicked on a password reset link. Log them in (might as well) and send them to
+        the password reset page."""
+    # This will also confirm their email if they haven't. Doesn't seem to be any harm in it.
+
+    if len(code) > 20:
+        abort(404)
+
+    uid = Users.verifyConfirmationCode(code)
+    if not uid:
+        abort(404)
+    Users.setConfirmed(uid)
+    Users.setConfirmationCode(uid, "")
+    u = UserAPI.getUser(uid)
+    session['username'] = u['uname']
+    session['user_id'] = uid
+    session['user_givenname'] = u['givenname']
+    session['user_familyname'] = u['familyname']
+    session['user_fullname'] = u['fullname']
+    session['user_authtype'] = "local"
+    audit(1, uid, uid, "UserAuth",
+          "%s successfully logged in using password reset email" % (session['username'],))
+
+    flash("Please change your password")
+    return redirect(url_for("main_top"))
 
 
 @app.route("/login/signup/submit", methods=['POST', ])
