@@ -184,8 +184,22 @@ def login_forgot_pass_submit():
     u = UserAPI.getUser(user_id)
     if not u['source'] == "local":
         flash("Your password is managed by a different system, please contact IT Support.")
+        return redirect(url_for("login_forgot_pass"))
 
-    abort(404)
+    code = Users.generateConfirmationCode(username)
+    Users.setConfirmationCode(user_id, code)
+
+    email = u['email']
+    if not email:
+        flash("We do not appear to have an email address on file for that account.")
+        return redirect(url_for("login_forgot_pass"))
+
+    text_body = render_template("email/forgot_pass.txt", code=code)
+    html_body = render_template("email/forgot_pass.html", code=code)
+    send_email(u['email'], from_addr=None, subject = "OASIS Password Reset", text_body=text_body, html_body=html_body)
+
+    return render_template("login_forgot_pass_submit.html")
+
 
 @app.route("/login/confirm/<string:code>")
 def login_confirm(code):

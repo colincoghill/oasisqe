@@ -234,6 +234,11 @@ def setConfirmed(uid):
     run_sql("""UPDATE "users" SET confirmed='TRUE' WHERE id=%s;""", (uid,))
 
 
+def setConfirmationCode(uid, code):
+    """ Set a new code, possibly for password reset confirmation."""
+    run_sql("""UPDATE "users" SET confirmation_code=%s WHERE id=%s;""", (code, uid))
+
+
 def generateConfirmationCode(user_id):
     """ Generate a new email confirmation code for the given user and return it
     """

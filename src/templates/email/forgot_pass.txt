@@ -1,0 +1,11 @@
+
+Hello,
+
+You are being sent this email because someone has entered your username into the OASIS "forgotten password" link.
+If this is not you, please discard this email.
+
+If you would like to reset your password, please visit this link in your web browser, and you should be prompted
+to enter a new one:
+
+{{ cf.url }}login/email_passreset/{{ code }}
+
