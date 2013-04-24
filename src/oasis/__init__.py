@@ -130,7 +130,7 @@ def login_local_submit():
 
     u = UserAPI.getUser(user_id)
     if not u['confirmed']:
-        flash("Your account has not yet been confirmed. You should have received an email with instructions in it to do so")
+        flash("Your account is not yet confirmed. You should have received an email with instructions in it to do so")
         return redirect(url_for("login_local"))
     session['username'] = username
     session['user_id'] = user_id
@@ -166,6 +166,26 @@ def login_forgot_pass():
 
     return render_template("login_forgot_pass.html")
 
+
+@app.route("/login/forgot_pass/submit", methods=["POST",])
+def login_forgot_pass_submit():
+    """ Forgot their password. Grab their username and send them a reset email.
+    """
+    if not 'username' in request.form:
+        flash("Unknown username ")
+        return redirect(url_for("login_forgot_pass"))
+
+    username = request.form['username']
+    user_id = UserAPI.getUidByUname(username)
+    if not user_id:
+        flash("Unknown username ")
+        return redirect(url_for("login_forgot_pass"))
+
+    u = UserAPI.getUser(user_id)
+    if not u['source'] == "local":
+        flash("Your password is managed by a different system, please contact IT Support.")
+
+    abort(404)
 
 @app.route("/login/confirm/<string:code>")
 def login_confirm(code):
