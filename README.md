@@ -48,7 +48,6 @@ Focus: A useful practice system
 Accounts:
  * Change password
  * Enrol in (open) course
- * Forgotten password process
  * User account management from Course Admin section
 
 Management
