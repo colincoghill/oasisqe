@@ -467,6 +467,42 @@ def setup_usersummary(view_id):
     )
 
 
+@app.route("/setup/myprofile")
+@authenticated
+def setup_myprofile():
+    """ Show an account summary for the current user account. """
+    user_id = session['user_id']
+
+    user = UserAPI.getUser(user_id)
+#    examids = Exams.getExamsDone(user_id)
+#    exams = []
+#   for examid in examids:
+#        exam = Exams.getExamStruct(examid)
+#        started = OaGeneral.humanDate(exam['start'])
+#        exam['started'] = started
+
+#        if satisfyPerms(user_id, exam['cid'], ("OASIS_VIEWMARKS", )):
+#           exam['viewable'] = True
+#        else:
+#            exam['viewable'] = False
+
+#        exams.append(exam)
+#    exams.sort(key=lambda x: x['start_epoch'], reverse=True)
+
+    course_ids = UserAPI.getCourses(user_id)
+    courses = []
+    for course_id in course_ids:
+        courses.append(CourseAPI.getCourse(course_id))
+    return render_template(
+        'setup_myprofile.html',
+        user=user,
+#        exams=exams,
+        courses=courses
+    )
+
+
+
+
 @app.route("/admin/top")
 @authenticated
 def admin_top():
