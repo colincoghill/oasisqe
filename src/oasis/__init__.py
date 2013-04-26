@@ -100,6 +100,13 @@ def index():
     """ Main landing page. Welcome them and give them some login instructions. """
     if 'user_id' in session:
         return redirect(url_for("main_top"))
+
+    if OaConfig.default == "landing":
+        return render_template("landing_page.html")
+    if OaConfig.default == "locallogin":
+        return redirect(url_for("login_local"))
+    if OaConfig.default == "webauth":
+        return redirect(url_for("login_webauth_submit"))
     return render_template("landing_page.html")
 
 
