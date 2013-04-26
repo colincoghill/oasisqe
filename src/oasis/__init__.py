@@ -243,7 +243,7 @@ def login_email_passreset(code):
           "%s successfully logged in using password reset email" % (session['username'],))
 
     flash("Please change your password")
-    return redirect(url_for("main_top"))
+    return redirect(url_for("setup_change_pass"))
 
 
 @app.route("/login/signup/submit", methods=['POST', ])

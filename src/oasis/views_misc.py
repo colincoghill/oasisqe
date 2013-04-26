@@ -514,6 +514,35 @@ def setup_change_pass():
     )
 
 
+@app.route("/setup/changepass_submit", methods=["POST",])
+@authenticated
+def setup_change_pass_submit():
+    """ Set a new password """
+    user_id = session['user_id']
+
+    user = UserAPI.getUser(user_id)
+
+    if not "newpass" in request.form or not "confirm" in request.form:
+        flash("Please provide your new password")
+        return redirect(url_for("setup_change_pass"))
+
+    newpass = request.form['newpass']
+    confirm = request.form['confirm']
+
+    if len(newpass) < 7:
+        flash("Password is too short, please try something longer.")
+        return redirect(url_for("setup_change_pass"))
+
+    if not newpass == confirm:
+        flash("Passwords do not match")
+        return redirect(url_for("setup_change_pass"))
+
+    UserAPI.setPassword(user_id=user_id, clearpass=newpass)
+    audit(1, user_id, user_id, "Setup", "%s reset password for %s." % (user['uname'], user['uname']))
+    flash("Password changed")
+    return redirect(url_for("setup_myprofile"))
+
+
 @app.route("/admin/top")
 @authenticated
 def admin_top():
