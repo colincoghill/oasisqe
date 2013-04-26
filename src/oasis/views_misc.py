@@ -501,6 +501,17 @@ def setup_myprofile():
     )
 
 
+@app.route("/setup/changepass")
+@authenticated
+def setup_change_pass():
+    """ Ask for a new password """
+    user_id = session['user_id']
+
+    user = UserAPI.getUser(user_id)
+    return render_template(
+        'setup_changepassword.html',
+        user=user,
+    )
 
 
 @app.route("/admin/top")
