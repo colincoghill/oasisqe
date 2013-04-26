@@ -27,6 +27,7 @@ cp.read(['%s/defaults.ini' % mydir, '/etc/oasis3.ini'])
 parentURL = cp.get("web", "url")
 statichost = cp.get("web", "statichost")
 staticpath = cp.get("web", "staticpath")
+default = cp.get("web", "default")
 staticURL = statichost + "/" + staticpath
 homedir = cp.get("app", "homedir")
 secretkey = cp.get("app", "secretkey")

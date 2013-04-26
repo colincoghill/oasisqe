@@ -467,6 +467,82 @@ def setup_usersummary(view_id):
     )
 
 
+@app.route("/setup/myprofile")
+@authenticated
+def setup_myprofile():
+    """ Show an account summary for the current user account. """
+    user_id = session['user_id']
+
+    user = UserAPI.getUser(user_id)
+#    examids = Exams.getExamsDone(user_id)
+#    exams = []
+#   for examid in examids:
+#        exam = Exams.getExamStruct(examid)
+#        started = OaGeneral.humanDate(exam['start'])
+#        exam['started'] = started
+
+#        if satisfyPerms(user_id, exam['cid'], ("OASIS_VIEWMARKS", )):
+#           exam['viewable'] = True
+#        else:
+#            exam['viewable'] = False
+
+#        exams.append(exam)
+#    exams.sort(key=lambda x: x['start_epoch'], reverse=True)
+
+    course_ids = UserAPI.getCourses(user_id)
+    courses = []
+    for course_id in course_ids:
+        courses.append(CourseAPI.getCourse(course_id))
+    return render_template(
+        'setup_myprofile.html',
+        user=user,
+#        exams=exams,
+        courses=courses
+    )
+
+
+@app.route("/setup/changepass")
+@authenticated
+def setup_change_pass():
+    """ Ask for a new password """
+    user_id = session['user_id']
+
+    user = UserAPI.getUser(user_id)
+    return render_template(
+        'setup_changepassword.html',
+        user=user,
+    )
+
+
+@app.route("/setup/changepass_submit", methods=["POST",])
+@authenticated
+def setup_change_pass_submit():
+    """ Set a new password """
+    user_id = session['user_id']
+
+    user = UserAPI.getUser(user_id)
+
+    if not "newpass" in request.form or not "confirm" in request.form:
+        flash("Please provide your new password")
+        return redirect(url_for("setup_change_pass"))
+
+    newpass = request.form['newpass']
+    confirm = request.form['confirm']
+
+    if len(newpass) < 7:
+        flash("Password is too short, please try something longer.")
+        return redirect(url_for("setup_change_pass"))
+
+    if not newpass == confirm:
+        flash("Passwords do not match")
+        return redirect(url_for("setup_change_pass"))
+
+    UserAPI.setPassword(user_id=user_id, clearpass=newpass)
+    audit(1, user_id, user_id, "Setup", "%s reset password for %s." % (user['uname'], user['uname']))
+    flash("Password changed")
+    return redirect(url_for("setup_myprofile"))
+
+
 @app.route("/admin/top")
 @authenticated
 def admin_top():

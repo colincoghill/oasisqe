@@ -8,7 +8,7 @@ Current Status:  "In Development, a few days from the first release"
 The "OASIS" Online Assessment system was developed by The University of Auckland, New Zealand, to assist
 in the teaching of large undergraduate engineering courses. The original system began in 1998, but it
 has been updated over time. We gained permission to release the code as Open Source, but lacked the
-resources to do so properly. Several other groups have taken the OASIS code to try it themselves, 
+resources to do so properly. Several other groups have taken the OASIS code to try it themselves,
 however.
 
 In 2012 it became clear that the code needed some work - it is still very successful and we've still
@@ -22,7 +22,7 @@ of work, requiring a rewrite of approximately 1/3 of the code.
 The plan is to release this code as a series of OSS releases, as I get enough features of the original
 system active to be useful to other people.
 
-This code has been developed mostly under the auspices of The University of Auckland, and is used 
+This code has been developed mostly under the auspices of The University of Auckland, and is used
 successfully by us. The University does not, however, otherwise endorse it or commit to any support
 of other users.
 
@@ -34,7 +34,7 @@ If you have any suggestions or improvements, feel free to contact me.
 
 Colin Coghill
  ( colin@colincoghill.com )
- 
+
 
 
 Things still To Do
@@ -46,7 +46,6 @@ Things still To Do
 Focus: A useful practice system
 
 Accounts:
- * Change password
  * Enrol in (open) course
  * User account management from Course Admin section
 
