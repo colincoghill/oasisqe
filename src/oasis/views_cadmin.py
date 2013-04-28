@@ -49,6 +49,28 @@ def cadmin_top(course_id):
     )
 
 
+@app.route("/courseadmin/config/<int:course_id>")
+@authenticated
+def cadmin_config(course_id):
+    """ Allow some course configuration """
+    user_id = session['user_id']
+
+    course = CourseAPI.getCourse(course_id)
+    if not course:
+        abort(404)
+
+    if not satisfyPerms(user_id, course_id,
+                        ("OASIS_QUESTIONEDITOR", "OASIS_VIEWMARKS", "OASIS_ALTERMARKS", "OASIS_CREATEASSESSMENT")):
+        flash("You do not have admin permission on course %s" % course['name'])
+        return redirect(url_for('setup_courses'))
+
+    return render_template(
+        "courseadmin_config.html",
+        course=course,
+
+    )
+
+
 @app.route("/courseadmin/previousassessments/<int:course_id>")
 @authenticated
 def cadmin_prev_assessments(course_id):

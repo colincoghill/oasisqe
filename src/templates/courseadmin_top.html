@@ -77,12 +77,21 @@
     </div>
 
 -->
+
+        <div class="container-fluid well">
+        <h5>People</h5>
+            <p><a href="{{ cf.url }}courseadmin/settings/{{ course.id }}">Permissions</a></p>
+            <p><a href="{{cf.url}}api/course/{{course.name}}/{{course.id}}/members?format=csv">Class List</a> as a CSV file.</p>
+
+            <a href="{{cf.url}}setup/uploadclass/{{course.id}}">Upload new</a> class list as a .csv file.
+    </div>
+
 <br>
         <div class="container-fluid well">
         <h5>Course Settings</h5>
         <!--    <p><a href="{{cf.url}}setup/studentsearch/{{course.id}}">Student Search</a></p>   -->
         <p><a href="{{ cf.url }}courseadmin/config/{{ course.id }}">Configuration</a></p>
-        <p><a href="{{ cf.url }}courseadmin/settings/{{ course.id }}">Permissions</a></p>
+
         <!--     <p><a href="{{cf.url}}api/course/{{course.name}}/{{course.id}}/members?format=csv">Class List</a> as a CSV file.</p>
 
             <div style='border: solid 1px black dashed;'>
