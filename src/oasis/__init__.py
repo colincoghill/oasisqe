@@ -6,6 +6,7 @@
 """ Main entry point. This uses Flask to provide a WSGI app, it should be
 run from a WSGI web server such as Apache or Nginx. """
 
+# We include the views covering logging in/out and account signup and related here.
 
 from flask import Flask, session, redirect, url_for, request, \
     render_template, flash, abort
@@ -400,6 +401,7 @@ def send_email(to_addr, from_addr=None, subject = "Message from OASIS", text_bod
 from oasis import views_practice
 # from oasis import views_assess
 from oasis import views_cadmin
+from oasis import views_admin
 from oasis import views_setup
 from oasis import views_api
 from oasis import views_embed
