@@ -1,5 +1,5 @@
+    WSGIDaemonProcess oasis user=oasisqe group=www-data processes=5 threads=5 python-path=/opt/oasisqe/3.9/src
 
-    WSGIDaemonProcess oasis user=oasisqe group=www-data threads=25
     WSGIScriptAlias /oasis /opt/oasisqe/3.9/src/oasis.wsgi
     WSGIPythonOptimize 1
 
