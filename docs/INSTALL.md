@@ -71,7 +71,7 @@ values appropriately.
 
 8. Setup Apache to serve OASIS
 ```Shell
-    cp /opt/oasisqe/3.9/deploy/apache_config /etc/apache2/sites-available/oasisqe
+    cp /opt/oasisqe/3.9/deploy/apacheconfig.sample /etc/apache2/sites-available/oasisqe
     nano /etc/apache2/sites-available/oasisqe
     a2enmod oasisqe
 ```
