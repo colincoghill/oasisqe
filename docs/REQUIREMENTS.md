@@ -1,4 +1,3 @@
-
 Requirements for running OASIS
 ==============================
 
@@ -28,5 +27,10 @@ We've successfully supported 2000 students (100 concurrent) using a single serve
  however we were not making heavy use of some of the more advanced features of OASIS. A Quad Core 3GHz Intel server
  with 4GB of RAM should support several thousand users comfortably.
 
-For slightly larger installations, or for ease of maintenance, a separate database server will work well.
+For slightly larger installations, or for ease of maintenance, a separate database server will work well. You may
+wish to do this to make it easier to backup/restore/replicate, or if you have an existing database server. Just
+make sure the database settings in /etc/oasisqe.ini are correct.
+
+For very large installations you can run memcached on a separate server and run multiple front-end OASIS web servers, 
+although we haven't tested this in practice yet so can't guarantee that it'll work! It's on the roadmap.
 
