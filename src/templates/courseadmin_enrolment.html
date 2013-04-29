@@ -9,36 +9,35 @@
 
         <p>This course has the following current group(s) of students:</p>
 
-        <form method="POST" action="{{ cf.url }}courseadmin/enrolment_save/{{ course.id }}">
-            <table class="table table-condensed">
-                <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Title</th>
-                    <th>Members</th>
-                    <th>Start</th>
-                    <th>End</th>
-                    <th></th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for group in groups %}
-                    {% if group.current %}
-                        <tr>
-                            <td>{{ group.name }}</td>
-                            <td>{{ group.title }}</td>
-                            <td>{{ group.nummembers }}</td>
-                            <td>{{ group.startdate }}</td>
-                            <td>{{ group.enddate }}</td>
-                            <td><a href="{{ cf.url }}courseadmin/editenrolment/{{ group.id }}" class='btn-mini btn'>Edit
-                                Members</a></td>
-                        </tr>
-                    {% endif %}
-                {% endfor %}
+        <table class="table table-condensed">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Title</th>
+                <th>Members</th>
+                <th>Start</th>
+                <th>End</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for group in groups %}
+                {% if group.current %}
+                    <tr>
+                        <td>{{ group.name }}</td>
+                        <td>{{ group.title }}</td>
+                        <td>{{ group.nummembers }}</td>
+                        <td>{{ group.startdate }}</td>
+                        <td>{{ group.enddate }}</td>
+                        <td><a href="{{ cf.url }}courseadmin/editenrolment/{{ group.id }}" class='btn-mini btn'>Edit
+                            Members</a></td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
 
-                </tbody>
-            </table>
-            <h5>Previous Groups</h5>
+            </tbody>
+        </table>
+        <!--        <h5>Previous Groups</h5>
             <table class="table table-condensed">
                 <thead>
                 <tr>
@@ -66,8 +65,8 @@
                 {% endfor %}
                 </tbody>
             </table>
+-->
 
-        </form>
     </div>
 
 {% endblock body %}
