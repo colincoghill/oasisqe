@@ -57,7 +57,6 @@ Install:
  * Install guide
  * Make sure sample configs etc work
  * Landing page - do a nice welcome/introduction page
- * Create fresh empty schema for new installs
  * Turn off assertion checking in production
  * OaPool's postgres pool size - revisit for running under wsgi
  * Question Creation Documentation
