@@ -47,11 +47,7 @@ Focus: A useful practice system
 
 Accounts:
  * Enrol in (open) course
- * User account management from Course Admin section
 
-Management
- * Scheduled task runner/monitor - stats, enrolment, etc
- * Better error checking or handling of permissions on log file & cache
 
 Install:
  * Install guide
@@ -79,6 +75,10 @@ Focus:   Integration with external auth/enrolment information
  * Use Apache web server for auth
  * Use uploadable spreadsheets, or spreadsheets in a nominated location for class lists
  * Way to delete/deactivate an account
+ * Better error checking or handling of permissions on log file & cache
+ * Scheduled task runner/monitor - stats, enrolment, etc
+ * User account management from Course Admin section
+
 
 Documentation
 
