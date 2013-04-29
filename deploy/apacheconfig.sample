@@ -1,11 +1,13 @@
 
 
-    WSGIDaemonProcess oasis user=oasis group=www-data threads=5
+    WSGIDaemonProcess oasis user=oasis group=www-data threads=25
     WSGIScriptAlias /oasis /opt/oasisqe/3.9/oasis/oasis.wsgi
+    WSGIPythonOptimize 1
 
     <Directory /opt/oasisqe/3.9/oasis>
         WSGIProcessGroup oasis
         WSGIApplicationGroup %{GLOBAL}
+
         Order deny,allow
         Allow from all
     </Directory>
