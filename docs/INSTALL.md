@@ -93,3 +93,12 @@ values appropriately.
     /opt/oasisqe/3.9/bin/reset_admin_password
 ```
    You should now be able to log in as the user "admin", with the password given to you above.
+
+
+Troubleshooting
+---------------
+
+Apache errors (Internal Server Error 500) should show up in 
+```
+   /var/log/apache2/error.log
+```
