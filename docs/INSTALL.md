@@ -17,7 +17,7 @@ Single Machine Install
 
 2. Install dependencies
    as root
-```
+```Shell
     apt-get install apache2 libapache2-mod-wsgi memcached
     apt-get install python-bcrypt python-decorator python-flask python-imaging python-jinja2
     apt-get install python-memcache python-psycopg2 python-openpyxl
@@ -25,7 +25,7 @@ Single Machine Install
 ```
 
 3. Create an account for OASIS to run under
-```
+```Shell
     adduser --disabled-login --disabled-password oasisqe
 ```
 
@@ -33,33 +33,35 @@ Single Machine Install
 
    It is possible to install OASIS elsewhere if you like, you will have to change the paths in various configuration
    options later
-```
+```Shell
     mkdir /opt/oasisqe
     cd /opt/oasisqe
+    wget OASIS
     tar -zxf OASIS_3.9.tgz
 ```
 
 5. Set up the OASIS database
     Choose a password for the database. You will not have to type this in often, it will go in configuration
     scripts, so pick something quite complex and secure. "createuser" will prompt you for this password.
-```
+```Shell
      su postgres
      createuser oasisdb -d -l -P
      createdb -O oasisdb oasisdb
      psql -Uoasisdb oasisdb < /opt/oasisqe/3.9/deploy/emptyschema.sql
 ```
 6. Setup the main OASIS configuration file
-```
-    cp /opt/oasisqe/3.9/deploy/sample_config.ini /etc/oasis3.9.ini
-    nano /etc/oasis3.9.ini
+```Shell
+    cp /opt/oasisqe/3.9/deploy/sample_config.ini /etc/oasisqe.ini
+    nano /etc/oasisqe.ini
 ```
 You can use VI or some other editor instead of nano, if you like. Go through the file and fill in the various
 values appropriately.
 
 7. Setup Apache to serve OASIS
 
-```
+```Shell
     cp /opt/oasisqe/3.9/deploy/apache_config /etc/apache2/sites-available/oasisqe
+    nano /etc/apache2/sites-available/oasisqe
     a2enmod oasisqe
 ```
 
