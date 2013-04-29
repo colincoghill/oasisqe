@@ -25,7 +25,7 @@
 
             <div class="">
                 <label>Student enrolment:
-                     <select name='registration' value='{{ course.registration }}'>
+                     <select name='registration'>
         <option value='open' {% if course.registration == 'open' %}SELECTED{% endif %}>Open (Anyone can add themselves)</option>
         <option value='controlled' {% if course.registration == 'controlled' %}SELECTED{% endif %}>Controlled (Managed by course administrator)</option>
     </select>
@@ -40,10 +40,10 @@
 
                 <div class="">
                     <label>Visibility in Practice Section:
-                        <select name="practice_visibility" value='{{ practice_visibility }}'>
-                            <option value='all'>All, including guests.</option>
-                            <option value='enrolled'>Enrolled in course only</option>
-                            <option value='staff'>Staff only</option>
+                        <select name="practice_visibility">
+                            <option value='all' {% if course.practice_visibility == 'all' %}SELECTED{% endif %}>All, including guests.</option>
+                            <option value='enrol' {% if course.practice_visibility == 'enrol' %}SELECTED{% endif %}>Enrolled in course only</option>
+                            <option value='staff' {% if course.practice_visibility == 'staff' %}SELECTED{% endif %}>Staff only</option>
                         </select>
 
                     </label>

@@ -9,7 +9,9 @@
     id integer NOT NULL,
     groupid integer NOT NULL,
     active integer DEFAULT 0,
-    course integer NOT NULL
+    course integer NOT NULL,
+    assess_visibility CHARACTER VARYING DEFAULT 'all';  --   all, enrolled, staff
+    practice_visibility CHARACTER VARYING DEFAULT 'enrolled';  --   all, enrolled, staff
     enrol_type CHARACTER VARYING DEFAULT 'manual';  --   manual, file, url, ldap
     registration CHARACTER VARYING DEFAULT 'controlled'; -- controlled, open
     enrol_location CHARACTER VARYING NULL;  -- if enrol type is URL or FILE, it's details
@@ -125,6 +127,24 @@ def setRegistration(cid, registration):
     incrementVersion()
 
 
+def setPracticeVisibility(cid, visibility):
+    """ Who can do practice questions."""
+    assert isinstance(cid, int)
+    assert isinstance(visibility, str) or isinstance(visibility, unicode)
+
+    run_sql("UPDATE courses SET practice_visibility=%s WHERE course=%s;", (visibility, cid))
+    incrementVersion()
+
+
+def setAssessVisibility(cid, visibility):
+    """ Who can do assessments."""
+    assert isinstance(cid, int)
+    assert isinstance(visibility, str) or isinstance(visibility, unicode)
+
+    run_sql("UPDATE courses SET assess_visibility=%s WHERE course=%s;", (visibility, cid))
+    incrementVersion()
+
+
 def setEnrolLocation(cid, enrol_location):
     """ Set the enrolment location of a course."""
     assert isinstance(cid, int)
@@ -157,18 +177,25 @@ def getInfoAll():
         [position] = { 'id':id, 'name':name, 'title':title }
     """
     ret = run_sql(
-        """SELECT course, title, description, owner, active, type, enrol_type, enrol_location, enrol_freq, registration
+        """SELECT course, title, description, owner, active, type, enrol_type, enrol_location, enrol_freq, registration,
+                practice_visibility, assess_visibility
              FROM courses WHERE active='1' ORDER BY title ;""")
     info = {}
     if ret:
         count = 0
         for row in ret:
-            info[count] = {'id': int(row[0]), 'name': row[1], 'title': row[2], 'owner': row[3], 'active': row[4],
-                           'type': row[5], 'enrol_type': row[6], 'enrol_location': row[7], 'enrol_freq': row[8],
-                           'registration': row[9]
+            info[count] = {
+                'id': int(row[0]), 'name': row[1], 'title': row[2], 'owner': row[3], 'active': row[4],
+                'type': row[5], 'enrol_type': row[6], 'enrol_location': row[7], 'enrol_freq': row[8],
+                'registration': row[9], 'practice_visibility': row[10], 'assess_visibility': row[11]
             }
+            # Defaults added since database was created
             if not row['enrol_location']:
                 row['enrol_location'] = ""
+            if not row['practice_visibility']:
+                row['practice_visibility'] = "all"
+            if not row['assess_visibility']:
+                row['assess_visibility'] = "all"
             count += 1
     return info
 
@@ -197,7 +224,8 @@ def getFullCourseDict():
         [id] = { 'id':id, 'name':name, 'title':title }
     """
     ret = run_sql(
-        """SELECT course, title, description, owner, active, type, enrol_type, enrol_location, enrol_freq, registration
+        """SELECT course, title, description, owner, active, type, enrol_type, enrol_location, enrol_freq, registration,
+                practice_visibility, assess_visibility
             FROM courses;""")
     cdict = {}
     if ret:
@@ -212,10 +240,16 @@ def getFullCourseDict():
                 'enrol_type': row[6],
                 'enrol_location': row[7],
                 'enrol_freq': row[8],
-                'registration': row[9]
+                'registration': row[9],
+                'practice_visibility': row[10],
+                'assess_visibility': row[11]
             }
             if course['enrol_location'] is None:
                 course['enrol_location'] = ''
+            if not course['practice_visibility']:
+                course['practice_visibility'] = "all"
+            if not course['assess_visibility']:
+                course['assess_visibility'] = "all"
             cdict[int(row[0])] = course
     return cdict
 

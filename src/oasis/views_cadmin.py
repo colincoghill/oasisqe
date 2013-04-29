@@ -120,6 +120,11 @@ def cadmin_config_submit(course_id):
             saved = True
             Courses.setRegistration(course_id, registration)
 
+    if 'practice_visibility' in form:
+        practice_visibility = form['practice_visibility']
+        if not (practice_visibility == course['practice_visibility']):
+            saved = True
+            Courses.setPracticeVisibility(course_id, practice_visibility)
 
     if saved:
         flash("Changes Saved")

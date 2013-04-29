@@ -25,7 +25,8 @@ ALTER TABLE "public"."courses" ADD COLUMN "registration" CHARACTER VARYING DEFAU
 ALTER TABLE "public"."courses" ADD COLUMN "enrol_location" CHARACTER VARYING NULL;  -- if enrol type is URL or FILE, it's details
                                                                            -- if it's LDAP, the LDAP group name
 ALTER TABLE "public"."courses" ADD COLUMN "enrol_freq" INTEGER DEFAULT '120';  -- How often (minutes) to refresh enrolment info
-
+ALTER TABLE "public"."courses" ADD COLUMN "practice_visibility" CHARACTER VARYING DEFAULT 'all';
+ALTER TABLE "public"."courses" ADD COLUMN "assess_visibility" CHARACTER VARYING DEFAULT 'enrol';
 
 
 
