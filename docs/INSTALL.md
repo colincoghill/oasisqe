@@ -13,7 +13,8 @@ Single Machine Install
 
 1. Install a basic Ubuntu 12.04 Linux system.
    If you have a newer version it should work fine, but hasn't specifically been tested yet, let us know!
-
+   32/64 bits doesn't matter. 64bit is probably recommended for a server unless you're low on RAM, in which
+   case 32 might be slightly more compact.
 
 2. Install dependencies
    as root
@@ -58,10 +59,22 @@ You can use VI or some other editor instead of nano, if you like. Go through the
 values appropriately.
 
 7. Setup Apache to serve OASIS
-
 ```Shell
     cp /opt/oasisqe/3.9/deploy/apache_config /etc/apache2/sites-available/oasisqe
     nano /etc/apache2/sites-available/oasisqe
     a2enmod oasisqe
 ```
 
+8. Restart Apache
+```Shell
+    service apache2 restart
+```
+
+    OASIS should now be available at the URL you configured.
+
+9. Reset the Admin password
+   If you forget it you can perform this step again and it will reset it again.
+```Shell
+    /opt/oasisqe/3.9/bin/reset_admin_password
+```
+   You should now be able to log in as the user "admin", with the password given to you above.
