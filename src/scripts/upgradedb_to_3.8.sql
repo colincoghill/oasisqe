@@ -29,6 +29,13 @@ ALTER TABLE "public"."courses" ADD COLUMN "practice_visibility" CHARACTER VARYIN
 ALTER TABLE "public"."courses" ADD COLUMN "assess_visibility" CHARACTER VARYING DEFAULT 'enrol';
 
 
+-- startdate and enddate allow enrolment in a group to come and go.
+ALTER TABLE "public"."groups" ADD COLUMN "startdate" TIMESTAMP NULL; -- When the group takes effect
+ALTER TABLE "public"."groups" ADD COLUMN "enddate" TIMESTAMP NULL; -- When the group ceases to take effect
+ALTER TABLE "public"."groups" ADD COLUMN "enrol_type" CHARACTER VARYING DEFAULT 'manual';
+ALTER TABLE "public"."groups" ADD COLUMN "registration" CHARACTER VARYING DEFAULT 'controlled';
+
+
 
 CREATE TABLE stats_prac_q_course (
     "qtemplate"  INTEGER NOT NULL,

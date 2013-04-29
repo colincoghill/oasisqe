@@ -7,32 +7,24 @@
     Handle group related operations.
 """
 
+import datetime
 from oasis.lib.OaDB import run_sql, dbpool
 from logging import log, WARN, INFO
 
 
-def create(name, description, owner, grouptype):
+def create(name, description, owner, grouptype, startdate=None, enddate=None):
     """ Add a group to the database. """
     conn = dbpool.begin()
-    conn.run_sql("""INSERT INTO groups (title, description, owner, "type")
-               VALUES (%s, %s, %s, %s);""", (name, description, owner, grouptype))
+    conn.run_sql("""INSERT INTO groups (title, description, owner, "type", startdate, enddate)
+               VALUES (%s, %s, %s, %s, %s, %s);""", (name, description, owner, grouptype, startdate, enddate))
     res = conn.run_sql("SELECT currval('groups_id_seq')")
     log("info", "db/Groups.py:create('%s', '%s', %d, %d)" % (name, description, owner, grouptype), "Group added.")
     dbpool.commit(conn)
     if res:
-        return res[0][0]
+        return int(res[0][0])
     log("error", "db/Groups.py:create('%s', '%s', %d, %d)" % (name, description, owner, grouptype),
         "Group create possibly failed.")
     return None
-
-#
-# def getGroupByTitle(title):
-#     """ Find the internal ID of the group with the given title."""
-#
-#     ret = run_sql("""SELECT "id" FROM groups WHERE title=%s;""", (title,))
-#     if ret:
-#         return int(ret[0][0])
-#     return None
 
 
 def getUsersInGroup(group):
@@ -63,12 +55,23 @@ def getInfo(group):
     """ Return a summary of the group.
         { 'id':id, 'name':name, 'title':title }
     """
-    ret = run_sql("""SELECT id, title, description FROM groups WHERE id = %s;""", (group,))
+    ret = run_sql("""SELECT id, title, description, startdate, enddate FROM groups WHERE id = %s;""", (group,))
     info = {}
     if ret:
-        info = {'id': ret[0][0],
-                'name': ret[0][1],
-                'title': ret[0][2]}
+        info = {
+            'id': ret[0][0],
+            'name': ret[0][1],
+            'title': ret[0][2],
+            'startdate': ret[0][3],
+            'enddate': ret[0][4]
+        }
+        if info['enddate']:
+            if info['enddate'] < datetime.datetime.now():
+                info['current'] = True
+            else:
+                info['current'] = False
+        else:
+            info['current'] = True
     return info
 
 

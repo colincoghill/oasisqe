@@ -12,7 +12,7 @@ from logging import log, ERROR
 from flask import render_template, session, request, redirect, abort, url_for, flash
 
 from .lib import OaConfig, UserAPI, OaDB, Topics, OaUserDB, OaGeneral, Exams, Courses, \
-    CourseAPI, OaSetup, CourseAdmin
+    CourseAPI, OaSetup, CourseAdmin, Groups
 
 MYPATH = os.path.dirname(__file__)
 
@@ -263,6 +263,38 @@ def cadmin_edit_exam_submit(course_id, exam_id):
     )
 
 
+@app.route("/courseadmin/enrolment/<int:course_id>")
+@authenticated
+def cadmin_enrolments(course_id):
+    """ Present a page to view and edit all topics, including hidden. """
+    user_id = session['user_id']
+
+    course = None
+    try:
+        course = CourseAPI.getCourse(course_id)
+    except KeyError:
+        abort(404)
+
+    if not course:
+        abort(404)
+
+    if not satisfyPerms(user_id, course_id, ("OASIS_USERADMIN",)):
+        flash("You do not have 'User Admin' permission on this course.")
+        return redirect(url_for('cadmin_top', course_id=course_id))
+
+    groups = [Groups.getInfo(group_id) for group_id in Courses.getGroupsInCourse(course_id)]
+
+    # it's possible one was never created, legacy database, etc.
+    if not len(groups):
+        now = datetime.datetime.now()
+        forever = datetime.datetime(year=9999, month=12, day=31)
+        group_id = Groups.create(u"%s Staff" % course.name, "Current Staff", user_id, 2, startdate=now, enddate=forever)
+        Courses.addGroupToCourse(group_id, course_id)
+        groups = [Groups.getInfo(group_id) for group_id in Courses.getGroupsInCourse(course_id)]
+        assert len(groups)
+    return render_template("courseadmin_enrolment.html", course=course, groups=groups)
+
+
 @app.route("/courseadmin/topics/<int:course_id>", methods=['GET', 'POST'])
 @authenticated
 def cadmin_edittopics(course_id):
@@ -405,7 +437,6 @@ def cadmin_view_qtemplate_history(topic_id, qt_id):
         qtemplate=qtemplate,
         years=years
     )
-
 
 
 @app.route("/courseadmin/topic/<int:topic_id>")
