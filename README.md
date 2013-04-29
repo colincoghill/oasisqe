@@ -58,9 +58,6 @@ Install:
  * OaPool's postgres pool size - revisit for running under wsgi
  * Basic Question Creation Documentation
 
- * Check Licensing, especially on 3rd party components, fonts
- * Make sure appropriate license documents are included
-
 Testing:
  * Test visibility of topics/questions to unenrolled but valid accounts.
  * Test all links on all pages.

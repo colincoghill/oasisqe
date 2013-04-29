@@ -1,7 +1,0 @@
-
-Most code in this tree is under the GNU Affero General Public License (included as GNU_AGPL_3.0).
-
-Some components, for example JQuery and Bootstrap are under their own licensing.
-
-We're still going through the code base making sure all the relevant parts are labelled clearly, license-wise,
-if in doubt, please ask.
