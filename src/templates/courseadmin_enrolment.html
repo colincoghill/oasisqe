@@ -8,8 +8,9 @@
         <h5>Enrolment Groups</h5>
 
         <p>This course has the following current group(s) of students:</p>
+
         <form method="POST" action="{{ cf.url }}courseadmin/enrolment_save/{{ course.id }}">
-            <table class="table">
+            <table class="table table-condensed">
                 <thead>
                 <tr>
                     <th>Name</th>
@@ -34,10 +35,11 @@
                         </tr>
                     {% endif %}
                 {% endfor %}
+
                 </tbody>
             </table>
             <h5>Previous Groups</h5>
-           <table class="table">
+            <table class="table table-condensed">
                 <thead>
                 <tr>
                     <th>Name</th>

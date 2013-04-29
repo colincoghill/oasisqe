@@ -288,10 +288,21 @@ def cadmin_enrolments(course_id):
     if not len(groups):
         now = datetime.datetime.now()
         forever = datetime.datetime(year=9999, month=12, day=31)
-        group_id = Groups.create(u"%s Staff" % course.name, "Current Staff", user_id, 2, startdate=now, enddate=forever)
+        group_id = Groups.create(u"Staff", "Current Staff", user_id, 2, startdate=now, enddate=forever)
         Courses.addGroupToCourse(group_id, course_id)
         groups = [Groups.getInfo(group_id) for group_id in Courses.getGroupsInCourse(course_id)]
         assert len(groups)
+
+    for group in groups:
+        if not group['enddate']:
+            group['enddate'] = "-"
+        elif group['enddate'] > datetime.datetime(year=9990, month=1, day=1):
+            group['enddate'] = "-"
+
+        if group['startdate']:
+            group['startdate'] = group['startdate'].strftime("%d %b %Y")
+        else:
+            group['startdate'] = "-"
     return render_template("courseadmin_enrolment.html", course=course, groups=groups)
 
 

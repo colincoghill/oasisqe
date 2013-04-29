@@ -18,12 +18,11 @@ def create(name, description, owner, grouptype, startdate=None, enddate=None):
     conn.run_sql("""INSERT INTO groups (title, description, owner, "type", startdate, enddate)
                VALUES (%s, %s, %s, %s, %s, %s);""", (name, description, owner, grouptype, startdate, enddate))
     res = conn.run_sql("SELECT currval('groups_id_seq')")
-    log("info", "db/Groups.py:create('%s', '%s', %d, %d)" % (name, description, owner, grouptype), "Group added.")
+    log(INFO, "create('%s', '%s', %d, %d) Added Group" % (name, description, owner, grouptype))
     dbpool.commit(conn)
     if res:
         return int(res[0][0])
-    log("error", "db/Groups.py:create('%s', '%s', %d, %d)" % (name, description, owner, grouptype),
-        "Group create possibly failed.")
+    log(INFO, "create('%s', '%s', %d, %d, %s, %s) FAILED" % (name, description, owner, grouptype, startdate, enddate))
     return None
 
 
@@ -66,7 +65,7 @@ def getInfo(group):
             'enddate': ret[0][4]
         }
         if info['enddate']:
-            if info['enddate'] < datetime.datetime.now():
+            if info['enddate'] >= datetime.datetime.now():
                 info['current'] = True
             else:
                 info['current'] = False
