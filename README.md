@@ -48,7 +48,6 @@ Focus: A useful practice system
 Code:
  * Disable incomplete or inactive areas
  * A way to change the News page
- * Admin password reset script
 
 Install:
  * Basic usage guide
