@@ -3,6 +3,8 @@ Installation Guide
 
 Work in progress, should not be published or used yet.
 Several of the files mentioned here do not yet exist.
+I'm currently making VMs of various Linux Distros and installing OASIS on them, updating these
+instructions as I go. It should take a few hours.
 
 
 Ubuntu Linux 12.04
