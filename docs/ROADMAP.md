@@ -1,4 +1,14 @@
 
+The main priority for the near future is to reach feature parity with the old version that the University of
+Auckland has used successfully for years. Much of the code is in place but many parts are disabled until they
+can be tested to my satisfaction.
+
+When it has reached this goal, I'll label it "Version 4.0" and do a more complete release, packaged for
+various distributions, etc.
+
+The 3.9.x releases should be perfectly usable in their own way though, just missing features or documentation.
+
+
 3.9.2 OSS Release
 =================
 
