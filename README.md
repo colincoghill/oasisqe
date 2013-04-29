@@ -51,9 +51,7 @@ Code:
  * Admin password reset script
 
 Install:
- * Install guide
  * Basic usage guide
- * Make sure sample configs etc work
  * Landing page - do a nice welcome/introduction page
  * OaPool's postgres pool size - revisit for running under wsgi
  * Basic Question Creation Documentation
