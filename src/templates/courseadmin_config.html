@@ -27,14 +27,13 @@
                 <label>Student enrolment:
                      <select name='registration'>
         <option value='open' {% if course.registration == 'open' %}SELECTED{% endif %}>Open (Anyone can add themselves)</option>
-        <option value='controlled' {% if course.registration == 'controlled' %}SELECTED{% endif %}>Controlled (Managed by course administrator)</option>
+  <!--      <option value='controlled' {% if course.registration == 'controlled' %}SELECTED{% endif %}>Controlled (Managed by course administrator)</option> -->
     </select>
                 </label>
 
                 <p>With "open" enrolment, students can enrol themselves in the course. This is good for demonstrations
-                    or
-                    non academic related content. A more traditional course should be controlled by the course
-                    admin.</p>
+                    or non academic related content. <!-- A more traditional course should be controlled by the course
+                    admin. --></p>
 </div>
                 <h5>Course Visibility</h5>
 
@@ -42,8 +41,8 @@
                     <label>Visibility in Practice Section:
                         <select name="practice_visibility">
                             <option value='all' {% if course.practice_visibility == 'all' %}SELECTED{% endif %}>All, including guests.</option>
-                            <option value='enrol' {% if course.practice_visibility == 'enrol' %}SELECTED{% endif %}>Enrolled in course only</option>
-                            <option value='staff' {% if course.practice_visibility == 'staff' %}SELECTED{% endif %}>Staff only</option>
+        <!--                     <option value='enrol' {% if course.practice_visibility == 'enrol' %}SELECTED{% endif %}>Enrolled in course only</option>
+                            <option value='staff' {% if course.practice_visibility == 'staff' %}SELECTED{% endif %}>Staff only</option>   -->
                         </select>
 
                     </label>

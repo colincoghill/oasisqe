@@ -45,12 +45,14 @@ Things still To Do
 
 Focus: A useful practice system
 
-Accounts:
- * Enrol in (open) course
-
+Code:
+ * Disable incomplete or inactive areas
+ * A way to change the News page
+ * Admin password reset script
 
 Install:
  * Install guide
+ * Basic usage guide
  * Make sure sample configs etc work
  * Landing page - do a nice welcome/introduction page
  * OaPool's postgres pool size - revisit for running under wsgi
@@ -74,11 +76,11 @@ Focus:   Integration with external auth/enrolment information
  * Configurable login page
  * Use Apache web server for auth
  * Use uploadable spreadsheets, or spreadsheets in a nominated location for class lists
+ * Enrol in (open) course
+ * User account management from Course Admin section
  * Way to delete/deactivate an account
  * Better error checking or handling of permissions on log file & cache
  * Scheduled task runner/monitor - stats, enrolment, etc
- * User account management from Course Admin section
-
 
 Documentation
 
