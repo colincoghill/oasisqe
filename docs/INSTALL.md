@@ -50,7 +50,16 @@ Single Machine Install
      createdb -O oasisdb oasisdb
      psql -Uoasisdb oasisdb < /opt/oasisqe/3.9/deploy/emptyschema.sql
 ```
-6. Setup the main OASIS configuration file
+
+6. Setup OASIS working space and logs.
+```Shell
+    mkdir /var/cache/oasisqe
+    chown oasisqe /var/cache/oasisqe
+    mkdir /var/logs/oasisqe
+    chown oasisqe /var/logs/oasisqe
+```
+
+7. Setup the main OASIS configuration file
 ```Shell
     cp /opt/oasisqe/3.9/deploy/sample_config.ini /etc/oasisqe.ini
     nano /etc/oasisqe.ini
@@ -58,21 +67,21 @@ Single Machine Install
 You can use VI or some other editor instead of nano, if you like. Go through the file and fill in the various
 values appropriately.
 
-7. Setup Apache to serve OASIS
+8. Setup Apache to serve OASIS
 ```Shell
     cp /opt/oasisqe/3.9/deploy/apache_config /etc/apache2/sites-available/oasisqe
     nano /etc/apache2/sites-available/oasisqe
     a2enmod oasisqe
 ```
 
-8. Restart Apache
+9. Restart Apache
 ```Shell
     service apache2 restart
 ```
 
     OASIS should now be available at the URL you configured.
 
-9. Reset the Admin password
+10. Reset the Admin password
    If you forget it you can perform this step again and it will reset it again.
 ```Shell
     /opt/oasisqe/3.9/bin/reset_admin_password
