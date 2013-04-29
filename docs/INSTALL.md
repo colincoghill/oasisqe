@@ -1,8 +1,8 @@
-
 Installation Guide
 ==================
 
 Work in progress, should not be published or used yet.
+Several of the files mentioned here do not yet exist.
 
 
 Ubuntu Linux 12.04
