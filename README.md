@@ -59,9 +59,8 @@ Install:
  * Landing page - do a nice welcome/introduction page
  * Turn off assertion checking in production
  * OaPool's postgres pool size - revisit for running under wsgi
- * Question Creation Documentation
- * Credits, Stephane's number stuff. Davy's editor. Nilroy's theme.
- * Web site
+ * Basic Question Creation Documentation
+
  * Check Licensing, especially on 3rd party components, fonts
  * Make sure appropriate license documents are included
 
@@ -81,6 +80,11 @@ Focus:   Integration with external auth/enrolment information
  * Use Apache web server for auth
  * Use uploadable spreadsheets, or spreadsheets in a nominated location for class lists
  * Way to delete/deactivate an account
+
+Documentation
+
+ * More complete question creation guide
+ * Basic admin guide
 
 
 3.9.3 OSS Release
@@ -112,6 +116,11 @@ Fix and re-enable Numeric Question Editor
  * Integrate with 3.8
  * Question renaming
  * Large and small numbers
+
+Documentation
+
+* Credits, Stephane's number stuff. Davy's editor. Nilroy's theme.
+* Web site
 
 
 
