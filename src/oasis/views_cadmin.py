@@ -71,6 +71,54 @@ def cadmin_config(course_id):
     )
 
 
+@app.route("/courseadmin/config_submit/<int:course_id>", methods=["POST",])
+@authenticated
+def cadmin_config_submit(course_id):
+    """ Allow some course configuration """
+    user_id = session['user_id']
+
+    course = CourseAPI.getCourse(course_id)
+    if not course:
+        abort(404)
+
+    if not satisfyPerms(user_id, course_id,
+                        ("OASIS_QUESTIONEDITOR", "OASIS_VIEWMARKS", "OASIS_ALTERMARKS", "OASIS_CREATEASSESSMENT")):
+        flash("You do not have admin permission on course %s" % course['name'])
+        return redirect(url_for('setup_courses'))
+
+    if "cancel" in request.form:
+        flash("Cancelled edit")
+        return redirect(url_for("cadmin_top", course_id=course_id))
+
+    saved = False
+    new_name = course['name']
+    if "name" in request.form:
+        new_name = request.form['name']
+
+    new_title = course['title']
+    if "title" in request.form:
+        new_title = request.form['title']
+
+    if not new_name == course['name']:
+        if not (3 <= len(new_name) <= 20):
+            flash("Course Name must be between 3 and 20 characters.")
+        else:
+            Courses.setName(course['id'], new_name)
+            saved = True
+    if not new_title == course['title']:
+        if not (3 <= len(new_title) <= 100):
+            flash("Course Title must be between 3 and 100 characters.")
+        else:
+            Courses.setTitle(course['id'], new_title)
+            saved = True
+
+    if saved:
+        flash("Changes Saved")
+    else:
+        flash("No changes made.")
+    return redirect(url_for("cadmin_top", course_id=course_id))
+
+
 @app.route("/courseadmin/previousassessments/<int:course_id>")
 @authenticated
 def cadmin_prev_assessments(course_id):
