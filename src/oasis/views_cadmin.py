@@ -86,18 +86,20 @@ def cadmin_config_submit(course_id):
         flash("You do not have admin permission on course %s" % course['name'])
         return redirect(url_for('setup_courses'))
 
-    if "cancel" in request.form:
+    form = request.form
+
+    if "cancel" in form:
         flash("Cancelled edit")
         return redirect(url_for("cadmin_top", course_id=course_id))
 
     saved = False
     new_name = course['name']
-    if "name" in request.form:
-        new_name = request.form['name']
+    if "name" in form:
+        new_name = form['name']
 
     new_title = course['title']
-    if "title" in request.form:
-        new_title = request.form['title']
+    if "title" in form:
+        new_title = form['title']
 
     if not new_name == course['name']:
         if not (3 <= len(new_name) <= 20):
@@ -111,6 +113,13 @@ def cadmin_config_submit(course_id):
         else:
             Courses.setTitle(course['id'], new_title)
             saved = True
+
+    if 'registration' in form:
+        registration = form['registration']
+        if not (registration == course['registration']):
+            saved = True
+            Courses.setRegistration(course_id, registration)
+
 
     if saved:
         flash("Changes Saved")

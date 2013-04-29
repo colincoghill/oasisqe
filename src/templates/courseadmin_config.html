@@ -25,10 +25,10 @@
 
             <div class="">
                 <label>Student enrolment:
-                    <select name="enrolment" value='{{ enrolment_type }}'>
-                        <option value='open'>Open. Students can enrol themselves.</option>
-                        <option value='closed'>Controlled by course admin</option>
-                    </select>
+                     <select name='registration' value='{{ course.registration }}'>
+        <option value='open' {% if course.registration == 'open' %}SELECTED{% endif %}>Open (Anyone can add themselves)</option>
+        <option value='controlled' {% if course.registration == 'controlled' %}SELECTED{% endif %}>Controlled (Managed by course administrator)</option>
+    </select>
                 </label>
 
                 <p>With "open" enrolment, students can enrol themselves in the course. This is good for demonstrations
