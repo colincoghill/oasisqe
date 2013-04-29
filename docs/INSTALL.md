@@ -19,6 +19,9 @@ Single Machine Install
    If you have a newer version it should work fine, but hasn't specifically been tested yet, let us know!
    32/64 bits doesn't matter. 64bit is probably recommended for a server unless you're low on RAM, in which
    case 32 might be slightly more compact.
+   
+   Don't install any extras unless you need them for something else. OpenSSH Server is a good idea for
+   remote management.
 
 2. Install dependencies
    as root
@@ -33,6 +36,7 @@ Single Machine Install
 ```Shell
     adduser --disabled-login --disabled-password oasisqe
 ```
+   When prompted for a Full Name, "OASIS Web Application" will do.
 
 4. Setup the main OASIS code
 
@@ -41,8 +45,8 @@ Single Machine Install
 ```Shell
     mkdir -p /opt/oasisqe
     cd /opt/oasisqe
-    wget OASIS
-    tar -zxf OASIS_3.9.tgz
+    wget http://www.oasisqe.com/downloads/oasis3.9_latest.tgz
+    tar -zxf oasis3.9_latest.tgz
 ```
 
 5. Set up the OASIS database
