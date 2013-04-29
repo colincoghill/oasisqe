@@ -399,6 +399,7 @@ def send_email(to_addr, from_addr=None, subject = "Message from OASIS", text_bod
 from oasis import views_practice
 # from oasis import views_assess
 from oasis import views_cadmin
+from oasis import views_setup
 from oasis import views_api
 from oasis import views_embed
 from oasis import views_misc
