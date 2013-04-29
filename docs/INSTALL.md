@@ -37,7 +37,7 @@ Single Machine Install
    It is possible to install OASIS elsewhere if you like, you will have to change the paths in various configuration
    options later
 ```Shell
-    mkdir /opt/oasisqe
+    mkdir -p /opt/oasisqe
     cd /opt/oasisqe
     wget OASIS
     tar -zxf OASIS_3.9.tgz
@@ -55,7 +55,7 @@ Single Machine Install
 
 6. Setup OASIS working space and logs.
 ```Shell
-    mkdir /var/cache/oasisqe
+    mkdir -p /var/cache/oasisqe/3.9
     chown oasisqe /var/cache/oasisqe
     mkdir /var/logs/oasisqe
     chown oasisqe /var/logs/oasisqe
@@ -63,7 +63,7 @@ Single Machine Install
 
 7. Setup the main OASIS configuration file
 ```Shell
-    cp /opt/oasisqe/3.9/deploy/sample_config.ini /etc/oasisqe.ini
+    cp /opt/oasisqe/3.9/deploy/sampleconfig.ini /etc/oasisqe.ini
     nano /etc/oasisqe.ini
 ```
 You can use VI or some other editor instead of nano, if you like. Go through the file and fill in the various
