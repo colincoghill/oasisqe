@@ -1,11 +1,7 @@
 Installation Guide
 ==================
 
-Work in progress, should not be published or used yet.
-Several of the files mentioned here do not yet exist.
-I'm currently making VMs of various Linux Distros and installing OASIS on them, updating these
-instructions as I go. It should take a few hours.
-
+Work in progress.
 
 Ubuntu Linux 12.04.2
 ------------------
@@ -56,15 +52,17 @@ Single Machine Install
      su postgres
      createuser oasisdb -d -l -P
      createdb -O oasisdb oasisdb
-     psql -Uoasisdb oasisdb < /opt/oasisqe/3.9/deploy/emptyschema.sql
+     nano /etc/postgresql/9.1/main/pg_hba.conf
+     psql -Uoasisdb -h localhost -W oasisdb < /opt/oasisqe/3.9/deploy/emptyschema.sql
 ```
 
 6. Setup OASIS working space and logs.
+   (as the 'root' user again)
 ```Shell
     mkdir -p /var/cache/oasisqe/3.9
     chown oasisqe /var/cache/oasisqe
-    mkdir /var/logs/oasisqe
-    chown oasisqe /var/logs/oasisqe
+    mkdir /var/log/oasisqe
+    chown oasisqe /var/log/oasisqe
 ```
 
 7. Setup the main OASIS configuration file
@@ -79,12 +77,12 @@ values appropriately.
 ```Shell
     cp /opt/oasisqe/3.9/deploy/apacheconfig.sample /etc/apache2/sites-available/oasisqe
     nano /etc/apache2/sites-available/oasisqe
-    a2enmod oasisqe
+    a2ensite oasisqe
 ```
 
 9. Restart Apache
 ```Shell
-    service apache2 restart
+    service apache2 reload
 ```
 
     OASIS should now be available at the URL you configured.
