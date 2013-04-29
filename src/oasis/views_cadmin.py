@@ -533,6 +533,12 @@ def cadmin_permissions_save(course_id):
     if not checkPermission(user_id, course_id, "OASIS_USERADMIN"):
         flash("You do not have user admin permissions on this course")
         return redirect(url_for('cadmin_top', course_id=course_id))
+
+    if "cancel" in request.form:
+        flash("Permission changes cancelled")
+        return redirect(url_for("cadmin_top", course_id=course_id))
+
     CourseAdmin.savePermissions(request, course_id, user_id)
+    flash("Changes saved")
     return redirect(url_for("cadmin_permissions", course_id=course_id))
 
