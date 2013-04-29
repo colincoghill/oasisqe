@@ -1,10 +1,9 @@
 
-
-    WSGIDaemonProcess oasis user=oasis group=www-data threads=25
-    WSGIScriptAlias /oasis /opt/oasisqe/3.9/oasis/oasis.wsgi
+    WSGIDaemonProcess oasis user=oasisqe group=www-data threads=25
+    WSGIScriptAlias /oasis /opt/oasisqe/3.9/src/oasis.wsgi
     WSGIPythonOptimize 1
 
-    <Directory /opt/oasisqe/3.9/oasis>
+    <Directory /opt/oasisqe/3.9/src>
         WSGIProcessGroup oasis
         WSGIApplicationGroup %{GLOBAL}
 
@@ -12,7 +11,7 @@
         Allow from all
     </Directory>
 
-    Alias /oasis/static /opt/oasisqe/3.9/oasis/static
+    Alias /oasis/static /opt/oasisqe/3.9/src/static
     <Location /oasis/static>
        Options Indexes FollowSymLinks MultiViews
        SetHandler default-handler
