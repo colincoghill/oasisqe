@@ -365,7 +365,8 @@ def send_email(to_addr, from_addr=None, subject = "Message from OASIS", text_bod
     if to_addr in _blacklist:
         return "Attempting to send to blacklisted address."
 
-    if not from_addr:  from_addr = OaConfig.email
+    if not from_addr:
+        from_addr = OaConfig.email
 
     if not text_body and not html_body:
         return "Attempting to send empty email"

@@ -10,6 +10,11 @@
     groupid integer NOT NULL,
     active integer DEFAULT 0,
     course integer NOT NULL
+    enrol_type CHARACTER VARYING DEFAULT 'manual';  --   manual, file, url, ldap
+    registration CHARACTER VARYING DEFAULT 'controlled'; -- controlled, open
+    enrol_location CHARACTER VARYING NULL;  -- if enrol type is URL or FILE, it's details
+                                            -- if it's LDAP, the LDAP group name
+    enrol_freq INTEGER DEFAULT '120';  -- How often (minutes) to refresh enrolment info
     );
 """
 from oasis.lib import Topics, Groups
