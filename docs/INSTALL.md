@@ -7,13 +7,15 @@ I'm currently making VMs of various Linux Distros and installing OASIS on them, 
 instructions as I go. It should take a few hours.
 
 
-Ubuntu Linux 12.04
+Ubuntu Linux 12.04.2
 ------------------
 
 Single Machine Install
 
 
-1. Install a basic Ubuntu 12.04 Linux system.
+1. Install a basic Ubuntu 12.04.2 "Server" Linux system.
+   Available from http://www.ubuntu.com/download
+
    If you have a newer version it should work fine, but hasn't specifically been tested yet, let us know!
    32/64 bits doesn't matter. 64bit is probably recommended for a server unless you're low on RAM, in which
    case 32 might be slightly more compact.
