@@ -71,12 +71,12 @@ Single Machine Install
     nano /etc/oasisqe.ini
 ```
 You can use VI or some other editor instead of nano, if you like. Go through the file and fill in the various
-values appropriately.
+values appropriately. The main ones you will need to change are the email addresses, the database password, and the URL. 
+Most of the other defaults are fine.
 
 8. Setup Apache to serve OASIS
 ```Shell
     cp /opt/oasisqe/3.9/deploy/apacheconfig.sample /etc/apache2/sites-available/oasisqe
-    nano /etc/apache2/sites-available/oasisqe
     a2ensite oasisqe
 ```
 
