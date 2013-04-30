@@ -48,6 +48,7 @@ Single Machine Install
 5. Set up the OASIS database
     Choose a password for the database. You will not have to type this in often, it will go in configuration
     scripts, so pick something quite complex and secure. "createuser" will prompt you for this password.
+    The database user does not need to be a superuser or to create new roles.
 ```Shell
      su postgres
      createuser oasisdb -d -l -P
