@@ -53,7 +53,6 @@ Single Machine Install
      su postgres
      createuser oasisdb -d -l -P
      createdb -O oasisdb oasisdb
-     nano /etc/postgresql/9.1/main/pg_hba.conf
      psql -Uoasisdb -h localhost -W oasisdb < /opt/oasisqe/3.9/deploy/emptyschema.sql
 ```
 
