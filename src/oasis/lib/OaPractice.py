@@ -31,10 +31,10 @@ def getPracticeQuestion(qtid, user_id):
     qid = OaGeneral.generateQuestion(qtid, user_id)
     try:
         qid = int(qid)
-        assert qid > 0
     except (ValueError, TypeError):
         log(WARN, "OaGeneralBE.generateQuestion(%s,%s) Failed (returned %s)" % (qtid, user_id, qid))
-    OaDB.setQuestionViewTime(qid)
+    else:
+        OaDB.setQuestionViewTime(qid)
     return qid
 
 

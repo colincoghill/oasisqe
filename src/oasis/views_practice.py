@@ -172,6 +172,19 @@ def practice_do_question(topic_id, qtemplate_id):
             q_pos="?",
         )
 
+    if not q_id > 0:
+        return render_template(
+            "practicequestionerror.html",
+            mesg="Error generating question.",
+            topictitle=topictitle,
+            topic_id=topic_id,
+            qt_id=qtemplate_id,
+            course=course,
+            q_title=q_title,
+            questions=questions,
+            q_pos="?",
+        )
+
     try:
         q_body = OaGeneral.renderQuestionHTML(q_id)
         q_body = q_body.replace(u"\240", u" ")
