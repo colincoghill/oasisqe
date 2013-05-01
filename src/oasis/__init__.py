@@ -19,7 +19,7 @@ import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
-from .lib import OaConfig, UserAPI, Users
+from .lib import OaConfig, UserAPI, Users, OaDB
 from .lib.Audit import audit
 
 
@@ -114,7 +114,9 @@ def index():
 @app.route("/login/local/")
 def login_local():
     """ Present a login page for people with local OASIS accounts to log in"""
-    return render_template("login_screen_local.html")
+
+    mesg_login = OaDB.getMessage("loginmotd")
+    return render_template("login_screen_local.html", mesg_login=mesg_login)
 
 
 @app.route("/login/local/submit", methods=['POST', ])

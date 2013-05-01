@@ -13,7 +13,7 @@ from .lib import Courses, CourseAPI, OaSetup
 
 MYPATH = os.path.dirname(__file__)
 from .lib.OaUserDB import checkPermission
-
+from .lib import OaDB
 from oasis import app, authenticated
 
 
@@ -214,3 +214,42 @@ def admin_add_course_save():
         "admin_course.html",
         course=course
     )
+
+
+@app.route("/admin/edit_messages")
+@authenticated
+def admin_editmessages():
+    """ Present page to administer messages in the system """
+    user_id = session['user_id']
+    if not checkPermission(user_id, 0, "OASIS_SYSADMIN"):
+        flash("You do not have system administrator permission")
+        return redirect(url_for('setup_top'))
+    mesg_news = OaDB.getMessage("news")
+    mesg_login = OaDB.getMessage("loginmotd")
+    return render_template(
+        "admin_editmessages.html",
+        mesg_news = mesg_news,
+        mesg_login = mesg_login
+    )
+
+
+@app.route("/admin/save_messages", methods=["POST", ])
+@authenticated
+def admin_savemessages():
+    """ Save messages in the system """
+    user_id = session['user_id']
+    if not checkPermission(user_id, 0, "OASIS_SYSADMIN"):
+        flash("You do not have system administrator permission")
+        return redirect(url_for('setup_top'))
+
+    form = request.form
+    if 'cancel' in form:
+        flash("Changes Cancelled")
+        return redirect(url_for("admin_top"))
+
+    if 'mesg_news' in form:
+        OaDB.setMessage("news", form['mesg_news'])
+    if 'mesg_news' in form:
+        OaDB.setMessage("loginmotd", form['mesg_login'])
+    flash("Changes saved")
+    return redirect(url_for("admin_top"))

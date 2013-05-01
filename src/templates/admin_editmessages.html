@@ -1,0 +1,40 @@
+{% extends "page_nav.html" %}
+{% block body %}
+    <br/>
+    <P>Return to <B><A HREF='{{ cf.url }}admin/top'>Admin</A></B> menu.</P>
+
+    <H2>OASIS Administration</H2>
+    <P>Messages that are displayed at various points in OASIS. You can use HTML in them if you wish.</P>
+    <form method='post' action='{{ cf.url }}admin/save_messages'>
+    <div class='container-fluid well'>
+        <div class='row'>
+            <div class='span8'>
+                <h5>Local Login Screen</h5>
+                <p>This is displayed below the login box for local logins.</p>
+                <textarea rows=6 name='mesg_login'>{{ mesg_login }}</textarea>
+            </div>
+            <BR/>
+        </div>
+
+    <div class='row'>
+            <div class='span8'>
+                <h5>News Page</h5>
+                <p>Displayed on the "News" page.</p>
+                <textarea rows=15 name='mesg_news'>{{ mesg_news }}</textarea>
+            </div>
+            <BR/>
+        </div>
+    </div>
+
+     <div class='pull-right'>
+                <input type="submit" name="save_changes" value="Apply Changes" class='btn btn-primary'>
+                <input type="submit" name="cancel" value="Cancel" class='btn btn-danger'>
+            </div>
+    <br>
+
+    </form>
+    <P>or Return to <B><A HREF='{{ cf.url }}admin/top'>Admin</A></B> menu.</P>
+    <BR/>
+
+{% endblock body %}
+{% block pagetitle %}Setup{% endblock %}
