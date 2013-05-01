@@ -9,14 +9,14 @@
 import json
 
 from .OaDB import dbpool, run_sql, MC
-from logging import log, ERROR
+from logging import log, ERROR, INFO
 
 
 def create(course, name, visibility, position=1):
     """Add a topic to the database."""
     key = "course-%s-topics" % course
     MC.delete(key)
-    log("info", "db/Topics/create(%s, %s, %s, %s)" % (course, name, visibility, position), "Called")
+    log(INFO, "db/Topics/create(%s, %s, %s, %s)" % (course, name, visibility, position))
     conn = dbpool.begin()
     conn.run_sql("""INSERT INTO topics (course, title, visibility, position)
                VALUES (%s, %s, %s, %s);""", (course, name, visibility, position))

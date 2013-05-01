@@ -30,20 +30,20 @@ def doCourseTopicUpdate(course, request):
                     categories = categories + [catid]
 
         for c in categories:
-            categorylist = categorylist + [{'id': c,
+            categorylist = categorylist + [{'id': int(c),
                                             'position': form['%s_position' % c],
                                             'name': form['%s_name' % c],
                                             'visibility': form['%s_visibility' % c]
                                            }]
         for i in categorylist:
-            if not i['id'] == '0':
+            if not i['id'] == 0:
                 Topics.setPosition(i['id'], i['position'])
-                Topics.setName(i['id'], i['name'])
+                Topics.setName(int(i['id']), i['name'])
                 Topics.setVisibility(i['id'], i['visibility'])
                 Courses.incrementVersion()
             else:
-                if not i['name'] == "[New Category]":
-                    Topics.create(course, i['name'], int(i['visibility']), i['position'])
+                if not i['name'] == "[Name of new topic]":
+                    Topics.create(course['id'], i['name'], int(i['visibility']), i['position'])
                     Courses.incrementVersion()
 
         return True
