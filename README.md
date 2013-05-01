@@ -27,7 +27,7 @@ successfully by us. The University does not, however, otherwise endorse it or co
 of other users.
 
 Feel free to download the software, as it is, and try it out. If you find it useful, use it!
-Right now it's mostly complete, but there are a few bugs making a fresh install somewhat error prone. I'm 
+Right now it's mostly complete, but there are a few bugs making a fresh install somewhat error prone. I'm
 working through that at the moment, along with some sample content.
 
 If you have any suggestions or improvements, feel free to contact me.
@@ -48,7 +48,6 @@ Focus: A useful practice system
 
 Code:
  * Disable incomplete or inactive areas
- * A way to change the News page
 
 Install:
  * Basic usage guide
