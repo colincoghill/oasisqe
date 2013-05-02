@@ -214,6 +214,7 @@ def generateQuestionFromVar(qtid, student, exam, position, version, variation):
         if html:
             qvars['Oasis_qid'] = qid
             newhtml = generateQuestionHTML(qvars, html)
+            log(INFO, "generating new qattach qtemplate.html for %s" % qid)
             OaDB.createQAttachment(qtid, variation, "qtemplate.html", "application/oasis-html", newhtml, version)
     try:
         qid = int(qid)
@@ -457,8 +458,12 @@ def renderQuestionHTML(qid, readonly=False):
         log(WARN,"renderQuestionHTML(%s,%s), getparent failed? " % (qid, readonly))
     variation = OaDB.getQuestionVariation(qid)
     version = OaDB.getQuestionVersion(qid)
+    data = OaDB.getQAttachment(qtid, "qtemplate.html", variation, version)
+    if not data:
+        log(WARN,"Unable to retrieve qtemplate for qid: %s" % qid)
+        return "QuestionError"
     try:
-        out = unicode(OaDB.getQAttachment(qtid, "qtemplate.html", variation, version), "utf-8")
+        out = unicode(data, "utf-8")
     except UnicodeDecodeError:
         try:
             out = unicode(OaDB.getQAttachment(qtid, "qtemplate.html", variation, version), "latin-1")

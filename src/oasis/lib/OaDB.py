@@ -536,7 +536,7 @@ def getQAttachment(qt_id, name, variation, version=1000000000):
             fileCache.set(key, data)
             return data
         fileCache.set(key, False)
-        return False
+        return getQTAttachment(qt_id, name, version)
     return value
 
 
@@ -720,6 +720,8 @@ def createQTAttachment(qt_id, name, mimetype, data, version):
     MC.delete(key)
     if not data:
         data = ""
+    if isinstance(data, unicode):
+        data = data.encode("utf8")
     safedata = psycopg2.Binary(data)
     run_sql("""INSERT INTO qtattach (qtemplate, mimetype, name, data, version)
                      VALUES (%s, %s, %s, %s, %s);""", (qt_id, mimetype, name, safedata, version))
@@ -916,7 +918,7 @@ def addQTVariation(qt_id, variation, data, version):
     """ Add a variation to the question template. """
     assert isinstance(qt_id, int)
     assert isinstance(variation, int)
-    assert isinstance(data, str) or isinstance(data, unicode)
+#    assert isinstance(data, str) or isinstance(data, unicode)
     assert isinstance(version, int)
     pick = cPickle.dumps(data)
     safedata = psycopg2.Binary(pick)

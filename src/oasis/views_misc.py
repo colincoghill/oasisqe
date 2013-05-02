@@ -218,16 +218,16 @@ def qedit_raw_save(topic_id, qt_id):
 
     # They uploaded a new qtemplate.html
     if 'newindex' in request.files:
-        data = request.files['newindex'].read()
+        data = request.files['newindex'].stream.getvalue()
         if len(data) > 1:
-            html = data.decode("utf8")
+            html = data
             OaDB.createQTAttachment(qt_id, "qtemplate.html", "text/plain", html, version)
 
     # They uploaded a new datfile
     if 'newdatfile' in request.files:
-        data = request.files['newdatfile'].read()
+        data = request.files['newdatfile'].stream.getvalue()
         if len(data) > 1:
-            df = data.decode("utf8")
+            df = data
             OaDB.createQTAttachment(qt_id, "datfile.txt", "text/plain", df, version)
             qvars = OaQEditor.parseDatfile(df)
             for row in range(0, len(qvars)):
@@ -235,9 +235,9 @@ def qedit_raw_save(topic_id, qt_id):
 
                 # They uploaded a new image file
     if 'newimgfile' in request.files:
-        data = request.files['newimgfile'].read()
+        data = request.files['newimgfile'].stream.getvalue()
         if len(data) > 1:
-            df = data.decode("utf8")
+            df = data
             OaDB.createQTAttachment(qt_id, "image.gif", "image/gif", df, version)
 
     if 'newmodule' in form:
