@@ -59,10 +59,9 @@ def cadmin_config(course_id):
     if not course:
         abort(404)
 
-    if not satisfyPerms(user_id, course_id,
-                        ("OASIS_QUESTIONEDITOR", "OASIS_VIEWMARKS", "OASIS_ALTERMARKS", "OASIS_CREATEASSESSMENT")):
-        flash("You do not have admin permission on course %s" % course['name'])
-        return redirect(url_for('setup_courses'))
+    if not satisfyPerms(user_id, course_id, ("OASIS_COURSEADMIN",)):
+        flash("You do not have 'Course Admin' permission on this course.")
+        return redirect(url_for('cadmin_top', course_id=course_id))
 
     return render_template(
         "courseadmin_config.html",
@@ -81,10 +80,9 @@ def cadmin_config_submit(course_id):
     if not course:
         abort(404)
 
-    if not satisfyPerms(user_id, course_id,
-                        ("OASIS_QUESTIONEDITOR", "OASIS_VIEWMARKS", "OASIS_ALTERMARKS", "OASIS_CREATEASSESSMENT")):
-        flash("You do not have admin permission on course %s" % course['name'])
-        return redirect(url_for('setup_courses'))
+    if not satisfyPerms(user_id, course_id, ("OASIS_COURSEADMIN",)):
+        flash("You do not have 'Course Admin' permission on this course.")
+        return redirect(url_for('cadmin_top', course_id=course_id))
 
     form = request.form
 

@@ -27,7 +27,7 @@ successfully by us. The University does not, however, otherwise endorse it or co
 of other users.
 
 Feel free to download the software, as it is, and try it out. If you find it useful, use it!
-Right now it's mostly complete, but there are a few bugs making a fresh install somewhat error prone. I'm
+Right now it's mostly complete, but there may be a few bugs in things like statistics. I'm
 working through that at the moment, along with some sample content.
 
 If you have any suggestions or improvements, feel free to contact me.
@@ -46,9 +46,6 @@ Things still To Do
 
 Focus: A useful practice system
 
-Code:
- * Disable incomplete or inactive areas
-
 Install:
  * Basic usage guide
  * Landing page - do a nice welcome/introduction page
@@ -57,7 +54,4 @@ Install:
 
 Testing:
  * Test visibility of topics/questions to unenrolled but valid accounts.
- * Test all links on all pages.
  * Check stats are correct when starting from empty db.
- * Walk through installation from fresh start, check stats, adding courses, etc.
-
