@@ -41,7 +41,7 @@ Feel free to download the software, as it is, and try it out. If you find it use
 Right now it's mostly complete, but there may be a few bugs in things like statistics. I'm
 working through that at the moment, along with some sample content.
 
-If you have any suggestions or improvements, feel free to contact me.
+If you have any suggestions or improvements, please contact me.
 
 Colin Coghill
  ( colin@colincoghill.com )
