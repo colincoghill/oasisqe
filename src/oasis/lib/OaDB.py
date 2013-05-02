@@ -1184,10 +1184,9 @@ def setMessage(name, message):
     """
     assert isinstance(name, str) or isinstance(name, unicode)
     assert isinstance(message, str) or isinstance(message, unicode)
-    key = "message-%s" % (name,)
-    prev = getMessage(name)
-    MC.delete(key)
-    if not prev is None:
+
+    ret = run_sql("SELECT COUNT(message) FROM messages WHERE name=%s;", (name,))
+    if ret and len(ret) and int(ret[0][0]) >= 1:
         run_sql("UPDATE messages SET message=%s WHERE name=%s;", (message, name))
         log(INFO, "Message %s updated to %s." % (name, message))
     else:
@@ -1199,16 +1198,10 @@ def getMessage(name):
     """Retrieve a message
     """
     assert isinstance(name, str) or isinstance(name, unicode)
-    key = "message-%s" % name
-    obj = MC.get(key)
-    if not obj is None:
-        return obj
+
     ret = run_sql("SELECT message FROM messages WHERE name=%s;", (name,))
     if not ret:
         return ""
-    if len(ret) < 1:
-        return ""
-    MC.set(key, ret[0][0])
     return ret[0][0]
 
 
