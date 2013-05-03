@@ -21,7 +21,8 @@ from logging import log, INFO, WARN, ERROR
 import OaConfig
 import OaPool
 
-dbpool = OaPool.DbPool(OaConfig.oasisdbconnectstring, 3)
+dbpool = OaPool.DbPool(OaConfig.oasisdbconnectstring, 3)  # 3 connections. This lets us keep going if one is slow but
+                                                          # doesn't overload the server if there're a lot of us
 
 # Cache stuff on local drives to save our poor database
 fileCache = OaPool.fileCache(OaConfig.cachedir)

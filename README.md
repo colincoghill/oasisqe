@@ -38,7 +38,7 @@ successfully by us. The University does not, however, otherwise endorse it or co
 of other users.
 
 Feel free to download the software, as it is, and try it out. If you find it useful, use it!
-Right now it's mostly complete, but I've disabled several useful features that aren't 100%, 
+Right now it's mostly complete, but I've disabled several useful features that aren't 100%,
 I'm working on that now, along with some sample content.
 
 If you have any suggestions or improvements, please contact me.
@@ -60,7 +60,6 @@ Focus: A useful practice system
 Install:
  * Basic usage guide
  * Landing page - do a nice welcome/introduction page
- * OaPool's postgres pool size - revisit for running under wsgi
  * Basic Question Creation Documentation
 
 Testing:
