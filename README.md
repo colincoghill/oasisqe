@@ -3,7 +3,11 @@ oasisqe
 
 OASIS Question Engine
 
-Current Status:  "In Development, a few days from the first release"
+Current Status:  first release, 3.9.1, is "minimal usable". You can use it to sign up, and admin
+can assign users permission to create questions for practicing.
+
+Priority for second release is user account/course enrolment management.
+
 
 Download
 ========
@@ -46,22 +50,3 @@ If you have any suggestions or improvements, please contact me.
 Colin Coghill
  ( colin@colincoghill.com )
 
-
-
-Things still To Do
-------------------
-(before I consider this a usable piece of software)
-
-3.9.1 OSS Release
-=================
-
-Focus: A useful practice system
-
-Install:
- * Basic usage guide
- * Landing page - do a nice welcome/introduction page
- * Basic Question Creation Documentation
-
-Testing:
- * Test visibility of topics/questions to unenrolled but valid accounts.
- * Check stats are correct when starting from empty db.
