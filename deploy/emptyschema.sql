@@ -257,7 +257,8 @@ CREATE TABLE stats_prac_q_course (
     day integer NOT NULL,
     month integer NOT NULL,
     year integer NOT NULL,
-    "number" integer NOT NULL
+    "number" integer NULL,
+    "avgscore" float NULL
 );
 
 CREATE SEQUENCE topics_topic_seq START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;

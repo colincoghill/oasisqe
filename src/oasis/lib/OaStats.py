@@ -197,8 +197,14 @@ def getQDailyPracticeLoad(start_time, end_time):
     return data
 
 
-if __name__ == "__main__":
-    # do a stats update for the entire database.
-    st = datetime.datetime(year=2013, month=1, day=1)
-    print populateStatsPracQCourse(start=st)
+def dailyStatsUpdate():
+    """ To be run daily. Will update stats for the last few days to now.
+        Do the last two weeks, should cover most temporary outages
+    """
+
+    now = datetime.datetime.now()
+    twoweek = datetime.timedelta(days=14)
+    st = now-twoweek
+    populateStatsPracQCourse(start=st)
+
 

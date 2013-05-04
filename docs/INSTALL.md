@@ -96,6 +96,20 @@ Most of the other defaults are fine.
 ```
    You should now be able to log in as the user "admin", with the password given to you above.
 
+11. Setup daily schedule
+    OASIS needs a daily task to run that does things like updates statistics.
+```
+    crontab -e -u oasisqe
+```
+    add the line:
+
+```Shell
+    # m h  dom mon dow   command
+
+    0 7 * * * /opt/oasisqe/3.9/bin/run_daily
+```
+    This will run the task at 5am every morning. You can choose another time if you wish.
+
 
 Troubleshooting
 ---------------
@@ -203,6 +217,21 @@ Most of the other defaults are fine.
     /opt/oasisqe/3.9/bin/reset_admin_password
 ```
    You should now be able to log in as the user "admin", with the password given to you above.
+
+11. Setup daily schedule
+    OASIS needs a daily task to run that does things like updates statistics.
+```
+    crontab -e -u oasisqe
+```
+    add the line:
+
+```Shell
+    # m h  dom mon dow   command
+
+    0 7 * * * /opt/oasisqe/3.9/bin/run_daily
+```
+    This will run the task at 5am every morning. You can choose another time if you wish.
+
 
 
 Troubleshooting

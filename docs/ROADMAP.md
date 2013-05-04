@@ -17,13 +17,12 @@ Focus:   Integration with external auth/enrolment information. User account/clas
 Install:
  * Configurable login page
  * Use Apache web server for auth
+    - What do we do with default accounts
  * Use uploadable spreadsheets, or spreadsheets in a nominated location for class lists
  * Enrol in (open) course
  * User account management from Course Admin section
  * Way to delete/deactivate an account
- * 
  * Better error checking or handling of permissions on log file & cache
- * Scheduled task runner/monitor - stats, enrolment, etc
 
 Testing:
  * Test visibility of topics/questions to unenrolled but valid accounts.

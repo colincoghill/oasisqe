@@ -1,0 +1,10 @@
+#!/usr/bin/python2.7
+
+
+import sys
+sys.path.append("/opt/oasisqe/3.9/src")
+
+from oasis.lib import OaStats
+
+print "Running daily stats update."
+OaStats.dailyStatsUpdate()
