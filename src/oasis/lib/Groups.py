@@ -79,3 +79,13 @@ def flushUsersInGroup(gid):
         Use only just before importing new list.
     """
     run_sql("""DELETE FROM usergroups WHERE groupid = %s;""", (gid,))
+
+
+def getCourseForGroup(group_id):
+    """ Return the course_id of the course this group is associated with.
+    """
+
+    ret = run_sql("""SELECT course FROM groupcourses WHERE groupid=%s;""", (group_id,))
+    if ret:
+        return int(ret[0][0])
+    raise KeyError

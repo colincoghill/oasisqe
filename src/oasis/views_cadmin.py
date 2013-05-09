@@ -305,6 +305,32 @@ def cadmin_enrolments(course_id):
     return render_template("courseadmin_enrolment.html", course=course, groups=groups)
 
 
+@app.route("/courseadmin/editgroup/<int:group_id>")
+@authenticated
+def cadmin_editgroup(group_id):
+    """ Present a page for editing a group, membership, etc.
+    """
+    user_id = session['user_id']
+
+    group = None
+    try:
+        group = Groups.getInfo(group_id)
+    except KeyError:
+        abort(404)
+
+    if not group:
+        abort(404)
+
+    course_id = Groups.getCourseForGroup(group_id)
+    if not satisfyPerms(user_id, course_id, ("OASIS_USERADMIN",)):
+        flash("You do not have 'User Admin' permission on this course.")
+        return redirect(url_for('cadmin_top', course_id=course_id))
+
+    course = CourseAPI.getCourse(course_id)
+    members = Groups.getUsersInGroup(group_id)
+    return render_template("courseadmin_editgroup.html", course=course, group=group, members=members)
+
+
 @app.route("/courseadmin/topics/<int:course_id>", methods=['GET', 'POST'])
 @authenticated
 def cadmin_edittopics(course_id):
