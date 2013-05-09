@@ -186,6 +186,11 @@ def login_forgot_pass_submit():
         return redirect(url_for("login_forgot_pass"))
 
     username = request.form['username']
+
+    if username == "admin":
+        flash("The admin account cannot do an email password reset, please see the Installation instructions.")
+        return redirect(url_for("login_forgot_pass"))
+
     user_id = UserAPI.getUidByUname(username)
     if not user_id:
         flash("Unknown username ")
