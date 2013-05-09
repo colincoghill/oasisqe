@@ -181,6 +181,11 @@ def login_forgot_pass():
 def login_forgot_pass_submit():
     """ Forgot their password. Grab their username and send them a reset email.
     """
+
+    if "cancel" in request.form:
+        flash("Password reset cancelled.")
+        return redirect(url_for("login_local"))
+
     if not 'username' in request.form:
         flash("Unknown username ")
         return redirect(url_for("login_forgot_pass"))
