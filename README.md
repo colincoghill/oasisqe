@@ -16,6 +16,7 @@ There's a downloadable build at:
 
 http://www.oasisqe.com/downloads
 
+(may have a short outage in the near future as I upgrade it prior to installing a demo version)
 
 What is this?
 =============
