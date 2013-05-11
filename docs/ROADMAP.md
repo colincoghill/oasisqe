@@ -73,28 +73,36 @@ Documentation
 * Support Web site
 
 
+3.9.5 OSS Release
+=================
+
+Focus: Loose ends
+
+ * Permissions for groups as well as individuals
+ * Example Questions
+ * Simple multi-choice Question Editor
+ * Check and enable "How am I doing?" Practice section
+
 
 4.0  OSS Release
 ================
 
 Focus:  Finish moving/implementing functionality of 3.6 OASIS
 
+ * Manuals, documentation
+ * Web site
+ * Better error checking/messages
+ * Cleanup logging - only error log stuff that needs to be fixed, maybe have separate debug logs
+ * Upgrate/migration tools
+
+
+
+4.1  and beyond...
+==================
  * LDAP integration.
- * Check and enable "How am I doing?" Practice section
- * Simple multi-choice Question Editor
- * Manuals
-
-
-
-
-
-
-Future - 4.1?
-----
- * SSO support (Shibboleth?)
- * Database cleanup script.
  * Course/semester codes need to be redone every semester. Cope a lot better with historical enrolment data.
  * Assessment question weighting
+ * Themes/Branding - allow admins to change the look of the system, link with external systems better.
  * Statistics on assessment
  * More Statistics on questions
- * Cleanup logging - only error log stuff that needs to be fixed, maybe have separate debug logs
+ * Database cleanup script. (clean out old practice questions)
