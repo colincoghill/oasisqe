@@ -327,7 +327,8 @@ def cadmin_editgroup(group_id):
         return redirect(url_for('cadmin_top', course_id=course_id))
 
     course = CourseAPI.getCourse(course_id)
-    members = Groups.getUsersInGroup(group_id)
+    ulist = Groups.getUsersInGroup(group_id)
+    members = [UserAPI.getUser(uid) for uid in ulist]
     return render_template("courseadmin_editgroup.html", course=course, group=group, members=members)
 
 
