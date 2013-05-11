@@ -352,7 +352,21 @@ def cadmin_editgroup_addperson(group_id):
         flash("You do not have 'User Admin' permission on this course.")
         return redirect(url_for('cadmin_top', course_id=course_id))
 
-    flash("Not implemented")
+    if not "uname" in request.form:
+        abort(400)
+
+    new_uname = request.form['uname']
+    try:
+        new_uid = UserAPI.getUidByUname(new_uname)
+    except KeyError:
+        flash("User '%s' Not Found" % new_uname)
+    else:
+        if not new_uid:
+            flash("User '%s' Not Found" % new_uname)
+        else:
+            Groups.addUserToGroup(new_uid, group_id)
+            flash("Added '%s to group." % (new_uname,))
+
     return redirect(url_for('cadmin_editgroup', group_id = group_id))
 
 
