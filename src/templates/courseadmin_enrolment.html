@@ -7,13 +7,12 @@
     <div class="container-fluid well">
         <h5>Enrolment Groups</h5>
 
-        <p>This course has the following current group(s) of students:</p>
+        <p>This course has the following current group(s) of people:</p>
 
         <table class="table table-condensed">
             <thead>
             <tr>
                 <th>Name</th>
-                <th>Title</th>
                 <th>Members</th>
                 <th>Start</th>
                 <th>End</th>
@@ -25,7 +24,6 @@
                 {% if group.current %}
                     <tr>
                         <td>{{ group.name }}</td>
-                        <td>{{ group.title }}</td>
                         <td>{{ group.nummembers }}</td>
                         <td>{{ group.startdate }}</td>
                         <td>{{ group.enddate }}</td>

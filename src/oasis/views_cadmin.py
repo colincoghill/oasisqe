@@ -301,6 +301,7 @@ def cadmin_enrolments(course_id):
             group['startdate'] = group['startdate'].strftime("%d %b %Y")
         else:
             group['startdate'] = "-"
+        group['nummembers'] = len(Groups.getUsersInGroup(group['id']))
 
     return render_template("courseadmin_enrolment.html", course=course, groups=groups)
 
