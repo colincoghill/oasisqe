@@ -22,7 +22,24 @@
                 {% endfor %}
                 </tbody>
             </table>
-
+    <form id='addperson_form' method='post' action='{{ cf.url }}courseadmin/editgroup/{{ group.id }}/addperson'>
+<label> Add a person to this group: <br/><div class='input-append'><input type='text' name='uname' placeholder="username"><button id='addperson_btn' class='btn' type='button'><i class='icon icon-plus-sign'> </i> Add</button></div></label>
+        </form>
+    <br/>
+ <!--   <button class='btn'><i class='icon icon-upload'> </i> Upload Spreadsheet</button> -->
     </div>
 
 {% endblock body %}
+{% block js %}
+    <script>
+    $(function (){
+
+        $("#addperson_btn").click(function () {
+            $("#addperson_form").submit();
+
+        });
+
+
+    });
+    </script>
+{% endblock %}
