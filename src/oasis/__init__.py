@@ -42,14 +42,18 @@ if OaConfig.email_admins:
 app.debug = False
 
 if not app.debug:  # Log warnings or higher
+    try:
 
-    fh = RotatingFileHandler(filename=OaConfig.logfile)
-    fh.setLevel(logging.WARNING)
-    fh.setFormatter(logging.Formatter(
-        "%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]"
-    ))
-    app.logger.addHandler(fh)
-    logging.log(logging.INFO, "File logger starting up" )
+        fh = RotatingFileHandler(filename=OaConfig.logfile)
+        fh.setLevel(logging.WARNING)
+        fh.setFormatter(logging.Formatter(
+            "%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]"
+        ))
+        app.logger.addHandler(fh)
+        logging.log(logging.INFO, "File logger starting up" )
+    except IOError, err:  # Probably a permission denied or folder not exist
+        logging.log(logging.ERROR, "Unable to open log file: %s"% err)
+
 
 
 @app.context_processor
