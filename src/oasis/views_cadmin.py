@@ -333,6 +333,20 @@ def cadmin_editgroup(group_id):
     return render_template("courseadmin_editgroup.html", course=course, group=group, members=members)
 
 
+@app.route("/courseadmin/addgroup/<int:course_id>")
+@authenticated
+def cadmin_addgroup(course_id):
+    """ Present a page for creating a group
+    """
+    user_id = session['user_id']
+    if not satisfyPerms(user_id, course_id, ("OASIS_USERADMIN",)):
+        flash("You do not have 'User Admin' permission on this course.")
+        return redirect(url_for('cadmin_top', course_id=course_id))
+
+    course = CourseAPI.getCourse(course_id)
+    return render_template("courseadmin_addgroup.html", course=course)
+
+
 @app.route("/courseadmin/editgroup/<int:group_id>/addperson", methods=["POST",])
 @authenticated
 def cadmin_editgroup_addperson(group_id):

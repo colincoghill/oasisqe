@@ -1,0 +1,42 @@
+{% extends "page_courseadmin.html" %}
+{% block body %}
+    <br/>
+    Back to <a href="{{ cf.url }}courseadmin/top/{{ course.id }}">Course Page</a>
+    <h4>{{ course.name }} ({{ course.title }})</h4>
+    <H2>Add a New Group</H2>
+    <form id='addperson_form' method='post' action='{{ cf.url }}courseadmin/addgroup_submit/{{ course.id }}'>
+    <div class="container-fluid well">
+        <h5>Group information</h5>
+
+            <table class="table">
+                <thead>
+                <tr>
+
+                </tr>
+                </thead>
+                <tbody>
+                <label>Name: <input type='text' name='name'></label>
+                <label>Type: <select></select></label>
+
+                </tbody>
+            </table>
+
+
+    <br/>
+ <!--   <button class='btn'><i class='icon icon-upload'> </i> Upload Spreadsheet</button> -->
+    </div>
+     </form>
+{% endblock body %}
+{% block js %}
+    <script>
+    $(function (){
+
+        $("#addperson_btn").click(function () {
+            $("#addperson_form").submit();
+
+        });
+
+
+    });
+    </script>
+{% endblock %}
