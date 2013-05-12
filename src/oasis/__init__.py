@@ -55,7 +55,6 @@ if not app.debug:  # Log warnings or higher
         logging.log(logging.ERROR, "Unable to open log file: %s"% err)
 
 
-
 @app.context_processor
 def template_context():
     """ Useful values for templates to always have access to"""
