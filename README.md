@@ -8,6 +8,7 @@ can assign users permission to create questions for practicing.
 
 Priority for second release is user account/course enrolment management.
 
+After that, I'll work on the main web site, at:  https://www.oasisqe.com/
 
 Download
 ========
