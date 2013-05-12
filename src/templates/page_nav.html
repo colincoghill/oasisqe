@@ -19,7 +19,7 @@
                 </li>
        <!-- <li class="page"><A NAME='nav_assess' CLASS='topmenu' HREF='{{ cf.url }}assess/top'>Assess</A></li> -->
                 <li class="page"><A NAME='nav_setup' CLASS='topmenu' HREF='{{ cf.url }}setup/top'>Setup</A></li>
-                <li class="page"><A id='nav_logout' CLASS='topmenu' HREF="{{ cf.url }}logout">Logout</A></li>
+            {% if cf.auth_type =="local" %}  <li class="page"><A id='nav_logout' CLASS='topmenu' HREF="{{ cf.url }}logout">Logout</A></li>{% endif %}
             </ul>
         </div>
         {% with messages = get_flashed_messages() %}
@@ -45,19 +45,4 @@
 </div>
 {% endblock page %}
 {% block js %}
-    <script>
-        if ("{{ cf.auth_type }}" == "httpauth") {
-            $("#nav_logout").click(function (ev) {
-                $.ajax({
-                    url: "{{ cf.url }}login/webauth/flush",
-                    complete: function () {
-                        document.location = "{{ cf.url }}login/webauth/flush";
-                    }
-                });
-
-                ev.preventDefault();
-                return false;
-            });
-        }
-    </script>
 {% endblock js %}
