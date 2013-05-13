@@ -53,11 +53,12 @@
 <p>{{ course.name }} currently has {{ course.size }} members.</p>
 <br/>
 <h4>Membership</h4>
-    <div>
+    <div><!-- change this to be group config. what types of group is the course admin allowed to make? -->
     <p>Is access to this course open to anyone, or is it controlled?</p>
     <select name='registration'>
         <option value='open' {% if course.registration == 'open' %}SELECTED{% endif %}>Open (Anyone can add themselves)</option>
         <option value='controlled' {% if course.registration == 'controlled' %}SELECTED{% endif %}>Controlled (Managed by course administrator)</option>
+     <option value='auto' {% if course.registration == 'auto' %}SELECTED{% endif %}>Automated (Managed by admin/feeds)</option>
     </select>
 
     </div>
