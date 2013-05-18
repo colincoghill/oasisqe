@@ -21,7 +21,6 @@ Install:
  * Use uploadable spreadsheets, or spreadsheets in a nominated location for class lists
  * Enrol in (open) course
  * User account management from Course Admin section
- * Way to delete/deactivate an account
  * Better error checking or handling of permissions on log file & cache
 
 Testing:
@@ -53,6 +52,8 @@ Assess:
  * Make sure assessment timer is good
  * view assessment results!
 
+Other:
+ * Way to delete/deactivate an account
 
 3.9.4 OSS Release
 =================
