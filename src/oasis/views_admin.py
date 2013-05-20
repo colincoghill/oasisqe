@@ -5,6 +5,7 @@
 
 
 import os
+import datetime
 
 from flask import render_template, session, \
     request, redirect, abort, url_for, flash
@@ -13,7 +14,7 @@ from .lib import Courses, CourseAPI, OaSetup
 
 MYPATH = os.path.dirname(__file__)
 from .lib.OaUserDB import checkPermission
-from .lib import OaDB
+from .lib import OaDB, Groups
 from oasis import app, authenticated
 
 
@@ -54,9 +55,25 @@ def admin_course(course_id):
 
     course = CourseAPI.getCourse(course_id)
     course['size'] = len(Courses.getUsersInCourse(course_id))
+
+    groups = [Groups.getInfo(group_id) for group_id in Courses.getGroupsInCourse(course_id)]
+
+    for group in groups:
+        if not group['enddate']:
+            group['enddate'] = "-"
+        elif group['enddate'] > datetime.datetime(year=9990, month=1, day=1):
+            group['enddate'] = "-"
+
+        if group['startdate']:
+            group['startdate'] = group['startdate'].strftime("%d %b %Y")
+        else:
+            group['startdate'] = "-"
+        group['size'] = len(Groups.getUsersInGroup(group['id']))
+
     return render_template(
         "admin_course.html",
-        course=course
+        course=course,
+        groups=groups
     )
 
 

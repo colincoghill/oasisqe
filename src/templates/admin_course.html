@@ -1,36 +1,35 @@
 {% extends "page_courseadmin.html" %}
-{%  block js %}
-<script>
-    $("#enrol_type").change(function () {
-        var etype = $(this).val();
-        if (etype == 'manual') {
-            $("#enrol_location_box").hide();
-        } else {
-            $("#enrol_location_box").show();
-        }
-    });
+{% block js %}
+    <script>
+        $("#enrol_type").change(function () {
+            var etype = $(this).val();
+            if (etype == 'manual') {
+                $("#enrol_location_box").hide();
+            } else {
+                $("#enrol_location_box").show();
+            }
+        });
 
+        // On load
+        $(function () {
+            var etype = $("#enrol_type").val();
+            if (etype == 'manual') {
+                $("#enrol_location_box").hide();
+            } else {
+                $("#enrol_location_box").show();
+            }
+        });
 
-    // On load
-    $(function (){
-        var etype = $("#enrol_type").val();
-        if (etype == 'manual') {
-            $("#enrol_location_box").hide();
-        } else {
-            $("#enrol_location_box").show();
-        }
-    });
-
-</script>
+    </script>
 {% endblock %}
 {% block body %}
     <br>
     <p>Return to <a href="{{ cf.url }}admin/courses">Course Choice</a></p>
     <h2>Server Administration</h2>
     <h3>{{ course.name }} ({{ course.title }})</h3>
-     <form method='post' action='{{ cf.url }}admin/course/save/{{ course.id }}'>
-    <div class="container-fluid well">
-        <h4>Course</h4>
+    <form method='post' action='{{ cf.url }}admin/course/save/{{ course.id }}'>
+        <div class="container-fluid well">
+            <h4>Course</h4>
 
 
             <div class='input'>
@@ -46,23 +45,44 @@
             <div class='input'>
                 <label>Title: <input type='text' name='course_title' value='{{ course.title }}'></label>
             </div>
-        <p><a class='btn' href="{{ cf.url }}courseadmin/perms/{{ course.id }}">Permissions</a></p>
-    </div>
-    <div class="container-fluid well">
-                <h4>Enrolment</h4>
-<p>{{ course.name }} currently has {{ course.size }} members.</p>
-<br/>
-<h4>Membership</h4>
-    <div><!-- change this to be group config. what types of group is the course admin allowed to make? -->
-    <p>Is access to this course open to anyone, or is it controlled?</p>
-    <select name='registration'>
-        <option value='open' {% if course.registration == 'open' %}SELECTED{% endif %}>Open (Anyone can add themselves)</option>
-        <option value='controlled' {% if course.registration == 'controlled' %}SELECTED{% endif %}>Controlled (Managed by course administrator)</option>
-     <option value='auto' {% if course.registration == 'auto' %}SELECTED{% endif %}>Automated (Managed by admin/feeds)</option>
-    </select>
+            <p><a class='btn' href="{{ cf.url }}courseadmin/perms/{{ course.id }}">Assign Coordinator</a></p>
+        </div>
+        <div class="container-fluid well">
+            <h4>Enrolment Groups</h4>
 
-    </div>
-    <!--
+            <p>{{ course.name }} currently has {{ course.size }} members. Composed of the following group(s):</p>
+            <div>{% if groups %}
+
+                <table class='table'>
+                <Tr><th>Name</th><th>Type</th><th>Size</th><th>start</th><th>end</th><th></th></Tr>
+                    {% for group in groups %}
+                <Tr><td>{{ group.name }}</td>
+                <td>Manual</td>
+                <td>{{ group.size }}</td>
+                <td>{{ group.startdate }}</td>
+                <td>{{ group.enddate }}</td>
+                <td><button class='btn btn-danger btn-mini'><i class='icon icon-trash'> </i></button></td>
+
+                </Tr>
+                {% endfor %}
+                    </table>
+                {% else %}
+                None.
+                {% endif %}
+            <br/>
+
+                <h5>Add Group:</h5>
+                <select name='group'>
+                    <option value='open'>1st Year Students
+                    </option>
+                    <option value='controlled'>2nd Year Students
+                    </option>
+                    <option value='auto'>3rd Year Students
+                    </option>
+                </select><button class='btn'>Add </button><br/>or
+                <button class='btn'>Create New Group</button>
+            </div>
+            <!--
         <div class='alert alert-danger'>WARNING: Changing these settings could un-enrol existing
 students from the course.</div>
             <p>Where to get information on which students are in the course.</p>
@@ -95,13 +115,14 @@ students from the course.</div>
         </div>
 
 --><br/></div>
-    <br/>
-    <div class='pull-right'>
-        <input type="submit" name="save_changes" value="Apply Changes" class='btn btn-primary'>
-        <input type="submit" name="cancel_edit" value="Cancel" class='btn btn-danger'>
-    </div>
+        <br/>
 
-        </form>
+        <div class='pull-right'>
+            <input type="submit" name="save_changes" value="Apply Changes" class='btn btn-primary'>
+            <input type="submit" name="cancel_edit" value="Cancel" class='btn btn-danger'>
+        </div>
+
+    </form>
     <br>
     <br/>
     <p>Return to <a href="{{ cf.url }}admin/courses">Course Choice</a></p>
