@@ -73,12 +73,9 @@
 
                 <h5>Add Group:</h5>
                 <select name='group'>
-                    <option value='open'>1st Year Students
-                    </option>
-                    <option value='controlled'>2nd Year Students
-                    </option>
-                    <option value='auto'>3rd Year Students
-                    </option>
+                    {% for group in allgroups %}
+                    <option value='{{group.id }}'>{{ group.title }}</option>
+                    {% endfor %}
                 </select><button class='btn'>Add </button><br/>or
                 <button class='btn'>Create New Group</button>
             </div>

@@ -89,3 +89,24 @@ def getCourseForGroup(group_id):
     if ret:
         return int(ret[0][0])
     raise KeyError
+
+
+def getInfoAll():
+    """ Return a summary of all active groups, sorted by name
+        [position] = { 'id':id, 'title':title }
+
+    """
+    ret = run_sql(
+        """SELECT id, title, description, startdate, enddate, owner, semester, "type", enrol_type, enrol_location
+             FROM groups WHERE startdate>NOW() OR enddate>NOW() ORDER BY title ;""")
+    info = {}
+    if ret:
+        count = 0
+        for row in ret:
+            info[count] = {
+                'id': int(row[0]), 'title': row[1], 'description': row[2], 'startdate': row[3], 'enddate': row[4],
+                'owner': row[5], 'semester': row[6], 'type': row[7], 'enrol_type': row[8],
+                'enrol_location': row[9]
+            }
+            count += 1
+    return info

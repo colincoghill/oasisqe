@@ -1231,3 +1231,36 @@ def getQTemplateEditor(qt_id):
         if att.endswith(".oqe"):
             etype = "OQE"
     return etype
+
+
+def getDBVersion():
+    """ Return an string representing the database version
+        If it's too old to have a configuration field, then use some heuristics.
+    """
+
+    # We have a setting, easy
+    try:
+        ret = run_sql("SELECT dbversion FROM config;")
+        if ret:
+            return ret[0][0]
+    except psycopg2.DatabaseError:
+        pass
+
+
+    # We don't have a setting, need to figure it out
+    try: # stats_prac_q_course was added for 3.9.1
+        ret = run_sql("SELECT 1 FROM stats_prac_q_course;")
+        if ret:
+            return "3.9.1"
+
+    except psycopg2.DatabaseError:
+        return "3.6"
+
+    return "unknown"
+
+
+def upgradeDB():
+    """ See if the database needs upgrading and, if so, do it
+    """
+
+    dbver = getDBVersion()

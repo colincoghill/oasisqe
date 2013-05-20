@@ -16,8 +16,6 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 
-
-
 CREATE SEQUENCE audit_id_seq START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;
 CREATE TABLE audit (
     id integer DEFAULT nextval('audit_id_seq'::regclass) NOT NULL,
@@ -110,6 +108,7 @@ CREATE TABLE groups (
     startdate timestamp without time zone,
     enddate timestamp without time zone,
     enrol_type character varying DEFAULT 'manual'::character varying,
+    enrol_location character varying DEFAULT ''::character varying,
     registration character varying DEFAULT 'controlled'::character varying
 );
 

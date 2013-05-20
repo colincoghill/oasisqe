@@ -59,13 +59,11 @@
             });
         }
 
-
       $(document).ready(function () {
 
            bargraph( "chart", "Questions Marked Per Day");
 
         });
-
 
 </script>
 {% endblock js %}
@@ -74,6 +72,7 @@
 
     <H2>OASIS Administration</H2>
     <P><B>System level options can be controlled from here:</B></P>
+
     <div class='container-fluid well'>
         <div class='row'>
 
@@ -99,7 +98,7 @@
             <BR/>
         </div>
     </div>
-
+    <b>DB Version: {{ db_version }}</b>
     <div id='chart' style="height: 120px;"></div>
     <br>
     <P>or Return to <B><A HREF='{{ cf.url }}setup/top'>Setup</A></B> menu.</P>

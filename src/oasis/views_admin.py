@@ -22,9 +22,11 @@ from oasis import app, authenticated
 @authenticated
 def admin_top():
     """ Present the top level admin page """
+    db_version = OaDB.getDBVersion()
     return render_template(
         "admintop.html",
-        courses=OaSetup.getSortedCourseList()
+        courses=OaSetup.getSortedCourseList(),
+        db_version = db_version
     )
 
 
@@ -70,10 +72,12 @@ def admin_course(course_id):
             group['startdate'] = "-"
         group['size'] = len(Groups.getUsersInGroup(group['id']))
 
+    allgroups = Groups.getInfoAll()
     return render_template(
         "admin_course.html",
         course=course,
-        groups=groups
+        groups=groups,
+        allgroups=allgroups
     )
 
 
