@@ -1240,7 +1240,7 @@ def getDBVersion():
 
     # We have a setting, easy
     try:
-        ret = run_sql("SELECT dbversion FROM config;")
+        ret = run_sql("""SELECT "value" from config WHERE "name" = 'dbversion';""")
         if ret:
             return ret[0][0]
     except psycopg2.DatabaseError:
@@ -1271,6 +1271,7 @@ def upgradeDB():
     if dbver == "3.6":
         log(WARN, "Upgrading database from %s to 3.9.1" % dbver)
         run_sql("""
+            BEGIN;
             ALTER TABLE "public"."users" ALTER COLUMN "passwd" TYPE character varying(250);
             ALTER TABLE "public"."users" ADD COLUMN "email" CHARACTER VARYING NULL;
             ALTER TABLE "public"."users" ADD COLUMN "confirmation_code" CHARACTER VARYING NULL;
@@ -1311,13 +1312,22 @@ def upgradeDB():
             );
             CREATE INDEX stats_prac_q_course_when_idx ON stats_prac_q_course USING btree ("when");
             CREATE INDEX stats_prac_q_course_qtemplate_idx ON stats_prac_q_course USING btree ("qtemplate");
+            COMMIT;
         """)
         dbver = "3.9.1"
 
     if dbver == "3.9.1":
         log(WARN, "Upgrading database from %s to 3.9.2" % dbver)
         run_sql("""
+            BEGIN;
+            CREATE TABLE config (
+                "name" character varying(50),
+                "value" text
+            );
+            INSERT INTO config ("name", "value") VALUES ('dbversion', '3.9.2');
+
             ALTER TABLE "public"."groups" ADD COLUMN "enrol_location" CHARACTER VARYING NULL;
+            COMMIT;
         """)
         dbver = "3.9.2"
         return True

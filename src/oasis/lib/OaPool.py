@@ -48,7 +48,7 @@ class DbConn:
         except BaseException, err:
             # it's possible that database connection timed out. Try one more time.
             log(ERROR, "Database Error. (%s) '%s' (%s)" % (err, sql, repr(params)))
-            return False
+            raise
 
         if sql.split()[0].upper() in ("SELECT", "SHOW", "DESC", "DESCRIBE"):
             recset = cur.fetchall()
