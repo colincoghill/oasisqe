@@ -74,19 +74,19 @@ Next, decide who controls how students will be associated with the course:
 If you choose "Central", a few more options will appear letting you set up a feed of enrolment information.
 
 
-  *   "HTTP Spreadsheet"
-              Will ask for the URL (and optional authentication information) where OASIS can retrieve a spreadsheet containing class lists.
+  *   "HTTP List"
+              Will ask for the URL (and optional authentication information) where OASIS can retrieve class lists.
 
-  *   "Server Spreadsheet"
-              Will ask for the filename of a spreadsheet to load the class lists from. This spreadsheet should be placed on the server in the folder configured as "enrol_file_path" in the oasisqe.ini config file.
+  *   "Server List"
+              Will ask for a filename to load the class lists from. This should be placed on the server in the folder configured as "enrol_file_path" in the oasisqe.ini config file.
 
   *   "Manual"
-              The Administrator can upload spreadsheets or add users manually. This is not recommended as it's quite time consuming.
+              The Administrator can upload lists or add users manually. This is not recommended as it's quite time consuming.
 
 
-## Spreadsheet Format
+## Enrolment List Format
 
-   The enrolment spreadsheets tell OASIS who is a member of a course. They are very simple, just a single column list of usernames:
+   The enrolment lists tell OASIS who is a member of a course. They are very simple, just a single column list of usernames:
 
 ```
 vdinkley
@@ -97,7 +97,7 @@ sdoo
 ```
 
    This can be created in Excel, or in a simple text editor. If you are fetching the data from a central system, eg. from a database
-   query, it should be possible to produce this automatically.
+   query, it should be possible to produce this automatically. [ PHP example ? ]
 
 
 # Scheduler
@@ -161,4 +161,13 @@ Advice and recommendations.
 # Development
 
 ## Advanced questions
+
+### Anatomy of an OASIS "raw" question
+
+
 ## Improving OASIS itself.
+
+### System layout
+### Coding Guidelines
+### Data migration
+### Testing
