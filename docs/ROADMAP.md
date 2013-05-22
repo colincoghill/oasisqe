@@ -8,6 +8,13 @@ various distributions, etc.
 The 3.9.x releases should be perfectly usable in their own way though, just missing features or documentation.
 
 
+The code is currently fairly messy - I've taken existing (working but terrible) code and gone through
+replacing severely broken or insecure parts. The priority is to finish that and get the system functionally
+equivalent to the old one. After that (version 4.1+) I want to seriously think about maintainance, testing,
+documentation, non-Linux installs, plugins, etc, and how to get other developers involved.
+
+
+
 3.9.2 OSS Release
 =================
 
