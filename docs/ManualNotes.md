@@ -84,9 +84,20 @@ If you choose "Central", a few more options will appear letting you set up a fee
               The Administrator can upload spreadsheets or add users manually. This is not recommended as it's quite time consuming.
 
 
+## Spreadsheet Format
 
+   The enrolment spreadsheets tell OASIS who is a member of a course. They are very simple, just a single column list of usernames:
 
+```
+vdinkley
+fjones
+dblake
+nrogers
+sdoo
+```
 
+   This can be created in Excel, or in a simple text editor. If you are fetching the data from a central system, eg. from a database
+   query, it should be possible to produce this automatically.
 
 
 # Scheduler
