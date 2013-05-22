@@ -43,7 +43,6 @@ app.debug = False
 
 if not app.debug:  # Log warnings or higher
     try:
-
         fh = RotatingFileHandler(filename=OaConfig.logfile)
         fh.setLevel(logging.WARNING)
         fh.setFormatter(logging.Formatter(
