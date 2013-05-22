@@ -6,8 +6,7 @@
 """ OaGeneral.py
     General and miscellaneous OASIS backend stuff
 
-    Various functions that are likely to be needed by several of the Oasis frontend (FE)
-    components.
+    Functions needed by several of the Oasis frontend (FE) components.
 """
 
 import Image
@@ -46,11 +45,12 @@ def getCourseListing():
 
 
 def getTopicListing(cid, numq=True):
-    """ Return a list of dictionaries containing topic list information for the given course.
+    """ Return a list of dictionaries with topic information for the given course.
         [{ tid: int       Topic ID
           name: string   Name of Topic
           num:  int      Number of questions in Topic (unless numq is false, then = None)
-          visibility:  int    Who can see the topic. 0 = Noone, 1 = Staff, 2 = Course, 3 = Student, 4 = Guest
+          visibility:  int    Who can see the topic. 0 = Noone, 1 = Staff,
+                                                     2 = Course, 3 = Student, 4 = Guest
         },]
     """
     tlist = []
@@ -81,7 +81,7 @@ def addCourse(name, description, owner, coursetype=1):
 
 
 def getQuestionListing(tid, uid=None, numdone=True):
-    """ Return a list of dictionaries containing question template list information for the given topic.
+    """ Return a list of dictionaries with question template information for the topic.
         [{ qtid: int      QTemplate ID
           name: string   Name of Question
           position: int  Position of Question in topic
@@ -320,7 +320,7 @@ def handleMultiFixed(html, answer, qvars):
         pcount = 0
         for p in paramlist:
             pcount += 1
-            if qvars.has_key(p):
+            if p in qvars:
                 pout += ["<td CLASS='multichoicecell'>"]
                 pout += ["<INPUT class='auto_save' TYPE='radio' NAME='ANS_%d' VALUE='%d' Oa_CHK_%d_%d>%s</td>" % (
                     answer, pcount, answer, pcount, qvars[p])]
@@ -389,13 +389,13 @@ def handleMulti(html, answer, qvars):
     if paramlist:
         pout = ["", ]
         pcount = 0
-        for p in paramlist:
+        for param in paramlist:
             pcount += 1
-            if qvars.has_key(p):
+            if param in qvars:
                 pout += [
                     "<td CLASS='multichoicecell'>",
                     "<INPUT class='auto_save' TYPE='radio' NAME='ANS_%d' VALUE='%d' Oa_CHK_%d_%d> %s</td>" % (
-                        answer, pcount, answer, pcount, qvars[p])]
+                        answer, pcount, answer, pcount, qvars[param])]
             else:
                 pout += ["""<FONT COLOR="red">ERROR IN QUESTION DATA</FONT>"""]
         # randomise the order in the list at least a little bit
@@ -460,7 +460,7 @@ def renderQuestionHTML(qid, readonly=False):
     version = OaDB.getQuestionVersion(qid)
     data = OaDB.getQAttachment(qtid, "qtemplate.html", variation, version)
     if not data:
-        log(WARN,"Unable to retrieve qtemplate for qid: %s" % qid)
+        log(WARN, "Unable to retrieve qtemplate for qid: %s" % qid)
         return "QuestionError"
     try:
         out = unicode(data, "utf-8")
@@ -529,6 +529,10 @@ re_expo = re.compile(
 
 
 def parseExpo(S):
+    """ Work out the exponent and mantisse of a number in  1.232e1231 syntax
+    :param S:
+    :return:
+    """
     resu = re_expo.search(S)
     if not resu:
         return S, None
@@ -666,7 +670,7 @@ def markQuestionScript(qvars, script, answer):
         else:
             qvars['A%d' % part] = None
 
-        if answer.has_key('G%d' % part):
+        if ('G%d' % part) in answer:
             guess = answer['G%d' % part]
             try:   # See if we can convert it to numeric form
                 qvars['G%d' % part] = float(guess)
