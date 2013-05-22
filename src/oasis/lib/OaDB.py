@@ -21,8 +21,9 @@ from logging import log, INFO, WARN, ERROR, FATAL
 import OaConfig
 import OaPool
 
-dbpool = OaPool.DbPool(OaConfig.oasisdbconnectstring, 3)  # 3 connections. This lets us keep going if one is slow but
-                                                          # doesn't overload the server if there're a lot of us
+# 3 connections. Lets us keep going if one is slow but
+# doesn't overload the server if there're a lot of us
+dbpool = OaPool.DbPool(OaConfig.oasisdbconnectstring, 3)
 
 # Cache stuff on local drives to save our poor database
 fileCache = OaPool.fileCache(OaConfig.cachedir)
@@ -64,7 +65,7 @@ def getQuestionViewTime(question):
         as a human readable string.
     """
     assert isinstance(question, int)
-    ret = run_sql("""SELECT firstview FROM questions WHERE question=%s;""", (question,))
+    ret = run_sql("SELECT firstview FROM questions WHERE question=%s;", (question,))
     if ret:
         firstview = ret[0][0]
         if firstview:
@@ -77,7 +78,7 @@ def getQuestionMarkTime(question):
         as a human readable string, or None if it hasn't been.
     """
     assert isinstance(question, int)
-    ret = run_sql("""SELECT marktime FROM questions WHERE question=%s;""", (question,))
+    ret = run_sql("SELECT marktime FROM questions WHERE question=%s;", (question,))
     if ret:
         marktime = ret[0][0]
         if marktime:
@@ -86,7 +87,8 @@ def getQuestionMarkTime(question):
 
 
 def getAllQTemplates():
-    """ Return a list of all qtemplates in the system (no matter what the status """
+    """ Return a list of all qtemplates in the system (no matter what the status
+    """
     ret = run_sql("SELECT qtemplate FROM qtemplates ORDER BY qtemplate;")
     qtemplates = []
     if ret:
@@ -153,13 +155,13 @@ def setQuestionStatus(q_id, status):
     """ Set the status of a question."""
     assert isinstance(q_id, int)
     assert isinstance(status, int)
-    run_sql("""UPDATE questions SET status=%s WHERE question=%s;""", (status, q_id))
+    run_sql("UPDATE questions SET status=%s WHERE question=%s;", (status, q_id))
 
 
 def getQuestionVersion(q_id):
     """ Return the template version this question was generated from """
     assert isinstance(q_id, int)
-    ret = run_sql("""SELECT version FROM questions WHERE question=%s;""", (q_id,))
+    ret = run_sql("SELECT version FROM questions WHERE question=%s;", (q_id,))
     if ret:
         return int(ret[0][0])
     return None
@@ -177,7 +179,7 @@ def getQuestionScore(q_id):
 def getQuestionVariation(q_id):
     """ Return the template variation this question was generated from"""
     assert isinstance(q_id, int)
-    ret = run_sql("""SELECT variation FROM questions WHERE question=%s;""", (q_id,))
+    ret = run_sql("SELECT variation FROM questions WHERE question=%s;", (q_id,))
     if ret:
         return int(ret[0][0])
     return None
@@ -186,7 +188,7 @@ def getQuestionVariation(q_id):
 def getQuestionParent(q_id):
     """ Return the template this question was generated from"""
     assert isinstance(q_id, int)
-    ret = run_sql("""SELECT qtemplate FROM questions WHERE question=%s;""", (q_id,))
+    ret = run_sql("SELECT qtemplate FROM questions WHERE question=%s;", (q_id,))
     if ret:
         return int(ret[0][0])
     log(ERROR, "No parent found for question %s!" % q_id)
@@ -217,7 +219,9 @@ def getQuestionGuesses(q_id):
 
 
 def getQuestionGuessesBeforeTime(q_id, lasttime):
-    """ Return a dictionary of the recent guesses in a question, from before it was marked. """
+    """ Return a dictionary of the recent guesses in a question,
+        from before it was marked.
+    """
     assert isinstance(q_id, int)
     assert isinstance(lasttime, datetime.datetime)
     ret = run_sql("SELECT part, guess FROM guesses WHERE question=%s AND created < %s ORDER BY created DESC;",
@@ -317,7 +321,7 @@ def updateQTemplateEmbedID(qt_id, embed_id):
 
 def incrementQTVersion(qt_id):
     """ Increase the version number of the current question template"""
-    # FIXME: Not done in a parallel-safe manner. Could maybe find a way to do this
+    # FIXME: Not done in a parallel-safe manner. Could find a way to do this
     # in the database. Fairly low risk.
     assert isinstance(qt_id, int)
     version = int(getQTVersion(qt_id))
@@ -329,7 +333,7 @@ def incrementQTVersion(qt_id):
 def getQTVersion(qt_id):
     """ Fetch the version of a question template."""
     assert isinstance(qt_id, int)
-    ret = run_sql("""SELECT version FROM qtemplates WHERE qtemplate=%s;""", (qt_id,))
+    ret = run_sql("SELECT version FROM qtemplates WHERE qtemplate=%s;", (qt_id,))
     if ret:
         return int(ret[0][0])
     log(WARN, "Request for unknown question template %s." % qt_id)
@@ -342,7 +346,7 @@ def getQTemplateMaxScore(qt_id):
     obj = MC.get(key)
     if not obj is None:  # 0 or [] or "" could be legit
         return obj
-    ret = run_sql("""SELECT scoremax FROM qtemplates WHERE qtemplate=%s;""", (qt_id,))
+    ret = run_sql("SELECT scoremax FROM qtemplates WHERE qtemplate=%s;", (qt_id,))
     if ret:
         try:
             scoremax = float(ret[0][0])
@@ -356,7 +360,7 @@ def getQTemplateMaxScore(qt_id):
 def getQTemplateMarker(qt_id):
     """ Fetch the marker of a question template."""
     assert isinstance(qt_id, int)
-    ret = run_sql("""SELECT marker FROM qtemplates WHERE qtemplate=%s;""", (qt_id,))
+    ret = run_sql("SELECT marker FROM qtemplates WHERE qtemplate=%s;", (qt_id,))
     if ret:
         return int(ret[0][0])
     log(WARN, "Request for unknown question template %s." % qt_id)
@@ -367,7 +371,7 @@ def getQTemplateOwner(qt_id):
         (The last person to make changes to it)
     """
     assert isinstance(qt_id, int)
-    ret = run_sql("""SELECT owner FROM qtemplates WHERE qtemplate=%s;""", (qt_id,))
+    ret = run_sql("SELECT owner FROM qtemplates WHERE qtemplate=%s;", (qt_id,))
     if ret:
         return ret[0][0]
     log(WARN, "Request for unknown question template %s." % qt_id)
@@ -380,7 +384,7 @@ def getQTemplateName(qt_id):
     obj = MC.get(key)
     if not obj is None:
         return obj
-    ret = run_sql("""SELECT title FROM qtemplates WHERE qtemplate=%s;""", (qt_id,))
+    ret = run_sql("SELECT title FROM qtemplates WHERE qtemplate=%s;", (qt_id,))
     if ret:
         MC.set(key, ret[0][0], expiry=360)  # 6 minutes
         return ret[0][0]
@@ -390,7 +394,7 @@ def getQTemplateName(qt_id):
 def getQTemplateEmbedID(qt_id):
     """ Fetch the embed_id of a question template."""
     assert isinstance(qt_id, int)
-    ret = run_sql("""SELECT embed_id FROM qtemplates WHERE qtemplate=%s;""", (qt_id,))
+    ret = run_sql("SELECT embed_id FROM qtemplates WHERE qtemplate=%s;", (qt_id,))
     if ret:
         embed_id = ret[0][0]
         if not embed_id:
@@ -408,10 +412,11 @@ def getQTAttachments(qt_id, version=1000000000):
     if version == 1000000000:
         version = getQTVersion(qt_id)
     attachments = []
-    ret = run_sql("""SELECT name FROM qtattach WHERE qtemplate = %s AND version <= %s
-                  GROUP BY name ORDER BY name;""", (qt_id, version))
+    ret = run_sql("SELECT name FROM qtattach WHERE qtemplate = %s "
+                  "AND version <= %s GROUP BY name ORDER BY name;",
+                  (qt_id, version))
     if ret:
-        attachments = [attachment[0] for attachment in ret if attachment[0] not in attachments and attachment[0]]
+        attachments = [att[0] for att in ret if att[0] not in att and att[0]]
         return attachments
     return []
 
@@ -440,7 +445,8 @@ def getQAttachmentMimeType(qt_id, name, variation, version=1000000000):
                 data = ret[0][1]
                 fileCache.set(key, data)
                 return data
-                # We use mimetype to see if an attachment is generated so not finding one is no big deal.
+                # We use mimetype to see if an attachment is generated so
+                # not finding one is no big deal.
             return False
         return value
     except BaseException, err:
@@ -896,7 +902,7 @@ def copyQTAttachment(sourceqtid, destqtid, name):
     assert isinstance(destqtid, int)
     assert isinstance(name, str) or isinstance(name, unicode)
     createQTAttachment(destqtid, name, getQTAttachmentMimeType(sourceqtid, name),
-                       getQTAttachment(sourceqtid, name), getQTVersion(destqtid))
+                    getQTAttachment(sourceqtid, name), getQTVersion(destqtid))
 
 
 def copyQTemplate(qt_id):
@@ -986,41 +992,57 @@ def getCourseExamInfoAll(course_id, previous_years=False):
         return _deserialize_courseexaminfo(obj)
 
     if previous_years:
-        sql = """SELECT exam, course, title, "type", "start", "end", description,
-                            duration, to_char("start", 'DD Mon'), to_char("start", 'hh:mm'),
-                            to_char("end", 'DD Mon'), to_char("end", 'hh:mm')
-                     FROM exams WHERE course='%s' AND archived='0' ORDER BY "start";"""
+        sql = """SELECT exam, course, title, "type", "start", "end",
+                    description, duration, to_char("start", 'DD Mon'),
+                    to_char("start", 'hh:mm'), to_char("end", 'DD Mon'),
+                    to_char("end", 'hh:mm')
+                 FROM exams
+                 WHERE course='%s' AND archived='0'
+                 ORDER BY "start";"""
     else:
-        sql = """SELECT exam, course, title, "type", "start", "end", description,
-                            duration, to_char("start", 'DD Mon'), to_char("start", 'hh:mm'),
-                            to_char("end", 'DD Mon'), to_char("end", 'hh:mm')
-                     FROM exams WHERE course='%s' AND archived='0' AND extract('year' from "end") = extract('year' from now()) ORDER BY "start";"""
+        sql = """SELECT exam, course, title, "type", "start", "end",
+                    description, duration, to_char("start", 'DD Mon'),
+                    to_char("start", 'hh:mm'), to_char("end", 'DD Mon'),
+                    to_char("end", 'hh:mm')
+                 FROM exams
+                 WHERE course='%s'
+                 AND archived='0'
+                 AND extract('year' from "end") = extract('year' from now())
+                 ORDER BY "start";"""
     params = (course_id,)
     ret = run_sql(sql, params)
     info = {}
     if ret:
         for row in ret:
-            info[int(row[0])] = {'id': row[0], 'course': row[1], 'name': row[2], 'type': row[3],
-                                 'start': row[4], 'end': row[5], 'description': row[6], 'duration': row[7],
-                                 'startdate': row[8], 'starttime': row[9], 'enddate': row[10], 'endtime': row[11]}
-    MC.set(key, _serialize_courseexaminfo(info),
-           60) # 60 second cache. enough to take the edge off an exam start peak load
+            info[int(row[0])] = {'id': row[0], 'course': row[1], 'name': row[2],
+                                 'type': row[3], 'start': row[4], 'end': row[5],
+                                 'description': row[6], 'duration': row[7],
+                                 'startdate': row[8], 'starttime': row[9],
+                                 'enddate': row[10], 'endtime': row[11]}
+    # 60 second cache. take the edge off an exam start peak load
+    MC.set(key, _serialize_courseexaminfo(info), 60)
+
     return info
 
 
 def addExamQuestion(user, exam, question, position):
-    """Record that the student was assigned the given question for their assessment. """
+    """Record that the student was assigned the given question for assessment.
+    """
     assert isinstance(user, int)
     assert isinstance(exam, int)
     assert isinstance(question, int)
     assert isinstance(position, int)
     sql = """SELECT id FROM examquestions
-            WHERE exam = %s AND student = %s AND position = %s AND question = %s;"""
+              WHERE exam = %s
+              AND student = %s
+              AND position = %s
+              AND question = %s;"""
     params = (exam, user, position, question)
     ret = run_sql(sql, params)
     if ret:  # already exists
         return
-    run_sql("INSERT INTO examquestions (exam, student, position, question)  VALUES (%s, %s, %s, %s);",
+    run_sql("INSERT INTO examquestions (exam, student, position, question) "
+            "VALUES (%s, %s, %s, %s);",
             (exam, user, position, question))
     touchUserExam(exam, user)
 
@@ -1078,7 +1100,8 @@ def convertSecondsToHuman(seconds):
 
 
 def getIndividualPracticeStats(user_id, qt_id):
-    """ Return Data on the scores of individual practices. it is used for displaying Individual Practise Data section
+    """ Return Data on the scores of individual practices. it is used to
+        display Individual Practise Data section
         Restricted by a certain time period which is 30 secs to 2 hours"""
     assert isinstance(user_id, int)
     assert isinstance(qt_id, int)
