@@ -5,7 +5,7 @@
 
 """ Assessment related pages """
 
-# Currently disabled until further testing has happened. Mostly complete and 
+# Currently disabled until further testing has happened. Mostly complete and
 # functional but it's really important this be right.
 
 import os
@@ -57,7 +57,8 @@ def assess_previousexams():
     )
 
 
-@app.route("/assess/assessmentunlock/<int:course_id>/<int:exam_id>", methods=['POST', ])
+@app.route("/assess/assessmentunlock/<int:course_id>/<int:exam_id>",
+           methods=['POST', ])
 @authenticated
 def assess_unlock(course_id, exam_id):
     """ An unlock code has been entered. """
@@ -83,7 +84,9 @@ def assess_unlock(course_id, exam_id):
         else:
             flash("Incorrect unlock code.")
 
-    return redirect(url_for("assess_startexam", course_id=course_id, exam_id=exam_id))
+    return redirect(url_for("assess_startexam",
+                            course_id=course_id,
+                            exam_id=exam_id))
 
 
 @app.route("/assess/startexam/<int:course_id>/<int:exam_id>")
@@ -102,7 +105,7 @@ def assess_startexam(course_id, exam_id):
             flash("That assessment is closed.")
             return redirect(url_for("assess_top"))
 
-    Exams.createUserExam(user_id, exam_id)  # so it's cached and ready when they do start
+    Exams.createUserExam(user_id, exam_id)  # get it cached and ready to start
 
     if 'code' in session:
         ucode = session['code']
@@ -121,10 +124,12 @@ def assess_startexam(course_id, exam_id):
     )
 
 
-@app.route("/assess/assessmentpage/<int:course_id>/<int:exam_id>/<int:page>", methods=['POST', 'GET'])
+@app.route("/assess/assessmentpage/<int:course_id>/<int:exam_id>/<int:page>",
+           methods=['POST', 'GET'])
 @authenticated
 def assess_assessmentpage(course_id, exam_id, page):
-    """ Display a page of the assessment and allow the user to fill in answers. """
+    """ Display a page of the assessment and allow the user to fill in answers.
+    """
     user_id = session['user_id']
 
     status = Exams.getUserStatus(user_id, exam_id)
@@ -142,7 +147,9 @@ def assess_assessmentpage(course_id, exam_id, page):
             timeremain = Exams.getEndTime(exam_id, user_id) - time.time()
             if timeremain < -30:
                 flash("Time Exceeded, automatically submitting...")
-                return redirect(url_for("assess_submit", course_id=course_id, exam_id=exam_id))
+                return redirect(url_for("assess_submit",
+                                        course_id=course_id,
+                                        exam_id=exam_id))
 
             if status < 6:
                 OaDB.saveGuess(q_id, part, value)
@@ -152,16 +159,22 @@ def assess_assessmentpage(course_id, exam_id, page):
     Exams.touchUserExam(exam_id, user_id)
 
     if "submit" in form:
-        return redirect(url_for("assess_submit", course_id=course_id, exam_id=exam_id))
+        return redirect(url_for("assess_submit",
+                                course_id=course_id,
+                                exam_id=exam_id))
 
     if "goto" in form:
         goto = form['goto']
 
         if goto == "Finish":
-            return redirect(url_for("assess_presubmit", course_id=course_id, exam_id=exam_id))
+            return redirect(url_for("assess_presubmit",
+                                    course_id=course_id,
+                                    exam_id=exam_id))
 
         if goto == "Start":
-            return redirect(url_for("assess_startexam", course_id=course_id, exam_id=exam_id))
+            return redirect(url_for("assess_startexam",
+                                    course_id=course_id,
+                                    exam_id=exam_id))
 
         page = int(goto.split(' ', 2)[1])
 
@@ -175,7 +188,9 @@ def assess_assessmentpage(course_id, exam_id, page):
         ucode = ""
 
     if exam['code'] and exam['code'] != ucode:
-        return redirect(url_for("assess_startexam", course_id=course_id, exam_id=exam_id))
+        return redirect(url_for("assess_startexam",
+                                course_id=course_id,
+                                exam_id=exam_id))
 
     course = CourseAPI.getCourse(course_id)
     if Exams.isDoneBy(user_id, exam_id):
@@ -252,16 +267,21 @@ def assess_submit(course_id, exam_id):
             flash("There was a problem marking the assessment, staff have been notified.")
 
     if exam["instant"] == 2:
-        return redirect(url_for("assess_awaitresults", course_id=course_id, exam_id=exam_id))
+        return redirect(url_for("assess_awaitresults",
+                                course_id=course_id,
+                                exam_id=exam_id))
 
     flash("Assessment has been marked.")
-    return redirect(url_for("assess_viewmarked", course_id=course_id, exam_id=exam_id))
+    return redirect(url_for("assess_viewmarked",
+                            course_id=course_id,
+                            exam_id=exam_id))
 
 
 @app.route("/assess/awaitresults/<int:course_id>/<int:exam_id>")
 @authenticated
 def assess_awaitresults(course_id, exam_id):
-    """  Thank them and tell them the results will be available later. """
+    """  Thank them and tell them the results will be available later.
+    """
     user_id = session['user_id']
     exam = Exams.getExamStruct(exam_id, course_id)
     course = CourseAPI.getCourse(course_id)

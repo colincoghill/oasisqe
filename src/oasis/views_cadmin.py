@@ -7,12 +7,13 @@
 """
 
 import os
-import datetime
+from datetime import timedelta, now, date, datetime
 from logging import log, ERROR
-from flask import render_template, session, request, redirect, abort, url_for, flash
+from flask import render_template, session, request, redirect, \
+    abort, url_for, flash
 
-from .lib import OaConfig, UserAPI, OaDB, Topics, OaUserDB, OaGeneral, Exams, Courses, \
-    CourseAPI, OaSetup, CourseAdmin, Groups
+from .lib import OaConfig, UserAPI, OaDB, Topics, OaUserDB, OaGeneral, \
+    Exams, Courses, CourseAPI, OaSetup, CourseAdmin, Groups
 
 MYPATH = os.path.dirname(__file__)
 
@@ -32,10 +33,12 @@ def cadmin_top(course_id):
         abort(404)
 
     topics = CourseAPI.getTopicsListInCourse(course_id)
-    exams = [Exams.getExamStruct(e, course_id) for e in Courses.getExams(course_id, previous_years=False)]
+    exams = [Exams.getExamStruct(e, course_id)
+             for e in Courses.getExams(course_id, previous_years=False)]
 
     if not satisfyPerms(user_id, course_id,
-                        ("OASIS_QUESTIONEDITOR", "OASIS_VIEWMARKS", "OASIS_ALTERMARKS", "OASIS_CREATEASSESSMENT")):
+                        ("OASIS_QUESTIONEDITOR", "OASIS_VIEWMARKS",
+                         "OASIS_ALTERMARKS", "OASIS_CREATEASSESSMENT")):
         flash("You do not have admin permission on course %s" % course['name'])
         return redirect(url_for('setup_courses'))
 
@@ -70,7 +73,7 @@ def cadmin_config(course_id):
     )
 
 
-@app.route("/courseadmin/config_submit/<int:course_id>", methods=["POST",])
+@app.route("/courseadmin/config_submit/<int:course_id>", methods=["POST", ])
 @authenticated
 def cadmin_config_submit(course_id):
     """ Allow some course configuration """
@@ -141,10 +144,12 @@ def cadmin_prev_assessments(course_id):
     if not course:
         abort(404)
 
-    exams = [Exams.getExamStruct(e, course_id) for e in OaDB.getCourseExamInfoAll(course_id, previous_years=True)]
+    exams = [Exams.getExamStruct(e, course_id)
+             for e in OaDB.getCourseExamInfoAll(course_id, previous_years=True)]
 
     if not satisfyPerms(user_id, course_id,
-                        ("OASIS_QUESTIONEDITOR", "OASIS_VIEWMARKS", "OASIS_ALTERMARKS", "OASIS_CREATEASSESSMENT")):
+                        ("OASIS_QUESTIONEDITOR", "OASIS_VIEWMARKS",
+                         "OASIS_ALTERMARKS", "OASIS_CREATEASSESSMENT")):
         flash("You do not have admin permission on course %s" % course['name'])
         return redirect(url_for('setup_courses'))
 
@@ -176,7 +181,7 @@ def cadmin_create_exam(course_id):
         flash("You do not have 'Create Assessment' permission on this course.")
         return redirect(url_for('cadmin_top', course_id=course_id))
 
-    today = datetime.date.today()
+    today = date.today()
     return render_template(
         "exam_edit.html",
         course=course,
@@ -184,8 +189,8 @@ def cadmin_create_exam(course_id):
         #  defaults
         exam={
             'id': 0,
-            'start_date': (today + datetime.timedelta(days=1)).strftime("%a %d %b %Y"),
-            'end_date': (today + datetime.timedelta(days=1)).strftime("%a %d %b %Y"),
+            'start_date': (today + timedelta(days=1)).strftime("%a %d %b %Y"),
+            'end_date': (today + timedelta(days=1)).strftime("%a %d %b %Y"),
             'start_year': today.year,
             'start_month': today.month,
             'start_day': today.day,
@@ -233,7 +238,8 @@ def cadmin_edit_exam(course_id, exam_id):
     )
 
 
-@app.route("/courseadmin/exam_edit_submit/<int:course_id>/<int:exam_id>", methods=["POST", ])
+@app.route("/courseadmin/exam_edit_submit/<int:course_id>/<int:exam_id>",
+           methods=["POST", ])
 @authenticated
 def cadmin_edit_exam_submit(course_id, exam_id):
     """ Provide a form to edit an assessment """
@@ -280,21 +286,28 @@ def cadmin_enrolments(course_id):
         flash("You do not have 'User Admin' permission on this course.")
         return redirect(url_for('cadmin_top', course_id=course_id))
 
-    groups = [Groups.getInfo(group_id) for group_id in Courses.getGroupsInCourse(course_id)]
+    groups = [Groups.getInfo(group_id)
+              for group_id in Courses.getGroupsInCourse(course_id)]
 
     # it's possible one was never created, legacy database, etc.
     if not len(groups):
-        now = datetime.datetime.now()
-        forever = datetime.datetime(year=9999, month=12, day=31)
-        group_id = Groups.create(u"Staff", "Current Staff", user_id, 2, startdate=now, enddate=forever)
+        now = datetime.now()
+        forever = datetime(year=9999, month=12, day=31)
+        group_id = Groups.create(u"Staff",
+                                 "Current Staff",
+                                 user_id,
+                                 2,
+                                 startdate=now,
+                                 enddate=forever)
         Courses.addGroupToCourse(group_id, course_id)
-        groups = [Groups.getInfo(group_id) for group_id in Courses.getGroupsInCourse(course_id)]
+        groups = [Groups.getInfo(group_id)
+                  for group_id in Courses.getGroupsInCourse(course_id)]
         assert len(groups)
 
     for group in groups:
         if not group['enddate']:
             group['enddate'] = "-"
-        elif group['enddate'] > datetime.datetime(year=9990, month=1, day=1):
+        elif group['enddate'] > datetime(year=9990, month=1, day=1):
             group['enddate'] = "-"
 
         if group['startdate']:
@@ -303,7 +316,9 @@ def cadmin_enrolments(course_id):
             group['startdate'] = "-"
         group['nummembers'] = len(Groups.getUsersInGroup(group['id']))
 
-    return render_template("courseadmin_enrolment.html", course=course, groups=groups)
+    return render_template("courseadmin_enrolment.html",
+                           course=course,
+                           groups=groups)
 
 
 @app.route("/courseadmin/editgroup/<int:group_id>")
@@ -330,7 +345,10 @@ def cadmin_editgroup(group_id):
     course = CourseAPI.getCourse(course_id)
     ulist = Groups.getUsersInGroup(group_id)
     members = [UserAPI.getUser(uid) for uid in ulist]
-    return render_template("courseadmin_editgroup.html", course=course, group=group, members=members)
+    return render_template("courseadmin_editgroup.html",
+                           course=course,
+                           group=group,
+                           members=members)
 
 
 @app.route("/courseadmin/addgroup/<int:course_id>")
@@ -347,7 +365,8 @@ def cadmin_addgroup(course_id):
     return render_template("courseadmin_addgroup.html", course=course)
 
 
-@app.route("/courseadmin/editgroup/<int:group_id>/addperson", methods=["POST",])
+@app.route("/courseadmin/editgroup/<int:group_id>/addperson",
+           methods=["POST", ])
 @authenticated
 def cadmin_editgroup_addperson(group_id):
     """ Add a person to the group.
@@ -406,7 +425,9 @@ def cadmin_edittopics(course_id):
         return redirect(url_for('cadmin_top', course_id=course_id))
 
     topics = CourseAPI.getTopicsListInCourse(course_id)
-    return render_template("courseadmin_edittopics.html", course=course, topics=topics)
+    return render_template("courseadmin_edittopics.html",
+                           course=course,
+                           topics=topics)
 
 
 @app.route("/courseadmin/topics_save/<int:course_id>", methods=['POST'])
@@ -442,7 +463,9 @@ def cadmin_edittopics_save(course_id):
 @app.route("/courseadmin/edittopic/<int:topic_id>")
 @authenticated
 def cadmin_edit_topic(topic_id):
-    """ Present a page to view and edit a topic, including adding/editing questions and setting some parameters."""
+    """ Present a page to view and edit a topic, including adding/editing
+        questions and setting some parameters.
+    """
     user_id = session['user_id']
     course_id = None
     try:
@@ -473,8 +496,9 @@ def cadmin_edit_topic(topic_id):
         q['editor'] = OaDB.getQTemplateEditor(q['id'])
 
     all_courses = OaGeneral.getCourseListing()
-    all_courses = [c for c in all_courses if satisfyPerms(user_id, int(c['id']), (
-        "OASIS_QUESTIONEDITOR", "OASIS_COURSEADMIN", "OASIS_SUPERUSER"))]
+    all_courses = [c
+                   for c in all_courses if satisfyPerms(user_id, int(c['id']),
+                                                        ("OASIS_QUESTIONEDITOR", "OASIS_COURSEADMIN", "OASIS_SUPERUSER"))]
     all_courses.sort(lambda f, s: cmp(f['name'], s['name']))
 
     all_course_topics = []
@@ -518,7 +542,7 @@ def cadmin_view_qtemplate_history(topic_id, qt_id):
         'name': Topics.getName(topic_id)
     }
     qtemplate = OaDB.getQTemplate(qt_id)
-    year = datetime.datetime.now().year
+    year = datetime.now().year
     years = range(year, year-6, -1)
 
     return render_template(

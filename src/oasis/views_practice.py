@@ -113,7 +113,8 @@ def practice_choose_question_stats(topic_id):
     )
 
 
-@app.route("/practice/question/<int:topic_id>/<int:qtemplate_id>", methods=['POST', 'GET'])
+@app.route("/practice/question/<int:topic_id>/<int:qtemplate_id>",
+           methods=['POST', 'GET'])
 @authenticated
 def practice_do_question(topic_id, qtemplate_id):
     """ Show them a question and allow them to fill in some answers """
@@ -185,22 +186,8 @@ def practice_do_question(topic_id, qtemplate_id):
             q_pos="?",
         )
 
-    # try:
     q_body = OaGeneral.renderQuestionHTML(q_id)
     q_body = q_body.replace(u"\240", u" ")
-    # except (ValueError, TypeError, KeyError), err:
-    #     log(ERROR, "OaPracticeBE:getPracticeQuestion(%s,%s) FAILED 2! %s" % (qtemplate_id, user_id, err))
-    #     return render_template(
-    #         "practicequestionerror.html",
-    #         mesg="Error generating question.",
-    #         topictitle=topictitle,
-    #         topic_id=topic_id,
-    #         qt_id=qtemplate_id,
-    #         course=course,
-    #         q_title=q_title,
-    #         questions=questions,
-    #         q_pos="?",
-    #     )
 
     return render_template(
         "practicedoquestion.html",
@@ -216,7 +203,8 @@ def practice_do_question(topic_id, qtemplate_id):
     )
 
 
-@app.route("/practice/markquestion/<int:topic_id>/<int:question_id>", methods=['POST'])
+@app.route("/practice/markquestion/<int:topic_id>/<int:question_id>",
+           methods=['POST', ])
 @authenticated
 def practice_mark_question(topic_id, question_id):
     """ Mark the submitted question answersjust wa """

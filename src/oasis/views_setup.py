@@ -40,7 +40,9 @@ def setup_courses():
 @app.route("/setup/usercreate", methods=['POST', 'GET'])
 @authenticated
 def setup_usercreate():
-    """ Show a page allowing the admin to enter user details to create an account. """
+    """ Show a page allowing the admin to enter user details
+        to create an account.
+    """
     user_id = session['user_id']
 
     if not checkPermission(user_id, -1, "OASIS_USERADMIN"):
@@ -85,7 +87,8 @@ def setup_usercreate():
             elif new_confirm == "" or not new_confirm == new_pass:
                 error = "Passwords don't match (or are empty)"
             else:   # yaay, it's ok
-                # uname, passwd, givenname, familyname, acctstatus, studentid, email=None, expiry=None, source="local"
+                # uname, passwd, givenname, familyname, acctstatus,
+                # studentid, email=None, expiry=None, source="local"
                 UserAPI.create(new_uname, "nologin-creation", new_fname, new_sname, 2, '', new_email)
                 UserAPI.setPassword(UserAPI.getUidByUname(new_uname), new_pass)
                 flash("New User Account Created for %s" % new_uname)
@@ -272,6 +275,8 @@ def setup_change_pass_submit():
         return redirect(url_for("setup_change_pass"))
 
     UserAPI.setPassword(user_id=user_id, clearpass=newpass)
-    audit(1, user_id, user_id, "Setup", "%s reset password for %s." % (user['uname'], user['uname']))
+    audit(1, user_id,
+          user_id,
+          "Setup", "%s reset password for %s." % (user['uname'], user['uname']))
     flash("Password changed")
     return redirect(url_for("setup_myprofile"))

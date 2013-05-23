@@ -17,7 +17,9 @@ from oasis import app
 @app.route("/embed/question/<embed_id>/question.html")
 # Does its own auth because it may be used in embedded questions
 def embed_question(embed_id):
-    """ Find an embed question and serve it. This should be suitable for including in an IFRAME or similar """
+    """ Find an embed question and serve it.
+        This should be suitable for including in an IFRAME or similar
+    """
     if 'user_id' not in session:
         user_id = UserAPI.getUidByUname("guest")
     else:
@@ -52,7 +54,8 @@ def embed_question(embed_id):
 @app.route("/embed/question/<embed_id>/mark.html", methods=["POST", "GET"])
 # Does its own auth because it may be used in embedded questions
 def embed_mark_question(embed_id):
-    """ Find an embed question and serve it. This should be suitable for including in an IFRAME or similar
+    """ Find an embed question and serve it.
+        This should be suitable for including in an IFRAME or similar
     """
     if 'user_id' not in session:
         user_id = UserAPI.getUidByUname("guest")

@@ -58,7 +58,8 @@ def admin_course(course_id):
     course = CourseAPI.getCourse(course_id)
     course['size'] = len(Courses.getUsersInCourse(course_id))
 
-    groups = [Groups.getInfo(group_id) for group_id in Courses.getGroupsInCourse(course_id)]
+    groups = [Groups.getInfo(group_id)
+              for group_id in Courses.getGroupsInCourse(course_id)]
 
     for group in groups:
         if not group['enddate']:
@@ -163,7 +164,8 @@ def admin_course_save(course_id):
         enrol_freq = form['enrol_freq']
         if not (enrol_freq == course['enrol_freq']):
             changed = True
-            enrol_freq = int(float(enrol_freq) * 60)  # form says hours, we want minutes.
+            # form says hours, we want minutes.
+            enrol_freq = int(float(enrol_freq) * 60)
             Courses.setEnrolFreq(course_id, enrol_freq)
 
     if changed:
@@ -182,6 +184,7 @@ def admin_course_save(course_id):
 @authenticated
 def admin_add_course_save():
     """ accept saved settings for a new course"""
+
     user_id = session['user_id']
     if not checkPermission(user_id, 0, "OASIS_SYSADMIN"):
         flash("You do not have system administrator permission")
@@ -241,6 +244,7 @@ def admin_add_course_save():
 @authenticated
 def admin_editmessages():
     """ Present page to administer messages in the system """
+
     user_id = session['user_id']
     if not checkPermission(user_id, 0, "OASIS_SYSADMIN"):
         flash("You do not have system administrator permission")
@@ -254,10 +258,12 @@ def admin_editmessages():
     )
 
 
-@app.route("/admin/save_messages", methods=["POST", ])
+@app.route("/admin/save_messages",
+           methods=["POST", ])
 @authenticated
 def admin_savemessages():
     """ Save messages in the system """
+
     user_id = session['user_id']
     if not checkPermission(user_id, 0, "OASIS_SYSADMIN"):
         flash("You do not have system administrator permission")

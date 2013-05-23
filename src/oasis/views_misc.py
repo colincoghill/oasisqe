@@ -61,7 +61,8 @@ def attachment_qtemplate(qtemplate_id, version, variation, fname):
 @app.route("/logout")
 # doesn't need auth. sort of obviously.
 def logout():
-    """ Log the user out, if they're logged in. Mainly by clearing the session. """
+    """ Log the user out, if they're logged in. Mainly by clearing the session.
+    """
 
     if "user_id" in session:
         user_id = session["user_id"]
@@ -74,16 +75,18 @@ def logout():
 
 @app.errorhandler(401)
 def custom_401(error):
-    return Response('Authentication declined %s' % error, 401, {'WWW-Authenticate': 'Basic realm="Login Required"'})
+    return Response('Authentication declined %s' % error,
+                    401,
+                    {'WWW-Authenticate': 'Basic realm="Login Required"'})
 
 
 @app.route("/login/webauth/flush")
 def logout_and_flush():
     """ Called vi AJAX so the user doesn't see the interaction.
         We first send them an access declined to force them to send credentials.
-        Then we accept those (invalid) credentials, which will flush the browser copy.
-        Next time they access a page their credentials will be invalid so they'll have
-        to re-login.
+        Then we accept those (invalid) credentials, which will flush the browser
+        copy. Next time they access a page their credentials will be
+        invalid so they'll have to re-login.
     """
     if not "logout" in session:
         # first hit, reject them
@@ -119,10 +122,13 @@ def qedit_redirect(topic_id, qt_id):
     """ Work out the appropriate question editor and redirect to it """
     etype = OaDB.getQTemplateEditor(qt_id)
     if etype == "Raw":
-        return redirect(url_for("qedit_raw_edit", topic_id=topic_id, qt_id=qt_id))
+        return redirect(url_for("qedit_raw_edit",
+                                topic_id=topic_id,
+                                qt_id=qt_id))
 
     flash("Unknown Question Type, can't Edit")
-    return redirect(url_for('cadmin_edit_topic', topic_id=topic_id))
+    return redirect(url_for('cadmin_edit_topic',
+                            topic_id=topic_id))
 
 
 @app.route("/qedit_raw/edit/<int:topic_id>/<int:qt_id>")
@@ -140,7 +146,8 @@ def qedit_raw_edit(topic_id, qt_id):
             or checkPermission(user_id, course_id, "OASIS_QUESTIONEDITOR")
             or checkPermission(user_id, course_id, "OASIS_QUESTIONSOURCEVIEW")):
         flash("You do not have question editor privilege in this course")
-        return redirect(url_for("cadmin_edit_topic", topic_id=topic_id))
+        return redirect(url_for("cadmin_edit_topic",
+                                topic_id=topic_id))
 
     course = CourseAPI.getCourse(course_id)
     topic = Topics.getTopic(topic_id)
@@ -160,7 +167,8 @@ def qedit_raw_edit(topic_id, qt_id):
             'name': name,
             'mimetype': OaDB.getQTAttachmentMimeType(qt_id, name)
         } for name in attachnames if
-        not name in ['qtemplate.html', 'image.gif', 'datfile.txt', '__datfile.txt', '__qtemplate.html']
+            not name in ['qtemplate.html', 'image.gif',
+                         'datfile.txt', '__datfile.txt', '__qtemplate.html']
     ]
     return render_template(
         "courseadmin_raw_edit.html",
@@ -262,7 +270,9 @@ def qedit_raw_save(topic_id, qt_id):
             newname = form['newattachmentname']
     if 'newattachment' in request.files:
         f = request.files['newattachment']
-        if not newname:  # If they haven't supplied a filename we'll use the name of the file they uploaded
+        if not newname:  # If they haven't supplied a filename we use
+                         # the name of the file they uploaded.
+            # TODO: Security check? We don't create disk files with this name
             newname = f.filename
         data = f.read()
         mtype = f.content_type
@@ -276,7 +286,9 @@ def qedit_raw_save(topic_id, qt_id):
 @app.route("/qedit_raw/att/<int:qt_id>/<fname>")
 @authenticated
 def qedit_raw_attach(qt_id, fname):
-    """ Serve the given question template attachment straight from DB so it's fresh """
+    """ Serve the given question template attachment
+        straight from DB so it's fresh
+    """
     mimetype = OaDB.getQTAttachmentMimeType(qt_id, fname)
     data = OaDB.getQTAttachment(qt_id, fname)
     if not data:
