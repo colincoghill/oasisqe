@@ -449,18 +449,21 @@ def renderQuestionHTML(qid, readonly=False):
         qid = int(qid)
         assert qid > 0
     except (ValueError, TypeError, AssertionError):
-        log(WARN, "renderQuestionHTML(%s,%s) called with bad qid?" % (qid, readonly))
+        log(WARN,
+            "renderQuestionHTML(%s,%s) called with bad qid?" % (qid, readonly))
     qtid = OaDB.getQuestionParent(qid)
     try:
         qtid = int(qtid)
         assert qtid > 0
     except (ValueError, TypeError, AssertionError):
-        log(WARN,"renderQuestionHTML(%s,%s), getparent failed? " % (qid, readonly))
+        log(WARN,
+            "renderQuestionHTML(%s,%s), getparent failed? " % (qid, readonly))
     variation = OaDB.getQuestionVariation(qid)
     version = OaDB.getQuestionVersion(qid)
     data = OaDB.getQAttachment(qtid, "qtemplate.html", variation, version)
     if not data:
-        log(WARN, "Unable to retrieve qtemplate for qid: %s" % qid)
+        log(WARN,
+            "Unable to retrieve qtemplate for qid: %s" % qid)
         return "QuestionError"
     try:
         out = unicode(data, "utf-8")
@@ -468,7 +471,8 @@ def renderQuestionHTML(qid, readonly=False):
         try:
             out = unicode(OaDB.getQAttachment(qtid, "qtemplate.html", variation, version), "latin-1")
         except UnicodeDecodeError, err:
-            log(ERROR, "unicode error decoding qtemplate for qid %s: %s" % (qid, err))
+            log(ERROR,
+                "unicode error decoding qtemplate for qid %s: %s" % (qid, err))
             raise
     out = out.replace("This question is not verified yet, please report any error!", "")
 

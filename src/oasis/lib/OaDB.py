@@ -148,7 +148,8 @@ def updateQuestionScore(q_id, score):
     except (TypeError, ValueError):
         log(ERROR, "Unable to cast score to float!? '%s'" % score)
         return
-    run_sql("""UPDATE questions SET score=%s WHERE question=%s;""", ("%.1f" % sc, q_id))
+    run_sql("""UPDATE questions SET score=%s WHERE question=%s;""",
+            ("%.1f" % sc, q_id))
 
 
 def setQuestionStatus(q_id, status):
@@ -750,7 +751,8 @@ def createQuestion(qt_id, name, student, status, variation, version, exam):
     res = conn.run_sql("SELECT currval('questions_question_seq')")
     dbpool.commit(conn)
     if not res:
-        log(ERROR, "CreateQuestion(%d, %s, %d, %s, %d, %d, %d) may have failed." % (
+        log(ERROR,
+            "CreateQuestion(%d, %s, %d, %s, %d, %d, %d) may have failed." % (
                 qt_id, name, student, status, variation, version, exam))
         return None
     return res[0][0]
@@ -1121,11 +1123,13 @@ def getIndividualPracticeStats(user_id, qt_id):
 
 
 def getStudentQuestionPracticeStats(user_id, qt_id, num=3):
-    """Return data on the scores obtained while practicing the given question the last 'num' times.
-       Exclude assessed scores.  If num is not provided, defaults to 3. If num is 0, give stats for all.
+    """Return data on the scores obtained while practicing the given question
+       the last 'num' times. Exclude assessed scores. If num is not provided,
+       defaults to 3. If num is 0, give stats for all.
        Returns list of last 'num' practices:
        {'score': score, 'question':question id, 'age': seconds since practiced }
-       New Changes: set up a time period. It only shows the stats within 30 secs to 2 hrs.
+       New Changes: set up a time period.
+       It only shows the stats within 30 secs to 2 hrs.
     """
     assert isinstance(user_id, int)
     assert isinstance(qt_id, int)
@@ -1160,7 +1164,11 @@ def getStudentQuestionPracticeStats(user_id, qt_id, num=3):
                     age = convertSecondsToHuman(age)
             except (TypeError, ValueError):
                 age = "more than 2 years"
-            stats.append({'score': float(row[0]), 'question': int(row[1]), 'age': age, 'ageseconds': ageseconds})
+            stats.append({'score': float(row[0]),
+                          'question': int(row[1]),
+                          'age': age,
+                          'ageseconds': ageseconds
+            })
 
         return stats[::-1]   # reverse it so they're in time order
     return None
