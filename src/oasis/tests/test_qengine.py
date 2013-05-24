@@ -7,7 +7,9 @@
 
 
 
-from oasis.lib import OaGeneral
+from oasis.lib import OaGeneral, OaDB
+
+OaDB.upgradeDB()
 
 
 def test_instance_generate_simple_answer():
