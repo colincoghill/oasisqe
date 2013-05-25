@@ -495,7 +495,7 @@ def cadmin_edit_topic(topic_id):
             question['embed_url'] = None
         question['editor'] = OaDB.getQTemplateEditor(question['id'])
 
-    all_courses = OaGeneral.getCourseListing()
+    all_courses = CourseAPI.getCourseList()
     all_courses = [cs
                    for cs in all_courses if satisfyPerms(user_id, int(cs['id']),
                                                         ("OASIS_QUESTIONEDITOR", "OASIS_COURSEADMIN", "OASIS_SUPERUSER"))]
@@ -587,7 +587,7 @@ def cadmin_view_topic(topic_id):
             question['embed_url'] = None
         question['editor'] = OaDB.getQTemplateEditor(question['id'])
 
-    all_courses = OaGeneral.getCourseListing()
+    all_courses = CourseAPI.getCourseList()
     all_courses = [cs for cs in all_courses if satisfyPerms(user_id, int(cs['id']), (
         "OASIS_QUESTIONEDITOR", "OASIS_COURSEADMIN", "OASIS_SUPERUSER"))]
     all_courses.sort(lambda f, s: cmp(f['name'], s['name']))

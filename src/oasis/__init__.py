@@ -212,7 +212,7 @@ def login_forgot_pass_submit():
         flash("Your password is managed by a different system, please contact IT Support.")
         return redirect(url_for("login_forgot_pass"))
 
-    code = Users.generateConfirmationCode(username)
+    code = Users.generateConfirmationCode()
     Users.setConfirmationCode(user_id, code)
 
     email = user['email']
@@ -308,7 +308,7 @@ def login_signup_submit():
         flash("An account with that name already exists, please try something else.")
         return redirect(url_for("login_signup"))
 
-    code = Users.generateConfirmationCode(username)
+    code = Users.generateConfirmationCode()
     newuid = Users.create(uname=username, passwd="NOLOGIN", email=email,
                              givenname=username, familyname="", acctstatus=1, studentid="",
                             source="local", confirm_code=code, confirm=False)

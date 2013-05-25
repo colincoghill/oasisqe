@@ -3,17 +3,10 @@
 # This code is under the GNU Affero General Public License
 # http://www.gnu.org/licenses/agpl-3.0.html
 
-"""Some useful data types.
+""" Some useful data types.
 """
 
 import datetime
-
-
-def epochToDatetime(epoch):
-    """Converts a datetime in seconds to a datetime.datetime.
-    """
-
-    return datetime.datetime.fromtimestamp(epoch)
 
 
 def todatetime(mydate):

@@ -32,16 +32,6 @@ def htmlesc(text):
     return jinja2.escape(text)
 
 
-def getCourseListing():
-    """ Return a list of dictionaries containing course list information.
-        [{ cid: int       Course ID
-          name: string   Name of Course
-          title: string   Short Description of Course
-        },]
-    """
-    return CourseAPI.getCourseList()
-
-
 def getTopicListing(cid, numq=True):
     """ Return a list of dicts with topic information for the given course.
         [{ tid: int       Topic ID
@@ -631,19 +621,6 @@ def markQuestionStandard(qvars, answers):
                 marks["M%s" % (part,)] = 0
                 marks["C%s" % (part,)] = "Incorrect"
     return marks
-
-
-def fmtException():
-    """Use sys.exc_info() to fetch information about the exception.
-    """
-    etype, ex, tb = sys.exc_info()
-    try:
-        eargs = ex.__dict__["args"]
-    except KeyError:
-        eargs = "<no args>"
-    ename = etype.__name__
-    etb = traceback.format_tb(tb, 3)
-    return ename, eargs, etb
 
 
 def markQuestionScript(qvars, script, answer):

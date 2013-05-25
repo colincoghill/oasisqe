@@ -241,8 +241,8 @@ def setConfirmationCode(uid, code):
     run_sql("""UPDATE "users" SET confirmation_code=%s WHERE id=%s;""", (code, uid))
 
 
-def generateConfirmationCode(user_id):
-    """ Generate a new email confirmation code for the given user and return it
+def generateConfirmationCode():
+    """ Generate a new email confirmation code and return it
     """
 
     return generate_uuid_readable(9)
