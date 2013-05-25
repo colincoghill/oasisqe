@@ -3,6 +3,8 @@
 # This code is under the GNU Affero General Public License
 # http://www.gnu.org/licenses/agpl-3.0.html
 
+""" UI for various setup options. Changing password, profile, user creation.
+"""
 
 import os
 

@@ -13,7 +13,8 @@ def chrange(start, end):
 
 
 def splitall(string, splitcharlist):
-    """Splits the supplied string at all of the characters given in the second argument list
+    """Splits the supplied string at all of the characters given in the
+       second argument list
     """
     strlist = [string]
     for i in splitcharlist:
@@ -38,7 +39,7 @@ VALID_BOOLOPS = ['+', '&', '!', '(', ')']
 
 
 def get_vars_bool_eqn(eqnstr):
-    """Gets the variables in a boolean equation and checks for invalid characters.
+    """Gets the variables in a boolean equation and checks for invalid chars.
     """
     valid_ops = VALID_BOOLOPS
     valid_chars = VALID_EQ_CHARS + valid_ops
@@ -69,8 +70,9 @@ def inc_bool_val_list(boollist):
 
 
 def comp_bool_eqs(eq1str, eq2str, varlist):
-    """ Will compare two boolean equations to see if they are the same. Assumes that the input
-        strings are valid python expressions (i.e. use the operators 'not','and','or'). All variables
+    """ Will compare two boolean equations to see if they are the same.
+        Assumes that the input strings are valid python expressions (i.e.
+        use the operators 'not','and','or'). All variables
         in the equation must be specified in a list in 'varlist'.
     """
     numvars = len(varlist)
@@ -92,6 +94,7 @@ def comp_bool_eqs(eq1str, eq2str, varlist):
         boolvals = inc_bool_val_list(boolvals)
 
     for i in range(2 ** numvars):
-        if not ((anslist1[i] and anslist2[i]) or (not anslist1[i]) and (not anslist2[i])):
+        if not (  (anslist1[i] and anslist2[i])
+            or (not anslist1[i]) and (not anslist2[i])):
             return 0
     return 1

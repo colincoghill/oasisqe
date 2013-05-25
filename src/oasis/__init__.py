@@ -144,15 +144,15 @@ def login_local_submit():
         flash("Incorrect name or password.")
         return redirect(url_for("login_local"))
 
-    u = UserAPI.getUser(user_id)
-    if not u['confirmed']:
+    user = UserAPI.getUser(user_id)
+    if not user['confirmed']:
         flash("Your account is not yet confirmed. You should have received an email with instructions in it to do so")
         return redirect(url_for("login_local"))
     session['username'] = username
     session['user_id'] = user_id
-    session['user_givenname'] = u['givenname']
-    session['user_familyname'] = u['familyname']
-    session['user_fullname'] = u['fullname']
+    session['user_givenname'] = user['givenname']
+    session['user_familyname'] = user['familyname']
+    session['user_fullname'] = user['fullname']
     session['user_authtype'] = "local"
 
     audit(1, user_id, user_id, "UserAuth",
@@ -207,22 +207,22 @@ def login_forgot_pass_submit():
         flash("Unknown username ")
         return redirect(url_for("login_forgot_pass"))
 
-    u = UserAPI.getUser(user_id)
-    if not u['source'] == "local":
+    user = UserAPI.getUser(user_id)
+    if not user['source'] == "local":
         flash("Your password is managed by a different system, please contact IT Support.")
         return redirect(url_for("login_forgot_pass"))
 
     code = Users.generateConfirmationCode(username)
     Users.setConfirmationCode(user_id, code)
 
-    email = u['email']
+    email = user['email']
     if not email:
         flash("We do not appear to have an email address on file for that account.")
         return redirect(url_for("login_forgot_pass"))
 
     text_body = render_template("email/forgot_pass.txt", code=code)
     html_body = render_template("email/forgot_pass.html", code=code)
-    send_email(u['email'], from_addr=None, subject = "OASIS Password Reset", text_body=text_body, html_body=html_body)
+    send_email(user['email'], from_addr=None, subject = "OASIS Password Reset", text_body=text_body, html_body=html_body)
 
     return render_template("login_forgot_pass_submit.html")
 
@@ -258,12 +258,12 @@ def login_email_passreset(code):
         abort(404)
     Users.setConfirmed(uid)
     Users.setConfirmationCode(uid, "")
-    u = UserAPI.getUser(uid)
-    session['username'] = u['uname']
+    user = UserAPI.getUser(uid)
+    session['username'] = user['uname']
     session['user_id'] = uid
-    session['user_givenname'] = u['givenname']
-    session['user_familyname'] = u['familyname']
-    session['user_fullname'] = u['fullname']
+    session['user_givenname'] = user['givenname']
+    session['user_familyname'] = user['familyname']
+    session['user_fullname'] = user['fullname']
     session['user_authtype'] = "local"
     audit(1, uid, uid, "UserAuth",
           "%s successfully logged in using password reset email" % (session['username'],))
@@ -338,12 +338,12 @@ def login_webauth_submit():
         flash("Incorrect name or password.")
         return redirect(url_for("index"))
 
-    u = UserAPI.getUser(user_id)
+    user = UserAPI.getUser(user_id)
     session['username'] = username
     session['user_id'] = user_id
-    session['user_givenname'] = u['givenname']
-    session['user_familyname'] = u['familyname']
-    session['user_fullname'] = u['fullname']
+    session['user_givenname'] = user['givenname']
+    session['user_familyname'] = user['familyname']
+    session['user_fullname'] = user['fullname']
     session['user_authtype'] = "httpauth"
 
     audit(1, user_id, user_id, "UserAuth",

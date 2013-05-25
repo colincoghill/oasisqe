@@ -187,7 +187,7 @@ def practice_do_question(topic_id, qtemplate_id):
         )
 
     q_body = OaGeneral.renderQuestionHTML(q_id)
-    q_body = q_body.replace(u"\240", u" ")
+    q_body = q_body.replace(r"\240", u" ")
 
     return render_template(
         "practicedoquestion.html",

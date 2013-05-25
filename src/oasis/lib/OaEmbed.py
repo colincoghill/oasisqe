@@ -33,7 +33,7 @@ def markQuestion(user_id, qtid, request):
     out = u""
     answers = {}
     for i in request.form.keys():
-        part = re.search("^Q_(\d+)_ANS_(\d+)$", i)
+        part = re.search(r"^Q_(\d+)_ANS_(\d+)$", i)
         if part:
             newqid = int(part.groups()[0])
             part = int(part.groups()[1])

@@ -139,7 +139,7 @@ def assess_assessmentpage(course_id, exam_id, page):
 
     form = request.form
     for field in form.keys():
-        qinfo = re.search("^Q_(\d+)_ANS_(\d+)$", field)
+        qinfo = re.search(r"^Q_(\d+)_ANS_(\d+)$", field)
         if qinfo:
             q_id = int(qinfo.groups()[0])
             part = int(qinfo.groups()[1])

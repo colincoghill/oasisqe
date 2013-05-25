@@ -486,26 +486,26 @@ def cadmin_edit_topic(topic_id):
         'position': Topics.getPosition(topic_id),
         'name': Topics.getName(topic_id)
     }
-    questions = [q for q in Topics.getQTemplates(topic_id).values()]
-    for q in questions:
-        q['embed_id'] = OaDB.getQTemplateEmbedID(q['id'])
-        if q['embed_id']:
-            q['embed_url'] = "%s/embed/question/%s/question.html" % (OaConfig.parentURL, q['embed_id'])
+    questions = [question for question in Topics.getQTemplates(topic_id).values()]
+    for question in questions:
+        question['embed_id'] = OaDB.getQTemplateEmbedID(question['id'])
+        if question['embed_id']:
+            question['embed_url'] = "%s/embed/question/%s/question.html" % (OaConfig.parentURL, question['embed_id'])
         else:
-            q['embed_url'] = None
-        q['editor'] = OaDB.getQTemplateEditor(q['id'])
+            question['embed_url'] = None
+        question['editor'] = OaDB.getQTemplateEditor(question['id'])
 
     all_courses = OaGeneral.getCourseListing()
-    all_courses = [c
-                   for c in all_courses if satisfyPerms(user_id, int(c['id']),
+    all_courses = [cs
+                   for cs in all_courses if satisfyPerms(user_id, int(cs['id']),
                                                         ("OASIS_QUESTIONEDITOR", "OASIS_COURSEADMIN", "OASIS_SUPERUSER"))]
     all_courses.sort(lambda f, s: cmp(f['name'], s['name']))
 
     all_course_topics = []
-    for c in all_courses:
-        topics = Courses.getTopicsInfoAll(c['id'], numq=False)
+    for cs in all_courses:
+        topics = Courses.getTopicsInfoAll(cs['id'], numq=False)
         if topics:
-            all_course_topics.append({'course': c['name'], 'topics': topics})
+            all_course_topics.append({'course': cs['name'], 'topics': topics})
 
     questions.sort(key=lambda k: k['position'])
     return render_template(
@@ -578,25 +578,25 @@ def cadmin_view_topic(topic_id):
         'position': Topics.getPosition(topic_id),
         'name': Topics.getName(topic_id)
     }
-    questions = [q for q in Topics.getQTemplates(topic_id).values()]
-    for q in questions:
-        q['embed_id'] = OaDB.getQTemplateEmbedID(q['id'])
-        if q['embed_id']:
-            q['embed_url'] = "%s/embed/question/%s/question.html" % (OaConfig.parentURL, q['embed_id'])
+    questions = [question for question in Topics.getQTemplates(topic_id).values()]
+    for question in questions:
+        question['embed_id'] = OaDB.getQTemplateEmbedID(question['id'])
+        if question['embed_id']:
+            question['embed_url'] = "%s/embed/question/%s/question.html" % (OaConfig.parentURL, question['embed_id'])
         else:
-            q['embed_url'] = None
-        q['editor'] = OaDB.getQTemplateEditor(q['id'])
+            question['embed_url'] = None
+        question['editor'] = OaDB.getQTemplateEditor(question['id'])
 
     all_courses = OaGeneral.getCourseListing()
-    all_courses = [c for c in all_courses if satisfyPerms(user_id, int(c['id']), (
+    all_courses = [cs for cs in all_courses if satisfyPerms(user_id, int(cs['id']), (
         "OASIS_QUESTIONEDITOR", "OASIS_COURSEADMIN", "OASIS_SUPERUSER"))]
     all_courses.sort(lambda f, s: cmp(f['name'], s['name']))
 
     all_course_topics = []
-    for c in all_courses:
-        topics = Courses.getTopicsInfoAll(c['id'], numq=False)
+    for cs in all_courses:
+        topics = Courses.getTopicsInfoAll(cs['id'], numq=False)
         if topics:
-            all_course_topics.append({'course': c['name'], 'topics': topics})
+            all_course_topics.append({'course': cs['name'], 'topics': topics})
 
     questions.sort(key=lambda k: k['position'])
     return render_template(

@@ -16,15 +16,17 @@ def create(course, name, visibility, position=1):
     """Add a topic to the database."""
     key = "course-%s-topics" % course
     MC.delete(key)
-    log(INFO, "db/Topics/create(%s, %s, %s, %s)" % (course, name, visibility, position))
+    log(INFO,
+        "db/Topics/create(%s, %s, %s, %s)" % (course, name, visibility, position))
     conn = dbpool.begin()
     conn.run_sql("""INSERT INTO topics (course, title, visibility, position)
-               VALUES (%s, %s, %s, %s);""", (course, name, visibility, position))
+             VALUES (%s, %s, %s, %s);""", (course, name, visibility, position))
     res = conn.run_sql("SELECT currval('topics_topic_seq');")
     dbpool.commit(conn)
     if res:
         return res[0][0]
-    log(ERROR, "Topic create may have failed (%s, %s, %s, %s)" % (course, name, visibility, position))
+    log(ERROR,
+        "Topic create may have failed (%s, %s, %s, %s)" % (course, name, visibility, position))
     return 0
 
 
@@ -34,7 +36,9 @@ def getTopic(topic_id):
     obj = MC.get(key)
     if obj:
         return json.loads(obj)
-    sql = """SELECT topic, course, title, visibility, position, archived FROM topics WHERE topic=%s;"""
+    sql = """SELECT topic, course, title, visibility, position, archived
+             FROM topics
+             WHERE topic=%s;"""
     params = (topic_id,)
     ret = run_sql(sql, params)
     if not ret:

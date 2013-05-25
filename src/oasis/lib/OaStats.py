@@ -32,7 +32,7 @@ import OaDB
 def fetchPracQCourseRow(year, month, day, hour, qtemplate):
     """ Fetch the practice count for the given time/qtemplate or return
         False if not found. Can be used when deciding if to INSERT or UPDATE.
-        Note: may return 0 if count is zero, which is not same as not exist (False)
+        Note: may return 0 if count is zero, is not same as not exist (False)
     """
     sql = """SELECT "qtemplate", "hour", "day", "month", "year", "number", "when"
                 FROM stats_prac_q_course
@@ -71,8 +71,8 @@ def updatePracQCourse(year, month, day, hour, qtemplate, count, avgscore):
 def populateStatsPracQCourse(start=None, end=None):
     """  Go through the questions from start to end date and count the number of
          questions practiced. Store the results in stats_prac_q_course
-         If start not given, go back to the start of the database. If end not given
-         go until now.
+         If start not given, go back to the start of the database. If end not
+         given go until now.
     """
     if not end:
         end = datetime.datetime.now()
@@ -119,7 +119,9 @@ def populateStatsPracQCourse(start=None, end=None):
 
 
 def getQDailyPracticeCount(start_time, end_time, qtemplate_id):
-    """ Return a list of daily count of practices for the given qtemplate over the time period"""
+    """ Return a list of daily count of practices for the given qtemplate
+        over the time period
+    """
     sql = """ SELECT "year", "month", "day", sum("number") from "stats_prac_q_course"
                WHERE "qtemplate"=%s
                AND "when" >= %s
@@ -147,7 +149,9 @@ def getQDailyPracticeCount(start_time, end_time, qtemplate_id):
 
 
 def getQDailyPracticeScores(start_time, end_time, qtemplate_id):
-    """ Return a list of daily count of practices for the given qtemplate over the timeperiod """
+    """ Return a list of daily count of practices for the given qtemplate over
+       the time period
+    """
     sql = """SELECT "year", "month", "day", sum("number"), sum("avgscore") from "stats_prac_q_course"
                WHERE "qtemplate"=%s
                AND "when" >= %s
@@ -161,7 +165,8 @@ def getQDailyPracticeScores(start_time, end_time, qtemplate_id):
     data = []
     first = True
     for row in res:
-        if first: # if the data doesn't start with any values, set a 0 entry, so graphs scale correctly
+        if first: # if the data doesn't start with any values, set a 0 entry,
+                  #  so graphs scale correctly
             if not (int(row[1]) == start_time.month and int(row[2]) == start_time.day and int(row[0] == start_time.year)):
                 data.append(("%04d-%02d-%02d" % (start_time.year, start_time.month, start_time.day), 0))
             first = False
@@ -186,7 +191,8 @@ def getQDailyPracticeLoad(start_time, end_time):
     data = []
     first = True
     for row in res:
-        if first: # if the data doesn't start with any values, set a 0 entry, so graphs scale correctly
+        if first: # if the data doesn't start with any values, set a 0 entry,
+                  # so graphs scale correctly
             if not (int(row[1]) == start_time.month and int(row[2]) == start_time.day and int(row[0] == start_time.year)):
                 data.append(("%04d-%02d-%02d" % (start_time.year, start_time.month, start_time.day), 0))
             first = False

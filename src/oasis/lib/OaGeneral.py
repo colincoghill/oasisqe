@@ -18,9 +18,7 @@ import StringIO
 import math
 import sys
 import traceback
-import time
 import datetime
-from flask import send_file
 import jinja2
 
 from logging import log, INFO, WARN, ERROR
@@ -537,7 +535,7 @@ def renderQuestionHTML(qid, readonly=False):
 # optional parentheses. Anything else is ignored and the string is left unchanged.
 
 re_expo = re.compile(
-    "^ *((?:[+-]? *[0-9]+(?:[\.,][0-9]*)?)|(?:[+-]? *[\.,][0-9]+)) *[xX\*] *10 *\^ *(?:([+-]? *[0-9]+)|\( *([+-]? *[0-9]+) *\)) *$")
+    r"^ *((?:[+-]? *[0-9]+(?:[\.,][0-9]*)?)|(?:[+-]? *[\.,][0-9]+)) *[xX\*] *10 *\^ *(?:([+-]? *[0-9]+)|\( *([+-]? *[0-9]+) *\)) *$")
 
 
 def parseExpo(S):

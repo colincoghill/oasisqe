@@ -186,7 +186,7 @@ def markQuestion(user_id, topic_id, q_id, request):
     """Mark the question and return the results"""
     answers = {}
     for i in request.form.keys():
-        part = re.search("^Q_(\d+)_ANS_(\d+)$", i)
+        part = re.search(r"^Q_(\d+)_ANS_(\d+)$", i)
         if part:
             newqid = int(part.groups()[0])
             part = int(part.groups()[1])
