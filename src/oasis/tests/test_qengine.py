@@ -60,6 +60,29 @@ blah"""
     assert res == html
 
 
+def test_instance_generate_multiv_answer():
+    """ Convert some html templates + variables into resulting instance HTML
+        and make sure it's doing it right. Focus on multif choice "ANSWER"
+
+        No side effects.
+    """
+
+    tmpl = "blah<ANSWER1 MULTIV f,g,h,i>blah"
+    qvars = { 'f': 7, 'g': "joe", "h": "3.4", "i": 33 }
+    html = """blah<table border=0><tr><th>Please choose one:</th></tr><tr><th>a)</th><td><INPUT class='auto_save' TYPE='radio' NAME='ANS_1' VALUE='1' Oa_CHK_1_1></td><td CLASS='multichoicecell'> 7</td></tr><tr><th>b)</th><td><INPUT class='auto_save' TYPE='radio' NAME='ANS_1' VALUE='2' Oa_CHK_1_2></td><td CLASS='multichoicecell'> joe</td></tr><tr><th>c)</th><td><INPUT class='auto_save' TYPE='radio' NAME='ANS_1' VALUE='3' Oa_CHK_1_3></td><td CLASS='multichoicecell'> 3.4</td></tr><tr><th>d)</th><td><INPUT class='auto_save' TYPE='radio' NAME='ANS_1' VALUE='4' Oa_CHK_1_4></td><td CLASS='multichoicecell'> 33</td></tr></table><br />
+blah"""
+    res = OaGeneral.generateQuestionHTML(qvars, tmpl)
+    print res
+    assert res == html
+
+    tmpl = "blah<ANSWER1 MULTIV f,g,h,i,j>blah"
+    qvars = { 'f': 7, 'g': "joe", "h": "3.4", "i": 33, "j": "&amp;" }
+    html = """blah<table border=0><tr><th>Please choose one:</th></tr><tr><th>a)</th><td><INPUT class='auto_save' TYPE='radio' NAME='ANS_1' VALUE='1' Oa_CHK_1_1></td><td CLASS='multichoicecell'> 7</td></tr><tr><th>b)</th><td><INPUT class='auto_save' TYPE='radio' NAME='ANS_1' VALUE='2' Oa_CHK_1_2></td><td CLASS='multichoicecell'> joe</td></tr><tr><th>c)</th><td><INPUT class='auto_save' TYPE='radio' NAME='ANS_1' VALUE='3' Oa_CHK_1_3></td><td CLASS='multichoicecell'> 3.4</td></tr><tr><th>d)</th><td><INPUT class='auto_save' TYPE='radio' NAME='ANS_1' VALUE='4' Oa_CHK_1_4></td><td CLASS='multichoicecell'> 33</td></tr><tr><th>e)</th><td><INPUT class='auto_save' TYPE='radio' NAME='ANS_1' VALUE='5' Oa_CHK_1_5></td><td CLASS='multichoicecell'> &amp;</td></tr></table><br />
+blah"""
+    res = OaGeneral.generateQuestionHTML(qvars, tmpl)
+    print res
+    assert res == html
+
 
 def test_instance_generate_variable():
     """ Convert some html templates + variables into resulting instance HTML
