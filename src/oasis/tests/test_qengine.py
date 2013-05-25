@@ -52,6 +52,14 @@ blah"""
     res = OaGeneral.generateQuestionHTML(qvars, tmpl)
     assert res == html
 
+    tmpl = "blah<ANSWER1 MULTIF f,g,h,i,j>blah"
+    qvars = { 'f': 7, 'g': "joe", "h": "3.4", "i": 33, "j": "&amp;" }
+    html = """blah<table border=0><tr><td>Please choose one:</td><td CLASS='multichoicecell'><INPUT class='auto_save' TYPE='radio' NAME='ANS_1' VALUE='1' Oa_CHK_1_1>7</td><td CLASS='multichoicecell'><INPUT class='auto_save' TYPE='radio' NAME='ANS_1' VALUE='2' Oa_CHK_1_2>joe</td><td CLASS='multichoicecell'><INPUT class='auto_save' TYPE='radio' NAME='ANS_1' VALUE='3' Oa_CHK_1_3>3.4</td><td CLASS='multichoicecell'><INPUT class='auto_save' TYPE='radio' NAME='ANS_1' VALUE='4' Oa_CHK_1_4>33</td><td CLASS='multichoicecell'><INPUT class='auto_save' TYPE='radio' NAME='ANS_1' VALUE='5' Oa_CHK_1_5>&amp;</td></tr></table><br />
+blah"""
+    res = OaGeneral.generateQuestionHTML(qvars, tmpl)
+    assert res == html
+
+
 
 def test_instance_generate_variable():
     """ Convert some html templates + variables into resulting instance HTML
