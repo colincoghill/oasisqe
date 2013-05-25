@@ -10,11 +10,11 @@ import datetime
 from flask import render_template, session, \
     request, redirect, abort, url_for, flash
 
-from .lib import Courses, CourseAPI, OaSetup
+from .lib import Courses, Courses2, Setup
 
 MYPATH = os.path.dirname(__file__)
-from .lib.OaUserDB import check_perm
-from .lib import OaDB, Groups
+from .lib.UserDB import check_perm
+from .lib import DB, Groups
 from oasis import app, authenticated
 
 
@@ -22,10 +22,10 @@ from oasis import app, authenticated
 @authenticated
 def admin_top():
     """ Present the top level admin page """
-    db_version = OaDB.getDBVersion()
+    db_version = DB.getDBVersion()
     return render_template(
         "admintop.html",
-        courses=OaSetup.get_sorted_courselist(),
+        courses=Setup.get_sorted_courselist(),
         db_version = db_version
     )
 
@@ -38,7 +38,7 @@ def admin_courses():
     if not check_perm(user_id, 0, "OASIS_SYSADMIN"):
         flash("You do not have system administrator permission")
         return redirect(url_for('setup_top'))
-    courses = OaSetup.get_sorted_courselist(with_stats=True, only_active=False)
+    courses = Setup.get_sorted_courselist(with_stats=True, only_active=False)
 
     return render_template(
         "admin_courselist.html",
@@ -55,7 +55,7 @@ def admin_course(course_id):
         flash("You do not have system administrator permission")
         return redirect(url_for('setup_top'))
 
-    course = CourseAPI.get_course(course_id)
+    course = Courses2.get_course(course_id)
     course['size'] = len(Courses.getUsersInCourse(course_id))
 
     groups = [Groups.getInfo(group_id)
@@ -119,7 +119,7 @@ def admin_course_save(course_id):
         abort(400)
 
     changed = False
-    course = CourseAPI.get_course(course_id)
+    course = Courses2.get_course(course_id)
     if 'course_name' in form:
         name = form['course_name']
         if not name == course['name']:
@@ -169,10 +169,10 @@ def admin_course_save(course_id):
             Courses.setEnrolFreq(course_id, enrol_freq)
 
     if changed:
-        CourseAPI.reloadCoursesIfNeeded()
+        Courses2.reloadCoursesIfNeeded()
         flash("Course changes saved!")
         return redirect(url_for("admin_courses"))
-    course = CourseAPI.get_course(course_id)
+    course = Courses2.get_course(course_id)
     course['size'] = len(Courses.getUsersInCourse(course_id))
     return render_template(
         "admin_course.html",
@@ -230,9 +230,9 @@ def admin_add_course_save():
             active = False
         Courses.setActive(course_id, active)
 
-    CourseAPI.reloadCoursesIfNeeded()
+    Courses2.reloadCoursesIfNeeded()
     flash("Course %s added!" % name)
-    course = CourseAPI.get_course(course_id)
+    course = Courses2.get_course(course_id)
     course['size'] = 0
     return render_template(
         "admin_course.html",
@@ -249,8 +249,8 @@ def admin_editmessages():
     if not check_perm(user_id, 0, "OASIS_SYSADMIN"):
         flash("You do not have system administrator permission")
         return redirect(url_for('setup_top'))
-    mesg_news = OaDB.getMessage("news")
-    mesg_login = OaDB.getMessage("loginmotd")
+    mesg_news = DB.getMessage("news")
+    mesg_login = DB.getMessage("loginmotd")
     return render_template(
         "admin_editmessages.html",
         mesg_news = mesg_news,
@@ -275,8 +275,8 @@ def admin_savemessages():
         return redirect(url_for("admin_top"))
 
     if 'mesg_news' in form:
-        OaDB.setMessage("news", form['mesg_news'])
+        DB.setMessage("news", form['mesg_news'])
     if 'mesg_news' in form:
-        OaDB.setMessage("loginmotd", form['mesg_login'])
+        DB.setMessage("loginmotd", form['mesg_login'])
     flash("Changes saved")
     return redirect(url_for("admin_top"))

@@ -24,7 +24,7 @@ import jinja2
 from logging import log, INFO, WARN, ERROR
 from oasis.lib.OaExceptions import OaMarkerError
 from . import Courses, Groups, Exams
-from oasis.lib import OaConfig, OaDB, Topics, CourseAPI, script_funcs, OqeSmartmarkFuncs
+from oasis.lib import OaConfig, DB, Topics, Courses2, script_funcs, OqeSmartmarkFuncs
 
 
 def htmlesc(text):
@@ -83,7 +83,7 @@ def get_q_list(tid, uid=None, numdone=True):
     qtemplates = Topics.get_qts(int(tid))
     for qtid in qtemplates:
         if uid and numdone:
-            num = OaDB.getStudentQuestionPracticeNum(uid, qtid)
+            num = DB.getStudentQuestionPracticeNum(uid, qtid)
         else:
             num = 0
         qlist.append({'qtid': qtid,
@@ -99,26 +99,26 @@ def getQuestionAttachmentFilename(qid, name):
     """ Return (mimetype, filename) with the relevant filename.
         If it's not found in question, look in questiontemplate.
     """
-    qtid = OaDB.get_q_parent(qid)
-    variation = OaDB.getQuestionVariation(qid)
-    version = OaDB.getQuestionVersion(qid)
+    qtid = DB.get_q_parent(qid)
+    variation = DB.getQuestionVariation(qid)
+    version = DB.getQuestionVersion(qid)
     # for the two biggies we hit the question first,
     # otherwise check the question template first
     if name == "image.gif" or name == "qtemplate.html":
 
-        filename = OaDB.get_q_att_fname(qtid, name, variation, version)
+        filename = DB.get_q_att_fname(qtid, name, variation, version)
         if filename:
-            return OaDB.get_q_att_mimetype(qtid, name, variation, version), filename
-        filename = OaDB.getQTAttachmentFilename(qtid, name, version)
+            return DB.get_q_att_mimetype(qtid, name, variation, version), filename
+        filename = DB.getQTAttachmentFilename(qtid, name, version)
         if filename:
-            return OaDB.get_qt_att_mimetype(qtid, name, version), filename
+            return DB.get_qt_att_mimetype(qtid, name, version), filename
     else:
-        filename = OaDB.getQTAttachmentFilename(qtid, name, version)
+        filename = DB.getQTAttachmentFilename(qtid, name, version)
         if filename:
-            return OaDB.get_qt_att_mimetype(qtid, name, version), filename
-        filename = OaDB.get_q_att_fname(qtid, name, variation, version)
+            return DB.get_qt_att_mimetype(qtid, name, version), filename
+        filename = DB.get_q_att_fname(qtid, name, variation, version)
         if filename:
-            return OaDB.get_q_att_mimetype(qtid, name, variation, version), filename
+            return DB.get_q_att_mimetype(qtid, name, variation, version), filename
     return None, None
 
 
@@ -126,25 +126,25 @@ def getQuestionAttachment(qid, name):
     """ Return (mimetype, data) with the relevant attachment.
         If it's not found in question, look in questiontemplate.
     """
-    qtid = OaDB.get_q_parent(qid)
-    variation = OaDB.getQuestionVariation(qid)
-    version = OaDB.getQuestionVersion(qid)
+    qtid = DB.get_q_parent(qid)
+    variation = DB.getQuestionVariation(qid)
+    version = DB.getQuestionVersion(qid)
     # for the two biggies we hit the question first,
     # otherwise check the question template first
     if name == "image.gif" or name == "qtemplate.html":
-        data = OaDB.get_q_att(qtid, name, variation, version)
+        data = DB.get_q_att(qtid, name, variation, version)
         if data:
-            return OaDB.get_q_att_mimetype(qtid, name, variation, version), data
-        data = OaDB.getQTAttachment(qtid, name, version)
+            return DB.get_q_att_mimetype(qtid, name, variation, version), data
+        data = DB.getQTAttachment(qtid, name, version)
         if data:
-            return OaDB.get_qt_att_mimetype(qtid, name, version), data
+            return DB.get_qt_att_mimetype(qtid, name, version), data
     else:
-        data = OaDB.getQTAttachment(qtid, name, version)
+        data = DB.getQTAttachment(qtid, name, version)
         if data:
-            return OaDB.get_qt_att_mimetype(qtid, name, version), data
-        data = OaDB.get_q_att(qtid, name, variation, version)
+            return DB.get_qt_att_mimetype(qtid, name, version), data
+        data = DB.get_q_att(qtid, name, variation, version)
         if data:
-            return OaDB.get_q_att_mimetype(qtid, name, variation, version), data
+            return DB.get_q_att_mimetype(qtid, name, variation, version), data
     return None, None
 
 
@@ -153,7 +153,7 @@ def generateExamQuestion(exam, position, student):
         If there are multiple qtemplates listed in a given position, one will
         be chosen at random.
     """
-    qtemplates = OaDB.getExamQTemplatesInPosition(exam, position)
+    qtemplates = DB.getExamQTemplatesInPosition(exam, position)
     if not qtemplates:
         log(WARN, "OaDB.getExamQTemplatesInPosition(%s,%s) returned a non list." % (exam, position))
         return False
@@ -172,8 +172,8 @@ def generateQuestion(qtid, student=0, exam=0, position=0):
         Will return the ID of the created instance.
     """
     # Pick a variation randomly
-    version = OaDB.get_qt_version(qtid)
-    numvars = OaDB.getQTNumVariations(qtid, version)
+    version = DB.get_qt_version(qtid)
+    numvars = DB.getQTNumVariations(qtid, version)
     if numvars > 0:
         variation = random.randint(1, numvars)
     else:
@@ -185,38 +185,38 @@ def generateQuestion(qtid, student=0, exam=0, position=0):
 def generateQuestionFromVar(qtid, student, exam, position, version, variation):
     """ Generate a question given a specific variation. """
     qvars = None
-    qid = OaDB.create_q(qtid, OaDB.get_qt_name(qtid), student, 1, variation, version, exam)
+    qid = DB.create_q(qtid, DB.get_qt_name(qtid), student, 1, variation, version, exam)
     try:
         qid = int(qid)
         assert (qid > 0)
     except (ValueError, TypeError, AssertionError):
         log(ERROR, "OaDB.createQuestion(%s,...) FAILED" % qtid)
-    imageexists = OaDB.get_q_att_mimetype(qtid, "image.gif", variation, version)
+    imageexists = DB.get_q_att_mimetype(qtid, "image.gif", variation, version)
     if not imageexists:
         if not qvars:
-            qvars = OaDB.getQTVariation(qtid, variation, version)
+            qvars = DB.getQTVariation(qtid, variation, version)
         qvars['Oasis_qid'] = qid
-        image = OaDB.getQTAttachment(qtid, "image.gif", version)
+        image = DB.getQTAttachment(qtid, "image.gif", version)
         if image:
             newimage = generateQuestionImage(qvars, image)
-            OaDB.create_q_att(qtid, variation, "image.gif", "image/gif", newimage, version)
-    htmlexists = OaDB.get_q_att_mimetype(qtid, "qtemplate.html", variation, version)
+            DB.create_q_att(qtid, variation, "image.gif", "image/gif", newimage, version)
+    htmlexists = DB.get_q_att_mimetype(qtid, "qtemplate.html", variation, version)
     if not htmlexists:
         if not qvars:
-            qvars = OaDB.getQTVariation(qtid, variation, version)
-        html = OaDB.getQTAttachment(qtid, "qtemplate.html", version)
+            qvars = DB.getQTVariation(qtid, variation, version)
+        html = DB.getQTAttachment(qtid, "qtemplate.html", version)
         if html:
             qvars['Oasis_qid'] = qid
             newhtml = generateQuestionHTML(qvars, html)
             log(INFO, "generating new qattach qtemplate.html for %s" % qid)
-            OaDB.create_q_att(qtid, variation, "qtemplate.html", "application/oasis-html", newhtml, version)
+            DB.create_q_att(qtid, variation, "qtemplate.html", "application/oasis-html", newhtml, version)
     try:
         qid = int(qid)
         assert (qid > 0)
     except (ValueError, TypeError, AssertionError):
         log(ERROR, "generateQuestionFromVar(%s,%s), can't find qid %s? " % (qtid, student, qid))
     if exam >= 1:
-        OaDB.addExamQuestion(student, exam, qid, position)
+        DB.addExamQuestion(student, exam, qid, position)
     return qid
 
 
@@ -447,16 +447,16 @@ def render_q_html(q_id, readonly=False):
     except (ValueError, TypeError, AssertionError):
         log(WARN,
             "renderQuestionHTML(%s,%s) called with bad qid?" % (q_id, readonly))
-    qt_id = OaDB.get_q_parent(q_id)
+    qt_id = DB.get_q_parent(q_id)
     try:
         qt_id = int(qt_id)
         assert qt_id > 0
     except (ValueError, TypeError, AssertionError):
         log(WARN,
             "renderQuestionHTML(%s,%s), getparent failed? " % (q_id, readonly))
-    variation = OaDB.getQuestionVariation(q_id)
-    version = OaDB.getQuestionVersion(q_id)
-    data = OaDB.get_q_att(qt_id, "qtemplate.html", variation, version)
+    variation = DB.getQuestionVariation(q_id)
+    version = DB.getQuestionVersion(q_id)
+    data = DB.get_q_att(qt_id, "qtemplate.html", variation, version)
     if not data:
         log(WARN,
             "Unable to retrieve qtemplate for q_id: %s" % q_id)
@@ -465,7 +465,7 @@ def render_q_html(q_id, readonly=False):
         out = unicode(data, "utf-8")
     except UnicodeDecodeError:
         try:
-            out = unicode(OaDB.get_q_att(qt_id, "qtemplate.html", variation, version), "latin-1")
+            out = unicode(DB.get_q_att(qt_id, "qtemplate.html", variation, version), "latin-1")
         except UnicodeDecodeError, err:
             log(ERROR,
                 "unicode error decoding qtemplate for q_id %s: %s" % (q_id, err))
@@ -482,7 +482,7 @@ def render_q_html(q_id, readonly=False):
     if readonly:
         out = out.replace("<INPUT ", "<INPUT READONLY ")
         out = out.replace("<SELECT ", "<SELECT DISABLED=DISABLED STYLE='color: black;'")
-    guesses = OaDB.getQuestionGuesses(q_id)
+    guesses = DB.getQuestionGuesses(q_id)
     for guess in guesses.keys():
         # noinspection PyComparisonWithNone
         if guesses[guess] == None:  # If it's 0 we want to leave it alone
@@ -749,9 +749,9 @@ def renderMarkResultsScript(qtid, qid, marks, script):
     """Run the provided script to show the marking for the
        question.
     """
-    version = OaDB.getQuestionVersion(qid)
-    variation = OaDB.getQuestionVariation(qid)
-    qvars = OaDB.getQTVariation(qtid, variation, version)
+    version = DB.getQuestionVersion(qid)
+    variation = DB.getQuestionVariation(qid)
+    qvars = DB.getQTVariation(qtid, variation, version)
     questionHTML = render_q_html(qid, readonly=True)
     resultsHTML = ""
     qvars["__builtins__"] = {'MyFuncs': OqeSmartmarkFuncs,
@@ -823,8 +823,8 @@ def renderMarkResults(qid, marks):
        set variable "resultsHTML" to contain a suitable string for putting
        in an HTML page.
     """
-    qtid = OaDB.get_q_parent(qid)
-    renderscript = OaDB.getQTAttachment(qtid, "__results.py")
+    qtid = DB.get_q_parent(qid)
+    renderscript = DB.getQTAttachment(qtid, "__results.py")
     if not renderscript:
         resultsHTML = renderMarkResultsStandard(qid, marks)
     else:
@@ -838,22 +838,22 @@ def markQuestion(qid, answers):
         input:    {"A1":"0.345", "A2":"fred", "A3":"-26" }
         return:   {"M1": Mark One, "C1": Comment One, "M2": Mark Two..... }
     """
-    qtid = OaDB.get_q_parent(qid)
-    version = OaDB.getQuestionVersion(qid)
-    variation = OaDB.getQuestionVariation(qid)
-    qvars = OaDB.getQTVariation(qtid, variation, version)
+    qtid = DB.get_q_parent(qid)
+    version = DB.getQuestionVersion(qid)
+    variation = DB.getQuestionVariation(qid)
+    qvars = DB.getQTVariation(qtid, variation, version)
     if not qvars:
         qvars = {}
         log(WARN, "markQuestion(%s, %s) unable to retrieve variables." % (qid, answers))
     qvars['OaQID'] = int(qid)
-    marktype = OaDB.get_qt_marker(qtid)
+    marktype = DB.get_qt_marker(qtid)
     if marktype == 1:    # standard
         marks = markQuestionStandard(qvars, answers)
     else:
         # We want the latest version of the marker, so no version given
-        markerscript = OaDB.getQTAttachment(qtid, "__marker.py")
+        markerscript = DB.getQTAttachment(qtid, "__marker.py")
         if not markerscript:
-            markerscript = OaDB.getQTAttachment(qtid, "marker.py")
+            markerscript = DB.getQTAttachment(qtid, "marker.py")
             log(INFO, "Found legacy 'marker.py', should now be called '__marker.py' (qtid=%s)" % qtid)
         if not markerscript:
             log(INFO, "Unable to retrieve marker script for smart marker question (qtid=%s)!" % qtid)
@@ -922,7 +922,7 @@ def getExamQuestion(exam, page, user_id):
     """ Find the appropriate exam question for the user.
         Generate it if there isn't one already.
     """
-    qid = OaDB.getExamQuestionByPositionStudent(exam, page, user_id)
+    qid = DB.getExamQuestionByPositionStudent(exam, page, user_id)
     if not qid is False:
         return int(qid)
     qid = int(generateExamQuestion(exam, page, user_id))
@@ -931,7 +931,7 @@ def getExamQuestion(exam, page, user_id):
         assert qid > 0
     except (ValueError, TypeError, AssertionError):
         log(WARN, "generateExamQuestion(%s,%s, %s) Failed (returned %s)" % (exam, page, user_id, qid))
-    OaDB.setQuestionViewTime(qid)
+    DB.setQuestionViewTime(qid)
     return qid
 
 
@@ -954,8 +954,8 @@ def remarkExam(exam, student):
     examtotal = 0.0
     end = Exams.getMarkTime(exam, student)
     for qtemplate in qtemplates:
-        question = OaDB.getExamQuestionByQTStudent(exam, qtemplate, student)
-        answers = OaDB.getQuestionGuessesBeforeTime(question, end)
+        question = DB.getExamQuestionByQTStudent(exam, qtemplate, student)
+        answers = DB.getQuestionGuessesBeforeTime(question, end)
         try:
             marks = markQuestion(question, answers)
         except OaMarkerError:
@@ -972,7 +972,7 @@ def remarkExam(exam, student):
             except (ValueError, TypeError, KeyError):
                 mark = 0
             total += mark
-        OaDB.updateQuestionScore(question, total)
+        DB.updateQuestionScore(question, total)
         #        OaDB.setQuestionStatus(question, 3)    # 3 = marked
         examtotal += total
     Exams.saveScore(exam, student, examtotal)
@@ -982,7 +982,7 @@ def remarkExam(exam, student):
 def remarkPractice(question):
     """ Re-mark the practice question and store the score back in the questions table.
     """
-    answers = OaDB.getQuestionGuesses(question)
+    answers = DB.getQuestionGuesses(question)
     try:
         marks = markQuestion(question, answers)
     except OaMarkerError:
@@ -996,8 +996,8 @@ def remarkPractice(question):
         except (ValueError, TypeError, KeyError):
             mark = 0
         total += mark
-    OaDB.updateQuestionScore(question, total)
-    OaDB.setQuestionStatus(question, 3)    # 3 = marked
+    DB.updateQuestionScore(question, total)
+    DB.setQuestionStatus(question, 3)    # 3 = marked
     return total
 
 

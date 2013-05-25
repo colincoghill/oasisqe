@@ -8,9 +8,9 @@
 
 import datetime
 
-from oasis.lib.OaUserDB import getCoursePerms, addPerm, deletePerm
+from oasis.lib.UserDB import getCoursePerms, addPerm, deletePerm
 from oasis.lib.Audit import audit
-from oasis.lib import UserAPI, OaDB, Topics, OaGeneral, Exams, Courses
+from oasis.lib import Users2, DB, Topics, General, Exams, Courses
 
 
 def doCourseTopicUpdate(course, request):
@@ -84,7 +84,7 @@ def savePerms(request, cid, user_id):
     perms = {}
     users = {}
     for perm in permlist:
-        u = UserAPI.getUser(perm[0])
+        u = Users2.getUser(perm[0])
         uname = u['uname']
         if not uname in users:
             users[uname] = {}
@@ -108,7 +108,7 @@ def savePerms(request, cid, user_id):
             newperms[uname].append(perm)
 
         for uname in users:
-            uid = UserAPI.getUidByUname(uname)
+            uid = Users2.getUidByUname(uname)
             for perm in [2, 5, 10, 14, 11, 8, 9, 15]:
                 if uname in newperms and perm in newperms[uname]:
                     if not perm in perms[uname]:
@@ -130,7 +130,7 @@ def savePerms(request, cid, user_id):
                         )
 
         for uname in newperms:
-            uid = UserAPI.getUidByUname(uname)
+            uid = Users2.getUidByUname(uname)
             if not uname in perms:
                 # We've added a user
                 for perm in [2, 5, 10, 14, 11, 8, 9, 15]:
@@ -144,7 +144,7 @@ def savePerms(request, cid, user_id):
                         )
         if "adduser" in form:
             newuname = form['adduser']
-            newuid = UserAPI.getUidByUname(newuname)
+            newuid = Users2.getUidByUname(newuname)
             if newuid:
                 addPerm(newuid, cid, 10)
             audit(1,
@@ -209,7 +209,7 @@ def ExamEditSubmit(request, user_id, cid, exam_id):
         Exams.setInstant(exam_id, instant)
 
     for pos, qts in qns.iteritems():
-        OaDB.update_exam_qt_in_pos(exam_id, pos, qts)
+        DB.update_exam_qt_in_pos(exam_id, pos, qts)
 
     return exam_id
 
@@ -243,7 +243,7 @@ def _getSortedQuestionList(topic):
 
         return cmp(abs(a['position']), abs(b['position']))
 
-    questionlist = OaGeneral.get_q_list(topic, None, False)
+    questionlist = General.get_q_list(topic, None, False)
 
     if questionlist:
         # At the moment we use -'ve positions to indicate that a question is hidden

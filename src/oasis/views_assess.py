@@ -15,11 +15,11 @@ import time
 from flask import render_template, session, \
     request, redirect, abort, url_for, flash
 
-from .lib import OaDB, OaGeneral, Exams, CourseAPI, OaAssess
+from .lib import DB, General, Exams, Courses2, Assess
 
 MYPATH = os.path.dirname(__file__)
 
-from .lib.OaUserDB import check_perm
+from .lib.UserDB import check_perm
 
 from oasis import app, authenticated
 
@@ -29,7 +29,7 @@ from oasis import app, authenticated
 def assess_top():
     """ Top level assessment page. Let them choose an assessment."""
     user_id = session['user_id']
-    exams = OaAssess.getSortedExamList(user_id=user_id, previous_years=False)
+    exams = Assess.getSortedExamList(user_id=user_id, previous_years=False)
     current_num = len([e for e in exams if e['active']])
     upcoming_num = len([e for e in exams if e['future']])
     return render_template(
@@ -46,7 +46,7 @@ def assess_previousexams():
     """ Show a list of older exams - from previous years """
     user_id = session['user_id']
 
-    exams = OaAssess.getSortedExamList(user_id=user_id, previous_years=True)
+    exams = Assess.getSortedExamList(user_id=user_id, previous_years=True)
     years = [e['start'].year for e in exams]
     years = list(set(years))
     years.sort(reverse=True)
@@ -119,7 +119,7 @@ def assess_startexam(course_id, exam_id):
 
     return render_template(
         "assessstart.html",
-        course=CourseAPI.get_course(course_id),
+        course=Courses2.get_course(course_id),
         exam=exam
     )
 
@@ -152,7 +152,7 @@ def assess_assessmentpage(course_id, exam_id, page):
                                         exam_id=exam_id))
 
             if status < 6:
-                OaDB.saveGuess(q_id, part, value)
+                DB.saveGuess(q_id, part, value)
         else:
             pass
 
@@ -178,7 +178,7 @@ def assess_assessmentpage(course_id, exam_id, page):
 
         page = int(goto.split(' ', 2)[1])
 
-    q_id = OaGeneral.getExamQuestion(exam_id, page, user_id)
+    q_id = General.getExamQuestion(exam_id, page, user_id)
     timeleft = Exams.getEndTime(exam_id, user_id) - time.time()
     exam = Exams.getExamStruct(exam_id, course_id)
 
@@ -192,12 +192,12 @@ def assess_assessmentpage(course_id, exam_id, page):
                                 course_id=course_id,
                                 exam_id=exam_id))
 
-    course = CourseAPI.get_course(course_id)
+    course = Courses2.get_course(course_id)
     if Exams.isDoneBy(user_id, exam_id):
         exam['is_done'] = True
-        html = OaGeneral.render_q_html(q_id, readonly=True)
+        html = General.render_q_html(q_id, readonly=True)
     else:
-        html = OaGeneral.render_q_html(q_id)
+        html = General.render_q_html(q_id)
 
     if exam['duration'] > 0:
         is_timed = 1
@@ -225,15 +225,15 @@ def assess_presubmit(course_id, exam_id):
     user_id = session['user_id']
 
     exam = Exams.getExamStruct(exam_id, course_id)
-    course = CourseAPI.get_course(course_id)
+    course = Courses2.get_course(course_id)
     numquestions = Exams.getNumQuestions(exam_id)
     qids = []
     questions = []
     for position in range(1, numquestions + 1):
-        q_id = OaDB.getExamQuestionByPositionStudent(exam_id, position, user_id)
+        q_id = DB.getExamQuestionByPositionStudent(exam_id, position, user_id)
         if q_id:
             qids.append(q_id)
-            guesses = OaDB.getQuestionGuesses(q_id)
+            guesses = DB.getQuestionGuesses(q_id)
             keys = guesses.keys()
             keys.sort()
             questions.append({
@@ -262,7 +262,7 @@ def assess_submit(course_id, exam_id):
     exam = Exams.getExamStruct(exam_id, course_id)
     status = Exams.getUserStatus(user_id, exam_id)
     if status < 5:
-        marked = OaAssess.markAssessment(user_id, exam_id)
+        marked = Assess.markAssessment(user_id, exam_id)
         if not marked:
             flash("There was a problem marking the assessment, staff have been notified.")
 
@@ -284,15 +284,15 @@ def assess_awaitresults(course_id, exam_id):
     """
     user_id = session['user_id']
     exam = Exams.getExamStruct(exam_id, course_id)
-    course = CourseAPI.get_course(course_id)
+    course = Courses2.get_course(course_id)
     numquestions = Exams.getNumQuestions(exam_id)
     qids = []
     questions = []
     for position in range(1, numquestions + 1):
-        q_id = OaDB.getExamQuestionByPositionStudent(exam_id, position, user_id)
+        q_id = DB.getExamQuestionByPositionStudent(exam_id, position, user_id)
         if q_id:
             qids.append(q_id)
-            guesses = OaDB.getQuestionGuesses(q_id)
+            guesses = DB.getQuestionGuesses(q_id)
             keys = guesses.keys()
             keys.sort()
             questions.append({
@@ -313,7 +313,7 @@ def assess_awaitresults(course_id, exam_id):
 def assess_viewmarked(course_id, exam_id):
     """  Show them their marked assessment results """
     user_id = session['user_id']
-    course = CourseAPI.get_course(course_id)
+    course = Courses2.get_course(course_id)
     try:
         exam = Exams.getExamStruct(exam_id, course_id)
     except KeyError:
@@ -328,9 +328,9 @@ def assess_viewmarked(course_id, exam_id):
             exam=exam
         )
 
-    results, examtotal = OaAssess.renderOwnMarkedExam(user_id, exam_id)
-    datemarked = OaGeneral.humanDate(Exams.getMarkTime(exam_id, user_id))
-    datesubmit = OaGeneral.humanDate(Exams.getSubmitTime(exam_id, user_id))
+    results, examtotal = Assess.renderOwnMarkedExam(user_id, exam_id)
+    datemarked = General.humanDate(Exams.getMarkTime(exam_id, user_id))
+    datesubmit = General.humanDate(Exams.getSubmitTime(exam_id, user_id))
 
     if "user_fullname" in session:
         fullname = session['user_fullname']

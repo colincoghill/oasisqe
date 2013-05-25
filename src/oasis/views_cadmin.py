@@ -12,12 +12,12 @@ from logging import log, ERROR
 from flask import render_template, session, request, redirect, \
     abort, url_for, flash
 
-from .lib import OaConfig, UserAPI, OaDB, Topics, OaUserDB, OaGeneral, \
-    Exams, Courses, CourseAPI, OaSetup, CourseAdmin, Groups
+from .lib import OaConfig, Users2, DB, Topics, UserDB, General, \
+    Exams, Courses, Courses2, Setup, CourseAdmin, Groups
 
 MYPATH = os.path.dirname(__file__)
 
-from .lib.OaUserDB import check_perm, satisfyPerms
+from .lib.UserDB import check_perm, satisfyPerms
 
 from oasis import app, authenticated
 
@@ -28,11 +28,11 @@ def cadmin_top(course_id):
     """ Present top level course admin page """
     user_id = session['user_id']
 
-    course = CourseAPI.get_course(course_id)
+    course = Courses2.get_course(course_id)
     if not course:
         abort(404)
 
-    topics = CourseAPI.get_topics_list(course_id)
+    topics = Courses2.get_topics_list(course_id)
     exams = [Exams.getExamStruct(e, course_id)
              for e in Courses.getExams(course_id, previous_years=False)]
 
@@ -58,7 +58,7 @@ def cadmin_config(course_id):
     """ Allow some course configuration """
     user_id = session['user_id']
 
-    course = CourseAPI.get_course(course_id)
+    course = Courses2.get_course(course_id)
     if not course:
         abort(404)
 
@@ -79,7 +79,7 @@ def cadmin_config_submit(course_id):
     """ Allow some course configuration """
     user_id = session['user_id']
 
-    course = CourseAPI.get_course(course_id)
+    course = Courses2.get_course(course_id)
     if not course:
         abort(404)
 
@@ -140,12 +140,12 @@ def cadmin_prev_assessments(course_id):
     """ Show a list of older assessments."""
     user_id = session['user_id']
 
-    course = CourseAPI.get_course(course_id)
+    course = Courses2.get_course(course_id)
     if not course:
         abort(404)
 
     exams = [Exams.getExamStruct(e, course_id)
-             for e in OaDB.getCourseExamInfoAll(course_id, previous_years=True)]
+             for e in DB.getCourseExamInfoAll(course_id, previous_years=True)]
 
     if not satisfyPerms(user_id, course_id,
                         ("OASIS_QUESTIONEDITOR", "OASIS_VIEWMARKS",
@@ -171,7 +171,7 @@ def cadmin_create_exam(course_id):
     """ Provide a form to create/edit a new assessment """
     user_id = session['user_id']
 
-    course = CourseAPI.get_course(course_id)
+    course = Courses2.get_course(course_id)
     if not course:
         abort(404)
 
@@ -214,7 +214,7 @@ def cadmin_edit_exam(course_id, exam_id):
     """ Provide a form to edit an assessment """
     user_id = session['user_id']
 
-    course = CourseAPI.get_course(course_id)
+    course = Courses2.get_course(course_id)
     if not course:
         abort(404)
 
@@ -245,7 +245,7 @@ def cadmin_edit_exam_submit(course_id, exam_id):
     """ Provide a form to edit an assessment """
     user_id = session['user_id']
 
-    course = CourseAPI.get_course(course_id)
+    course = Courses2.get_course(course_id)
     if not course:
         abort(404)
 
@@ -275,7 +275,7 @@ def cadmin_enrolments(course_id):
 
     course = None
     try:
-        course = CourseAPI.get_course(course_id)
+        course = Courses2.get_course(course_id)
     except KeyError:
         abort(404)
 
@@ -342,9 +342,9 @@ def cadmin_editgroup(group_id):
         flash("You do not have 'User Admin' permission on this course.")
         return redirect(url_for('cadmin_top', course_id=course_id))
 
-    course = CourseAPI.get_course(course_id)
+    course = Courses2.get_course(course_id)
     ulist = Groups.getUsersInGroup(group_id)
-    members = [UserAPI.getUser(uid) for uid in ulist]
+    members = [Users2.getUser(uid) for uid in ulist]
     return render_template("courseadmin_editgroup.html",
                            course=course,
                            group=group,
@@ -361,7 +361,7 @@ def cadmin_addgroup(course_id):
         flash("You do not have 'User Admin' permission on this course.")
         return redirect(url_for('cadmin_top', course_id=course_id))
 
-    course = CourseAPI.get_course(course_id)
+    course = Courses2.get_course(course_id)
     return render_template("courseadmin_addgroup.html", course=course)
 
 
@@ -392,7 +392,7 @@ def cadmin_editgroup_addperson(group_id):
 
     new_uname = request.form['uname']
     try:
-        new_uid = UserAPI.getUidByUname(new_uname)
+        new_uid = Users2.getUidByUname(new_uname)
     except KeyError:
         flash("User '%s' Not Found" % new_uname)
     else:
@@ -413,7 +413,7 @@ def cadmin_edittopics(course_id):
 
     course = None
     try:
-        course = CourseAPI.get_course(course_id)
+        course = Courses2.get_course(course_id)
     except KeyError:
         abort(404)
 
@@ -424,7 +424,7 @@ def cadmin_edittopics(course_id):
         flash("You do not have 'Question Editor' permission on this course.")
         return redirect(url_for('cadmin_top', course_id=course_id))
 
-    topics = CourseAPI.get_topics_list(course_id)
+    topics = Courses2.get_topics_list(course_id)
     return render_template("courseadmin_edittopics.html",
                            course=course,
                            topics=topics)
@@ -438,7 +438,7 @@ def cadmin_edittopics_save(course_id):
 
     course = None
     try:
-        course = CourseAPI.get_course(course_id)
+        course = Courses2.get_course(course_id)
     except KeyError:
         abort(404)
 
@@ -480,7 +480,7 @@ def cadmin_edit_topic(topic_id):
         flash("You do not have 'Question Editor' permission on this course.")
         return redirect(url_for('cadmin_top', course_id=course_id))
 
-    course = CourseAPI.get_course(course_id)
+    course = Courses2.get_course(course_id)
     topic = {
         'id': topic_id,
         'position': Topics.getPosition(topic_id),
@@ -489,14 +489,14 @@ def cadmin_edit_topic(topic_id):
     questions = [question
                  for question in Topics.get_qts(topic_id).values()]
     for question in questions:
-        question['embed_id'] = OaDB.getQTemplateEmbedID(question['id'])
+        question['embed_id'] = DB.getQTemplateEmbedID(question['id'])
         if question['embed_id']:
             question['embed_url'] = "%s/embed/question/%s/question.html" % (OaConfig.parentURL, question['embed_id'])
         else:
             question['embed_url'] = None
-        question['editor'] = OaDB.getQTemplateEditor(question['id'])
+        question['editor'] = DB.getQTemplateEditor(question['id'])
 
-    all_courses = CourseAPI.getCourseList()
+    all_courses = Courses2.getCourseList()
     all_courses = [cs
                    for cs in all_courses
                    if satisfyPerms(user_id, int(cs['id']),
@@ -537,13 +537,13 @@ def cadmin_view_qtemplate_history(topic_id, qt_id):
         flash("You do not have 'Course Admin' permission on this course.")
         return redirect(url_for('cadmin_top', course_id=course_id))
 
-    course = CourseAPI.get_course(course_id)
+    course = Courses2.get_course(course_id)
     topic = {
         'id': topic_id,
         'position': Topics.getPosition(topic_id),
         'name': Topics.get_name(topic_id)
     }
-    qtemplate = OaDB.get_qtemplate(qt_id)
+    qtemplate = DB.get_qtemplate(qt_id)
     year = datetime.now().year
     years = range(year, year-6, -1)
 
@@ -574,7 +574,7 @@ def cadmin_view_topic(topic_id):
         flash("You do not have 'Course Admin' permission on this course.")
         return redirect(url_for('cadmin_top', course_id=course_id))
 
-    course = CourseAPI.get_course(course_id)
+    course = Courses2.get_course(course_id)
     topic = {
         'id': topic_id,
         'position': Topics.getPosition(topic_id),
@@ -582,14 +582,14 @@ def cadmin_view_topic(topic_id):
     }
     questions = [question for question in Topics.get_qts(topic_id).values()]
     for question in questions:
-        question['embed_id'] = OaDB.getQTemplateEmbedID(question['id'])
+        question['embed_id'] = DB.getQTemplateEmbedID(question['id'])
         if question['embed_id']:
             question['embed_url'] = "%s/embed/question/%s/question.html" % (OaConfig.parentURL, question['embed_id'])
         else:
             question['embed_url'] = None
-        question['editor'] = OaDB.getQTemplateEditor(question['id'])
+        question['editor'] = DB.getQTemplateEditor(question['id'])
 
-    all_courses = CourseAPI.getCourseList()
+    all_courses = Courses2.getCourseList()
     all_courses = [cs
                    for cs in all_courses
                    if satisfyPerms(user_id, int(cs['id']), (
@@ -635,7 +635,7 @@ def cadmin_topic_save(topic_id):
         return redirect(url_for('cadmin_top', course_id=course_id))
 
     if "save_changes" in request.form:
-        result = OaSetup.doTopicPageCommands(request, topic_id, user_id)
+        result = Setup.doTopicPageCommands(request, topic_id, user_id)
         if result:
             # flash(result['mesg'])
             return redirect(url_for('cadmin_edit_topic', topic_id=topic_id))
@@ -653,13 +653,13 @@ def cadmin_permissions(course_id):
     if not check_perm(user_id, course_id, "OASIS_USERADMIN"):
         flash("You do not have user admin permissions on this course")
         return redirect(url_for('cadmin_top', course_id=course_id))
-    course = CourseAPI.get_course(course_id)
+    course = Courses2.get_course(course_id)
 
-    permlist = OaUserDB.getCoursePerms(course_id)
+    permlist = UserDB.getCoursePerms(course_id)
     perms = {}
     for uid, pid in permlist:  # (uid, permission)
         if not uid in perms:
-            user = UserAPI.getUser(uid)
+            user = Users2.getUser(uid)
             perms[uid] = {
                 'uname': user['uname'],
                 'fullname': user['fullname'],

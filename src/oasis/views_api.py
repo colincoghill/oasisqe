@@ -12,11 +12,11 @@ import datetime
 
 from flask import session, abort, jsonify
 
-from .lib import Exams, OaAPI, OaStats
+from .lib import Exams, API, Stats
 
 MYPATH = os.path.dirname(__file__)
 
-from .lib.OaUserDB import satisfyPerms
+from .lib.UserDB import satisfyPerms
 
 from oasis import app, authenticated
 
@@ -56,7 +56,7 @@ def api_stats_qtemplates_year(qtemplate_id, year):
     start_time = datetime.datetime(year=year, month=1, day=1, hour=0)
     end_time = datetime.datetime(year=year, month=12, day=31, hour=23)
 
-    counts = OaStats.getQDailyPracticeCount(start_time, end_time, qtemplate_id)
+    counts = Stats.getQDailyPracticeCount(start_time, end_time, qtemplate_id)
     return jsonify(result=counts)
 
 
@@ -69,7 +69,7 @@ def api_stats_qtemplates_year_scores(qtemplate_id, year):
     start_time = datetime.datetime(year=year, month=1, day=1, hour=0)
     end_time = datetime.datetime(year=year, month=12, day=31, hour=23)
 
-    scores = OaStats.getQDailyPracticeScores(start_time, end_time, qtemplate_id)
+    scores = Stats.getQDailyPracticeScores(start_time, end_time, qtemplate_id)
     return jsonify(result=scores)
 
 
@@ -86,7 +86,7 @@ def api_stats_qtemplates_3month_scores(qtemplate_id):
     end_time = now+days3
     start_time = now-month3
 
-    scores = OaStats.getQDailyPracticeScores(start_time, end_time, qtemplate_id)
+    scores = Stats.getQDailyPracticeScores(start_time, end_time, qtemplate_id)
     return jsonify(result=scores)
 
 
@@ -103,7 +103,7 @@ def api_stats_qtemplates_3month(qtemplate_id):
     end_time = now+days3
     start_time = now-month3
 
-    counts = OaStats.getQDailyPracticeCount(start_time, end_time, qtemplate_id)
+    counts = Stats.getQDailyPracticeCount(start_time, end_time, qtemplate_id)
     return jsonify(result=counts)
 
 
@@ -120,7 +120,7 @@ def api_stats_practice_load():
     end_time = now+days3
     start_time = now-month3
 
-    counts = OaStats.getQDailyPracticeLoad(start_time, end_time)
+    counts = Stats.getQDailyPracticeLoad(start_time, end_time)
     return jsonify(result=counts)
 
 
@@ -133,7 +133,7 @@ def api_stats_practice_load_year(year):
     start_time = datetime.datetime(year=year, month=1, day=1, hour=0)
     end_time = datetime.datetime(year=year, month=12, day=31, hour=23)
 
-    counts = OaStats.getQDailyPracticeLoad(start_time, end_time)
+    counts = Stats.getQDailyPracticeLoad(start_time, end_time)
     return jsonify(result=counts)
 
 
@@ -148,4 +148,4 @@ def api_exam_available_qtemplates(course_id, exam_id):
     if not satisfyPerms(user_id, course_id, ("OASIS_CREATEASSESSMENT",)):
         abort(401)
 
-    return jsonify(result=OaAPI.getCreateExamQuestionList(course_id))
+    return jsonify(result=API.getCreateExamQuestionList(course_id))

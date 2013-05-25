@@ -8,7 +8,7 @@
 """
 
 import datetime
-from oasis.lib.OaDB import run_sql, dbpool
+from oasis.lib.DB import run_sql, dbpool
 from logging import log, WARN, INFO
 
 

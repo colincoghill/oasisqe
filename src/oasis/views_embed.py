@@ -8,7 +8,7 @@
 
 import os
 from flask import render_template, session, request, abort
-from .lib import UserAPI, OaDB, OaGeneral, OaPractice, OaEmbed
+from .lib import Users2, DB, General, Practice, Embed
 
 MYPATH = os.path.dirname(__file__)
 
@@ -21,31 +21,31 @@ def embed_question(embed_id):
         This should be suitable for including in an IFRAME or similar
     """
     if 'user_id' not in session:
-        user_id = UserAPI.getUidByUname("guest")
+        user_id = Users2.getUidByUname("guest")
     else:
         user_id = session['user_id']
 
     if len(embed_id) < 1:
         abort(404)
     try:
-        qtid = OaDB.getQTemplateByEmbedID(embed_id)
+        qtid = DB.getQTemplateByEmbedID(embed_id)
     except KeyError:
         qtid = None
         abort(404)
 
-    title = request.args.get('title', OaDB.get_qt_name(qtid))
+    title = request.args.get('title', DB.get_qt_name(qtid))
     title = ''.join([t for t in title if t in " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!.,?$@&"])
 
-    qid = OaPractice.get_practice_q(qtid, user_id)
-    vers = OaDB.getQuestionVersion(qid)
-    if not vers >= OaDB.get_qt_version(qtid):
-        qid = OaGeneral.generateQuestion(qtid, user_id)
+    qid = Practice.get_practice_q(qtid, user_id)
+    vers = DB.getQuestionVersion(qid)
+    if not vers >= DB.get_qt_version(qtid):
+        qid = General.generateQuestion(qtid, user_id)
 
-    q_body = OaGeneral.render_q_html(qid)
+    q_body = General.render_q_html(qid)
     return render_template(
         "embeddoquestion.html",
         q_body=q_body,
-        embed_id=OaDB.getQTemplateEmbedID(qtid),
+        embed_id=DB.getQTemplateEmbedID(qtid),
         title=title,
         qid=qid,
     )
@@ -58,11 +58,11 @@ def embed_mark_question(embed_id):
         This should be suitable for including in an IFRAME or similar
     """
     if 'user_id' not in session:
-        user_id = UserAPI.getUidByUname("guest")
+        user_id = Users2.getUidByUname("guest")
     else:
         user_id = session['user_id']
 
-    qtid = OaDB.getQTemplateByEmbedID(embed_id)
+    qtid = DB.getQTemplateByEmbedID(embed_id)
     if not qtid:
         abort(404)
 
@@ -73,7 +73,7 @@ def embed_mark_question(embed_id):
     if not qid:
         abort(404)
 
-    marking = OaEmbed.markQuestion(user_id, qtid, request)
+    marking = Embed.markQuestion(user_id, qtid, request)
 
     return render_template(
         "embedmarkquestion.html",

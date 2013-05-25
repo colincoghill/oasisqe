@@ -5,7 +5,7 @@
 
 """ Contains db access functions for users, groups, permissions and courses """
 
-from oasis.lib.OaDB import run_sql, MC
+from oasis.lib.DB import run_sql, MC
 
 PERMS = {'OASIS_SUPERUSER': 1, 'OASIS_USERADMIN': 2,
          'OASIS_COURSEADMIN': 3, 'OASIS_COURSECOORD': 4,

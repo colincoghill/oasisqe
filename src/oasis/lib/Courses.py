@@ -8,7 +8,7 @@
 """
 from oasis.lib import Topics, Groups
 
-from oasis.lib.OaDB import run_sql, dbpool, MC
+from oasis.lib.DB import run_sql, dbpool, MC
 from logging import log, ERROR
 import datetime
 

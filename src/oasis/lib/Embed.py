@@ -19,7 +19,7 @@ import re
 
 from logging import log, INFO
 from oasis.lib.OaExceptions import OaMarkerError
-from oasis.lib import OaDB, OaGeneral
+from oasis.lib import DB, General
 
 
 def markQuestion(user_id, qtid, request):
@@ -40,19 +40,19 @@ def markQuestion(user_id, qtid, request):
 
             value = request.form[i]
             answers["G%d" % part] = value
-            OaDB.saveGuess(newqid, part, value)
+            DB.saveGuess(newqid, part, value)
 
     if qid:
         try:
-            marks = OaGeneral.markQuestion(qid, answers)
-            OaDB.setQuestionStatus(qid, 3)    # 3 = marked
-            OaDB.setQuestionMarkTime(qid)
+            marks = General.markQuestion(qid, answers)
+            DB.setQuestionStatus(qid, 3)    # 3 = marked
+            DB.setQuestionMarkTime(qid)
         except OaMarkerError:
             log(INFO,
                 "getMarkQuestionPage(%d, %d, %s) Marker ERROR" % (user_id, qtid, request.form))
             marks = {}
 
-        out += OaGeneral.renderMarkResults(qid, marks)
+        out += General.renderMarkResults(qid, marks)
         parts = [int(var[1:])
                  for var in marks.keys()
                  if re.search("^A([0-9]+)$", var) > 0]

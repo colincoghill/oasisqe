@@ -10,7 +10,7 @@ import re
 
 from oasis.lib.OaExceptions import OaMarkerError
 from logging import log, INFO, ERROR, WARN
-from oasis.lib import OaDB, OaGeneral, Exams, Courses
+from oasis.lib import DB, General, Exams, Courses
 
 
 DATEFORMAT = "%d %b %H:%M"
@@ -25,16 +25,16 @@ def markAssessment(user_id, exam_id):
     log(INFO, "Marking assessment %s for %s, status is %s" % (exam_id, user_id, status))
     examtotal = 0.0
     for position in range(1, numQuestions + 1):
-        q_id = OaGeneral.getExamQuestion(exam_id, position, user_id)
-        answers = OaDB.getQuestionGuesses(q_id)
+        q_id = General.getExamQuestion(exam_id, position, user_id)
+        answers = DB.getQuestionGuesses(q_id)
         # There's a small chance they got here without ever seeing a question, make sure it exists.
-        OaDB.addExamQuestion(user_id, exam_id, q_id, position)
+        DB.addExamQuestion(user_id, exam_id, q_id, position)
 
         # First, mark the question
         try:
-            marks = OaGeneral.markQuestion(q_id, answers)
-            OaDB.setQuestionStatus(q_id, 3)    # 3 = marked
-            OaDB.setQuestionMarkTime(q_id)
+            marks = General.markQuestion(q_id, answers)
+            DB.setQuestionStatus(q_id, 3)    # 3 = marked
+            DB.setQuestionMarkTime(q_id)
         except OaMarkerError:
             log(WARN, "Marker Error in question %s, exam %s, student %s!" % (q_id, exam_id, user_id))
             return False
@@ -49,7 +49,7 @@ def markAssessment(user_id, exam_id):
             except (KeyError, ValueError):
                 mark = 0
             total += mark
-            OaDB.updateQuestionScore(q_id, total)
+            DB.updateQuestionScore(q_id, total)
         examtotal += total
 
     Exams.setUserStatus(user_id, exam_id, 5)
@@ -70,13 +70,13 @@ def student_exam_duration(student, exam_id):
     firstview = None
 
     examsubmit = Exams.getSubmitTime(exam_id, student)
-    questions = OaGeneral.getExamQuestions(student, exam_id)
+    questions = General.getExamQuestions(student, exam_id)
 
     # we're working out the first time the assessment was viewed is the
     # earliest time a question in it was viewed
     # It's possible (although unlikely) that they viewed a question other than the first page, first.
     for question in questions:
-        questionview = OaDB.getQuestionViewTime(question)
+        questionview = DB.getQuestionViewTime(question)
         if firstview:
             if questionview < firstview:
                 firstview = questionview
@@ -102,17 +102,17 @@ def renderOwnMarkedExam(student, exam):
            }, ...
         ]
     """
-    questions = OaGeneral.getExamQuestions(student, exam)
+    questions = General.getExamQuestions(student, exam)
     firstview, examsubmit = student_exam_duration(student, exam)
     results = []
 
     examtotal = 0.0
     for question in questions:
-        qtemplate = OaDB.get_q_parent(question)
+        qtemplate = DB.get_q_parent(question)
 
-        answers = OaDB.getQuestionGuessesBeforeTime(question, examsubmit)
-        pos = OaDB.getQTemplatePositionInExam(exam, qtemplate)
-        marks = OaGeneral.markQuestion(question, answers)
+        answers = DB.getQuestionGuessesBeforeTime(question, examsubmit)
+        pos = DB.getQTemplatePositionInExam(exam, qtemplate)
+        marks = General.markQuestion(question, answers)
         parts = [int(var[1:]) for var in marks.keys() if re.search("^A([0-9]+$)", var) > 0]
         parts.sort()
         marking = []
@@ -135,7 +135,7 @@ def renderOwnMarkedExam(student, exam):
                 'comment': comment
             })
 
-        html = OaGeneral.render_q_html(question)
+        html = General.render_q_html(question)
         results.append({
             'pos': pos,
             'html': html,

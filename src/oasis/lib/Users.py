@@ -13,7 +13,7 @@ import random
 
 import bcrypt
 
-from oasis.lib.OaDB import run_sql, MC
+from oasis.lib.DB import run_sql, MC
 from logging import log, WARN, ERROR, INFO
 
 

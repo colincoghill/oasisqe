@@ -9,7 +9,7 @@
  of different kinds of attachment.
 """
 
-from oasis.lib import OaDB
+from oasis.lib import DB
 
 def is_restricted(fname):
     """ Is the filename restricted
@@ -30,17 +30,17 @@ def getQuestionAttachmentDetails(qtid, version, variation, name):
     # for the two biggies we hit the question first,
     # otherwise check the question template first
     if name == "image.gif" or name == "qtemplate.html":
-        filename = OaDB.get_q_att_fname(qtid, name, variation, version)
+        filename = DB.get_q_att_fname(qtid, name, variation, version)
         if filename:
-            return OaDB.get_q_att_mimetype(qtid, name, variation, version), filename
-        filename = OaDB.getQTAttachmentFilename(qtid, name, version)
+            return DB.get_q_att_mimetype(qtid, name, variation, version), filename
+        filename = DB.getQTAttachmentFilename(qtid, name, version)
         if filename:
-            return OaDB.get_qt_att_mimetype(qtid, name, version), filename
+            return DB.get_qt_att_mimetype(qtid, name, version), filename
     else:
-        filename = OaDB.getQTAttachmentFilename(qtid, name, version)
+        filename = DB.getQTAttachmentFilename(qtid, name, version)
         if filename:
-            return OaDB.get_qt_att_mimetype(qtid, name, version), filename
-        filename = OaDB.get_q_att_fname(qtid, name, variation, version)
+            return DB.get_qt_att_mimetype(qtid, name, version), filename
+        filename = DB.get_q_att_fname(qtid, name, variation, version)
         if filename:
-            return OaDB.get_q_att_mimetype(qtid, name, variation, version), filename
+            return DB.get_q_att_mimetype(qtid, name, variation, version), filename
     return None, None

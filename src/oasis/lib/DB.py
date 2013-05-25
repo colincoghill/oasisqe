@@ -19,16 +19,16 @@ from logging import log, INFO, WARN, ERROR, FATAL
 
 # Global dbpool
 import OaConfig
-import OaPool
+import Pool
 
 # 3 connections. Lets us keep going if one is slow but
 # doesn't overload the server if there're a lot of us
-dbpool = OaPool.DbPool(OaConfig.oasisdbconnectstring, 3)
+dbpool = Pool.DbPool(OaConfig.oasisdbconnectstring, 3)
 
 # Cache stuff on local drives to save our poor database
-fileCache = OaPool.fileCache(OaConfig.cachedir)
+fileCache = Pool.fileCache(OaConfig.cachedir)
 
-from OaPool import MCPool
+from Pool import MCPool
 
 # Get a pool of memcache connections to use
 MC = MCPool('127.0.0.1:11211', 3)

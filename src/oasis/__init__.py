@@ -19,7 +19,7 @@ import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
-from .lib import OaConfig, UserAPI, Users, OaDB
+from .lib import OaConfig, Users2, Users, DB
 from .lib.Audit import audit
 
 
@@ -121,7 +121,7 @@ def index():
 def login_local():
     """ Present a login page for people with local OASIS accounts to log in"""
 
-    mesg_login = OaDB.getMessage("loginmotd")
+    mesg_login = DB.getMessage("loginmotd")
     return render_template("login_screen_local.html", mesg_login=mesg_login)
 
 
@@ -138,13 +138,13 @@ def login_local_submit():
     username = request.form['username']
     password = request.form['password']
 
-    user_id = UserAPI.verifyPass(username, password)
+    user_id = Users2.verifyPass(username, password)
     if not user_id:
         log(INFO, "Failed Login for %s" % username)
         flash("Incorrect name or password.")
         return redirect(url_for("login_local"))
 
-    user = UserAPI.getUser(user_id)
+    user = Users2.getUser(user_id)
     if not user['confirmed']:
         flash("Your account is not yet confirmed. You should have received an email with instructions in it to do so")
         return redirect(url_for("login_local"))
@@ -202,12 +202,12 @@ def login_forgot_pass_submit():
         flash("The admin account cannot do an email password reset, please see the Installation instructions.")
         return redirect(url_for("login_forgot_pass"))
 
-    user_id = UserAPI.getUidByUname(username)
+    user_id = Users2.getUidByUname(username)
     if not user_id:
         flash("Unknown username ")
         return redirect(url_for("login_forgot_pass"))
 
-    user = UserAPI.getUser(user_id)
+    user = Users2.getUser(user_id)
     if not user['source'] == "local":
         flash("Your password is managed by a different system, please contact IT Support.")
         return redirect(url_for("login_forgot_pass"))
@@ -258,7 +258,7 @@ def login_email_passreset(code):
         abort(404)
     Users.setConfirmed(uid)
     Users.setConfirmationCode(uid, "")
-    user = UserAPI.getUser(uid)
+    user = Users2.getUser(uid)
     session['username'] = user['uname']
     session['user_id'] = uid
     session['user_givenname'] = user['givenname']
@@ -303,7 +303,7 @@ def login_signup_submit():
         flash("Email address doesn't appear to be valid")
         return redirect(url_for("login_signup"))
 
-    existing = UserAPI.getUidByUname(username)
+    existing = Users2.getUidByUname(username)
     if existing:
         flash("An account with that name already exists, please try something else.")
         return redirect(url_for("login_signup"))
@@ -312,7 +312,7 @@ def login_signup_submit():
     newuid = Users.create(uname=username, passwd="NOLOGIN", email=email,
                              givenname=username, familyname="", acctstatus=1, studentid="",
                             source="local", confirm_code=code, confirm=False)
-    UserAPI.setPassword(newuid, password)
+    Users2.setPassword(newuid, password)
 
     text_body = render_template("email/confirmation.txt", code=code)
     html_body = render_template("email/confirmation.html", code=code)
@@ -333,12 +333,12 @@ def login_webauth_submit():
 
     if '@' in username:
         username = username.split('@')[0]
-    user_id = UserAPI.getUidByUname(username)
+    user_id = Users2.getUidByUname(username)
     if not user_id:
         flash("Incorrect name or password.")
         return redirect(url_for("index"))
 
-    user = UserAPI.getUser(user_id)
+    user = Users2.getUser(user_id)
     session['username'] = username
     session['user_id'] = user_id
     session['user_givenname'] = user['givenname']
@@ -425,4 +425,4 @@ from oasis import views_api
 from oasis import views_embed
 from oasis import views_misc
 
-OaDB.upgradeDB()
+DB.upgradeDB()

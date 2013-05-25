@@ -4,7 +4,7 @@
 import sys
 sys.path.append("/opt/oasisqe/3.9/src")
 
-from oasis.lib import OaStats
+from oasis.lib import Stats
 
 print "Running daily stats update."
-OaStats.dailyStatsUpdate()
+Stats.dailyStatsUpdate()

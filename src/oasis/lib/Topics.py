@@ -8,7 +8,7 @@
 """
 import json
 
-from .OaDB import dbpool, run_sql, MC
+from .DB import dbpool, run_sql, MC
 from logging import log, ERROR, INFO
 
 

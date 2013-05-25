@@ -6,7 +6,7 @@
 """ A collection of functions that may be called by
     scripts. eg. the __marker.py and __results.py scripts.
 """
-import OaDB
+import DB
 from Audit import audit
 
 
@@ -67,9 +67,9 @@ def question_log(qid, priority, facility, mesg):
     """function for question scripts (marker, render, generator, etc) to
        use to log messages. """
     qid = int(qid)
-    version = OaDB.getQuestionVersion(qid)
-    variation = OaDB.getQuestionVariation(qid)
-    qtid = OaDB.get_q_parent(qid)
-    owner = OaDB.get_qt_owner(qtid)
+    version = DB.getQuestionVersion(qid)
+    variation = DB.getQuestionVariation(qid)
+    qtid = DB.get_q_parent(qid)
+    owner = DB.get_qt_owner(qtid)
     audit(3, owner, qtid, "qlogger", "version=%s,variation=%s,priority=%s,facility=%s,message=%s" % (version, variation, priority, facility, mesg))
 

@@ -26,7 +26,7 @@
 #
 
 import datetime
-import OaDB
+import DB
 
 
 def fetchPracQCourseRow(year, month, day, hour, qtemplate):
@@ -42,7 +42,7 @@ def fetchPracQCourseRow(year, month, day, hour, qtemplate):
                  AND year=%s
                  AND qtemplate=%s;"""
     params = (hour, month, day, year, qtemplate)
-    res = OaDB.run_sql(sql, params)
+    res = DB.run_sql(sql, params)
     if not res or len(res)==0:
         return False
     return int(res[0][0])
@@ -53,7 +53,7 @@ def insertPracQCourse(year, month, day, hour, qtemplate, count, avgscore):
     sql = """INSERT INTO stats_prac_q_course ("qtemplate", "hour", "day", "month", "year", "number", "when", "avgscore")
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s);"""
     params = (qtemplate,  hour, day, month, year, count, datetime.datetime(year=year, hour=hour, day=day, month=month), avgscore)
-    OaDB.run_sql(sql, params)
+    DB.run_sql(sql, params)
 
 
 def updatePracQCourse(year, month, day, hour, qtemplate, count, avgscore):
@@ -65,7 +65,7 @@ def updatePracQCourse(year, month, day, hour, qtemplate, count, avgscore):
                  AND year=%s
                  AND qtemplate=%s;"""
     params = (count, avgscore, hour, month, day, year, qtemplate)
-    OaDB.run_sql(sql, params)
+    DB.run_sql(sql, params)
 
 
 def populateStatsPracQCourse(start=None, end=None):
@@ -98,7 +98,7 @@ def populateStatsPracQCourse(start=None, end=None):
                      qtemplate;
                      """
     params = (start, end)
-    res = OaDB.run_sql(sql, params)
+    res = DB.run_sql(sql, params)
     if not res:
         return False
     for row in res:
@@ -129,7 +129,7 @@ def getQDailyPracticeCount(start_time, end_time, qtemplate_id):
                GROUP BY "year","month","day"
                ORDER BY "year","month","day" ASC;"""
     params = (qtemplate_id, start_time, end_time)
-    res = OaDB.run_sql(sql, params)
+    res = DB.run_sql(sql, params)
     if not res:
         res = []
     data = []
@@ -159,7 +159,7 @@ def getQDailyPracticeScores(start_time, end_time, qtemplate_id):
                GROUP BY "year","month","day"
                ORDER BY "year","month","day" ASC;"""
     params = (qtemplate_id, start_time, end_time)
-    res = OaDB.run_sql(sql, params)
+    res = DB.run_sql(sql, params)
     if not res:
         res = []
     data = []
@@ -185,7 +185,7 @@ def getQDailyPracticeLoad(start_time, end_time):
                GROUP BY "year","month","day"
                ORDER BY "year","month","day" ASC;"""
     params = (start_time, end_time)
-    res = OaDB.run_sql(sql, params)
+    res = DB.run_sql(sql, params)
     if not res:
         res = []
     data = []

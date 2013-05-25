@@ -10,9 +10,9 @@ import os
 
 from flask import render_template, session, request, abort
 from logging import log, ERROR
-from .lib import OaDB, OaPractice, Topics, OaGeneral, CourseAPI, OaSetup
+from .lib import DB, Practice, Topics, General, Courses2, Setup
 MYPATH = os.path.dirname(__file__)
-from .lib.OaUserDB import check_perm
+from .lib.UserDB import check_perm
 
 from oasis import app, authenticated
 
@@ -23,7 +23,7 @@ def practice_top():
     """ Present the top level practice page - let them choose a course """
     return render_template(
         "practicetop.html",
-        courses=OaSetup.get_sorted_courselist()
+        courses=Setup.get_sorted_courselist()
     )
 
 
@@ -33,18 +33,18 @@ def practice_choose_topic(course_id):
     """ Present a list of topics for them to choose from the given course """
     user_id = session['user_id']
     try:
-        course = CourseAPI.get_course(course_id)
+        course = Courses2.get_course(course_id)
     except KeyError:
         course = None
         abort(404)
     try:
-        topics = CourseAPI.get_topics_list(course_id)
+        topics = Courses2.get_topics_list(course_id)
     except KeyError:
         topics = []
         abort(404)
     return render_template(
         "practicecourse.html",
-        courses=OaSetup.get_sorted_courselist(),
+        courses=Setup.get_sorted_courselist(),
         canpreview=check_perm(user_id, course_id, "OASIS_PREVIEWQUESTIONS"),
         topics=topics,
         course=course
@@ -63,16 +63,16 @@ def practice_choose_question(topic_id):
         abort(404)
     topics = []
     try:
-        topics = CourseAPI.get_topics_list(course_id)
+        topics = Courses2.get_topics_list(course_id)
     except KeyError:
         abort(404)
     try:
-        course = CourseAPI.get_course(course_id)
+        course = Courses2.get_course(course_id)
     except KeyError:
         course = None
         abort(404)
     topictitle = Topics.get_name(topic_id)
-    questions = OaPractice.get_sorted_questions(course_id, topic_id, user_id)
+    questions = Practice.get_sorted_questions(course_id, topic_id, user_id)
 
     return render_template(
         "practicetopic.html",
@@ -97,10 +97,10 @@ def practice_choose_question_stats(topic_id):
     if not course_id:
         abort(404)
 
-    topics = CourseAPI.get_topics_list(course_id)
-    course = CourseAPI.get_course(course_id)
+    topics = Courses2.get_topics_list(course_id)
+    course = Courses2.get_course(course_id)
     topictitle = Topics.get_name(topic_id)
-    questions = OaPractice.get_sorted_qlist_wstats(course_id, topic_id, user_id)
+    questions = Practice.get_sorted_qlist_wstats(course_id, topic_id, user_id)
 
     return render_template(
         "practicetopicstats.html",
@@ -125,7 +125,7 @@ def practice_do_question(topic_id, qt_id):
         course_id = None
         abort(404)
     try:
-        course = CourseAPI.get_course(course_id)
+        course = Courses2.get_course(course_id)
     except KeyError:
         course = None
         abort(404)
@@ -135,15 +135,15 @@ def practice_do_question(topic_id, qt_id):
     except KeyError:
         abort(404)
     try:
-        qt = OaDB.get_qtemplate(qt_id)
+        qt = DB.get_qtemplate(qt_id)
     except KeyError:
         qt = None
         abort(404)
-    questions = OaPractice.get_sorted_questions(course_id, topic_id, user_id)
+    questions = Practice.get_sorted_questions(course_id, topic_id, user_id)
     q_title = qt['title']
-    q_pos = OaDB.get_qtemplate_topic_pos(qt_id, topic_id)
+    q_pos = DB.get_qtemplate_topic_pos(qt_id, topic_id)
 
-    blocked = OaPractice.is_q_blocked(user_id, course_id, topic_id, qt_id)
+    blocked = Practice.is_q_blocked(user_id, course_id, topic_id, qt_id)
     if blocked:
         return render_template(
             "practicequestionblocked.html",
@@ -158,7 +158,7 @@ def practice_do_question(topic_id, qt_id):
         )
 
     try:
-        q_id = OaPractice.get_practice_q(qt_id, user_id)
+        q_id = Practice.get_practice_q(qt_id, user_id)
     except (ValueError, TypeError), err:
         log(ERROR,
             "ERROR 1001  (%s,%s) %s" % (qt_id, user_id, err))
@@ -187,7 +187,7 @@ def practice_do_question(topic_id, qt_id):
             q_pos="?",
         )
 
-    q_body = OaGeneral.render_q_html(q_id)
+    q_body = General.render_q_html(q_id)
     q_body = q_body.replace(r"\240", u" ")  # TODO: why is this here?
 
     return render_template(
@@ -215,7 +215,7 @@ def practice_mark_question(topic_id, question_id):
     if not course_id:
         abort(404)
 
-    course = CourseAPI.get_course(course_id)
+    course = Courses2.get_course(course_id)
     if not course:
         abort(404)
 
@@ -225,13 +225,13 @@ def practice_mark_question(topic_id, question_id):
     except KeyError:
         abort(404)
 
-    qt_id = OaDB.get_q_parent(question_id)
+    qt_id = DB.get_q_parent(question_id)
 
-    q_title = OaDB.get_qt_name(qt_id)
-    questions = OaPractice.get_sorted_questions(course_id, topic_id, user_id)
-    q_pos = OaDB.get_qtemplate_topic_pos(qt_id, topic_id)
+    q_title = DB.get_qt_name(qt_id)
+    questions = Practice.get_sorted_questions(course_id, topic_id, user_id)
+    q_pos = DB.get_qtemplate_topic_pos(qt_id, topic_id)
 
-    blocked = OaPractice.is_q_blocked(user_id, course_id, topic_id, qt_id)
+    blocked = Practice.is_q_blocked(user_id, course_id, topic_id, qt_id)
     if blocked:
         return render_template(
             "practicequestionblocked.html",
@@ -245,8 +245,8 @@ def practice_mark_question(topic_id, question_id):
             q_pos=q_pos,
         )
 
-    marking = OaPractice.mark_q(user_id, topic_id, question_id, request)
-    prev_id, next_id = OaPractice.get_next_prev(qt_id, topic_id)
+    marking = Practice.mark_q(user_id, topic_id, question_id, request)
+    prev_id, next_id = Practice.get_next_prev(qt_id, topic_id)
 
     return render_template(
         "practicemarkquestion.html",

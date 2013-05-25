@@ -9,7 +9,7 @@
     some backend for AJAX stuff.
 """
 
-from oasis.lib import OaGeneral, Courses
+from oasis.lib import General, Courses
 
 
 def getSortedQuestionList(topic):
@@ -19,7 +19,7 @@ def getSortedQuestionList(topic):
         """
         return cmp(abs(a['position']), abs(b['position']))
 
-    questionlist = OaGeneral.get_q_list(topic, None, False)
+    questionlist = General.get_q_list(topic, None, False)
     if questionlist:
         # At the moment we use -'ve positions to indicate that a question is
         # hidden but when displaying them we want to maintain the sort order.

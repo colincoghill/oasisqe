@@ -7,7 +7,7 @@
     Handle storing and searching audit messages
 """
 
-from oasis.lib.OaDB import run_sql
+from oasis.lib.DB import run_sql
 
 
 def audit(aclass, instigator, obj, module, message):

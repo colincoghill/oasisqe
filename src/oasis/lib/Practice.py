@@ -8,13 +8,13 @@
 
 import re
 from logging import log, WARN
-from oasis.lib import OaGeneral
+from oasis.lib import General
 
-from oasis.lib.OaUserDB import check_perm
+from oasis.lib.UserDB import check_perm
 from oasis.lib.OaExceptions import OaMarkerError
-from . import OaConfig, OaDB, OaPool, Topics
+from . import OaConfig, DB, Pool, Topics
 
-fileCache = OaPool.fileCache(OaConfig.cachedir)
+fileCache = Pool.fileCache(OaConfig.cachedir)
 
 
 def get_practice_q(qt_id, user_id):
@@ -25,17 +25,17 @@ def get_practice_q(qt_id, user_id):
         assert qt_id > 0
     except (ValueError, TypeError, AssertionError):
         log(WARN, "Called with bad qtid %s?" % qt_id)
-    qid = OaDB.getQuestionByQTStudent(qt_id, user_id)
+    qid = DB.getQuestionByQTStudent(qt_id, user_id)
     if not qid is False:
         return int(qid)
-    qid = OaGeneral.generateQuestion(qt_id, user_id)
+    qid = General.generateQuestion(qt_id, user_id)
     try:
         qid = int(qid)
     except (ValueError, TypeError):
         log(WARN,
             "generateQuestion(%s,%s) Fail: returned %s" % (qt_id, user_id, qid))
     else:
-        OaDB.setQuestionViewTime(qid)
+        DB.setQuestionViewTime(qid)
     return qid
 
 
@@ -46,7 +46,7 @@ def get_sorted_questions(course_id, topic_id, user_id=None):
         """
         return cmp(abs(a['position']), abs(b['position']))
 
-    questionlist = OaGeneral.get_q_list(topic_id, user_id, numdone=False)
+    questionlist = General.get_q_list(topic_id, user_id, numdone=False)
     if questionlist:
         # Filter out the questions without a positive position unless
         # the user has prevew permission.
@@ -76,7 +76,7 @@ def get_sorted_qlist_wstats(course_id, topic_id, user_id=None):
         """
         return cmp(abs(a['position']), abs(b['position']))
 
-    questionlist = OaGeneral.get_q_list(topic_id, user_id, numdone=False)
+    questionlist = General.get_q_list(topic_id, user_id, numdone=False)
     if not questionlist:
         return []
         # Filter out the questions without a positive position unless
@@ -85,9 +85,9 @@ def get_sorted_qlist_wstats(course_id, topic_id, user_id=None):
                  if question['position'] > 0]
     questions.sort(cmp_question_position)
     for question in questions:
-        question['maxscore'] = OaDB.get_qt_maxscore(question['qtid'])
+        question['maxscore'] = DB.get_qt_maxscore(question['qtid'])
 
-        stats_1 = OaDB.getStudentQuestionPracticeStats(user_id, question['qtid'], 3)
+        stats_1 = DB.getStudentQuestionPracticeStats(user_id, question['qtid'], 3)
         if stats_1: # Last practices
             # Date of last practice
             question['age'] = stats_1[(len(stats_1) - 1)]['age']
@@ -109,7 +109,7 @@ def get_sorted_qlist_wstats(course_id, topic_id, user_id=None):
             question['stats'] = stats_1
         else:
             question['stats'] = None
-        stats_2 = OaDB.fetchQuestionStatsInClass(course_id, question['qtid'])
+        stats_2 = DB.fetchQuestionStatsInClass(course_id, question['qtid'])
         if not stats_2:  # no stats, make some up
             stats_2 = {'num': 0, 'max': 0, 'min': 0, 'avg': 0}
             percentage = 0
@@ -119,7 +119,7 @@ def get_sorted_qlist_wstats(course_id, topic_id, user_id=None):
             else:
                 percentage = int(stats_2['avg'] / stats_2['max'] * 100)
         question['classpercent'] = str(percentage) + "%"
-        individualstats = OaDB.getIndividualPracticeStats(user_id, question['qtid'])
+        individualstats = DB.getIndividualPracticeStats(user_id, question['qtid'])
         if not individualstats:
             indivpercentage = 0
         else:
@@ -139,7 +139,7 @@ def is_q_blocked(user_id, course_id, topic_id, qt_id):
     topicvisibility = Topics.getVisibility(topic_id)
     canpreview = check_perm(user_id, course_id, "OASIS_PREVIEWQUESTIONS")
     # They're trying to go directly to a hidden question?
-    position = OaDB.get_qtemplate_topic_pos(qt_id, topic_id)
+    position = DB.get_qtemplate_topic_pos(qt_id, topic_id)
     if position <= 0 and not canpreview:
         return "Access denied to question."
         # They're trying to go directly to a question in an invisible category?
@@ -154,7 +154,7 @@ def get_next_prev(qt_id, topic_id):
         return None, None
         # This is very inefficient, but with the way questions are stored,
         # I didn't see a better way. Could maybe be revisited some time?
-    questionlist = OaGeneral.get_q_list(topic_id, numdone=False)
+    questionlist = General.get_q_list(topic_id, numdone=False)
     if questionlist:
         # Filter out the questions without a positive position
         questionlist = [question
@@ -193,24 +193,24 @@ def mark_q(user_id, topic_id, q_id, request):
             if newqid == q_id:
                 value = request.form[i]
                 answers["G%d" % part] = value
-                OaDB.saveGuess(newqid, part, value)
+                DB.saveGuess(newqid, part, value)
             else:
                 log(WARN,
                     "received guess for wrong question? (%d,%d,%d,%s)" % (user_id, topic_id, q_id, request.form))
     try:
-        marks = OaGeneral.markQuestion(q_id, answers)
-        OaDB.setQuestionStatus(q_id, 3)    # 3 = marked
-        OaDB.setQuestionMarkTime(q_id)
+        marks = General.markQuestion(q_id, answers)
+        DB.setQuestionStatus(q_id, 3)    # 3 = marked
+        DB.setQuestionMarkTime(q_id)
     except OaMarkerError:
         log(WARN, "Marker Error - (%d, %d, %d, %s)" % (user_id, topic_id, q_id, request.form))
         marks = {}
-    q_body = OaGeneral.renderMarkResults(q_id, marks)
+    q_body = General.renderMarkResults(q_id, marks)
     parts = [int(var[1:]) for var in marks.keys() if re.search("^A([0-9]+)$", var) > 0]
     parts.sort()
     total = 0.0
     for part in parts:
         if marks.has_key('M%d' % (part,)):
             total += float(marks['M%d' % (part,)])
-    OaDB.updateQuestionScore(q_id, total)    # 3 = marked
-    OaDB.setQuestionStatus(q_id, 2)
+    DB.updateQuestionScore(q_id, total)    # 3 = marked
+    DB.setQuestionStatus(q_id, 2)
     return q_body

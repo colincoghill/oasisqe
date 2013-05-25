@@ -11,13 +11,13 @@ import os
 from flask import render_template, session, \
     request, redirect, url_for, flash
 
-from .lib import UserAPI, OaGeneral, Exams, \
-    CourseAPI, OaSetup
+from .lib import Users2, General, Exams, \
+    Courses2, Setup
 
 MYPATH = os.path.dirname(__file__)
 
 from .lib.Audit import audit, getRecordsByUser
-from .lib.OaUserDB import check_perm, satisfyPerms
+from .lib.UserDB import check_perm, satisfyPerms
 
 from oasis import app, authenticated
 
@@ -35,7 +35,7 @@ def setup_courses():
     """ Let the user choose a course to administer """
     return render_template(
         "setupchoosecourse.html",
-        courses=OaSetup.get_sorted_courselist()
+        courses=Setup.get_sorted_courselist()
     )
 
 
@@ -83,7 +83,7 @@ def setup_usercreate():
             if not all((new_uname, new_email, new_pass, new_confirm)):
                 error = "Please fill in all fields."
 
-            elif UserAPI.getUidByUname(new_uname):
+            elif Users2.getUidByUname(new_uname):
                 error = "ERROR: An account already exists with that name"
 
             elif new_confirm == "" or not new_confirm == new_pass:
@@ -91,8 +91,8 @@ def setup_usercreate():
             else:   # yaay, it's ok
                 # uname, passwd, givenname, familyname, acctstatus,
                 # studentid, email=None, expiry=None, source="local"
-                UserAPI.create(new_uname, "nologin-creation", new_fname, new_sname, 2, '', new_email)
-                UserAPI.setPassword(UserAPI.getUidByUname(new_uname), new_pass)
+                Users2.create(new_uname, "nologin-creation", new_fname, new_sname, 2, '', new_email)
+                Users2.setPassword(Users2.getUidByUname(new_uname), new_pass)
                 flash("New User Account Created for %s" % new_uname)
                 new_uname = ""
                 new_fname = ""
@@ -133,8 +133,8 @@ def setup_usersearch():
             if len(needle) < 2:
                 flash("Search term too short, please try something longer")
             else:
-                uids = UserAPI.find(needle)
-                users = [UserAPI.getUser(uid) for uid in uids]
+                uids = Users2.find(needle)
+                users = [Users2.getUser(uid) for uid in uids]
                 if len(users) == 0:
                     nonefound = True
                 else:
@@ -157,10 +157,10 @@ def setup_useraudit(audit_id):
         flash("You do not have User Administration access.")
         return redirect(url_for('setup_top'))
 
-    user = UserAPI.getUser(audit_id)
+    user = Users2.getUser(audit_id)
     audits = getRecordsByUser(audit_id)
     for aud in audits:
-        aud['humantime'] = OaGeneral.humanDate(aud['time'])
+        aud['humantime'] = General.humanDate(aud['time'])
     return render_template(
         'setup_useraudit.html',
         user=user,
@@ -178,12 +178,12 @@ def setup_usersummary(view_id):
         flash("You do not have User Administration access.")
         return redirect(url_for('setup_top'))
 
-    user = UserAPI.getUser(view_id)
+    user = Users2.getUser(view_id)
     examids = Exams.getExamsDone(view_id)
     exams = []
     for examid in examids:
         exam = Exams.getExamStruct(examid)
-        started = OaGeneral.humanDate(exam['start'])
+        started = General.humanDate(exam['start'])
         exam['started'] = started
 
         if satisfyPerms(user_id, exam['cid'], ("OASIS_VIEWMARKS", )):
@@ -194,10 +194,10 @@ def setup_usersummary(view_id):
         exams.append(exam)
     exams.sort(key=lambda x: x['start_epoch'], reverse=True)
 
-    course_ids = UserAPI.getCourses(view_id)
+    course_ids = Users2.getCourses(view_id)
     courses = []
     for course_id in course_ids:
-        courses.append(CourseAPI.get_course(course_id))
+        courses.append(Courses2.get_course(course_id))
     return render_template(
         'setup_usersummary.html',
         user=user,
@@ -212,7 +212,7 @@ def setup_myprofile():
     """ Show an account summary for the current user account. """
     user_id = session['user_id']
 
-    user = UserAPI.getUser(user_id)
+    user = Users2.getUser(user_id)
 #    examids = Exams.getExamsDone(user_id)
 #    exams = []
 #   for examid in examids:
@@ -228,10 +228,10 @@ def setup_myprofile():
 #        exams.append(exam)
 #    exams.sort(key=lambda x: x['start_epoch'], reverse=True)
 
-    course_ids = UserAPI.getCourses(user_id)
+    course_ids = Users2.getCourses(user_id)
     courses = []
     for course_id in course_ids:
-        courses.append(CourseAPI.get_course(course_id))
+        courses.append(Courses2.get_course(course_id))
     return render_template(
         'setup_myprofile.html',
         user=user,
@@ -246,7 +246,7 @@ def setup_change_pass():
     """ Ask for a new password """
     user_id = session['user_id']
 
-    user = UserAPI.getUser(user_id)
+    user = Users2.getUser(user_id)
     return render_template(
         'setup_changepassword.html',
         user=user,
@@ -259,7 +259,7 @@ def setup_change_pass_submit():
     """ Set a new password """
     user_id = session['user_id']
 
-    user = UserAPI.getUser(user_id)
+    user = Users2.getUser(user_id)
 
     if not "newpass" in request.form or not "confirm" in request.form:
         flash("Please provide your new password")
@@ -276,7 +276,7 @@ def setup_change_pass_submit():
         flash("Passwords do not match")
         return redirect(url_for("setup_change_pass"))
 
-    UserAPI.setPassword(user_id=user_id, clearpass=newpass)
+    Users2.setPassword(user_id=user_id, clearpass=newpass)
     audit(1, user_id,
           user_id,
           "Setup", "%s reset password for %s." % (user['uname'], user['uname']))

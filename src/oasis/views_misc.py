@@ -15,13 +15,13 @@ from flask import render_template, session, \
     send_file, Response
 from logging import log, INFO
 
-from .lib import UserAPI, OaDB, Topics, \
-    CourseAPI, OaAttachment, OaQEditor
+from .lib import Users2, DB, Topics, \
+    Courses2, Attachment, QEditor
 
 MYPATH = os.path.dirname(__file__)
 
 from .lib.Audit import audit
-from .lib.OaUserDB import check_perm
+from .lib.UserDB import check_perm
 
 from oasis import app, authenticated
 
@@ -30,14 +30,14 @@ from oasis import app, authenticated
 @app.route("/att/qatt/<int:qtemplate_id>/<int:version>/<int:variation>/<fname>")
 def attachment_question(qtemplate_id, version, variation, fname):
     """ Serve the given question attachment """
-    qt = OaDB.get_qtemplate(qtemplate_id)
+    qt = DB.get_qtemplate(qtemplate_id)
     if len(qt['embed_id']) < 1:  # if it's not embedded, check auth
         if 'user_id' not in session:
             session['redirect'] = request.path
             return redirect(url_for('index'))
-    if OaAttachment.is_restricted(fname):
+    if Attachment.is_restricted(fname):
         abort(403)
-    (mimetype, filename) = OaAttachment.getQuestionAttachmentDetails(qtemplate_id, version, variation, fname)
+    (mimetype, filename) = Attachment.getQuestionAttachmentDetails(qtemplate_id, version, variation, fname)
     if not mimetype:
         abort(404)
 
@@ -48,13 +48,13 @@ def attachment_question(qtemplate_id, version, variation, fname):
 # Does its own auth because it may be used in embedded questions
 def attachment_qtemplate(qtemplate_id, version, variation, fname):
     """ Serve the given question attachment """
-    qt = OaDB.get_qtemplate(qtemplate_id)
+    qt = DB.get_qtemplate(qtemplate_id)
     if len(qt['embed_id']) < 1:  # if it's not embedded, check auth
         if 'user_id' not in session:
             session['redirect'] = request.path
             return redirect(url_for('index'))
-    (mimetype, filename) = OaAttachment.getQuestionAttachmentDetails(qtemplate_id, version, variation, fname)
-    if OaAttachment.is_restricted(fname):
+    (mimetype, filename) = Attachment.getQuestionAttachmentDetails(qtemplate_id, version, variation, fname)
+    if Attachment.is_restricted(fname):
         abort(403)
     if not mimetype:
         abort(404)
@@ -117,7 +117,7 @@ def main_news():
     """ Present the top menu page """
     return render_template(
         "news.html",
-        news=OaDB.getMessage("news"),
+        news=DB.getMessage("news"),
     )
 
 
@@ -125,7 +125,7 @@ def main_news():
 @authenticated
 def qedit_redirect(topic_id, qt_id):
     """ Work out the appropriate question editor and redirect to it """
-    etype = OaDB.getQTemplateEditor(qt_id)
+    etype = DB.getQTemplateEditor(qt_id)
     if etype == "Raw":
         return redirect(url_for("qedit_raw_edit",
                                 topic_id=topic_id,
@@ -154,23 +154,23 @@ def qedit_raw_edit(topic_id, qt_id):
         return redirect(url_for("cadmin_edit_topic",
                                 topic_id=topic_id))
 
-    course = CourseAPI.get_course(course_id)
+    course = Courses2.get_course(course_id)
     topic = Topics.getTopic(topic_id)
-    qtemplate = OaDB.get_qtemplate(qt_id)
+    qtemplate = DB.get_qtemplate(qt_id)
     try:
-        html = OaDB.getQTAttachment(qt_id, "qtemplate.html")
+        html = DB.getQTAttachment(qt_id, "qtemplate.html")
     except KeyError:
         try:
-            html = OaDB.getQTAttachment(qt_id, "__qtemplate.html")
+            html = DB.getQTAttachment(qt_id, "__qtemplate.html")
         except KeyError:
             html = "[question html goes here]"
 
     qtemplate['html'] = html
-    attachnames = OaDB.get_qt_atts(qt_id, version=qtemplate['version'])
+    attachnames = DB.get_qt_atts(qt_id, version=qtemplate['version'])
     attachments = [
         {
             'name': name,
-            'mimetype': OaDB.get_qt_att_mimetype(qt_id, name)
+            'mimetype': DB.get_qt_att_mimetype(qt_id, name)
         } for name in attachnames if
             not name in ['qtemplate.html', 'image.gif',
                          'datfile.txt', '__datfile.txt', '__qtemplate.html']
@@ -204,9 +204,9 @@ def qedit_raw_save(topic_id, qt_id):
         flash("Question editing cancelled, changes not saved.")
         return redirect(url_for("cadmin_edit_topic", topic_id=topic_id))
 
-    version = OaDB.incrementQTVersion(qt_id)
-    owner = UserAPI.getUser(user_id)
-    OaDB.update_qt_owner(qt_id, user_id)
+    version = DB.incrementQTVersion(qt_id)
+    owner = Users2.getUser(user_id)
+    DB.update_qt_owner(qt_id, user_id)
     audit(3, user_id, qt_id, "qeditor",
           "version=%s,message=%s" % (version, "Edited: ownership set to %s" % owner['uname']))
 
@@ -214,44 +214,44 @@ def qedit_raw_save(topic_id, qt_id):
         qtitle = form['qtitle']
         qtitle = qtitle.replace("'", "&#039;")
         title = qtitle.replace("%", "&#037;")
-        OaDB.update_qt_title(qt_id, title)
+        DB.update_qt_title(qt_id, title)
 
     if 'embed_id' in form:
         embed_id = form['embed_id']
         embed_id = ''.join([ch for ch in embed_id
                             if ch in "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"])
-        if not OaDB.updateQTemplateEmbedID(qt_id, embed_id):
+        if not DB.updateQTemplateEmbedID(qt_id, embed_id):
             flash("Error updating EmbedID, possibly the value is already used elsewhere.")
 
     # They entered something into the html field and didn't upload a qtemplate.html
     if not ('newattachmentname' in form and form['newattachmentname'] == "qtemplate.html"):
         if 'newhtml' in form:
             html = form['newhtml'].encode("utf8")
-            OaDB.create_qt_att(qt_id, "qtemplate.html", "text/plain", html, version)
+            DB.create_qt_att(qt_id, "qtemplate.html", "text/plain", html, version)
 
     # They uploaded a new qtemplate.html
     if 'newindex' in request.files:
         data = request.files['newindex'].stream.getvalue()
         if len(data) > 1:
             html = data
-            OaDB.create_qt_att(qt_id, "qtemplate.html", "text/plain", html, version)
+            DB.create_qt_att(qt_id, "qtemplate.html", "text/plain", html, version)
 
     # They uploaded a new datfile
     if 'newdatfile' in request.files:
         data = request.files['newdatfile'].stream.getvalue()
         if len(data) > 1:
             df = data
-            OaDB.create_qt_att(qt_id, "datfile.txt", "text/plain", df, version)
-            qvars = OaQEditor.parseDatfile(df)
+            DB.create_qt_att(qt_id, "datfile.txt", "text/plain", df, version)
+            qvars = QEditor.parseDatfile(df)
             for row in range(0, len(qvars)):
-                OaDB.addQTVariation(qt_id, row + 1, qvars[row], version)
+                DB.addQTVariation(qt_id, row + 1, qvars[row], version)
 
                 # They uploaded a new image file
     if 'newimgfile' in request.files:
         data = request.files['newimgfile'].stream.getvalue()
         if len(data) > 1:
             df = data
-            OaDB.create_qt_att(qt_id, "image.gif", "image/gif", df, version)
+            DB.create_qt_att(qt_id, "image.gif", "image/gif", df, version)
 
     if 'newmodule' in form:
         try:
@@ -259,14 +259,14 @@ def qedit_raw_save(topic_id, qt_id):
         except (ValueError, TypeError):
             flash(form['newmodule'])
         else:
-            OaDB.update_qt_marker(qt_id, newmodule)
+            DB.update_qt_marker(qt_id, newmodule)
 
     if 'newmaxscore' in form:
         try:
             newmaxscore = float(form['newmaxscore'])
         except (ValueError, TypeError):
             newmaxscore = None
-        OaDB.update_qt_maxscore(qt_id, newmaxscore)
+        DB.update_qt_maxscore(qt_id, newmaxscore)
 
     newname = False
     if 'newattachmentname' in form:
@@ -280,7 +280,7 @@ def qedit_raw_save(topic_id, qt_id):
             newname = f.filename
         data = f.read()
         mtype = f.content_type
-        OaDB.create_qt_att(qt_id, newname, mtype, data, version)
+        DB.create_qt_att(qt_id, newname, mtype, data, version)
         log(INFO, "File '%s' uploaded by %s" % (newname, session['username']))
 
     flash("Question changes saved")
@@ -293,8 +293,8 @@ def qedit_raw_attach(qt_id, fname):
     """ Serve the given question template attachment
         straight from DB so it's fresh
     """
-    mimetype = OaDB.get_qt_att_mimetype(qt_id, fname)
-    data = OaDB.getQTAttachment(qt_id, fname)
+    mimetype = DB.get_qt_att_mimetype(qt_id, fname)
+    data = DB.getQTAttachment(qt_id, fname)
     if not data:
         abort(404)
     if not mimetype:

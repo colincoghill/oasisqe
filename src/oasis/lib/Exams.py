@@ -12,11 +12,11 @@ import json
 import datetime
 from logging import log, INFO, ERROR
 
-from .OaDB import run_sql, dbpool, MC
+from .DB import run_sql, dbpool, MC
 from .OaTypes import todatetime
-import CourseAPI
-from .OaUserDB import check_perm
-import OaDB, OaGeneral
+import Courses2
+from .UserDB import check_perm
+import DB, General
 
 
 def saveScore(exam, student, examtotal):
@@ -466,7 +466,7 @@ def touchUserExam(exam, user):
     """
     assert isinstance(exam, int)
     assert isinstance(user, int)
-    OaDB.touchUserExam(exam, user)
+    DB.touchUserExam(exam, user)
 
 
 def resetMark(exam, user):
@@ -680,14 +680,14 @@ def getExamStruct(exam_id, user_id=None, include_qtemplates=False, include_stats
 
         MC.set(key, _serialize_examstruct(exam),
                60) # 60 second cache. enough to take the edge off an exam start peak load
-    course = CourseAPI.get_course(exam['cid'])
-    exam['future'] = OaGeneral.isFuture2(exam['start'])
-    exam['past'] = OaGeneral.isPast2(exam['end'])
-    exam['soon'] = OaGeneral.isSoon(exam['start'])
-    exam['recent'] = OaGeneral.isRecent(exam['end'])
-    exam['active'] = OaGeneral.isNow(exam['start'], exam['end'])
+    course = Courses2.get_course(exam['cid'])
+    exam['future'] = General.isFuture2(exam['start'])
+    exam['past'] = General.isPast2(exam['end'])
+    exam['soon'] = General.isSoon(exam['start'])
+    exam['recent'] = General.isRecent(exam['end'])
+    exam['active'] = General.isNow(exam['start'], exam['end'])
     exam['start_epoch'] = int(exam['start'].strftime("%s"))  # useful for sorting
-    exam['period'] = OaGeneral.humanDatePeriod(exam['start'], exam['end'])
+    exam['period'] = General.humanDatePeriod(exam['start'], exam['end'])
     exam['course'] = course
     exam['start_human'] = exam['start'].strftime("%a %d %b")
 
