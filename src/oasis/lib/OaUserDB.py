@@ -17,7 +17,7 @@ PERMS = {'OASIS_SUPERUSER': 1, 'OASIS_USERADMIN': 2,
          'OASIS_SYSCOURSES': 19, 'OASIS_SURVEYRESULTS': 20}
 
 
-def checkPermission(uid, group_id, perm):
+def checkPerm(uid, group_id, perm):
     """ Check to see if the user has the permission on the given course. """
     permission = 0
     if not isinstance(perm, int):  # we have a string name so look it up
@@ -55,12 +55,12 @@ def satisfyPerms(uid, group_id, permlist):
         on the given group?
     """
     for perm in permlist:
-        if checkPermission(uid, group_id, perm):
+        if checkPerm(uid, group_id, perm):
             return True
     return False
 
 
-def deletePermission(uid, group_id, perm):
+def deletePerm(uid, group_id, perm):
     """Remove a permission. """
     key = "permission-%s-super" % (uid,)
     MC.delete(key)
@@ -69,7 +69,7 @@ def deletePermission(uid, group_id, perm):
             (uid, group_id, perm))
 
 
-def addPermission(uid, group_id, perm):
+def addPerm(uid, group_id, perm):
     """ Assign a permission."""
     key = "permission-%s-super" % (uid,)
     MC.delete(key)
@@ -77,18 +77,7 @@ def addPermission(uid, group_id, perm):
              VALUES (%s, %s, %s) """, (group_id, uid, perm))
 
 
-def getPermissions(uid):
-    """ Return a list of the permissions held by the user.
-        returns [(gid, perm), (gid, perm),... ]
-    """
-    ret = run_sql("""SELECT "id", course, permission FROM permissions WHERE userid=%s;""", (uid,))
-    if not ret:
-        return []
-    res = [(int(perm[1]), int(perm[2])) for perm in ret]
-    return res
-
-
-def getCoursePermissions(course_id):
+def getCoursePerms(course_id):
     """ Return a list of all users with permissions on the given course.
         Exclude those who get them via superuser.
     """

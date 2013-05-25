@@ -13,7 +13,7 @@ from flask import render_template, session, \
 from .lib import Courses, CourseAPI, OaSetup
 
 MYPATH = os.path.dirname(__file__)
-from .lib.OaUserDB import checkPermission
+from .lib.OaUserDB import checkPerm
 from .lib import OaDB, Groups
 from oasis import app, authenticated
 
@@ -35,7 +35,7 @@ def admin_top():
 def admin_courses():
     """ Present page to administer courses in the system """
     user_id = session['user_id']
-    if not checkPermission(user_id, 0, "OASIS_SYSADMIN"):
+    if not checkPerm(user_id, 0, "OASIS_SYSADMIN"):
         flash("You do not have system administrator permission")
         return redirect(url_for('setup_top'))
     courses = OaSetup.getSortedCourseList(with_stats=True, only_active=False)
@@ -51,7 +51,7 @@ def admin_courses():
 def admin_course(course_id):
     """ Present page to administer settings for a given course"""
     user_id = session['user_id']
-    if not checkPermission(user_id, 0, "OASIS_SYSADMIN"):
+    if not checkPerm(user_id, 0, "OASIS_SYSADMIN"):
         flash("You do not have system administrator permission")
         return redirect(url_for('setup_top'))
 
@@ -87,7 +87,7 @@ def admin_course(course_id):
 def admin_add_course():
     """ Present page to administer settings for a given course """
     user_id = session['user_id']
-    if not checkPermission(user_id, 0, "OASIS_SYSADMIN"):
+    if not checkPerm(user_id, 0, "OASIS_SYSADMIN"):
         flash("You do not have system administrator permission")
         return redirect(url_for('setup_top'))
     course = {
@@ -106,7 +106,7 @@ def admin_add_course():
 def admin_course_save(course_id):
     """ accept saved settings """
     user_id = session['user_id']
-    if not checkPermission(user_id, 0, "OASIS_SYSADMIN"):
+    if not checkPerm(user_id, 0, "OASIS_SYSADMIN"):
         flash("You do not have system administrator permission")
         return redirect(url_for('setup_top'))
 
@@ -186,7 +186,7 @@ def admin_add_course_save():
     """ accept saved settings for a new course"""
 
     user_id = session['user_id']
-    if not checkPermission(user_id, 0, "OASIS_SYSADMIN"):
+    if not checkPerm(user_id, 0, "OASIS_SYSADMIN"):
         flash("You do not have system administrator permission")
         return redirect(url_for('setup_top'))
 
@@ -246,7 +246,7 @@ def admin_editmessages():
     """ Present page to administer messages in the system """
 
     user_id = session['user_id']
-    if not checkPermission(user_id, 0, "OASIS_SYSADMIN"):
+    if not checkPerm(user_id, 0, "OASIS_SYSADMIN"):
         flash("You do not have system administrator permission")
         return redirect(url_for('setup_top'))
     mesg_news = OaDB.getMessage("news")
@@ -265,7 +265,7 @@ def admin_savemessages():
     """ Save messages in the system """
 
     user_id = session['user_id']
-    if not checkPermission(user_id, 0, "OASIS_SYSADMIN"):
+    if not checkPerm(user_id, 0, "OASIS_SYSADMIN"):
         flash("You do not have system administrator permission")
         return redirect(url_for('setup_top'))
 

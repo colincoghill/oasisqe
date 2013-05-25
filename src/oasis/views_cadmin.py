@@ -17,7 +17,7 @@ from .lib import OaConfig, UserAPI, OaDB, Topics, OaUserDB, OaGeneral, \
 
 MYPATH = os.path.dirname(__file__)
 
-from .lib.OaUserDB import checkPermission, satisfyPerms
+from .lib.OaUserDB import checkPerm, satisfyPerms
 
 from oasis import app, authenticated
 
@@ -646,12 +646,12 @@ def cadmin_topic_save(topic_id):
 def cadmin_permissions(course_id):
     """ Present a page for them to assign permissions to the course"""
     user_id = session['user_id']
-    if not checkPermission(user_id, course_id, "OASIS_USERADMIN"):
+    if not checkPerm(user_id, course_id, "OASIS_USERADMIN"):
         flash("You do not have user admin permissions on this course")
         return redirect(url_for('cadmin_top', course_id=course_id))
     course = CourseAPI.getCourse(course_id)
 
-    permlist = OaUserDB.getCoursePermissions(course_id)
+    permlist = OaUserDB.getCoursePerms(course_id)
     perms = {}
     for uid, pid in permlist:  # (uid, permission)
         if not uid in perms:
@@ -676,7 +676,7 @@ def cadmin_permissions(course_id):
 def cadmin_permissions_save(course_id):
     """ Present a page for them to save new permissions to the course """
     user_id = session['user_id']
-    if not checkPermission(user_id, course_id, "OASIS_USERADMIN"):
+    if not checkPerm(user_id, course_id, "OASIS_USERADMIN"):
         flash("You do not have user admin permissions on this course")
         return redirect(url_for('cadmin_top', course_id=course_id))
 

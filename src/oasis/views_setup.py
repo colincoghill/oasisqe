@@ -15,7 +15,7 @@ from .lib import UserAPI, OaGeneral, Exams, \
 MYPATH = os.path.dirname(__file__)
 
 from .lib.Audit import audit, getRecordsByUser
-from .lib.OaUserDB import checkPermission, satisfyPerms
+from .lib.OaUserDB import checkPerm, satisfyPerms
 
 from oasis import app, authenticated
 
@@ -45,7 +45,7 @@ def setup_usercreate():
     """
     user_id = session['user_id']
 
-    if not checkPermission(user_id, -1, "OASIS_USERADMIN"):
+    if not checkPerm(user_id, -1, "OASIS_USERADMIN"):
         flash("You do not have User Administration access.")
         return redirect(url_for('setup_top'))
 
@@ -118,7 +118,7 @@ def setup_usersearch():
     """ Show a page allowing the admin search for users, or create new ones"""
     user_id = session['user_id']
 
-    if not checkPermission(user_id, -1, "OASIS_USERADMIN"):
+    if not checkPerm(user_id, -1, "OASIS_USERADMIN"):
         flash("You do not have User Administration access.")
         return redirect(url_for('setup_top'))
 
@@ -151,7 +151,7 @@ def setup_useraudit(audit_id):
     """ Show all the audit entries for the given user account. """
     user_id = session['user_id']
 
-    if not checkPermission(user_id, -1, "OASIS_USERADMIN"):
+    if not checkPerm(user_id, -1, "OASIS_USERADMIN"):
         flash("You do not have User Administration access.")
         return redirect(url_for('setup_top'))
 
@@ -172,7 +172,7 @@ def setup_usersummary(view_id):
     """ Show an account summary for the given user account. """
     user_id = session['user_id']
 
-    if not checkPermission(user_id, -1, "OASIS_USERADMIN"):
+    if not checkPerm(user_id, -1, "OASIS_USERADMIN"):
         flash("You do not have User Administration access.")
         return redirect(url_for('setup_top'))
 

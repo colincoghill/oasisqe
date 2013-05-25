@@ -8,7 +8,7 @@
 
 import datetime
 
-from oasis.lib.OaUserDB import getCoursePermissions, addPermission, deletePermission
+from oasis.lib.OaUserDB import getCoursePerms, addPerm, deletePerm
 from oasis.lib.Audit import audit
 from oasis.lib import UserAPI, OaDB, Topics, OaGeneral, Exams, Courses
 
@@ -150,7 +150,7 @@ def savePermissions(request, cid, user_id):
     """ Save permission changes
     """
 
-    permlist = getCoursePermissions(cid)
+    permlist = getCoursePerms(cid)
     perms = {}
     users = {}
     for perm in permlist:
@@ -182,7 +182,7 @@ def savePermissions(request, cid, user_id):
             for perm in [2, 5, 10, 14, 11, 8, 9, 15]:
                 if uname in newperms and perm in newperms[uname]:
                     if not perm in perms[uname]:
-                        addPermission(uid, cid, perm)
+                        addPerm(uid, cid, perm)
                         audit(1,
                               user_id,
                               uid,
@@ -191,7 +191,7 @@ def savePermissions(request, cid, user_id):
                         )
                 else:
                     if uname in perms and perm in perms[uname]:
-                        deletePermission(uid, cid, perm)
+                        deletePerm(uid, cid, perm)
                         audit(1,
                               user_id,
                               uid,
@@ -205,7 +205,7 @@ def savePermissions(request, cid, user_id):
                 # We've added a user
                 for perm in [2, 5, 10, 14, 11, 8, 9, 15]:
                     if perm in newperms[uname]:
-                        addPermission(uid, cid, perm)
+                        addPerm(uid, cid, perm)
                         audit(1,
                               user_id,
                               uid,
@@ -216,7 +216,7 @@ def savePermissions(request, cid, user_id):
             newuname = form['adduser']
             newuid = UserAPI.getUidByUname(newuname)
             if newuid:
-                addPermission(newuid, cid, 10)
+                addPerm(newuid, cid, 10)
             audit(1,
                   user_id,
                   newuid,

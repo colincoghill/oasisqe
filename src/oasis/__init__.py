@@ -6,7 +6,7 @@
 """ Main entry point. This uses Flask to provide a WSGI app, it should be
 run from a WSGI web server such as Apache or Nginx. """
 
-# We include the views covering logging in/out and account signup and related here.
+# We include the views covering logging in/out and account signup and related.
 
 from flask import Flask, session, redirect, url_for, request, \
     render_template, flash, abort
@@ -46,7 +46,7 @@ if not app.debug:  # Log warnings or higher
         fh = RotatingFileHandler(filename=OaConfig.logfile)
         fh.setLevel(logging.WARNING)
         fh.setFormatter(logging.Formatter(
-            "%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]"
+           "%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]"
         ))
         app.logger.addHandler(fh)
         logging.log(logging.INFO, "File logger starting up" )
@@ -85,22 +85,26 @@ def template_context():
     }}
 
 
-def authenticated(f):
+def authenticated(fn):
     """ Decorator to check the user is currently authenticated and
         deal with the session/redirect """
-    @wraps(f)
+    @wraps(fn)
     def call_fn(*args, **kwargs):
+        """ If they're not in session, redirect them and remember where
+            they were going.
+        """
         if 'user_id' not in session:
             session['redirect'] = request.path
             return redirect(url_for('index'))
-        return f(*args, **kwargs)
+        return fn(*args, **kwargs)
 
     return call_fn
 
 
 @app.route("/")
 def index():
-    """ Main landing page. Welcome them and give them some login instructions. """
+    """ Main landing page. Welcome them and give them some login instructions.
+    """
     if 'user_id' in session:
         return redirect(url_for("main_top"))
 

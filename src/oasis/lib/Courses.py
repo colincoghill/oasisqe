@@ -289,7 +289,8 @@ def getGroupsInCourse(course):
 def getCourseGroupMap(only_active=True):
     """ Return a dictionary mapping course ids to (multiple) group ids.
         eg. { 5: [1,2,3], 6: [2,3] }
-        says that groups 1,2,3 are associated with course 5, and 2,3 with course 6.
+        says that groups 1,2,3 are associated with course 5,and 2,3 with
+        course 6.
         if only_active is set to False, will include inactive courses.
     """
     courses = getAll(only_active)

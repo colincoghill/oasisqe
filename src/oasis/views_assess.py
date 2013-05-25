@@ -19,7 +19,7 @@ from .lib import OaDB, OaGeneral, Exams, CourseAPI, OaAssess
 
 MYPATH = os.path.dirname(__file__)
 
-from .lib.OaUserDB import checkPermission
+from .lib.OaUserDB import checkPerm
 
 from oasis import app, authenticated
 
@@ -66,7 +66,7 @@ def assess_unlock(course_id, exam_id):
 
     exam = Exams.getExamStruct(exam_id, user_id)
 
-    if not checkPermission(user_id, course_id, "OASIS_PREVIEWASSESSMENT"):
+    if not checkPerm(user_id, course_id, "OASIS_PREVIEWASSESSMENT"):
         if exam['future']:
             flash("That assessment is not yet available.")
             return redirect(url_for("assess_top"))
@@ -96,7 +96,7 @@ def assess_startexam(course_id, exam_id):
     user_id = session['user_id']
     exam = Exams.getExamStruct(exam_id, user_id)
 
-    if not checkPermission(user_id, course_id, "OASIS_PREVIEWASSESSMENT"):
+    if not checkPerm(user_id, course_id, "OASIS_PREVIEWASSESSMENT"):
         if exam['future']:
             flash("That assessment is not yet available.")
             return redirect(url_for("assess_top"))

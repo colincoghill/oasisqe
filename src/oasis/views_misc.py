@@ -18,7 +18,7 @@ from .lib import UserAPI, OaDB, Topics, \
 MYPATH = os.path.dirname(__file__)
 
 from .lib.Audit import audit
-from .lib.OaUserDB import checkPermission
+from .lib.OaUserDB import checkPerm
 
 from oasis import app, authenticated
 
@@ -141,10 +141,10 @@ def qedit_raw_edit(topic_id, qt_id):
 
     course_id = Topics.getCourse(topic_id)
 
-    if not (checkPermission(user_id, course_id, "OASIS_COURSECOORD")
-            or checkPermission(user_id, course_id, "OASIS_COURSEADMIN")
-            or checkPermission(user_id, course_id, "OASIS_QUESTIONEDITOR")
-            or checkPermission(user_id, course_id, "OASIS_QUESTIONSOURCEVIEW")):
+    if not (checkPerm(user_id, course_id, "OASIS_COURSECOORD")
+            or checkPerm(user_id, course_id, "OASIS_COURSEADMIN")
+            or checkPerm(user_id, course_id, "OASIS_QUESTIONEDITOR")
+            or checkPerm(user_id, course_id, "OASIS_QUESTIONSOURCEVIEW")):
         flash("You do not have question editor privilege in this course")
         return redirect(url_for("cadmin_edit_topic",
                                 topic_id=topic_id))
@@ -186,10 +186,10 @@ def qedit_raw_save(topic_id, qt_id):
     """ Accept the question editor form and save the results. """
     user_id = session['user_id']
     course_id = Topics.getCourse(topic_id)
-    if not (checkPermission(user_id, course_id, "OASIS_COURSECOORD")
-            or checkPermission(user_id, course_id, "OASIS_COURSEADMIN")
-            or checkPermission(user_id, course_id, "OASIS_QUESTIONEDITOR")
-            or checkPermission(user_id, course_id, "OASIS_QUESTIONSOURCEVIEW")):
+    if not (checkPerm(user_id, course_id, "OASIS_COURSECOORD")
+            or checkPerm(user_id, course_id, "OASIS_COURSEADMIN")
+            or checkPerm(user_id, course_id, "OASIS_QUESTIONEDITOR")
+            or checkPerm(user_id, course_id, "OASIS_QUESTIONSOURCEVIEW")):
         flash("You do not have question editor privilege in this course")
         return redirect(url_for("cadmin_edit_topic", topic_id=topic_id))
 

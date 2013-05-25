@@ -10,7 +10,7 @@ import re
 from logging import log, WARN
 from oasis.lib import OaGeneral
 
-from oasis.lib.OaUserDB import checkPermission
+from oasis.lib.OaUserDB import checkPerm
 from oasis.lib.OaExceptions import OaMarkerError
 from . import OaConfig, OaDB, OaPool, Topics
 
@@ -50,7 +50,7 @@ def getSortedQuestionList(course, topic, user_id=None):
     if questionlist:
         # Filter out the questions without a positive position unless
         # the user has prevew permission.
-        canpreview = checkPermission(user_id, course, "OASIS_PREVIEWQUESTIONS")
+        canpreview = checkPerm(user_id, course, "OASIS_PREVIEWQUESTIONS")
         if not canpreview:
             questionlist = [question for question in questionlist
                             if question['position'] > 0]
@@ -137,7 +137,7 @@ def isQuestionBlockedToUser(user_id, c_id, topic_id, qt_id):
         True, or a (str) error message indicating why it's blocked.
     """
     topicvisibility = Topics.getVisibility(topic_id)
-    canpreview = checkPermission(user_id, c_id, "OASIS_PREVIEWQUESTIONS")
+    canpreview = checkPerm(user_id, c_id, "OASIS_PREVIEWQUESTIONS")
     # They're trying to go directly to a hidden question?
     position = OaDB.getQTemplatePositionInTopic(qt_id, topic_id)
     if position <= 0 and not canpreview:

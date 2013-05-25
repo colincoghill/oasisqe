@@ -15,7 +15,7 @@ from logging import log, INFO, ERROR
 from .OaDB import run_sql, dbpool, MC
 from .OaTypes import todatetime
 import CourseAPI
-from .OaUserDB import checkPermission
+from .OaUserDB import checkPerm
 import OaDB, OaGeneral
 
 
@@ -699,6 +699,6 @@ def getExamStruct(exam_id, user_id=None, include_qtemplates=False, include_stats
         exam['notcoursedone'] = getNumDone(exam_id), exam['coursedone']
     if user_id:
         exam['is_done'] = isDoneBy(user_id, exam_id)
-        exam['can_preview'] = checkPermission(user_id, exam['cid'], "OASIS_PREVIEWASSESSMENT")
+        exam['can_preview'] = checkPerm(user_id, exam['cid'], "OASIS_PREVIEWASSESSMENT")
 
     return exam

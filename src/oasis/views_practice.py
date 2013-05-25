@@ -12,7 +12,7 @@ from flask import render_template, session, request, abort
 from logging import log, ERROR
 from .lib import OaDB, OaPractice, Topics, OaGeneral, CourseAPI, OaSetup
 MYPATH = os.path.dirname(__file__)
-from .lib.OaUserDB import checkPermission
+from .lib.OaUserDB import checkPerm
 
 from oasis import app, authenticated
 
@@ -45,7 +45,7 @@ def practice_choose_topic(course_id):
     return render_template(
         "practicecourse.html",
         courses=OaSetup.getSortedCourseList(),
-        canpreview=checkPermission(user_id, course_id, "OASIS_PREVIEWQUESTIONS"),
+        canpreview=checkPerm(user_id, course_id, "OASIS_PREVIEWQUESTIONS"),
         topics=topics,
         course=course
     )
@@ -76,7 +76,7 @@ def practice_choose_question(topic_id):
 
     return render_template(
         "practicetopic.html",
-        canpreview=checkPermission(user_id, course_id, "OASIS_PREVIEWQUESTIONS"),
+        canpreview=checkPerm(user_id, course_id, "OASIS_PREVIEWQUESTIONS"),
         topics=topics,
         topic_id=topic_id,
         course=course,
@@ -104,7 +104,7 @@ def practice_choose_question_stats(topic_id):
 
     return render_template(
         "practicetopicstats.html",
-        canpreview=checkPermission(user_id, course_id, "OASIS_PREVIEWQUESTIONS"),
+        canpreview=checkPerm(user_id, course_id, "OASIS_PREVIEWQUESTIONS"),
         topics=topics,
         topic_id=topic_id,
         course=course,
