@@ -32,7 +32,8 @@ def getPracticeQuestion(qtid, user_id):
     try:
         qid = int(qid)
     except (ValueError, TypeError):
-        log(WARN, "OaGeneralBE.generateQuestion(%s,%s) Failed (returned %s)" % (qtid, user_id, qid))
+        log(WARN,
+            "generateQuestion(%s,%s) Fail: returned %s" % (qtid, user_id, qid))
     else:
         OaDB.setQuestionViewTime(qid)
     return qid
@@ -54,10 +55,12 @@ def getSortedQuestionList(course, topic, user_id=None):
             questionlist = [question for question in questionlist
                             if question['position'] > 0]
         else:
-            # At the moment we use -'ve positions to indicate that a question is hidden
-            # but when displaying them we want to maintain the sort order.
+            # At the moment we use -'ve positions to indicate that a question
+            # is hidden but when displaying them we want to maintain the sort
+            # order.
             for question in questionlist:
-                # Usually questions with position 0 are broken or uninteresting so put them at the bottom.
+                # Usually questions with position 0 are broken or
+                # uninteresting so put them at the bottom.
                 if question['position'] == 0:
                     question['position'] = -10000
             questionlist.sort(cmp_question_position)
@@ -149,12 +152,14 @@ def getNextPrev(qt_id, topic_id):
     """ Find the "next" and "previous" qtemplates, by topic, position. """
     if not topic_id:
         return None, None
-        # This is very inefficient, but with the way questions are stored, I didn't
-    # see a better way. Could maybe be revisited some time?
+        # This is very inefficient, but with the way questions are stored,
+        # I didn't see a better way. Could maybe be revisited some time?
     questionlist = OaGeneral.getQuestionListing(topic_id, numdone=False)
     if questionlist:
         # Filter out the questions without a positive position
-        questionlist = [question for question in questionlist if question['position'] > 0]
+        questionlist = [question
+                        for question in questionlist
+                        if question['position'] > 0]
     else:
         questionlist = []
         # We need to step through the list finding the "next and previous" id's
@@ -190,7 +195,8 @@ def markQuestion(user_id, topic_id, q_id, request):
                 answers["G%d" % part] = value
                 OaDB.saveGuess(newqid, part, value)
             else:
-                log(WARN,"received guess for wrong question? (%d,%d,%d,%s)" % (user_id, topic_id, q_id, request.form))
+                log(WARN,
+                    "received guess for wrong question? (%d,%d,%d,%s)" % (user_id, topic_id, q_id, request.form))
     try:
         marks = OaGeneral.markQuestion(q_id, answers)
         OaDB.setQuestionStatus(q_id, 3)    # 3 = marked
