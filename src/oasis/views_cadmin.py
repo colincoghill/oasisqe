@@ -314,7 +314,7 @@ def cadmin_enrolments(course_id):
             group['startdate'] = group['startdate'].strftime("%d %b %Y")
         else:
             group['startdate'] = "-"
-        group['nummembers'] = len(Groups.getUsersInGroup(group['id']))
+        group['nummembers'] = len(Groups.get_users(group['id']))
 
     return render_template("courseadmin_enrolment.html",
                            course=course,
@@ -337,13 +337,13 @@ def cadmin_editgroup(group_id):
     if not group:
         abort(404)
 
-    course_id = Groups.getCourseForGroup(group_id)
+    course_id = Groups.get_course(group_id)
     if not satisfyPerms(user_id, course_id, ("OASIS_USERADMIN",)):
         flash("You do not have 'User Admin' permission on this course.")
         return redirect(url_for('cadmin_top', course_id=course_id))
 
     course = Courses2.get_course(course_id)
-    ulist = Groups.getUsersInGroup(group_id)
+    ulist = Groups.get_users(group_id)
     members = [Users2.getUser(uid) for uid in ulist]
     return render_template("courseadmin_editgroup.html",
                            course=course,
@@ -382,7 +382,7 @@ def cadmin_editgroup_addperson(group_id):
     if not group:
         abort(404)
 
-    course_id = Groups.getCourseForGroup(group_id)
+    course_id = Groups.get_course(group_id)
     if not satisfyPerms(user_id, course_id, ("OASIS_USERADMIN",)):
         flash("You do not have 'User Admin' permission on this course.")
         return redirect(url_for('cadmin_top', course_id=course_id))
@@ -399,7 +399,7 @@ def cadmin_editgroup_addperson(group_id):
         if not new_uid:
             flash("User '%s' Not Found" % new_uname)
         else:
-            Groups.addUserToGroup(new_uid, group_id)
+            Groups.add_user(new_uid, group_id)
             flash("Added '%s to group." % (new_uname,))
 
     return redirect(url_for('cadmin_editgroup', group_id = group_id))
@@ -483,7 +483,7 @@ def cadmin_edit_topic(topic_id):
     course = Courses2.get_course(course_id)
     topic = {
         'id': topic_id,
-        'position': Topics.getPosition(topic_id),
+        'position': Topics.get_pos(topic_id),
         'name': Topics.get_name(topic_id)
     }
     questions = [question
@@ -540,7 +540,7 @@ def cadmin_view_qtemplate_history(topic_id, qt_id):
     course = Courses2.get_course(course_id)
     topic = {
         'id': topic_id,
-        'position': Topics.getPosition(topic_id),
+        'position': Topics.get_pos(topic_id),
         'name': Topics.get_name(topic_id)
     }
     qtemplate = DB.get_qtemplate(qt_id)
@@ -577,7 +577,7 @@ def cadmin_view_topic(topic_id):
     course = Courses2.get_course(course_id)
     topic = {
         'id': topic_id,
-        'position': Topics.getPosition(topic_id),
+        'position': Topics.get_pos(topic_id),
         'name': Topics.get_name(topic_id)
     }
     questions = [question for question in Topics.get_qts(topic_id).values()]

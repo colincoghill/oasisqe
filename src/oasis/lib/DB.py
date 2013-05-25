@@ -872,7 +872,9 @@ def copy_qt(qt_id):
         Returns the new qtemplate id.
     """
     assert isinstance(qt_id, int)
-    res = run_sql("SELECT owner, title, description, marker, scoremax, status FROM qtemplates WHERE qtemplate = %s",
+    res = run_sql("SELECT owner, title, description, marker, scoremax, status "
+                  "FROM qtemplates "
+                  "WHERE qtemplate = %s",
                   qt_id)
     if not res:
         raise KeyError("QTemplate %d not found" % qt_id)
@@ -891,7 +893,8 @@ def addQTVariation(qt_id, variation, data, version):
     assert isinstance(version, int)
     pick = cPickle.dumps(data)
     safedata = psycopg2.Binary(pick)
-    run_sql("INSERT INTO qtvariations (qtemplate, variation, data, version) VALUES (%s, %s, %s, %s)",
+    run_sql("INSERT INTO qtvariations (qtemplate, variation, data, version) "
+            "VALUES (%s, %s, %s, %s)",
             (qt_id, variation, safedata, version))
 
 
@@ -911,7 +914,8 @@ def create_qt(owner, title, desc, marker, scoremax, status):
     dbpool.commit(conn)
     if res:
         return int(res[0][0])
-    log(ERROR, "createQT may have failed(%d, %s, %s, %d, %s, %s)" % (owner, title, desc, marker, scoremax, status))
+    log(ERROR,
+        "create_qt error (%d, %s, %s, %d, %s, %s)" % (owner, title, desc, marker, scoremax, status))
 
 
 def _serialize_courseexaminfo(info):
@@ -1061,7 +1065,7 @@ def convertSecondsToHuman(seconds):
     return "%d days ago" % int(seconds / perday)
 
 
-def getIndividualPracticeStats(user_id, qt_id):
+def get_prac_stats_user_qt(user_id, qt_id):
     """ Return Data on the scores of individual practices. it is used to
         display Individual Practise Data section
         Restricted by a certain time period which is 30 secs to 2 hours"""
@@ -1113,7 +1117,7 @@ def getStudentQuestionPracticeStats(user_id, qt_id, num=3):
     stats = []
     if ret:
         for row in ret:
-            ageseconds = 10000000000 # if we can't tell we assume it's from before we tracked it
+            ageseconds = 10000000000 #  could be from before we tracked it.
             age = row[2]
             try:
                 age = int(age)
@@ -1134,13 +1138,16 @@ def getStudentQuestionPracticeStats(user_id, qt_id, num=3):
     return None
 
 
-def fetchQuestionStatsInClass(course, qt_id):
+def get_q_stats_class(course, qt_id):
     """Fetch a bunch of statistics about the given question for the class
     """
     assert isinstance(course, int)
     assert isinstance(qt_id, int)
-    sql = """SELECT
-                 COUNT(question), AVG(score), STDDEV(score), MAX(score), MIN(score)
+    sql = """SELECT COUNT(question),
+                    AVG(score),
+                    STDDEV(score),
+                    MAX(score),
+                    MIN(score)
              FROM questions
              WHERE qtemplate = %s
              AND marktime < NOW()

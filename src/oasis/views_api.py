@@ -3,7 +3,8 @@
 # This code is under the GNU Affero General Public License
 # http://www.gnu.org/licenses/agpl-3.0.html
 
-""" URLs designed to be called by other code - generally to return JSON for AJAX calls from the web interface
+""" URLs designed to be called by other code - generally to return
+    JSON for AJAX calls from the web interface
 """
 
 import os

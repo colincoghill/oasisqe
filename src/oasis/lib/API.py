@@ -13,6 +13,8 @@ from oasis.lib import General, Courses
 
 
 def getSortedQuestionList(topic):
+    # TODO: Duplicated in General.get_q_list ?
+
     def cmp_question_position(a, b):
         """Order questions by the absolute value of their positions
            since we use -'ve to indicate hidden.

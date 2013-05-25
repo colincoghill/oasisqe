@@ -109,7 +109,7 @@ def get_sorted_qlist_wstats(course_id, topic_id, user_id=None):
             question['stats'] = stats_1
         else:
             question['stats'] = None
-        stats_2 = DB.fetchQuestionStatsInClass(course_id, question['qtid'])
+        stats_2 = DB.get_q_stats_class(course_id, question['qtid'])
         if not stats_2:  # no stats, make some up
             stats_2 = {'num': 0, 'max': 0, 'min': 0, 'avg': 0}
             percentage = 0
@@ -119,14 +119,14 @@ def get_sorted_qlist_wstats(course_id, topic_id, user_id=None):
             else:
                 percentage = int(stats_2['avg'] / stats_2['max'] * 100)
         question['classpercent'] = str(percentage) + "%"
-        individualstats = DB.getIndividualPracticeStats(user_id, question['qtid'])
-        if not individualstats:
+        user_stats = DB.get_prac_stats_user_qt(user_id, question['qtid'])
+        if not user_stats:
             indivpercentage = 0
         else:
             if stats_2['max'] == 0:
                 indivpercentage = 0
             else:
-                indivpercentage = int(individualstats['avg'] / stats_2['max'] * 100)
+                indivpercentage = int(user_stats['avg'] / stats_2['max'] * 100)
         question['indivpercent'] = str(indivpercentage) + "%"
     return questions
 
@@ -136,7 +136,7 @@ def is_q_blocked(user_id, course_id, topic_id, qt_id):
         False if they can view it
         True, or a (str) error message indicating why it's blocked.
     """
-    topicvisibility = Topics.getVisibility(topic_id)
+    topicvisibility = Topics.get_vis(topic_id)
     canpreview = check_perm(user_id, course_id, "OASIS_PREVIEWQUESTIONS")
     # They're trying to go directly to a hidden question?
     position = DB.get_qtemplate_topic_pos(qt_id, topic_id)
@@ -205,7 +205,9 @@ def mark_q(user_id, topic_id, q_id, request):
         log(WARN, "Marker Error - (%d, %d, %d, %s)" % (user_id, topic_id, q_id, request.form))
         marks = {}
     q_body = General.renderMarkResults(q_id, marks)
-    parts = [int(var[1:]) for var in marks.keys() if re.search("^A([0-9]+)$", var) > 0]
+    parts = [int(var[1:])
+             for var in marks.keys()
+             if re.search(r"^A([0-9]+)$", var) > 0]
     parts.sort()
     total = 0.0
     for part in parts:

@@ -53,7 +53,7 @@ def getTopicListing(cid, numq=True):
         tlist.append({'tid': topic,
                       'name': Topics.get_name(topic),
                       'num': num,
-                      'visibility': Topics.getVisibility(topic)})
+                      'visibility': Topics.get_vis(topic)})
     return tlist
 
 

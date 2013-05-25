@@ -71,7 +71,7 @@ def admin_course(course_id):
             group['startdate'] = group['startdate'].strftime("%d %b %Y")
         else:
             group['startdate'] = "-"
-        group['size'] = len(Groups.getUsersInGroup(group['id']))
+        group['size'] = len(Groups.get_users(group['id']))
 
     allgroups = Groups.getInfoAll()
     return render_template(

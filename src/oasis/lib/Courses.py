@@ -155,7 +155,7 @@ def getUsersInCourse(course):
     groups = get_groups(course)
     allusers = []
     for group in groups:
-        allusers += Groups.getUsersInGroup(group)
+        allusers += Groups.get_users(group)
     return allusers
 
 

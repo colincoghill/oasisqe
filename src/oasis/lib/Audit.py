@@ -24,27 +24,31 @@ def getRecordsByUser(uid, start=None, end=None, limit=100, offset=0):
         If end is also provided, only searches between start and end.
         start and end should be datetime or None
         uid should be a user ID integer.
-        limit is the maximum number of rows returned, offset is starting from result n
+        limit is the maximum number of rows returned, offset is starting
+        from result n
     """
     uid = int(uid)
     if end:
         sql = """SELECT "id", "instigator", "module", "longmesg", "time", "object", "message"
                 FROM audit
-                WHERE ("object" = %s or "instigator" = %s) AND "time" > %s AND "time" < %s
+                WHERE ("object" = %s or "instigator" = %s)
+                  AND "time" > %s
+                  AND "time" < %s
                 ORDER BY "time" DESC
                 LIMIT %s OFFSET %s;"""
         params = (uid, uid, start, end, limit, offset)
     elif start:
         sql = """SELECT "id", "instigator", "module", "longmesg", "time", "object", "message"
                 FROM audit
-                WHERE ("object" = %s or "instigator" = %s) AND "time" > %s
+                WHERE ("object" = %s or "instigator" = %s)
+                  AND "time" > %s
                 ORDER BY "time" DESC
                 LIMIT %s OFFSET %s;"""
         params = (uid, uid, start, limit, offset)
     else:
         sql = """SELECT "id", "instigator", "module", "longmesg", "time", "object", "message"
                 FROM audit
-                WHERE ("object" = %s or "instigator" = %s)
+                WHERE ("object" = %s OR "instigator" = %s)
                 ORDER BY "time" DESC
                 LIMIT %s OFFSET %s;"""
         params = (uid, uid, limit, offset)

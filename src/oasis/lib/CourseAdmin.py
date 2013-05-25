@@ -14,11 +14,11 @@ from oasis.lib import Users2, DB, Topics, General, Exams, Courses
 
 
 def doCourseTopicUpdate(course, request):
-    """Read the user submitted form and make relevant changes to the Topic information
+    """Read the submitted form and make relevant changes to Topic information
     """
-
+    # TODO: Describe what this is doing
     categories = []
-    categorylist = []
+    topics = []
 
     form = request.form
     if form:
@@ -30,16 +30,16 @@ def doCourseTopicUpdate(course, request):
                     categories = categories + [catid]
 
         for c in categories:
-            categorylist = categorylist + [{'id': int(c),
-                                            'position': form['%s_position' % c],
-                                            'name': form['%s_name' % c],
-                                            'visibility': form['%s_visibility' % c]
-                                           }]
-        for i in categorylist:
+            topics = topics + [{'id': int(c),
+                                'position': form['%s_position' % c],
+                                'name': form['%s_name' % c],
+                                'visibility': form['%s_visibility' % c]
+                                }]
+        for i in topics:
             if not i['id'] == 0:
-                Topics.setPosition(i['id'], i['position'])
-                Topics.setName(int(i['id']), i['name'])
-                Topics.setVisibility(i['id'], i['visibility'])
+                Topics.set_pos(i['id'], i['position'])
+                Topics.set_name(int(i['id']), i['name'])
+                Topics.set_vis(i['id'], i['visibility'])
                 Courses.incrementVersion()
             else:
                 if not i['name'] == "[Name of new topic]":
@@ -213,29 +213,9 @@ def ExamEditSubmit(request, user_id, cid, exam_id):
 
     return exam_id
 
-#
-#
-# def _getSubmitExam(session, course, student, exam):
-#     """ Submit the assessment for the student (eg. when they didn't).
-#     """
-#
-#     userid = session['user_id']
-#     out = OaAssessFE.getAssessmentSubmitPage(student, course, exam)
-#     audit(1, userid, student, "Assessment", "%s submitted exam %d for %s" % (Users.getUname(userid), exam, Users.getUname(student)))
-#     return "Assessment submitted!. <a href='$SPATH$/courseadmin/examstatus/%d'>Return to marks page</a>%s" % (exam,out)
-#
-#
-# def _getUnsubmitExam(session, course, student, exam):
-#     """ Reset the exam timers and marks so the student can re-do or finish it.
-#     """
-#
-#     userid = session['user_id']
-#     Exams.unsubmit(exam, student)
-#     audit(1, userid, student, "Assessment", "%s unsubmitted exam %d for %s" % (Users.getUname(userid), exam, Users.getUname(student)))
-#     return "Assessment reset!. <a href='$SPATH$/courseadmin/examstatus/%d'>Return to marks page</a>" % (exam,)
-
 
 def _getSortedQuestionList(topic):
+    # TODO: Is this duplicated elsewhere?
     def cmp_question_position(a, b):
         """Order questions by the absolute value of their positions
            since we use -'ve to indicate hidden.

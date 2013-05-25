@@ -64,7 +64,7 @@ def get_name(topic_id):
     return getTopic(topic_id)['title']
 
 
-def setName(topic_id, name):
+def set_name(topic_id, name):
     """Set the name of a topic."""
     assert isinstance(topic_id, int)
     assert isinstance(name, str) or isinstance(name, unicode)
@@ -73,13 +73,13 @@ def setName(topic_id, name):
     MC.delete(key)
 
 
-def getPosition(topic_id):
+def get_pos(topic_id):
     """Fetch the position of a topic."""
     assert isinstance(topic_id, int)
     return getTopic(topic_id)['position']
 
 
-def setPosition(topic_id, pos):
+def set_pos(topic_id, pos):
     """Update the position of a topic."""
     if pos is None:
         pos = 0
@@ -98,12 +98,12 @@ def get_course_id(topic_id):
     return getTopic(topic_id)['course']
 
 
-def getVisibility(topic_id):
+def get_vis(topic_id):
     """Fetch the visibility of a topic."""
     return getTopic(topic_id)['visibility']
 
 
-def setVisibility(topic_id, vis):
+def set_vis(topic_id, vis):
     """Update the visibility of a topic."""
     run_sql("""UPDATE topics SET visibility=%s WHERE topic=%s;""", (vis, topic_id))
     key = "topic-%s-record" % topic_id

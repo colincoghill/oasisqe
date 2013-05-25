@@ -26,7 +26,7 @@ def create(name, description, owner, grouptype, startdate=None, enddate=None):
     return None
 
 
-def getUsersInGroup(group_id):
+def get_users(group_id):
     """ Return a list of users in the group. """
     ret = run_sql("""SELECT userid FROM usergroups WHERE groupid=%s;""", (int(group_id),))
     if ret:
@@ -45,7 +45,7 @@ def getName(group_id):
     return "UNKNOWN"
 
 
-def addUserToGroup(uid, group_id):
+def add_user(uid, group_id):
     """ Adds given user to the list of people enrolled in the given group."""
     run_sql("""INSERT INTO usergroups (userid, groupid, "type") VALUES (%s, %s, 2) """, (uid, group_id))
 
@@ -81,7 +81,7 @@ def flushUsersInGroup(group_id):
     run_sql("""DELETE FROM usergroups WHERE groupid = %s;""", (group_id,))
 
 
-def getCourseForGroup(group_id):
+def get_course(group_id):
     """ Return the course_id of the course this group is associated with.
     """
 

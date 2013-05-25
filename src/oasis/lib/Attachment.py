@@ -30,17 +30,17 @@ def getQuestionAttachmentDetails(qtid, version, variation, name):
     # for the two biggies we hit the question first,
     # otherwise check the question template first
     if name == "image.gif" or name == "qtemplate.html":
-        filename = DB.get_q_att_fname(qtid, name, variation, version)
-        if filename:
-            return DB.get_q_att_mimetype(qtid, name, variation, version), filename
-        filename = DB.getQTAttachmentFilename(qtid, name, version)
-        if filename:
-            return DB.get_qt_att_mimetype(qtid, name, version), filename
+        fname = DB.get_q_att_fname(qtid, name, variation, version)
+        if fname:
+            return DB.get_q_att_mimetype(qtid, name, variation, version), fname
+        fname = DB.getQTAttachmentFilename(qtid, name, version)
+        if fname:
+            return DB.get_qt_att_mimetype(qtid, name, version), fname
     else:
-        filename = DB.getQTAttachmentFilename(qtid, name, version)
-        if filename:
-            return DB.get_qt_att_mimetype(qtid, name, version), filename
-        filename = DB.get_q_att_fname(qtid, name, variation, version)
-        if filename:
-            return DB.get_q_att_mimetype(qtid, name, variation, version), filename
+        fname = DB.getQTAttachmentFilename(qtid, name, version)
+        if fname:
+            return DB.get_qt_att_mimetype(qtid, name, version), fname
+        fname = DB.get_q_att_fname(qtid, name, variation, version)
+        if fname:
+            return DB.get_q_att_mimetype(qtid, name, variation, version), fname
     return None, None
