@@ -26,35 +26,35 @@ def create(name, description, owner, grouptype, startdate=None, enddate=None):
     return None
 
 
-def getUsersInGroup(group):
+def getUsersInGroup(group_id):
     """ Return a list of users in the group. """
-    ret = run_sql("""SELECT userid FROM usergroups WHERE groupid=%s;""", (int(group),))
+    ret = run_sql("""SELECT userid FROM usergroups WHERE groupid=%s;""", (int(group_id),))
     if ret:
         users = [int(row[0]) for row in ret]
         return users
-    log(INFO, "Request for users in unknown or empty group %s." % group)
+    log(INFO, "Request for users in unknown or empty group %s." % group_id)
     return []
 
 
-def getName(group):
+def getName(group_id):
     """ Return the name of the group."""
-    ret = run_sql("""SELECT title FROM groups WHERE "id"=%s;""", (group,))
+    ret = run_sql("""SELECT title FROM groups WHERE "id"=%s;""", (group_id,))
     if ret:
         return ret[0][0]
-    log(WARN, "Request for users in unknown or empty group %s." % group)
+    log(WARN, "Request for users in unknown or empty group %s." % group_id)
     return "UNKNOWN"
 
 
-def addUserToGroup(uid, gid):
+def addUserToGroup(uid, group_id):
     """ Adds given user to the list of people enrolled in the given group."""
-    run_sql("""INSERT INTO usergroups (userid, groupid, "type") VALUES (%s, %s, 2) """, (uid, gid))
+    run_sql("""INSERT INTO usergroups (userid, groupid, "type") VALUES (%s, %s, 2) """, (uid, group_id))
 
 
-def getInfo(group):
+def getInfo(group_id):
     """ Return a summary of the group.
         { 'id':id, 'name':name, 'title':title }
     """
-    ret = run_sql("""SELECT id, title, description, startdate, enddate FROM groups WHERE id = %s;""", (group,))
+    ret = run_sql("""SELECT id, title, description, startdate, enddate FROM groups WHERE id = %s;""", (group_id,))
     info = {}
     if ret:
         info = {
@@ -74,11 +74,11 @@ def getInfo(group):
     return info
 
 
-def flushUsersInGroup(gid):
+def flushUsersInGroup(group_id):
     """ DANGEROUS:  Clears list of enrolled users in group.
         Use only just before importing new list.
     """
-    run_sql("""DELETE FROM usergroups WHERE groupid = %s;""", (gid,))
+    run_sql("""DELETE FROM usergroups WHERE groupid = %s;""", (group_id,))
 
 
 def getCourseForGroup(group_id):

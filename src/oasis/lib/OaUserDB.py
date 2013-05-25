@@ -3,7 +3,7 @@
 # This code is under the GNU Affero General Public License
 # http://www.gnu.org/licenses/agpl-3.0.html
 
-""" Contains database access functions for users, groups, permissions, and courses """
+""" Contains db access functions for users, groups, permissions and courses """
 
 from oasis.lib.OaDB import run_sql, MC
 
@@ -17,7 +17,7 @@ PERMS = {'OASIS_SUPERUSER': 1, 'OASIS_USERADMIN': 2,
          'OASIS_SYSCOURSES': 19, 'OASIS_SURVEYRESULTS': 20}
 
 
-def checkPermission(uid, gid, perm):
+def checkPermission(uid, group_id, perm):
     """ Check to see if the user has the permission on the given course. """
     permission = 0
     if not isinstance(perm, int):  # we have a string name so look it up
@@ -33,48 +33,48 @@ def checkPermission(uid, gid, perm):
         MC.set(key, True)
         return True
         # If we're asking for course -1 it means any course will do.
-    if gid == -1:
+    if group_id == -1:
         ret = run_sql("""SELECT "id" FROM permissions WHERE userid=%s AND permission=%s;""", (uid, permission))
         if ret:
             return True
         # Do they have the permission explicitly?
     ret = run_sql("""SELECT "id" FROM permissions WHERE course=%s AND userid=%s AND permission=%s;""",
-                  (gid, uid, permission))
+                  (group_id, uid, permission))
     if ret:
         return True
         # Now check for global override
     ret = run_sql("""SELECT "id" FROM permissions WHERE course=%s AND userid=%s AND permission='0';""",
-                  (gid, uid))
+                  (group_id, uid))
     if ret:
         return True
     return False
 
 
-def satisfyPerms(uid, gid, permlist):
+def satisfyPerms(uid, group_id, permlist):
     """ Does the user have one or more of the permissions in permlist,
         on the given group?
     """
     for perm in permlist:
-        if checkPermission(uid, gid, perm):
+        if checkPermission(uid, group_id, perm):
             return True
     return False
 
 
-def deletePermission(uid, gid, perm):
+def deletePermission(uid, group_id, perm):
     """Remove a permission. """
     key = "permission-%s-super" % (uid,)
     MC.delete(key)
     run_sql("""DELETE FROM permissions
                 WHERE userid=%s AND course=%s AND permission=%s""",
-            (uid, gid, perm))
+            (uid, group_id, perm))
 
 
-def addPermission(uid, gid, perm):
+def addPermission(uid, group_id, perm):
     """ Assign a permission."""
     key = "permission-%s-super" % (uid,)
     MC.delete(key)
     run_sql("""INSERT INTO permissions (course, userid, permission)
-             VALUES (%s, %s, %s) """, (gid, uid, perm))
+             VALUES (%s, %s, %s) """, (group_id, uid, perm))
 
 
 def getPermissions(uid):
@@ -88,13 +88,14 @@ def getPermissions(uid):
     return res
 
 
-def getCoursePermissions(cid):
+def getCoursePermissions(course_id):
     """ Return a list of all users with permissions on the given course.
         Exclude those who get them via superuser.
     """
-    ret = run_sql("""SELECT "id", userid, permission FROM permissions WHERE course=%s;""", (cid,))
+    ret = run_sql("""SELECT "id", userid, permission FROM permissions WHERE course=%s;""", (course_id,))
     if not ret:
         return []
     res = [(int(perm[1]), int(perm[2])) for perm in ret if
            perm[2] in [2, 5, 10, 14, 11, 17, 16, 8, 9, 15]]
+    # TODO: Magic numbers! get rid of them!
     return res

@@ -5,19 +5,6 @@
 
 """ Courses.py
     Handle course related operations.
-    CREATE TABLE groupcourses (
-    id integer NOT NULL,
-    groupid integer NOT NULL,
-    active integer DEFAULT 0,
-    course integer NOT NULL,
-    assess_visibility CHARACTER VARYING DEFAULT 'all';  --   all, enrolled, staff
-    practice_visibility CHARACTER VARYING DEFAULT 'enrolled';  --   all, enrolled, staff
-    enrol_type CHARACTER VARYING DEFAULT 'manual';  --   manual, file, url, ldap
-    registration CHARACTER VARYING DEFAULT 'controlled'; -- controlled, open
-    enrol_location CHARACTER VARYING NULL;  -- if enrol type is URL or FILE, it's details
-                                            -- if it's LDAP, the LDAP group name
-    enrol_freq INTEGER DEFAULT '120';  -- How often (minutes) to refresh enrolment info
-    );
 """
 from oasis.lib import Topics, Groups
 
@@ -25,7 +12,7 @@ from oasis.lib.OaDB import run_sql, dbpool, MC
 from logging import log, ERROR
 import datetime
 
-# WARNING: Course name and title are stored in the database as:  title, description
+# WARNING: name and title are stored in the database as: title, description
 
 
 def getVersion():
@@ -58,72 +45,72 @@ def incrementVersion():
     return -1
 
 
-def setName(cid, name):
+def setName(course_id, name):
     """ Set the name of a course."""
-    assert isinstance(cid, int)
+    assert isinstance(course_id, int)
     assert isinstance(name, str) or isinstance(name, unicode)
     incrementVersion()
-    run_sql("UPDATE courses SET title=%s WHERE course=%s;", (name, cid))
-    key = "course-%s-name" % cid
+    run_sql("UPDATE courses SET title=%s WHERE course=%s;", (name, course_id))
+    key = "course-%s-name" % course_id
     MC.delete(key)
 
 
-def setTitle(cid, title):
+def setTitle(course_id, title):
     """ Set the title of a course."""
-    assert isinstance(cid, int)
+    assert isinstance(course_id, int)
     assert isinstance(title, str) or isinstance(title, unicode)
     incrementVersion()
-    run_sql("UPDATE courses SET description=%s WHERE course=%s;", (title, cid))
-    key = "course-%s-title" % cid
+    run_sql("UPDATE courses SET description=%s WHERE course=%s;", (title, course_id))
+    key = "course-%s-title" % course_id
     MC.delete(key)
 
 
-def getActive(cid):
+def getActive(course_id):
     """ Fetch the active flag"""
-    assert isinstance(cid, int)
-    key = "course-%s-active" % cid
+    assert isinstance(course_id, int)
+    key = "course-%s-active" % course_id
     obj = MC.get(key)
     if not obj is None:
         return obj
-    ret = run_sql("""SELECT active FROM courses WHERE course=%s;""", (cid,))
+    ret = run_sql("SELECT active FROM courses WHERE course=%s;", (course_id,))
     if ret:
         MC.set(key, ret[0][0])
         return ret[0][0]
-    log(ERROR, "Request for active flag of unknown course %s." % cid)
+    log(ERROR, "Request for active flag of unknown course %s." % course_id)
     return None
 
 
-def setActive(cid, active):
+def setActive(course_id, active):
     """ Set the active flag of a course."""
-    assert isinstance(cid, int)
+    assert isinstance(course_id, int)
     assert isinstance(active, bool)
     if active:
         val = 1
     else:
         val = 0
-    run_sql("UPDATE courses SET active=%s WHERE course=%s;", (val, cid))
+    run_sql("UPDATE courses SET active=%s WHERE course=%s;", (val, course_id))
     incrementVersion()
-    key = "course-%s-active" % cid
+    key = "course-%s-active" % course_id
     MC.delete(key)
     key = "courses-active"
     MC.delete(key)
 
 
-def setEnrolType(cid, enrol_type):
+def setEnrolType(course_id, enrol_type):
     """ Set the enrolment type of a course."""
-    assert isinstance(cid, int)
+    assert isinstance(course_id, int)
     assert isinstance(enrol_type, str) or isinstance(enrol_type, unicode)
 
-    run_sql("UPDATE courses SET enrol_type=%s WHERE course=%s;", (enrol_type, cid))
+    run_sql("UPDATE courses SET enrol_type=%s WHERE course=%s;", (enrol_type, course_id))
     incrementVersion()
 
 
-def setRegistration(cid, registration):
+def setRegistration(course_id, registration):
     """ Set the registration type of a course."""
-    assert isinstance(cid, int)
+    assert isinstance(course_id, int)
     assert isinstance(registration, str) or isinstance(registration, unicode)
 
-    run_sql("UPDATE courses SET registration=%s WHERE course=%s;", (registration, cid))
+    run_sql("UPDATE courses SET registration=%s WHERE course=%s;", (registration, course_id))
     incrementVersion()
 
 
@@ -177,17 +164,29 @@ def getInfoAll():
         [position] = { 'id':id, 'name':name, 'title':title }
     """
     ret = run_sql(
-        """SELECT course, title, description, owner, active, type, enrol_type, enrol_location, enrol_freq, registration,
-                practice_visibility, assess_visibility
-             FROM courses WHERE active='1' ORDER BY title ;""")
+        """SELECT course, title, description, owner, active, type,
+                  enrol_type, enrol_location, enrol_freq, registration,
+                  practice_visibility, assess_visibility
+             FROM courses
+             WHERE active='1'
+             ORDER BY title ;""")
     info = {}
     if ret:
         count = 0
         for row in ret:
             info[count] = {
-                'id': int(row[0]), 'name': row[1], 'title': row[2], 'owner': row[3], 'active': row[4],
-                'type': row[5], 'enrol_type': row[6], 'enrol_location': row[7], 'enrol_freq': row[8],
-                'registration': row[9], 'practice_visibility': row[10], 'assess_visibility': row[11]
+                'id': int(row[0]),
+                'name': row[1],
+                'title': row[2],
+                'owner': row[3],
+                'active': row[4],
+                'type': row[5],
+                'enrol_type': row[6],
+                'enrol_location': row[7],
+                'enrol_freq': row[8],
+                'registration': row[9],
+                'practice_visibility': row[10],
+                'assess_visibility': row[11]
             }
             # Defaults added since database was created
             if not row['enrol_location']:
@@ -224,9 +223,10 @@ def getFullCourseDict():
         [id] = { 'id':id, 'name':name, 'title':title }
     """
     ret = run_sql(
-        """SELECT course, title, description, owner, active, type, enrol_type, enrol_location, enrol_freq, registration,
-                practice_visibility, assess_visibility
-            FROM courses;""")
+        """SELECT course, title, description, owner, active, type,
+                  enrol_type, enrol_location, enrol_freq, registration,
+                  practice_visibility, assess_visibility
+             FROM courses;""")
     cdict = {}
     if ret:
         for row in ret:
@@ -258,7 +258,8 @@ def create(name, description, owner, coursetype):
     """ Add a course to the database."""
     conn = dbpool.begin()
     conn.run_sql("""INSERT INTO courses (title, description, owner, type)
-               VALUES (%s, %s, %s, %s);""", (name, description, owner, coursetype))
+                    VALUES (%s, %s, %s, %s);""",
+                    (name, description, owner, coursetype))
     res = conn.run_sql("SELECT currval('courses_course_seq')")
     dbpool.commit(conn)
     incrementVersion()
@@ -268,13 +269,14 @@ def create(name, description, owner, coursetype):
     MC.delete(key)
     if res:
         return int(res[0][0])
-    log(ERROR, "db/Courses.py:create('%s','%s',%d,%d) FAILED." % (name, description, owner, coursetype))
+    log(ERROR,
+        "create('%s','%s',%d,%d) Fail" % (name, description, owner, coursetype))
     return 0
 
 
 def getGroupsInCourse(course):
     """ Return a list of groups currently attached to this course."""
-    # TODO: need to figure out how to incorporate semester codes.
+    # TODO: need to figure out how to incorporate semester codes/timing.
     sql = "SELECT groupid FROM groupcourses WHERE active='1' AND course = %s;"
     params = (course, )
     ret = run_sql(sql, params)
@@ -282,21 +284,6 @@ def getGroupsInCourse(course):
     if ret:
         groups = [row[0] for row in ret]
     return groups
-
-
-def getPrimaryGroup(course):
-    """ Return the main student group in the course. This is only a temporary measure
-        while we're separating courses and groups. This should be used wherever a list
-        of students in a course is wanted. It doesn't allow for multiple groups being
-        in a course.
-    """
-    sql = "SELECT groupid FROM groupcourses WHERE active='1' AND course = %s LIMIT 1;"
-    params = (course, )
-    ret = run_sql(sql, params)
-    if ret:
-        return int(ret[0][0])
-    log(ERROR, "Unable to find primary group for course %s, defaulting to course id, which may be incorrect." % course)
-    return [course, ]
 
 
 def getCourseGroupMap(only_active=True):
@@ -314,13 +301,14 @@ def getCourseGroupMap(only_active=True):
 
 def addGroupToCourse(gid, cid):
     """ Add a group to a course."""
-    sql = """INSERT INTO groupcourses (groupid, active, course) VALUES (%s, %s, %s);"""
+    sql = "INSERT INTO groupcourses (groupid, active, course) " \
+          "VALUES (%s, %s, %s);"
     params = (gid, 1, cid)
     run_sql(sql, params)
 
 
-# TODO most of this should be in Topics. Especially the SQL parts, so it's easier to cache without
-# getting confused.
+# TODO most of this should be in Topics. Especially the SQL parts, so it's
+#  easier to cache without getting confused.
 def getTopicsInfoAll(course, archived=2, numq=True):
     """ Return a summary of all topics in the course.
         if archived=0, only return non archived courses
