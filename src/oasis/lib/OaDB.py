@@ -1288,7 +1288,7 @@ def getDBVersion():
         pass
 
     try:  # one of the very original fields
-        ret = run_sql("""SELECT "uname" from users LIMIT 1;""")
+        ret = run_sql("""SELECT 1 from users;""")
         if ret:
             return "3.6"
     except psycopg2.DatabaseError:
@@ -1304,11 +1304,15 @@ def upgradeDB():
 
     # TODO: What do we do if we detect an empty DB?
 
-    versions = ['3.6', '3.9.1', '3.9.2']
+    versions = ['none', '3.6', '3.9.1', '3.9.2']
     dbver = getDBVersion()
     if not dbver in versions:
         log(FATAL, "Unknown Database version '%s'" % dbver)
         raise ValueError("Unknown Database version '%s'" % dbver)
+
+    if dbver == "none":
+        log(WARN, "Installing fresh database!")
+
 
     if dbver == "3.6":
         log(WARN, "Upgrading database from %s to 3.9.1" % dbver)
