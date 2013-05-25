@@ -5,10 +5,13 @@
 
 """ OaEmbed.py
 
-    Allow us to embed OASIS questions into pages from other places, eg. web tutorials.
+    Allow us to embed OASIS questions into pages from other places,
+    eg. web tutorials.
 
     http://host:port/oasis/embed/question/QTID/question.html, will POST to:
-    http://host:port/oasis/embed/question/QTID/mark.html, which will allow    Try Again
+    http://host:port/oasis/embed/question/QTID/mark.html,
+
+    Marked page may contain link to Try Again
 
 """
 
@@ -45,11 +48,14 @@ def markQuestion(user_id, qtid, request):
             OaDB.setQuestionStatus(qid, 3)    # 3 = marked
             OaDB.setQuestionMarkTime(qid)
         except OaMarkerError:
-            log(INFO, "OaEmbed:getMarkQuestionPage(%d, %d, %s) Marker ERROR" % (user_id, qtid, request.form))
+            log(INFO,
+                "getMarkQuestionPage(%d, %d, %s) Marker ERROR" % (user_id, qtid, request.form))
             marks = {}
 
         out += OaGeneral.renderMarkResults(qid, marks)
-        parts = [int(var[1:]) for var in marks.keys() if re.search("^A([0-9]+)$", var) > 0]
+        parts = [int(var[1:])
+                 for var in marks.keys()
+                 if re.search("^A([0-9]+)$", var) > 0]
         parts.sort()
         total = 0.0
         for part in parts:

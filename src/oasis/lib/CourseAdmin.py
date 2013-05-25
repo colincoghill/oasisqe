@@ -50,80 +50,10 @@ def doCourseTopicUpdate(course, request):
 
     return False
 
-#
-# def _getExamsMarksDownload(cid, eid, formdata):
-#     """ Provide a spreadsheet containing all exam marks.
-#         fmt should be 'csv' for now.
-#         Send a text/csv file with the following columns:
-#         groupname, studentID, totalmark, flags
-#     """
-#
-#     out = ""
-#     # Info about students in the course
-#     userlist = Courses.getUsersInCourse(cid)
-#
-#     users = {}
-#     for user in userlist:
-#         users[user] = {'uname': Users.getUname(user),
-#                        'givenname': Users.getGivenName(user),
-#                        'familyname': Users.getFamilyName(user)
-#                        }
-#
-#     groups = [{'id': gid,
-#                'name': Groups.getName(gid),
-#                'marks': OaGeneralBE.getGroupExamResults(gid, eid)
-#                } for gid in Courses.getGroupsInCourse(cid) ]
-#
-#     if "showid" in formdata:
-#         out += "#ID,"
-#     if "showuname" in formdata:
-#         out += "#Uname,"
-#     if "showname" in formdata:
-#         out += "#Family Name,#Given Name,"
-#     if "showparts" in formdata:
-#         numparts = Exams.getNumQuestions(eid)
-#         for part in range(1,numparts+1):
-#             out += "#Q%d," % (part,)
-#     if "showmark" in formdata:
-#         out += "#Mark,"
-#     if "showduration" in formdata:
-#         out += "#Duration,"
-#
-#     out += "\n"
-#     for group in groups:
-#
-#         exam = Exams.getExamStruct(eid, group)
-#         for uid in group["marks"].keys():
-#
-#             if "showid" in formdata:
-#                 out += '%s,' % (Users.getStudentID(uid),)
-#             if "showuname" in formdata:
-#                 out += '%s,' % (Users.getUname(uid),)
-#             if "showname" in formdata:
-#                 out += '%s,%s,' % (Users.getFamilyName(uid), Users.getGivenName(uid))
-#             mark = group["marks"][uid]['total']
-#
-#             if mark is None:
-#                 mark = ""
-#             if "showparts" in formdata:
-#                 for qtid in exam['qtemplates']:
-#                     try:
-#                         part = group['marks'][uid]['Q%d' % (qtid,)]
-#                         out += "%s," % (part,)
-#                     except KeyError:
-#                         out += ","
-#             if "showmark" in formdata:
-#                 out += '%s' % (mark,)
-#             if "showduration" in formdata:
-#                 out += ',%s' % (group["marks"][uid]['duration'],)
-#             out += "\n"
-#
-#     return out
-#
 
 # This is taken from OaSetupFE, but should probably be moved into the database
 # at some point.
-def _getPermissionShort(pid):
+def _getPermShort(pid):
     """ Return a short human readable name for the permission."""
 
     pNames = {1: "Super User",
@@ -146,7 +76,7 @@ def _getPermissionShort(pid):
     return None
 
 
-def savePermissions(request, cid, user_id):
+def savePerms(request, cid, user_id):
     """ Save permission changes
     """
 
@@ -165,7 +95,7 @@ def savePermissions(request, cid, user_id):
         perms[uname].append(int(perm[1]))
 
     form = request.form
-    if form:    # we received a form submission, so work out changes and save them
+    if form:    # we received a form submission, work out changes and save them
         fields = [field for field in form.keys() if field[:5] == "perm_"]
         newperms = {}
 
@@ -187,7 +117,7 @@ def savePermissions(request, cid, user_id):
                               user_id,
                               uid,
                               "CourseAdmin",
-                              "%s given '%s' permission by %s" % (uname, _getPermissionShort(perm), user_id,)
+                              "%s given %s permission by %s" % (uname, _getPermShort(perm), user_id,)
                         )
                 else:
                     if uname in perms and perm in perms[uname]:
@@ -196,7 +126,7 @@ def savePermissions(request, cid, user_id):
                               user_id,
                               uid,
                               "CourseAdmin",
-                              "%s had '%s' permission revoked by %s" % (uname, _getPermissionShort(perm), user_id,)
+                              "%s had %s permission revoked by %s" % (uname, _getPermShort(perm), user_id,)
                         )
 
         for uname in newperms:
@@ -210,7 +140,7 @@ def savePermissions(request, cid, user_id):
                               user_id,
                               uid,
                               "CourseAdmin",
-                              "%s given '%s' permission by %s" % (uname, _getPermissionShort(perm), user_id,)
+                              "%s given %s permission by %s" % (uname, _getPermShort(perm), user_id,)
                         )
         if "adduser" in form:
             newuname = form['adduser']
@@ -221,7 +151,7 @@ def savePermissions(request, cid, user_id):
                   user_id,
                   newuid,
                   "CourseAdmin",
-                  "%s given '%s' permission by %s" % (newuname, _getPermissionShort(10), user_id,)
+                  "%s given '%s' permission by %s" % (newuname, _getPermShort(10), user_id,)
             )
     return
 
@@ -231,8 +161,9 @@ def ExamEditSubmit(request, user_id, cid, exam_id):
         If exam_id is not provided, create a new one.
     """
 
-    # TODO: More validation. Currently we trust the client validation, although the user is authenticated staff
-    # so probably not too high a risk of shenanigans.
+    # TODO: More validation. Currently we trust the client validation,
+    # although the user is authenticated staff so probably not too high a
+    # risk of shenanigans.
 
     title = str(request.form['assess_title'])
     atype = int(request.form['assess_type'])
@@ -265,8 +196,8 @@ def ExamEditSubmit(request, user_id, cid, exam_id):
             qns[q].append(v[0])
 
     if not exam_id:
-        exam_id = Exams.create(cid, user_id, title, atype, duration, astart, aend, instructions, code=code,
-                               instant=instant)
+        exam_id = Exams.create(cid, user_id, title, atype, duration, astart,
+                               aend, instructions, code=code, instant=instant)
     else:  # update
         Exams.setTitle(exam_id, title)
         Exams.setDuration(exam_id, duration)
@@ -303,40 +234,6 @@ def ExamEditSubmit(request, user_id, cid, exam_id):
 #     audit(1, userid, student, "Assessment", "%s unsubmitted exam %d for %s" % (Users.getUname(userid), exam, Users.getUname(student)))
 #     return "Assessment reset!. <a href='$SPATH$/courseadmin/examstatus/%d'>Return to marks page</a>" % (exam,)
 
-#
-# def _getPage(session, command, formdata, tmpl):
-#     """Do the magic to fill in the main pane."""
-#
-#     out = ""
-#     user_id = int(session['user_id'])
-#     subcommands = command.split("/")
-#
-#     if not subcommands:
-#         subcommands = [command, ""]
-#
-#     if subcommands[0]=='examstatus':
-#         exam = int(subcommands[1])
-#         course = Exams.getCourse(exam)
-#         if (satisfyPerms(user_id, course,
-#                 ("OASIS_VIEWMARKS", "OASIS_ALTERMARKS"))):
-#             out = _getExamStatusPage(session, exam, tmpl)
-#         else:
-#             out = "You do not have access to administer this course."
-#
-#     if subcommands[0]=='unsubmit':
-#         course = int(subcommands[1])
-#         student = int(subcommands[2])
-#         exam = int(subcommands[3])
-#         if satisfyPerms(user_id, course, ("OASIS_ALTERMARKS",)):
-#             return _getUnsubmitExam(session, course, student, exam)
-#     elif subcommands[0]=='submit':
-#         course = int(subcommands[1])
-#         student = int(subcommands[2])
-#         exam = int(subcommands[3])
-#         if satisfyPerms(user_id, course, ("OASIS_ALTERMARKS",)):
-#             return _getSubmitExam(session, course, student, exam)
-#     return out
-
 
 def _getSortedQuestionList(topic):
     def cmp_question_position(a, b):
@@ -372,43 +269,3 @@ def getCreateExamQuestionList(course):
         topics[num]['questions'] = _getSortedQuestionList(topic_id)
     return topics
 
-#
-# def showMain(session, command="top", formdata=None):
-#     """Page handler. Called by the dispatcher to handle the setup
-#        section."""
-#
-#
-#
-#     # WARNING: Remember to check arguments carefully to stop people putting scripting in URLs
-#     # Casting them to int is generally a good plan
-#     subcommands = command.split("/")
-#     cmd = subcommands[0]
-#     user_id = session['user_id']
-#
-#
-#
-#     if subcommands[0]=='exammarks':
-#         exam = int(subcommands[2])
-#         course_id = Exams.getCourse(exam)
-#         course_info = CourseAPI.getCourse(course_id)
-#         now = datetime.datetime.now()
-#         OaSession.showHTTPHeader(session, contenttype = "text/csv", disposition = 'inline; filename="%s-results-%s-%s.csv"' % (course_info['name'], Exams.getTitle(exam), OaGeneralBE.humanDate(now)))
-#         if (satisfyPerms(user_id, course_id,
-#                 ("OASIS_VIEWMARKS", "OASIS_ALTERMARKS"))):
-#             out = _getExamsMarksDownload(course_id, exam, formdata)
-#         else:
-#             out = "You do not have access to administer this course."
-#         OaSession.showHTML(session, out)
-#         return True
-#
-#     loader = TemplateLoader([OaConfig.homedir + "/html", ], variable_lookup='lenient')
-#
-#     tmpl = loader.load("page-std.xhtml")
-#     try:
-#         page = _getPage(session, command, formdata, tmpl)
-#         OaSession.showHTTPHeader(session, contenttype = "text/html; charset=UTF-8", disposition = None)
-#         OaSession.showHTML(session, page)
-#     except sendRedirect, e:
-#         OaSession.sendRedirect(session, e.target)
-#
-#     return True

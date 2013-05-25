@@ -10,7 +10,8 @@
 
 from logging import log, INFO
 
-# Todo: this may misbehave when we're running parallel web servers. Maybe make it expire automatically
+# Todo: this may misbehave when we're running parallel web servers.
+# Maybe make it expire automatically
 # every 10 mins or something.
 
 # Get the latest version of the course info

@@ -46,8 +46,8 @@ class DbConn:
                 rec = cur.execute(sql, params)
 
         except BaseException, err:
-            # it's possible that database connection timed out. Try one more time.
-            log(ERROR, "Database Error. (%s) '%s' (%s)" % (err, sql, repr(params)))
+            # it's possible that database connection timed out. Try once more.
+            log(ERROR, "Database Error (%s) '%s' (%s)" % (err, sql, repr(params)))
             raise
 
         if sql.split()[0].upper() in ("SELECT", "SHOW", "DESC", "DESCRIBE"):
@@ -63,8 +63,9 @@ class DbConn:
 
 class DbPool:
     """ Manage a pool of DbConn.
-        users should grab a database connection with begin(), run sql commands with run_sql()
-        and then release it back to the pool with commit(). This also signifies one transaction.
+        users should grab a database connection with begin(), run sql
+        commands with run_sql() and then release it back to the pool with
+        commit(). This also signifies one transaction.
         Will initialise the pool with the given number of parallel connections.
 
         example:
@@ -81,8 +82,8 @@ class DbPool:
             self.connqueue.put(DbConn(connectstring))
 
     def begin(self):
-        """Fetch a database connection from the pool (will block until one becomes
-         available), and begin a transaction on it.
+        """Fetch a db connection from the pool (will block until one becomes
+           available), and begin a transaction on it.
         """
         if self.connqueue.qsize() < 3:
             log(INFO, "DB Pool getting low! %d" % self.connqueue.qsize())
@@ -91,7 +92,7 @@ class DbPool:
         return dbc
 
     def commit(self, dbc):
-        """Commit the transaction and put the database connection back in the pool."""
+        """Commit the transaction and put the db connection back in the pool."""
         dbc.commit()
         # TODO: Check to see if there were any errors before putting it back
         self.connqueue.put(dbc)
@@ -106,7 +107,8 @@ class fileCache:
             try:
                 os.makedirs(cachedir)
             except BaseException, err:
-                log(INFO, "Can't create file cache in %s (%s)" % (cachedir, err))
+                log(INFO,
+                    "Can't create file cache in %s (%s)" % (cachedir, err))
         self.cachedir = cachedir
 
     def set(self, key, value):
@@ -123,7 +125,8 @@ class fileCache:
             try:
                 os.makedirs("%s/%s" % (self.cachedir, key))
             except IOError:
-                log(ERROR, "Can't create file cache directory in %s/%s" % (self.cachedir, key))
+                log(ERROR,
+                    "Can't create file cache directory in %s/%s" % (self.cachedir, key))
         try:
             # create with a temporary name so we don't get concurrent access issues
             fname = os.tempnam("%s/%s" % (self.cachedir, key), "oatmp")
@@ -132,7 +135,8 @@ class fileCache:
             fptr.close()
             os.rename(fname, "%s/%s/DATA" % (self.cachedir, key))
         except IOError, err:
-            log(ERROR, "File Cache Error. (%s)" % err)
+            log(ERROR,
+                "File Cache Error. (%s)" % err)
             return False
         return True
 
@@ -186,14 +190,15 @@ class FakeMCConn:
 
 
 class MCConn:
-    """ Look after a connection to a memcached server. This is really just a simple
-        wrapper with some logging. """
+    """ Look after a connection to a memcached server.
+        Just a simple wrapper with some logging. """
 
     def __init__(self, connectstring):
 
         self.conn = memcache.Client([connectstring], debug=0)
         if not self.conn:
-            log(ERROR, "Memcache login failed!")
+            log(ERROR,
+                "Memcache login failed!")
 
     def set(self, key, value, expiry=None):
         """ store item. """
@@ -204,7 +209,8 @@ class MCConn:
                 res = self.conn.set(key, value, expiry)
             else:
                 res = self.conn.set(key, value)
-            log(INFO, "OaPool:MCConn:set(%s, %s, %s)" % (key, value, expiry))
+            log(INFO,
+                "OaPool:MCConn:set(%s, %s, %s)" % (key, value, expiry))
         except BaseException, err:
             # it's possible that something went wrong
             log(ERROR, "Memcache Error. (%s)" % err)
@@ -221,7 +227,8 @@ class MCConn:
 
         except BaseException, err:
             # it's possible that something went wrong
-            log(ERROR, "Memcache Error. (%s)" % err)
+            log(ERROR,
+                "Memcache Error. (%s)" % err)
             return False
 
         return res
@@ -235,7 +242,8 @@ class MCConn:
 
         except IOError, err:
             # it's possible that something went wrong
-            log(ERROR, "Memcache Error. (%s)" % err)
+            log(ERROR,
+                "Memcache Error. (%s)" % err)
             return False
 
         return res
@@ -244,14 +252,14 @@ class MCConn:
 # nowadays memcache-client comes with its own pool, but this works and I haven't
 # had time to evaluate the memcache one.
 class MCPool:
-    """ Look after a pool of connections to the memcached. As well as reducing the
-        total number of connections used, memcached also doesn't appear to be threadsafe,
-        so this gives us some protection.
+    """ Look after a pool of connections to the memcached. As well as reducing
+        total number of connections used, libmemcache also doesn't appear to be
+        threadsafe, so this gives us some protection.
     """
 
     def __init__(self, connectstring, size):
-        """Call the construction with the connection string and a number of connections to
-           put in the pool. >=10 is usually fairly safe.
+        """Call with the connection string and a number of
+           connections to put in the pool.
         """
 
         self.connqueue = Queue.Queue(size)
@@ -268,7 +276,8 @@ class MCPool:
     def get(self, key):
         """Get an item from the cache. """
         if self.connqueue.qsize() < 3:
-            log(WARNING, "Memcache Pool getting low! %d" % self.connqueue.qsize())
+            log(WARNING,
+                "Memcache Pool getting low! %d" % self.connqueue.qsize())
         dbc = self.connqueue.get(True)
         res = dbc.get(key)
         self.connqueue.put(dbc)

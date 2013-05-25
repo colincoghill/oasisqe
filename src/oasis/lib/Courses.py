@@ -319,14 +319,22 @@ def getTopicsInfoAll(course, archived=2, numq=True):
     """
     ret = None
     if archived == 0:
-        ret = run_sql("""SELECT topic, title, position, visibility, archived FROM topics
-                         WHERE course=%s AND (archived='0' OR archived IS NULL) ORDER BY position, topic;""", (course,))
+        ret = run_sql("""SELECT topic, title, position, visibility, archived
+                         FROM topics
+                         WHERE course=%s
+                           AND (archived='0' OR archived IS NULL)
+                         ORDER BY position, topic;""", (course,))
     elif archived == 1:
-        ret = run_sql("""SELECT topic, title, position, visibility, archived FROM topics
-                         WHERE course=%s AND archived='1' ORDER BY position, topic;""", (course,))
+        ret = run_sql("""SELECT topic, title, position, visibility, archived
+                         FROM topics
+                         WHERE course=%s
+                           AND archived='1'
+                         ORDER BY position, topic;""", (course,))
     elif archived == 2:
-        ret = run_sql("""SELECT topic, title, position, visibility, 0 FROM topics
-                         WHERE course=%s ORDER BY position, topic;""", (course,))
+        ret = run_sql("""SELECT topic, title, position, visibility, 0
+                         FROM topics
+                         WHERE course=%s
+                         ORDER BY position, topic;""", (course,))
     info = {}
     if ret:
         count = 0
@@ -341,7 +349,10 @@ def getTopicsInfoAll(course, archived=2, numq=True):
             count += 1
     else:  # we probably don't have the archived flag in the Db yet
         ret = run_sql(
-            "SELECT topic, title, visibility FROM topics WHERE course=%s ORDER BY position, topic;", (course,))
+            """SELECT topic, title, visibility
+               FROM topics
+               WHERE course=%s
+               ORDER BY position, topic;""", (course,))
         if ret:
             count = 0
             for row in ret:
@@ -378,7 +389,11 @@ def getExams(cid, previous_years=False):
     if not previous_years:
         now = datetime.datetime.now()
         year = now.year
-        sql = """SELECT exam FROM exams WHERE course=%s AND archived='0' AND "end" > '%s-01-01';"""
+        sql = """SELECT exam
+                 FROM exams
+                 WHERE course=%s
+                   AND archived='0'
+                   AND "end" > '%s-01-01';"""
         params = (cid, year)
     else:
         sql = """SELECT exam FROM exams WHERE course=%s;"""

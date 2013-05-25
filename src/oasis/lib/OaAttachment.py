@@ -5,14 +5,18 @@
 
 """OaAttachment.py
  Send a question attachment
- This is a little more advanced than OaQuestionAtt, as we need to be aware of different kinds of attachment.
+ This is a little more advanced than OaQuestionAtt, as we need to be aware
+ of different kinds of attachment.
 """
 
 from oasis.lib import OaDB
 
 def is_restricted(fname):
-    """ Is the filename restricted - not to be downloaded by non question editors? """
-    if fname in ('datfile.txt', 'datfile.dat', 'qtemplate.html', 'marker.py', 'results.py'):
+    """ Is the filename restricted
+        - not to be downloaded by non question editors?
+    """
+    if fname in ('datfile.txt', 'datfile.dat', 'qtemplate.html',
+                 'marker.py', 'results.py'):
         return True
     if fname.startswith("_"):
         return True

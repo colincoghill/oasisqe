@@ -684,7 +684,7 @@ def cadmin_permissions_save(course_id):
         flash("Permission changes cancelled")
         return redirect(url_for("cadmin_top", course_id=course_id))
 
-    CourseAdmin.savePermissions(request, course_id, user_id)
+    CourseAdmin.savePerms(request, course_id, user_id)
     flash("Changes saved")
     return redirect(url_for("cadmin_permissions", course_id=course_id))
 

@@ -45,14 +45,16 @@ def getCourseListing():
 
 
 def getTopicListing(cid, numq=True):
-    """ Return a list of dictionaries with topic information for the given course.
+    """ Return a list of dicts with topic information for the given course.
         [{ tid: int       Topic ID
           name: string   Name of Topic
-          num:  int      Number of questions in Topic (unless numq is false, then = None)
+          num:  int      Number of questions (if numq is false, then None)
           visibility:  int    Who can see the topic. 0 = Noone, 1 = Staff,
-                                                     2 = Course, 3 = Student, 4 = Guest
+                                                     2 = Course, 3 = Student,
+                                                     4 = Guest
+
         },]
-    """
+    """     # TODO: magic numbers!
     tlist = []
     topics = Courses.getTopics(int(cid))
     for topic in topics:
@@ -81,11 +83,12 @@ def addCourse(name, description, owner, coursetype=1):
 
 
 def getQuestionListing(tid, uid=None, numdone=True):
-    """ Return a list of dictionaries with question template information for the topic.
+    """ Return a list of dicts with question template information for the topic.
         [{ qtid: int      QTemplate ID
           name: string   Name of Question
           position: int  Position of Question in topic
-          done:  Number of times the given user has submitted a question for practice
+          done:  Number of times the given user has submitted a question
+                 for practice
         },]
     """
     qlist = []
@@ -111,7 +114,8 @@ def getQuestionAttachmentFilename(qid, name):
     qtid = OaDB.getQuestionParent(qid)
     variation = OaDB.getQuestionVariation(qid)
     version = OaDB.getQuestionVersion(qid)
-    # for the two biggies we hit the question first, otherwise check the question template first
+    # for the two biggies we hit the question first,
+    # otherwise check the question template first
     if name == "image.gif" or name == "qtemplate.html":
 
         filename = OaDB.getQAttachmentFilename(qtid, name, variation, version)
@@ -137,7 +141,8 @@ def getQuestionAttachment(qid, name):
     qtid = OaDB.getQuestionParent(qid)
     variation = OaDB.getQuestionVariation(qid)
     version = OaDB.getQuestionVersion(qid)
-    # for the two biggies we hit the question first, otherwise check the question template first
+    # for the two biggies we hit the question first,
+    # otherwise check the question template first
     if name == "image.gif" or name == "qtemplate.html":
         data = OaDB.getQAttachment(qtid, name, variation, version)
         if data:
@@ -173,8 +178,9 @@ def generateExamQuestion(exam, position, student):
 
 
 def generateQuestion(qtid, student=0, exam=0, position=0):
-    """ Given a qtemplate, will generate a question instance. If student and/or exam is supplied
-        it will be assigned appropriately. If exam is supplied, position must also be supplied.
+    """ Given a qtemplate, will generate a question instance.
+        If student and/or exam is supplied it will be assigned appropriately.
+        If exam is supplied, position must also be supplied.
         Will return the ID of the created instance.
     """
     # Pick a variation randomly
@@ -248,7 +254,8 @@ def generateQuestionHTML(qvars, html):
                    """<TEXTAREA class='auto_save' NAME='ANS_%s' ROWS=6 COLS=100>VAL_%s</TEXTAREA>""" %
                    (x.group(1), x.group(1))), html)
     # Do multiple choice
-    # TODO: need to replace with regex at some point    '<ANSWER(.+?)\s+(.+?)\s+(.*?)>'
+    # TODO: need to replace with regex at some point
+    #  '<ANSWER(.+?)\s+(.+?)\s+(.*?)>'
     for i in range(1, 49):
         (match, repl) = handleMultiFixed(html, i, qvars)
         if match:
@@ -262,7 +269,8 @@ def generateQuestionHTML(qvars, html):
         if match:
             html = html.replace(match, repl)
         # Do listbox
-    # TODO: need to replace with regex at some point    '<ANSWER(.+?)\s+(.+?)\s+(.*?)>'
+    # TODO: need to replace with regex at some point
+    #  '<ANSWER(.+?)\s+(.+?)\s+(.*?)>'
     for i in range(1, 49):
         (match, repl) = handleListbox(html, i, qvars)
         if match:
@@ -850,7 +858,8 @@ def renderMarkResults(qid, marks):
 
 
 def markQuestion(qid, answers):
-    """ Mark the question according to the answers given in a dictionary and return the result in a dictionary:
+    """ Mark the question according to the answers given in a dictionary and
+        return the result in a dictionary:
         input:    {"A1":"0.345", "A2":"fred", "A3":"-26" }
         return:   {"M1": Mark One, "C1": Comment One, "M2": Mark Two..... }
     """
@@ -877,58 +886,6 @@ def markQuestion(qid, answers):
         else:
             marks = markQuestionScript(qvars, markerscript, answers)
     return marks
-
-#
-# def getGroupExamResults(group, exam):
-#     """ Return a list of exam results for the given group (class).
-#         Will return a dictionary keyed on the userid of the student, containing
-#         results[userid] = {'total',most recent 'marker' id, 'markdate','submitdate', 'whotagged' id, 'q1','q2'...}
-#     """
-#
-#     results = {}
-#     users = Groups.getUsersInGroup(group)
-#
-#     maxduration = Exams.getDuration(exam)
-#     for user in users:
-#         marktotal = Exams.getMarkTotal(user, exam)
-#         marker = Exams.getMarker(user, exam)
-#         markdate = Exams.getMarkDate(user, exam)
-#         questions = OaDB.getExamQuestions(user, exam)
-#         results[user] = {'total': marktotal, 'marker': marker, 'markdate': markdate }
-#         start = Exams.getStudentStartTime(exam, user)
-#         if start:
-#             results[user]['started'] = humanDate(start)
-#         else:
-#             results[user]['started'] = "--"
-#         duration = getExamTimeTaken(exam, user) / 60
-#
-#         if maxduration < duration:
-#             duration = maxduration + 1
-#         if duration <= 0:
-#             duration = "0"
-#         results[user]['duration'] = duration
-#         status = Exams.getUserStatus(user, exam)
-#
-#         try:
-#             statustext = ("NotStarted", "Unseen", "InProgress", "Over-Time", "Submitted", "Marked","Official")[status]
-#         except (KeyError, ValueError, AttributeError):
-#             statustext = "ERROR"
-#         if status < 0:
-#             statustext = "Unknown"
-#         results[user]['status'] = statustext
-#         for question in questions:
-#             qmark = OaDB.getQuestionScore(question)
-#             parent = OaDB.getQuestionParent(question)
-#             if parent:
-#                 results[user]["Q%d" % parent] = qmark
-#                 results[user]["q%d" % parent] = question
-#             else:
-#                 log("info",
-#                     "OaGeneralBE:getGroupExamResults(%s, %s)" % (group, exam),
-#                     "parent = %s, question = %s, user = %s" % (parent, question, user))
-#
-#     return results
-#
 
 
 def isNow(start, end):
@@ -1083,14 +1040,6 @@ def getExamTimeTaken(exam, student):
     return int((end - start).seconds)
 
 
-def getNumberofPartsInQTemplate(qtid, version=1000000):
-    """ Returns the number of parts in a question template. """
-    html = OaDB.getQTAttachment(qtid, "qtemplate.html", version)
-    rx_answern = re.compile(r'<ANSWER([0-9]+)')
-    matches = re.findall(rx_answern, html)
-    return len(matches)
-
-
 def humanDatePeriod(start, end, html=True):
     """ Return a string containing a nice human readable description of the time period.
         eg. if the start and end are on the same day, it only gives the date once.
@@ -1110,66 +1059,11 @@ def humanDatePeriod(start, end, html=True):
 
 
 def humanDate(date):
-    """ Return a string containing a nice human readable date/time. Miss out the year if it's this year """
+    """ Return a string containing a nice human readable date/time.
+        Miss out the year if it's this year
+     """
     today = datetime.datetime.today()
     if today.year == date.year:
         return date.strftime("%b %d, %I:%M%P")
 
     return date.strftime("%Y %b %d, %I:%M%P")
-
-
-def fuzzyDate(date):
-    """ Return a friendly, human readable, representation of the given date (as an epoch). """
-    return getRelativeTimeStr(date.strftime("%Y-%m-%d %H:%M:%S"), accuracy=2)
-
-
-# taken from relativeDates.py by Jehiah Czebotar
-# http://jehiah.com/
-# released under whatever license you want; modify as you see fit
-def getRelativeTimeStr(str_time, time_format="%Y-%m-%d %H:%M:%S", accuracy=1, cmp_time=None, alternative_past=None):
-    """ convert str_time to date """
-    t = time.mktime(time.strptime(str_time, time_format))
-    return getRelativeTime(t, accuracy=accuracy, cmp_time=cmp_time, alternative_past=alternative_past)
-
-
-def getRelativeTime(t, accuracy=1, cmp_time=None, alternative_past=None):
-    """ get english text for a given time period. """
-    if not cmp_time:
-        cmp_time = time.time()
-    diff_seconds = (t - cmp_time) + 20 # unknown why it's off by 20 seconds
-    diff_minutes = int(math.floor(diff_seconds / 60))
-
-    sign = diff_minutes > 0
-    diff_minutes = math.fabs(diff_minutes)
-    # return in minutes
-    if diff_minutes > (60 * 24):
-        relative_time = str(int(math.floor(diff_minutes / (60 * 24)))) + " days"
-        if accuracy > 1:
-            relative_time += " " + str(int(math.floor((diff_minutes % (60 * 24))) / 60)) + " hours"
-    elif diff_minutes > 60:
-        relative_time = str(int(math.floor(diff_minutes / 60))) + " hours"
-        if accuracy > 1:
-            relative_time += " " + str(int(diff_minutes % 60)) + " mins"
-    else:
-        relative_time = str(int(diff_minutes)) + " minutes"
-
-    if sign:
-        relative_time = "in " + relative_time
-    else:
-        if alternative_past:
-            return alternative_past
-        relative_time += " ago"
-    return relative_time
-
-
-def showAttachment(qid, name):
-    """Send the named question attachment to the user. """
-    (mimetype, data) = getQuestionAttachment(qid, name)
-    return senddata_asfile(data, mimetype)
-
-
-def senddata_asfile(data, mimetype=None):
-    """ Send the given data as a file to the browser """
-    if mimetype:
-        return send_file(data, mimetype=mimetype)
-    return send_file(data, "text/plain")
