@@ -10,47 +10,47 @@ import re
 from logging import log, WARN
 from oasis.lib import OaGeneral
 
-from oasis.lib.OaUserDB import checkPerm
+from oasis.lib.OaUserDB import check_perm
 from oasis.lib.OaExceptions import OaMarkerError
 from . import OaConfig, OaDB, OaPool, Topics
 
 fileCache = OaPool.fileCache(OaConfig.cachedir)
 
 
-def getPracticeQuestion(qtid, user_id):
+def get_practice_q(qt_id, user_id):
     """ Find an existing, or create a new, practice question
         for the given user."""
     try:
-        qtid = int(qtid)
-        assert qtid > 0
+        qt_id = int(qt_id)
+        assert qt_id > 0
     except (ValueError, TypeError, AssertionError):
-        log(WARN, "Called with bad qtid %s?" % qtid)
-    qid = OaDB.getQuestionByQTStudent(qtid, user_id)
+        log(WARN, "Called with bad qtid %s?" % qt_id)
+    qid = OaDB.getQuestionByQTStudent(qt_id, user_id)
     if not qid is False:
         return int(qid)
-    qid = OaGeneral.generateQuestion(qtid, user_id)
+    qid = OaGeneral.generateQuestion(qt_id, user_id)
     try:
         qid = int(qid)
     except (ValueError, TypeError):
         log(WARN,
-            "generateQuestion(%s,%s) Fail: returned %s" % (qtid, user_id, qid))
+            "generateQuestion(%s,%s) Fail: returned %s" % (qt_id, user_id, qid))
     else:
         OaDB.setQuestionViewTime(qid)
     return qid
 
 
-def getSortedQuestionList(course, topic, user_id=None):
+def get_sorted_questions(course_id, topic_id, user_id=None):
     def cmp_question_position(a, b):
         """Order questions by the absolute value of their positions
            since we use -'ve to indicate hidden.
         """
         return cmp(abs(a['position']), abs(b['position']))
 
-    questionlist = OaGeneral.getQuestionListing(topic, user_id, numdone=False)
+    questionlist = OaGeneral.getQuestionListing(topic_id, user_id, numdone=False)
     if questionlist:
         # Filter out the questions without a positive position unless
         # the user has prevew permission.
-        canpreview = checkPerm(user_id, course, "OASIS_PREVIEWQUESTIONS")
+        canpreview = check_perm(user_id, course_id, "OASIS_PREVIEWQUESTIONS")
         if not canpreview:
             questionlist = [question for question in questionlist
                             if question['position'] > 0]
@@ -69,14 +69,14 @@ def getSortedQuestionList(course, topic, user_id=None):
     return questionlist
 
 
-def getSortedQuestionListWithStats(course, topic, user_id=None):
+def get_sorted_questions_wstats(course_id, topic_id, user_id=None):
     def cmp_question_position(a, b):
         """Order questions by the absolute value of their positions
            since we use -'ve to indicate hidden.
         """
         return cmp(abs(a['position']), abs(b['position']))
 
-    questionlist = OaGeneral.getQuestionListing(topic, user_id, numdone=False)
+    questionlist = OaGeneral.getQuestionListing(topic_id, user_id, numdone=False)
     if not questionlist:
         return []
         # Filter out the questions without a positive position unless
@@ -109,7 +109,7 @@ def getSortedQuestionListWithStats(course, topic, user_id=None):
             question['stats'] = stats_1
         else:
             question['stats'] = None
-        stats_2 = OaDB.fetchQuestionStatsInClass(course, question['qtid'])
+        stats_2 = OaDB.fetchQuestionStatsInClass(course_id, question['qtid'])
         if not stats_2:  # no stats, make some up
             stats_2 = {'num': 0, 'max': 0, 'min': 0, 'avg': 0}
             percentage = 0
@@ -131,15 +131,15 @@ def getSortedQuestionListWithStats(course, topic, user_id=None):
     return questions
 
 
-def isQuestionBlockedToUser(user_id, c_id, topic_id, qt_id):
+def is_q_blocked(user_id, course_id, topic_id, qt_id):
     """ Is the user blocked from seeing the practice question?
         False if they can view it
         True, or a (str) error message indicating why it's blocked.
     """
     topicvisibility = Topics.getVisibility(topic_id)
-    canpreview = checkPerm(user_id, c_id, "OASIS_PREVIEWQUESTIONS")
+    canpreview = check_perm(user_id, course_id, "OASIS_PREVIEWQUESTIONS")
     # They're trying to go directly to a hidden question?
-    position = OaDB.getQTemplatePositionInTopic(qt_id, topic_id)
+    position = OaDB.get_qtemplate_topic_pos(qt_id, topic_id)
     if position <= 0 and not canpreview:
         return "Access denied to question."
         # They're trying to go directly to a question in an invisible category?
@@ -148,7 +148,7 @@ def isQuestionBlockedToUser(user_id, c_id, topic_id, qt_id):
     return False
 
 
-def getNextPrev(qt_id, topic_id):
+def get_next_prev(qt_id, topic_id):
     """ Find the "next" and "previous" qtemplates, by topic, position. """
     if not topic_id:
         return None, None
@@ -182,7 +182,7 @@ def getNextPrev(qt_id, topic_id):
     return previd, nextid
 
 
-def markQuestion(user_id, topic_id, q_id, request):
+def mark_q(user_id, topic_id, q_id, request):
     """Mark the question and return the results"""
     answers = {}
     for i in request.form.keys():

@@ -18,7 +18,7 @@ from .lib import UserAPI, OaDB, Topics, \
 MYPATH = os.path.dirname(__file__)
 
 from .lib.Audit import audit
-from .lib.OaUserDB import checkPerm
+from .lib.OaUserDB import check_perm
 
 from oasis import app, authenticated
 
@@ -27,7 +27,7 @@ from oasis import app, authenticated
 @app.route("/att/qatt/<int:qtemplate_id>/<int:version>/<int:variation>/<fname>")
 def attachment_question(qtemplate_id, version, variation, fname):
     """ Serve the given question attachment """
-    qt = OaDB.getQTemplate(qtemplate_id)
+    qt = OaDB.get_qtemplate(qtemplate_id)
     if len(qt['embed_id']) < 1:  # if it's not embedded, check auth
         if 'user_id' not in session:
             session['redirect'] = request.path
@@ -45,7 +45,7 @@ def attachment_question(qtemplate_id, version, variation, fname):
 # Does its own auth because it may be used in embedded questions
 def attachment_qtemplate(qtemplate_id, version, variation, fname):
     """ Serve the given question attachment """
-    qt = OaDB.getQTemplate(qtemplate_id)
+    qt = OaDB.get_qtemplate(qtemplate_id)
     if len(qt['embed_id']) < 1:  # if it's not embedded, check auth
         if 'user_id' not in session:
             session['redirect'] = request.path
@@ -139,19 +139,19 @@ def qedit_raw_edit(topic_id, qt_id):
     """
     user_id = session['user_id']
 
-    course_id = Topics.getCourse(topic_id)
+    course_id = Topics.get_course_id(topic_id)
 
-    if not (checkPerm(user_id, course_id, "OASIS_COURSECOORD")
-            or checkPerm(user_id, course_id, "OASIS_COURSEADMIN")
-            or checkPerm(user_id, course_id, "OASIS_QUESTIONEDITOR")
-            or checkPerm(user_id, course_id, "OASIS_QUESTIONSOURCEVIEW")):
+    if not (check_perm(user_id, course_id, "OASIS_COURSECOORD")
+            or check_perm(user_id, course_id, "OASIS_COURSEADMIN")
+            or check_perm(user_id, course_id, "OASIS_QUESTIONEDITOR")
+            or check_perm(user_id, course_id, "OASIS_QUESTIONSOURCEVIEW")):
         flash("You do not have question editor privilege in this course")
         return redirect(url_for("cadmin_edit_topic",
                                 topic_id=topic_id))
 
-    course = CourseAPI.getCourse(course_id)
+    course = CourseAPI.get_course(course_id)
     topic = Topics.getTopic(topic_id)
-    qtemplate = OaDB.getQTemplate(qt_id)
+    qtemplate = OaDB.get_qtemplate(qt_id)
     try:
         html = OaDB.getQTAttachment(qt_id, "qtemplate.html")
     except KeyError:
@@ -185,11 +185,11 @@ def qedit_raw_edit(topic_id, qt_id):
 def qedit_raw_save(topic_id, qt_id):
     """ Accept the question editor form and save the results. """
     user_id = session['user_id']
-    course_id = Topics.getCourse(topic_id)
-    if not (checkPerm(user_id, course_id, "OASIS_COURSECOORD")
-            or checkPerm(user_id, course_id, "OASIS_COURSEADMIN")
-            or checkPerm(user_id, course_id, "OASIS_QUESTIONEDITOR")
-            or checkPerm(user_id, course_id, "OASIS_QUESTIONSOURCEVIEW")):
+    course_id = Topics.get_course_id(topic_id)
+    if not (check_perm(user_id, course_id, "OASIS_COURSECOORD")
+            or check_perm(user_id, course_id, "OASIS_COURSEADMIN")
+            or check_perm(user_id, course_id, "OASIS_QUESTIONEDITOR")
+            or check_perm(user_id, course_id, "OASIS_QUESTIONSOURCEVIEW")):
         flash("You do not have question editor privilege in this course")
         return redirect(url_for("cadmin_edit_topic", topic_id=topic_id))
 

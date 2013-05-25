@@ -33,15 +33,15 @@ def embed_question(embed_id):
         qtid = None
         abort(404)
 
-    title = request.args.get('title', OaDB.getQTemplateName(qtid))
+    title = request.args.get('title', OaDB.get_qt_name(qtid))
     title = ''.join([t for t in title if t in " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!.,?$@&"])
 
-    qid = OaPractice.getPracticeQuestion(qtid, user_id)
+    qid = OaPractice.get_practice_q(qtid, user_id)
     vers = OaDB.getQuestionVersion(qid)
     if not vers >= OaDB.getQTVersion(qtid):
         qid = OaGeneral.generateQuestion(qtid, user_id)
 
-    q_body = OaGeneral.renderQuestionHTML(qid)
+    q_body = OaGeneral.render_q_html(qid)
     return render_template(
         "embeddoquestion.html",
         q_body=q_body,

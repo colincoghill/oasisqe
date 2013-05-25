@@ -90,24 +90,24 @@ def getTopicsInCourse(cid, archived=2):
     return COURSES[cid]['topics']
 
 
-def getTopicsListInCourse(cid, archived=2):
+def get_topics_list(course_id, archived=2):
     """ Return a list of all topics in the course.
     """
 
     reloadCoursesIfNeeded()
-    if not "topics" in COURSES[cid]:
-        COURSES[cid]['topics'] = Courses.getTopicsInfoAll(cid, archived, True)
-    topics = COURSES[cid]['topics']
+    if not "topics" in COURSES[course_id]:
+        COURSES[course_id]['topics'] = Courses.getTopicsInfoAll(course_id, archived, True)
+    topics = COURSES[course_id]['topics']
     tlist = [topics[tid] for tid in topics]
     return tlist
 
 
-def getCourse(cid):
+def get_course(course_id):
     """ Return a dict of the course fields.
     """
 
     reloadCoursesIfNeeded()
-    return COURSES[cid]
+    return COURSES[course_id]
 
 
 reloadCoursesIfNeeded()

@@ -15,7 +15,7 @@ from logging import log, INFO, ERROR
 from .OaDB import run_sql, dbpool, MC
 from .OaTypes import todatetime
 import CourseAPI
-from .OaUserDB import checkPerm
+from .OaUserDB import check_perm
 import OaDB, OaGeneral
 
 
@@ -680,7 +680,7 @@ def getExamStruct(exam_id, user_id=None, include_qtemplates=False, include_stats
 
         MC.set(key, _serialize_examstruct(exam),
                60) # 60 second cache. enough to take the edge off an exam start peak load
-    course = CourseAPI.getCourse(exam['cid'])
+    course = CourseAPI.get_course(exam['cid'])
     exam['future'] = OaGeneral.isFuture2(exam['start'])
     exam['past'] = OaGeneral.isPast2(exam['end'])
     exam['soon'] = OaGeneral.isSoon(exam['start'])
@@ -699,6 +699,6 @@ def getExamStruct(exam_id, user_id=None, include_qtemplates=False, include_stats
         exam['notcoursedone'] = getNumDone(exam_id), exam['coursedone']
     if user_id:
         exam['is_done'] = isDoneBy(user_id, exam_id)
-        exam['can_preview'] = checkPerm(user_id, exam['cid'], "OASIS_PREVIEWASSESSMENT")
+        exam['can_preview'] = check_perm(user_id, exam['cid'], "OASIS_PREVIEWASSESSMENT")
 
     return exam

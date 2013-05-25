@@ -58,9 +58,9 @@ def getTopic(topic_id):
     return topic
 
 
-def getName(tid):
+def get_name(topic_id):
     """Fetch the name of a topic."""
-    return getTopic(tid)['title']
+    return getTopic(topic_id)['title']
 
 
 def setName(topic, name):
@@ -85,14 +85,14 @@ def setPosition(topic, position):
     run_sql("""UPDATE topics SET position=%s WHERE topic=%s;""", (position, topic))
     key = "topic-%s-record" % topic
     MC.delete(key)
-    course = getCourse(topic)
+    course = get_course_id(topic)
     key = "course-%s-topics" % course
     MC.delete(key)
 
 
-def getCourse(tid):
-    """Fetch the course a topic belongs to"""
-    return getTopic(tid)['course']
+def get_course_id(topic_id):
+    """Fetch the course ID of the course a topic belongs to"""
+    return getTopic(topic_id)['course']
 
 
 def getVisibility(tid):

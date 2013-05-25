@@ -61,7 +61,7 @@ def getTopicListing(cid, numq=True):
         else:
             num = None
         tlist.append({'tid': topic,
-                      'name': Topics.getName(topic),
+                      'name': Topics.get_name(topic),
                       'num': num,
                       'visibility': Topics.getVisibility(topic)})
     return tlist
@@ -109,7 +109,7 @@ def getQuestionAttachmentFilename(qid, name):
     """ Return (mimetype, filename) with the relevant filename.
         If it's not found in question, look in questiontemplate.
     """
-    qtid = OaDB.getQuestionParent(qid)
+    qtid = OaDB.get_q_parent(qid)
     variation = OaDB.getQuestionVariation(qid)
     version = OaDB.getQuestionVersion(qid)
     # for the two biggies we hit the question first,
@@ -136,7 +136,7 @@ def getQuestionAttachment(qid, name):
     """ Return (mimetype, data) with the relevant attachment.
         If it's not found in question, look in questiontemplate.
     """
-    qtid = OaDB.getQuestionParent(qid)
+    qtid = OaDB.get_q_parent(qid)
     variation = OaDB.getQuestionVariation(qid)
     version = OaDB.getQuestionVersion(qid)
     # for the two biggies we hit the question first,
@@ -195,7 +195,7 @@ def generateQuestion(qtid, student=0, exam=0, position=0):
 def generateQuestionFromVar(qtid, student, exam, position, version, variation):
     """ Generate a question given a specific variation. """
     qvars = None
-    qid = OaDB.createQuestion(qtid, OaDB.getQTemplateName(qtid), student, 1, variation, version, exam)
+    qid = OaDB.createQuestion(qtid, OaDB.get_qt_name(qtid), student, 1, variation, version, exam)
     try:
         qid = int(qid)
         assert (qid > 0)
@@ -448,51 +448,51 @@ def handleListbox(html, answer, qvars):
     return match, ret
 
 
-def renderQuestionHTML(qid, readonly=False):
+def render_q_html(q_id, readonly=False):
     """ Fetch the question html and get it ready for display - replacing
         links with appropriate targets and filling in form details."""
     try:
-        qid = int(qid)
-        assert qid > 0
+        q_id = int(q_id)
+        assert q_id > 0
     except (ValueError, TypeError, AssertionError):
         log(WARN,
-            "renderQuestionHTML(%s,%s) called with bad qid?" % (qid, readonly))
-    qtid = OaDB.getQuestionParent(qid)
+            "renderQuestionHTML(%s,%s) called with bad qid?" % (q_id, readonly))
+    qt_id = OaDB.get_q_parent(q_id)
     try:
-        qtid = int(qtid)
-        assert qtid > 0
+        qt_id = int(qt_id)
+        assert qt_id > 0
     except (ValueError, TypeError, AssertionError):
         log(WARN,
-            "renderQuestionHTML(%s,%s), getparent failed? " % (qid, readonly))
-    variation = OaDB.getQuestionVariation(qid)
-    version = OaDB.getQuestionVersion(qid)
-    data = OaDB.getQAttachment(qtid, "qtemplate.html", variation, version)
+            "renderQuestionHTML(%s,%s), getparent failed? " % (q_id, readonly))
+    variation = OaDB.getQuestionVariation(q_id)
+    version = OaDB.getQuestionVersion(q_id)
+    data = OaDB.getQAttachment(qt_id, "qtemplate.html", variation, version)
     if not data:
         log(WARN,
-            "Unable to retrieve qtemplate for qid: %s" % qid)
+            "Unable to retrieve qtemplate for q_id: %s" % q_id)
         return "QuestionError"
     try:
         out = unicode(data, "utf-8")
     except UnicodeDecodeError:
         try:
-            out = unicode(OaDB.getQAttachment(qtid, "qtemplate.html", variation, version), "latin-1")
+            out = unicode(OaDB.getQAttachment(qt_id, "qtemplate.html", variation, version), "latin-1")
         except UnicodeDecodeError, err:
             log(ERROR,
-                "unicode error decoding qtemplate for qid %s: %s" % (qid, err))
+                "unicode error decoding qtemplate for q_id %s: %s" % (q_id, err))
             raise
     out = out.replace("This question is not verified yet, please report any error!", "")
 
-    out = out.replace("ANS_", "Q_%d_ANS_" % (qid,))
+    out = out.replace("ANS_", "Q_%d_ANS_" % (q_id,))
     out = out.replace("$IMAGES$",
-                      "%s/att/qatt/%s/%s/%s/" % (OaConfig.parentURL, qtid, version, variation))
+                      "%s/att/qatt/%s/%s/%s/" % (OaConfig.parentURL, qt_id, version, variation))
     out = out.replace("$APPLET$",
-                      "%s/att/qatt/%s/%s/%s/" % (OaConfig.parentURL, qtid, version, variation))
+                      "%s/att/qatt/%s/%s/%s/" % (OaConfig.parentURL, qt_id, version, variation))
     out = out.replace("$STATIC$",
-                      "%s/att/qtatt/%s/%s/%s/" % (OaConfig.parentURL, qtid, version, variation))
+                      "%s/att/qtatt/%s/%s/%s/" % (OaConfig.parentURL, qt_id, version, variation))
     if readonly:
         out = out.replace("<INPUT ", "<INPUT READONLY ")
         out = out.replace("<SELECT ", "<SELECT DISABLED=DISABLED STYLE='color: black;'")
-    guesses = OaDB.getQuestionGuesses(qid)
+    guesses = OaDB.getQuestionGuesses(q_id)
     for guess in guesses.keys():
         # noinspection PyComparisonWithNone
         if guesses[guess] == None:  # If it's 0 we want to leave it alone
@@ -764,7 +764,7 @@ def renderMarkResultsStandard(qid, marks):
         out += u"<tr><th>&nbsp;</th><th valign='top'>Overall Comment:</th><td colspan='4'>%s</td></tr>" % (
             marks['C0'],)
     out += u"</table>\n<hr />"
-    out += renderQuestionHTML(qid, readonly=True)
+    out += render_q_html(qid, readonly=True)
     return out
 
 
@@ -775,7 +775,7 @@ def renderMarkResultsScript(qtid, qid, marks, script):
     version = OaDB.getQuestionVersion(qid)
     variation = OaDB.getQuestionVariation(qid)
     qvars = OaDB.getQTVariation(qtid, variation, version)
-    questionHTML = renderQuestionHTML(qid, readonly=True)
+    questionHTML = render_q_html(qid, readonly=True)
     resultsHTML = ""
     qvars["__builtins__"] = {'MyFuncs': OqeSmartmarkFuncs,
                              'withinTolerance': script_funcs.withinTolerance,
@@ -846,7 +846,7 @@ def renderMarkResults(qid, marks):
        set variable "resultsHTML" to contain a suitable string for putting
        in an HTML page.
     """
-    qtid = OaDB.getQuestionParent(qid)
+    qtid = OaDB.get_q_parent(qid)
     renderscript = OaDB.getQTAttachment(qtid, "__results.py")
     if not renderscript:
         resultsHTML = renderMarkResultsStandard(qid, marks)
@@ -861,7 +861,7 @@ def markQuestion(qid, answers):
         input:    {"A1":"0.345", "A2":"fred", "A3":"-26" }
         return:   {"M1": Mark One, "C1": Comment One, "M2": Mark Two..... }
     """
-    qtid = OaDB.getQuestionParent(qid)
+    qtid = OaDB.get_q_parent(qid)
     version = OaDB.getQuestionVersion(qid)
     variation = OaDB.getQuestionVariation(qid)
     qvars = OaDB.getQTVariation(qtid, variation, version)

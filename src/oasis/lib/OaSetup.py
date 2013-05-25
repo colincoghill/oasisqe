@@ -152,38 +152,38 @@ def doTopicPageCommands(request, topic_id, user_id):
         if target_cmd == 'move':
             if target_topic:
                 for qtid in qtids:
-                    qt_title = OaDB.getQTemplateName(qtid)
-                    topic_title = Topics.getName(topic_id)
+                    qt_title = OaDB.get_qt_name(qtid)
+                    topic_title = Topics.get_name(topic_id)
                     flash("Moving %s to %s" % (qt_title, topic_title))
                     OaDB.moveQTemplateToTopic(qtid, target_topic)
         if target_cmd == 'copy':
             if target_topic:
                 for qtid in qtids:
-                    qt_title = OaDB.getQTemplateName(qtid)
-                    topic_title = Topics.getName(topic_id)
+                    qt_title = OaDB.get_qt_name(qtid)
+                    topic_title = Topics.get_name(topic_id)
                     flash("Copying %s to %s" % (qt_title, topic_title))
                     newid = OaDB.copyQTemplateAll(qtid)
                     OaDB.addQTemplateToTopic(newid, target_topic)
 
         if target_cmd == 'hide':
             for qtid in qtids:
-                position = OaDB.getQTemplatePositionInTopic(qtid, topic_id)
+                position = OaDB.get_qtemplate_topic_pos(qtid, topic_id)
                 if position > 0:  # If visible, make it hidden
                     OaDB.updateQTemplatePosition(qtid, topic_id, -position)
-                    title = OaDB.getQTemplateName(qtid)
+                    title = OaDB.get_qt_name(qtid)
                     flash("Made '%s' Hidden" % title)
 
         if target_cmd == 'show':
             for qtid in qtids:
-                position = OaDB.getQTemplatePositionInTopic(qtid, topic_id)
+                position = OaDB.get_qtemplate_topic_pos(qtid, topic_id)
                 if position == 0:  # If hidden, make it visible
                     newpos = OaDB.getMaxQTemplatePositionInTopic(topic_id)
                     OaDB.updateQTemplatePosition(qtid, topic_id, newpos + 1)
-                    title = OaDB.getQTemplateName(qtid)
+                    title = OaDB.get_qt_name(qtid)
                     flash("Made '%s' Visible" % title)
                 if position < 0:  # If hidden, make it visible
                     OaDB.updateQTemplatePosition(qtid, topic_id, -position)
-                    title = OaDB.getQTemplateName(qtid)
+                    title = OaDB.get_qt_name(qtid)
                     flash("Made '%s' Visible" % title)
 
     # Then new questions
@@ -315,7 +315,7 @@ def doTopicPageCommands(request, topic_id, user_id):
 #
 
 
-def getSortedCourseList(with_stats=False, only_active=True):
+def get_sorted_courselist(with_stats=False, only_active=True):
     """Return a list of courses suitable for choosing one to edit
          [  ('example101', { coursedict }),  ('sorted302', { coursedict } )  ]
     """

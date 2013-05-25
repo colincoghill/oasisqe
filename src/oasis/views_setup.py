@@ -17,7 +17,7 @@ from .lib import UserAPI, OaGeneral, Exams, \
 MYPATH = os.path.dirname(__file__)
 
 from .lib.Audit import audit, getRecordsByUser
-from .lib.OaUserDB import checkPerm, satisfyPerms
+from .lib.OaUserDB import check_perm, satisfyPerms
 
 from oasis import app, authenticated
 
@@ -35,7 +35,7 @@ def setup_courses():
     """ Let the user choose a course to administer """
     return render_template(
         "setupchoosecourse.html",
-        courses=OaSetup.getSortedCourseList()
+        courses=OaSetup.get_sorted_courselist()
     )
 
 
@@ -47,7 +47,7 @@ def setup_usercreate():
     """
     user_id = session['user_id']
 
-    if not checkPerm(user_id, -1, "OASIS_USERADMIN"):
+    if not check_perm(user_id, -1, "OASIS_USERADMIN"):
         flash("You do not have User Administration access.")
         return redirect(url_for('setup_top'))
 
@@ -120,7 +120,7 @@ def setup_usersearch():
     """ Show a page allowing the admin search for users, or create new ones"""
     user_id = session['user_id']
 
-    if not checkPerm(user_id, -1, "OASIS_USERADMIN"):
+    if not check_perm(user_id, -1, "OASIS_USERADMIN"):
         flash("You do not have User Administration access.")
         return redirect(url_for('setup_top'))
 
@@ -153,7 +153,7 @@ def setup_useraudit(audit_id):
     """ Show all the audit entries for the given user account. """
     user_id = session['user_id']
 
-    if not checkPerm(user_id, -1, "OASIS_USERADMIN"):
+    if not check_perm(user_id, -1, "OASIS_USERADMIN"):
         flash("You do not have User Administration access.")
         return redirect(url_for('setup_top'))
 
@@ -174,7 +174,7 @@ def setup_usersummary(view_id):
     """ Show an account summary for the given user account. """
     user_id = session['user_id']
 
-    if not checkPerm(user_id, -1, "OASIS_USERADMIN"):
+    if not check_perm(user_id, -1, "OASIS_USERADMIN"):
         flash("You do not have User Administration access.")
         return redirect(url_for('setup_top'))
 
@@ -197,7 +197,7 @@ def setup_usersummary(view_id):
     course_ids = UserAPI.getCourses(view_id)
     courses = []
     for course_id in course_ids:
-        courses.append(CourseAPI.getCourse(course_id))
+        courses.append(CourseAPI.get_course(course_id))
     return render_template(
         'setup_usersummary.html',
         user=user,
@@ -231,7 +231,7 @@ def setup_myprofile():
     course_ids = UserAPI.getCourses(user_id)
     courses = []
     for course_id in course_ids:
-        courses.append(CourseAPI.getCourse(course_id))
+        courses.append(CourseAPI.get_course(course_id))
     return render_template(
         'setup_myprofile.html',
         user=user,

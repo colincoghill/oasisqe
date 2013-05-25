@@ -19,7 +19,7 @@ from .lib import OaDB, OaGeneral, Exams, CourseAPI, OaAssess
 
 MYPATH = os.path.dirname(__file__)
 
-from .lib.OaUserDB import checkPerm
+from .lib.OaUserDB import check_perm
 
 from oasis import app, authenticated
 
@@ -66,7 +66,7 @@ def assess_unlock(course_id, exam_id):
 
     exam = Exams.getExamStruct(exam_id, user_id)
 
-    if not checkPerm(user_id, course_id, "OASIS_PREVIEWASSESSMENT"):
+    if not check_perm(user_id, course_id, "OASIS_PREVIEWASSESSMENT"):
         if exam['future']:
             flash("That assessment is not yet available.")
             return redirect(url_for("assess_top"))
@@ -96,7 +96,7 @@ def assess_startexam(course_id, exam_id):
     user_id = session['user_id']
     exam = Exams.getExamStruct(exam_id, user_id)
 
-    if not checkPerm(user_id, course_id, "OASIS_PREVIEWASSESSMENT"):
+    if not check_perm(user_id, course_id, "OASIS_PREVIEWASSESSMENT"):
         if exam['future']:
             flash("That assessment is not yet available.")
             return redirect(url_for("assess_top"))
@@ -119,7 +119,7 @@ def assess_startexam(course_id, exam_id):
 
     return render_template(
         "assessstart.html",
-        course=CourseAPI.getCourse(course_id),
+        course=CourseAPI.get_course(course_id),
         exam=exam
     )
 
@@ -192,12 +192,12 @@ def assess_assessmentpage(course_id, exam_id, page):
                                 course_id=course_id,
                                 exam_id=exam_id))
 
-    course = CourseAPI.getCourse(course_id)
+    course = CourseAPI.get_course(course_id)
     if Exams.isDoneBy(user_id, exam_id):
         exam['is_done'] = True
-        html = OaGeneral.renderQuestionHTML(q_id, readonly=True)
+        html = OaGeneral.render_q_html(q_id, readonly=True)
     else:
-        html = OaGeneral.renderQuestionHTML(q_id)
+        html = OaGeneral.render_q_html(q_id)
 
     if exam['duration'] > 0:
         is_timed = 1
@@ -225,7 +225,7 @@ def assess_presubmit(course_id, exam_id):
     user_id = session['user_id']
 
     exam = Exams.getExamStruct(exam_id, course_id)
-    course = CourseAPI.getCourse(course_id)
+    course = CourseAPI.get_course(course_id)
     numquestions = Exams.getNumQuestions(exam_id)
     qids = []
     questions = []
@@ -284,7 +284,7 @@ def assess_awaitresults(course_id, exam_id):
     """
     user_id = session['user_id']
     exam = Exams.getExamStruct(exam_id, course_id)
-    course = CourseAPI.getCourse(course_id)
+    course = CourseAPI.get_course(course_id)
     numquestions = Exams.getNumQuestions(exam_id)
     qids = []
     questions = []
@@ -313,7 +313,7 @@ def assess_awaitresults(course_id, exam_id):
 def assess_viewmarked(course_id, exam_id):
     """  Show them their marked assessment results """
     user_id = session['user_id']
-    course = CourseAPI.getCourse(course_id)
+    course = CourseAPI.get_course(course_id)
     try:
         exam = Exams.getExamStruct(exam_id, course_id)
     except KeyError:

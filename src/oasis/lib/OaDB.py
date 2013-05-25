@@ -166,7 +166,7 @@ def getQuestionVariation(q_id):
     return None
 
 
-def getQuestionParent(q_id):
+def get_q_parent(q_id):
     """ Return the template this question was generated from"""
     assert isinstance(q_id, int)
     ret = run_sql("SELECT qtemplate FROM questions WHERE question=%s;", (q_id,))
@@ -231,7 +231,7 @@ def getQTemplateByEmbedID(embed_id):
     return qtemplate
 
 
-def getQTemplate(qt_id, version=None):
+def get_qtemplate(qt_id, version=None):
     """ Return a dictionary with the QTemplate information """
     assert isinstance(qt_id, int)
     assert isinstance(version, int) or version is None
@@ -338,7 +338,7 @@ def getQTemplateOwner(qt_id):
     log(WARN, "Request for unknown question template %s." % qt_id)
 
 
-def getQTemplateName(qt_id):
+def get_qt_name(qt_id):
     """ Fetch the name of a question template."""
     assert isinstance(qt_id, int)
     key = "qtemplate-%d-name" % qt_id
@@ -579,7 +579,7 @@ def getQTemplatePositionInExam(exam_id, qt_id):
     return None
 
 
-def getQTemplatePositionInTopic(qt_id, topic_id):
+def get_qtemplate_topic_pos(qt_id, topic_id):
     """ Fetch the position of a question template in a topic. """
     assert isinstance(topic_id, int)
     assert isinstance(qt_id, int)
@@ -783,7 +783,7 @@ def updateQTemplatePosition(qt_id, topic_id, position):
     assert isinstance(qt_id, int)
     assert isinstance(position, int)
     assert isinstance(topic_id, int)
-    previous = getQTemplatePositionInTopic(qt_id, topic_id)
+    previous = get_qtemplate_topic_pos(qt_id, topic_id)
     key = "topic-%d-qtemplate-%d-position" % (topic_id, qt_id)
     MC.delete(key)
     key = "topic-%d-numquestions" % topic_id

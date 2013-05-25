@@ -69,7 +69,7 @@ def question_log(qid, priority, facility, mesg):
     qid = int(qid)
     version = OaDB.getQuestionVersion(qid)
     variation = OaDB.getQuestionVariation(qid)
-    qtid = OaDB.getQuestionParent(qid)
+    qtid = OaDB.get_q_parent(qid)
     owner = OaDB.getQTemplateOwner(qtid)
     audit(3, owner, qtid, "qlogger", "version=%s,variation=%s,priority=%s,facility=%s,message=%s" % (version, variation, priority, facility, mesg))
 

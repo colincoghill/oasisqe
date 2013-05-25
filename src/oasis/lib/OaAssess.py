@@ -108,7 +108,7 @@ def renderOwnMarkedExam(student, exam):
 
     examtotal = 0.0
     for question in questions:
-        qtemplate = OaDB.getQuestionParent(question)
+        qtemplate = OaDB.get_q_parent(question)
 
         answers = OaDB.getQuestionGuessesBeforeTime(question, examsubmit)
         pos = OaDB.getQTemplatePositionInExam(exam, qtemplate)
@@ -135,7 +135,7 @@ def renderOwnMarkedExam(student, exam):
                 'comment': comment
             })
 
-        html = OaGeneral.renderQuestionHTML(question)
+        html = OaGeneral.render_q_html(question)
         results.append({
             'pos': pos,
             'html': html,
