@@ -86,17 +86,6 @@ def getQuestionMarkTime(question):
     return None
 
 
-def getAllQTemplates():
-    """ Return a list of all qtemplates in the system (no matter what the status
-    """
-    ret = run_sql("SELECT qtemplate FROM qtemplates ORDER BY qtemplate;")
-    qtemplates = []
-    if ret:
-        for row in ret:
-            qtemplates.append(row[0])
-    return qtemplates
-
-
 def getExamQuestionByPositionStudent(exam, position, student):
     """ Return the question at the given position in the exam for the student.
         Return False if there is no question assigned yet.
@@ -168,15 +157,6 @@ def getQuestionVersion(q_id):
     return None
 
 
-def getQuestionScore(q_id):
-    """ Return the score obtained on this question """
-    assert isinstance(q_id, int)
-    ret = run_sql("""SELECT score FROM questions WHERE question=%s;""", (q_id,))
-    if ret:
-        return float(ret[0][0])
-    return None
-
-
 def getQuestionVariation(q_id):
     """ Return the template variation this question was generated from"""
     assert isinstance(q_id, int)
@@ -234,26 +214,6 @@ def getQuestionGuessesBeforeTime(q_id, lasttime):
         if not "G%d" % (int(row[0])) in guesses:
             guesses["G%d" % (int(row[0]))] = row[1]
     return guesses
-
-
-def getQTemplatesInTopic(topic_id):
-    """ Return a list of the QTemplates in the given Topic. """
-    assert isinstance(topic_id, int)
-    key = "topic-%d-qtemplates" % topic_id
-    obj = MC.get(key)
-    if obj:
-        return list(obj)
-    sql = """select qtemplates.qtemplate
-            from questiontopics,qtemplates
-            where questiontopics.topic=%s
-            and questiontopics.qtemplate = qtemplates.qtemplate;"""
-    params = (topic_id,)
-    ret = run_sql(sql, params)
-    qtemplates = []
-    if ret:
-        qtemplates = [int(row[0]) for row in ret]
-        MC.set(key, qtemplates, 120)
-    return qtemplates
 
 
 def getQTemplateByEmbedID(embed_id):
@@ -895,16 +855,6 @@ def copyQTemplateAll(qt_id):
     except AttributeError, err:
         log(WARN, "Copying a qtemplate %s with no variations. '%s'" % (qt_id, err))
     return newid
-
-
-def copyQTAttachment(sourceqtid, destqtid, name):
-    """ Copy an attachment from one template to another.
-    """
-    assert isinstance(sourceqtid, int)
-    assert isinstance(destqtid, int)
-    assert isinstance(name, str) or isinstance(name, unicode)
-    createQTAttachment(destqtid, name, getQTAttachmentMimeType(sourceqtid, name),
-                    getQTAttachment(sourceqtid, name), getQTVersion(destqtid))
 
 
 def copyQTemplate(qt_id):
