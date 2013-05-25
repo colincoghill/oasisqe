@@ -46,7 +46,7 @@ def get_sorted_questions(course_id, topic_id, user_id=None):
         """
         return cmp(abs(a['position']), abs(b['position']))
 
-    questionlist = OaGeneral.getQuestionListing(topic_id, user_id, numdone=False)
+    questionlist = OaGeneral.get_q_list(topic_id, user_id, numdone=False)
     if questionlist:
         # Filter out the questions without a positive position unless
         # the user has prevew permission.
@@ -69,14 +69,14 @@ def get_sorted_questions(course_id, topic_id, user_id=None):
     return questionlist
 
 
-def get_sorted_questions_wstats(course_id, topic_id, user_id=None):
+def get_sorted_qlist_wstats(course_id, topic_id, user_id=None):
     def cmp_question_position(a, b):
         """Order questions by the absolute value of their positions
            since we use -'ve to indicate hidden.
         """
         return cmp(abs(a['position']), abs(b['position']))
 
-    questionlist = OaGeneral.getQuestionListing(topic_id, user_id, numdone=False)
+    questionlist = OaGeneral.get_q_list(topic_id, user_id, numdone=False)
     if not questionlist:
         return []
         # Filter out the questions without a positive position unless
@@ -85,7 +85,7 @@ def get_sorted_questions_wstats(course_id, topic_id, user_id=None):
                  if question['position'] > 0]
     questions.sort(cmp_question_position)
     for question in questions:
-        question['maxscore'] = OaDB.getQTemplateMaxScore(question['qtid'])
+        question['maxscore'] = OaDB.get_qt_maxscore(question['qtid'])
 
         stats_1 = OaDB.getStudentQuestionPracticeStats(user_id, question['qtid'], 3)
         if stats_1: # Last practices
@@ -154,7 +154,7 @@ def get_next_prev(qt_id, topic_id):
         return None, None
         # This is very inefficient, but with the way questions are stored,
         # I didn't see a better way. Could maybe be revisited some time?
-    questionlist = OaGeneral.getQuestionListing(topic_id, numdone=False)
+    questionlist = OaGeneral.get_q_list(topic_id, numdone=False)
     if questionlist:
         # Filter out the questions without a positive position
         questionlist = [question

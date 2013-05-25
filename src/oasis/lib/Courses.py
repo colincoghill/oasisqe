@@ -152,7 +152,7 @@ def setEnrolFreq(cid, enrol_freq):
 
 def getUsersInCourse(course):
     """ Return a list of users in the course"""
-    groups = getGroupsInCourse(course)
+    groups = get_groups(course)
     allusers = []
     for group in groups:
         allusers += Groups.getUsersInGroup(group)
@@ -274,7 +274,7 @@ def create(name, description, owner, coursetype):
     return 0
 
 
-def getGroupsInCourse(course):
+def get_groups(course):
     """ Return a list of groups currently attached to this course."""
     # TODO: need to figure out how to incorporate semester codes/timing.
     sql = "SELECT groupid FROM groupcourses WHERE active='1' AND course = %s;"
@@ -296,15 +296,15 @@ def getCourseGroupMap(only_active=True):
     courses = getAll(only_active)
     coursemap = {}
     for course in courses:
-        coursemap[course] = getGroupsInCourse(course)
+        coursemap[course] = get_groups(course)
     return coursemap
 
 
-def addGroupToCourse(gid, cid):
+def add_group(group_id, course_id):
     """ Add a group to a course."""
     sql = "INSERT INTO groupcourses (groupid, active, course) " \
           "VALUES (%s, %s, %s);"
-    params = (gid, 1, cid)
+    params = (group_id, 1, course_id)
     run_sql(sql, params)
 
 
@@ -345,7 +345,7 @@ def getTopicsInfoAll(course, archived=2, numq=True):
                            'visibility': row[3],
                            'archived': row[4]}
             if numq:
-                info[count]['numquestions'] = Topics.getNumQuestions(int(row[0]))
+                info[count]['numquestions'] = Topics.get_num_qs(int(row[0]))
             count += 1
     else:  # we probably don't have the archived flag in the Db yet
         ret = run_sql(
@@ -360,7 +360,7 @@ def getTopicsInfoAll(course, archived=2, numq=True):
                                'title': row[1],
                                'visibility': row[2]}
                 if numq:
-                    info[count]['numquestions'] = Topics.getNumQuestions(int(row[0]))
+                    info[count]['numquestions'] = Topics.get_num_qs(int(row[0]))
                 count += 1
     return info
 

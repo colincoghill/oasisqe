@@ -47,7 +47,7 @@ def getTopicListing(cid, numq=True):
     topics = Courses.getTopics(int(cid))
     for topic in topics:
         if numq:
-            num = Topics.getNumQuestions(topic)
+            num = Topics.get_num_qs(topic)
         else:
             num = None
         tlist.append({'tid': topic,
@@ -66,11 +66,11 @@ def addCourse(name, description, owner, coursetype=1):
     """
     cid = Courses.create(name, description, owner, coursetype)
     gid = Groups.create(name, description, owner, coursetype)
-    Courses.addGroupToCourse(gid, cid)
+    Courses.add_group(gid, cid)
     return cid
 
 
-def getQuestionListing(tid, uid=None, numdone=True):
+def get_q_list(tid, uid=None, numdone=True):
     """ Return a list of dicts with question template information for the topic.
         [{ qtid: int      QTemplate ID
           name: string   Name of Question
@@ -80,7 +80,7 @@ def getQuestionListing(tid, uid=None, numdone=True):
         },]
     """
     qlist = []
-    qtemplates = Topics.getQTemplates(int(tid))
+    qtemplates = Topics.get_qts(int(tid))
     for qtid in qtemplates:
         if uid and numdone:
             num = OaDB.getStudentQuestionPracticeNum(uid, qtid)
@@ -106,19 +106,19 @@ def getQuestionAttachmentFilename(qid, name):
     # otherwise check the question template first
     if name == "image.gif" or name == "qtemplate.html":
 
-        filename = OaDB.getQAttachmentFilename(qtid, name, variation, version)
+        filename = OaDB.get_q_att_fname(qtid, name, variation, version)
         if filename:
-            return OaDB.getQAttachmentMimeType(qtid, name, variation, version), filename
+            return OaDB.get_q_att_mimetype(qtid, name, variation, version), filename
         filename = OaDB.getQTAttachmentFilename(qtid, name, version)
         if filename:
-            return OaDB.getQTAttachmentMimeType(qtid, name, version), filename
+            return OaDB.get_qt_att_mimetype(qtid, name, version), filename
     else:
         filename = OaDB.getQTAttachmentFilename(qtid, name, version)
         if filename:
-            return OaDB.getQTAttachmentMimeType(qtid, name, version), filename
-        filename = OaDB.getQAttachmentFilename(qtid, name, variation, version)
+            return OaDB.get_qt_att_mimetype(qtid, name, version), filename
+        filename = OaDB.get_q_att_fname(qtid, name, variation, version)
         if filename:
-            return OaDB.getQAttachmentMimeType(qtid, name, variation, version), filename
+            return OaDB.get_q_att_mimetype(qtid, name, variation, version), filename
     return None, None
 
 
@@ -132,19 +132,19 @@ def getQuestionAttachment(qid, name):
     # for the two biggies we hit the question first,
     # otherwise check the question template first
     if name == "image.gif" or name == "qtemplate.html":
-        data = OaDB.getQAttachment(qtid, name, variation, version)
+        data = OaDB.get_q_att(qtid, name, variation, version)
         if data:
-            return OaDB.getQAttachmentMimeType(qtid, name, variation, version), data
+            return OaDB.get_q_att_mimetype(qtid, name, variation, version), data
         data = OaDB.getQTAttachment(qtid, name, version)
         if data:
-            return OaDB.getQTAttachmentMimeType(qtid, name, version), data
+            return OaDB.get_qt_att_mimetype(qtid, name, version), data
     else:
         data = OaDB.getQTAttachment(qtid, name, version)
         if data:
-            return OaDB.getQTAttachmentMimeType(qtid, name, version), data
-        data = OaDB.getQAttachment(qtid, name, variation, version)
+            return OaDB.get_qt_att_mimetype(qtid, name, version), data
+        data = OaDB.get_q_att(qtid, name, variation, version)
         if data:
-            return OaDB.getQAttachmentMimeType(qtid, name, variation, version), data
+            return OaDB.get_q_att_mimetype(qtid, name, variation, version), data
     return None, None
 
 
@@ -172,7 +172,7 @@ def generateQuestion(qtid, student=0, exam=0, position=0):
         Will return the ID of the created instance.
     """
     # Pick a variation randomly
-    version = OaDB.getQTVersion(qtid)
+    version = OaDB.get_qt_version(qtid)
     numvars = OaDB.getQTNumVariations(qtid, version)
     if numvars > 0:
         variation = random.randint(1, numvars)
@@ -185,13 +185,13 @@ def generateQuestion(qtid, student=0, exam=0, position=0):
 def generateQuestionFromVar(qtid, student, exam, position, version, variation):
     """ Generate a question given a specific variation. """
     qvars = None
-    qid = OaDB.createQuestion(qtid, OaDB.get_qt_name(qtid), student, 1, variation, version, exam)
+    qid = OaDB.create_q(qtid, OaDB.get_qt_name(qtid), student, 1, variation, version, exam)
     try:
         qid = int(qid)
         assert (qid > 0)
     except (ValueError, TypeError, AssertionError):
         log(ERROR, "OaDB.createQuestion(%s,...) FAILED" % qtid)
-    imageexists = OaDB.getQAttachmentMimeType(qtid, "image.gif", variation, version)
+    imageexists = OaDB.get_q_att_mimetype(qtid, "image.gif", variation, version)
     if not imageexists:
         if not qvars:
             qvars = OaDB.getQTVariation(qtid, variation, version)
@@ -199,8 +199,8 @@ def generateQuestionFromVar(qtid, student, exam, position, version, variation):
         image = OaDB.getQTAttachment(qtid, "image.gif", version)
         if image:
             newimage = generateQuestionImage(qvars, image)
-            OaDB.createQAttachment(qtid, variation, "image.gif", "image/gif", newimage, version)
-    htmlexists = OaDB.getQAttachmentMimeType(qtid, "qtemplate.html", variation, version)
+            OaDB.create_q_att(qtid, variation, "image.gif", "image/gif", newimage, version)
+    htmlexists = OaDB.get_q_att_mimetype(qtid, "qtemplate.html", variation, version)
     if not htmlexists:
         if not qvars:
             qvars = OaDB.getQTVariation(qtid, variation, version)
@@ -209,7 +209,7 @@ def generateQuestionFromVar(qtid, student, exam, position, version, variation):
             qvars['Oasis_qid'] = qid
             newhtml = generateQuestionHTML(qvars, html)
             log(INFO, "generating new qattach qtemplate.html for %s" % qid)
-            OaDB.createQAttachment(qtid, variation, "qtemplate.html", "application/oasis-html", newhtml, version)
+            OaDB.create_q_att(qtid, variation, "qtemplate.html", "application/oasis-html", newhtml, version)
     try:
         qid = int(qid)
         assert (qid > 0)
@@ -456,7 +456,7 @@ def render_q_html(q_id, readonly=False):
             "renderQuestionHTML(%s,%s), getparent failed? " % (q_id, readonly))
     variation = OaDB.getQuestionVariation(q_id)
     version = OaDB.getQuestionVersion(q_id)
-    data = OaDB.getQAttachment(qt_id, "qtemplate.html", variation, version)
+    data = OaDB.get_q_att(qt_id, "qtemplate.html", variation, version)
     if not data:
         log(WARN,
             "Unable to retrieve qtemplate for q_id: %s" % q_id)
@@ -465,7 +465,7 @@ def render_q_html(q_id, readonly=False):
         out = unicode(data, "utf-8")
     except UnicodeDecodeError:
         try:
-            out = unicode(OaDB.getQAttachment(qt_id, "qtemplate.html", variation, version), "latin-1")
+            out = unicode(OaDB.get_q_att(qt_id, "qtemplate.html", variation, version), "latin-1")
         except UnicodeDecodeError, err:
             log(ERROR,
                 "unicode error decoding qtemplate for q_id %s: %s" % (q_id, err))
@@ -846,7 +846,7 @@ def markQuestion(qid, answers):
         qvars = {}
         log(WARN, "markQuestion(%s, %s) unable to retrieve variables." % (qid, answers))
     qvars['OaQID'] = int(qid)
-    marktype = OaDB.getQTemplateMarker(qtid)
+    marktype = OaDB.get_qt_marker(qtid)
     if marktype == 1:    # standard
         marks = markQuestionStandard(qvars, answers)
     else:

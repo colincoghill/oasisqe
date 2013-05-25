@@ -12,21 +12,22 @@ from .OaDB import dbpool, run_sql, MC
 from logging import log, ERROR, INFO
 
 
-def create(course, name, visibility, position=1):
+def create(course_id, name, vis, pos=1):
     """Add a topic to the database."""
-    key = "course-%s-topics" % course
+    key = "course-%s-topics" % course_id
     MC.delete(key)
     log(INFO,
-        "db/Topics/create(%s, %s, %s, %s)" % (course, name, visibility, position))
+        "db/Topics/create(%s, %s, %s, %s)" % (course_id, name, vis, pos))
     conn = dbpool.begin()
     conn.run_sql("""INSERT INTO topics (course, title, visibility, position)
-             VALUES (%s, %s, %s, %s);""", (course, name, visibility, position))
+                    VALUES (%s, %s, %s, %s);""",
+                    (course_id, name, vis, pos))
     res = conn.run_sql("SELECT currval('topics_topic_seq');")
     dbpool.commit(conn)
     if res:
         return res[0][0]
     log(ERROR,
-        "Topic create may have failed (%s, %s, %s, %s)" % (course, name, visibility, position))
+        "Topic create error (%s, %s, %s, %s)" % (course_id, name, vis, pos))
     return 0
 
 
@@ -63,29 +64,31 @@ def get_name(topic_id):
     return getTopic(topic_id)['title']
 
 
-def setName(topic, name):
+def setName(topic_id, name):
     """Set the name of a topic."""
-    assert isinstance(topic, int)
+    assert isinstance(topic_id, int)
     assert isinstance(name, str) or isinstance(name, unicode)
-    run_sql("UPDATE topics SET title=%s WHERE topic=%s;", (name, topic))
-    key = "topic-%s-record" % topic
+    run_sql("UPDATE topics SET title=%s WHERE topic=%s;", (name, topic_id))
+    key = "topic-%s-record" % topic_id
     MC.delete(key)
 
 
-def getPosition(tid):
+def getPosition(topic_id):
     """Fetch the position of a topic."""
-    assert isinstance(tid, int)
-    return getTopic(tid)['position']
+    assert isinstance(topic_id, int)
+    return getTopic(topic_id)['position']
 
 
-def setPosition(topic, position):
+def setPosition(topic_id, pos):
     """Update the position of a topic."""
-    if position is None:
-        position = 0
-    run_sql("""UPDATE topics SET position=%s WHERE topic=%s;""", (position, topic))
-    key = "topic-%s-record" % topic
+    if pos is None:
+        pos = 0
+    run_sql("""UPDATE topics
+               SET position=%s
+               WHERE topic=%s;""", (pos, topic_id))
+    key = "topic-%s-record" % topic_id
     MC.delete(key)
-    course = get_course_id(topic)
+    course = get_course_id(topic_id)
     key = "course-%s-topics" % course
     MC.delete(key)
 
@@ -95,21 +98,21 @@ def get_course_id(topic_id):
     return getTopic(topic_id)['course']
 
 
-def getVisibility(tid):
+def getVisibility(topic_id):
     """Fetch the visibility of a topic."""
-    return getTopic(tid)['visibility']
+    return getTopic(topic_id)['visibility']
 
 
-def setVisibility(topic, visibility):
+def setVisibility(topic_id, vis):
     """Update the visibility of a topic."""
-    run_sql("""UPDATE topics SET visibility=%s WHERE topic=%s;""", (visibility, topic))
-    key = "topic-%s-record" % topic
+    run_sql("""UPDATE topics SET visibility=%s WHERE topic=%s;""", (vis, topic_id))
+    key = "topic-%s-record" % topic_id
     MC.delete(key)
 
 
-def getNumQuestions(tid):
+def get_num_qs(topic_id):
     """Tell us how many questions are in the given topic."""
-    key = "topic-%s-numquestions" % tid
+    key = "topic-%s-numquestions" % topic_id
     obj = MC.get(key)
     if obj:
         return int(obj)
@@ -118,7 +121,7 @@ def getNumQuestions(tid):
             WHERE topic=%s
              AND position > 0;
             """
-    params = (tid,)
+    params = (topic_id,)
     try:
         res = run_sql(sql, params)
         if not res:
@@ -131,7 +134,7 @@ def getNumQuestions(tid):
         raise IOError, "Database connection failed"
 
 
-def getQTemplates(tid):
+def get_qts(topic_id):
     """ Return a dictionary of the QTemplates in the given Topic, keyed by qtid.
         qtemplates[qtid] = {'id', 'position', 'owner', 'name', 'description',
                             'marker', 'maxscore', 'version', 'status'}
@@ -143,7 +146,7 @@ def getQTemplates(tid):
             from questiontopics,qtemplates
             where questiontopics.topic=%s
             and questiontopics.qtemplate = qtemplates.qtemplate;"""
-    params = (tid,)
+    params = (topic_id,)
     ret = run_sql(sql, params)
     qtemplates = {}
     if ret:

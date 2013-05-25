@@ -129,7 +129,7 @@ def doTopicPageCommands(request, topic_id, user_id):
     for command in [cmd for cmd in cmdlist if cmd['cmd'] == 'name']:
         qid = int(command['data'])
         title = command['value']
-        OaDB.updateQTemplateTitle(qid, title)
+        OaDB.update_qt_title(qid, title)
 
     # Then positions
     for command in [cmd for cmd in cmdlist if cmd['cmd'] == 'position']:
@@ -138,7 +138,7 @@ def doTopicPageCommands(request, topic_id, user_id):
             position = int(command['value'])
         except ValueError:
             position = 0
-        OaDB.updateQTemplatePosition(qtid, topic_id, position)
+        OaDB.update_qt_pos(qtid, topic_id, position)
 
     # Then commands on selected questions
     target_cmd = form.get('target_cmd', None)
@@ -155,21 +155,21 @@ def doTopicPageCommands(request, topic_id, user_id):
                     qt_title = OaDB.get_qt_name(qtid)
                     topic_title = Topics.get_name(topic_id)
                     flash("Moving %s to %s" % (qt_title, topic_title))
-                    OaDB.moveQTemplateToTopic(qtid, target_topic)
+                    OaDB.move_qt_to_topic(qtid, target_topic)
         if target_cmd == 'copy':
             if target_topic:
                 for qtid in qtids:
                     qt_title = OaDB.get_qt_name(qtid)
                     topic_title = Topics.get_name(topic_id)
                     flash("Copying %s to %s" % (qt_title, topic_title))
-                    newid = OaDB.copyQTemplateAll(qtid)
-                    OaDB.addQTemplateToTopic(newid, target_topic)
+                    newid = OaDB.copy_qt_all(qtid)
+                    OaDB.add_qt_to_topic(newid, target_topic)
 
         if target_cmd == 'hide':
             for qtid in qtids:
                 position = OaDB.get_qtemplate_topic_pos(qtid, topic_id)
                 if position > 0:  # If visible, make it hidden
-                    OaDB.updateQTemplatePosition(qtid, topic_id, -position)
+                    OaDB.update_qt_pos(qtid, topic_id, -position)
                     title = OaDB.get_qt_name(qtid)
                     flash("Made '%s' Hidden" % title)
 
@@ -178,11 +178,11 @@ def doTopicPageCommands(request, topic_id, user_id):
                 position = OaDB.get_qtemplate_topic_pos(qtid, topic_id)
                 if position == 0:  # If hidden, make it visible
                     newpos = OaDB.getMaxQTemplatePositionInTopic(topic_id)
-                    OaDB.updateQTemplatePosition(qtid, topic_id, newpos + 1)
+                    OaDB.update_qt_pos(qtid, topic_id, newpos + 1)
                     title = OaDB.get_qt_name(qtid)
                     flash("Made '%s' Visible" % title)
                 if position < 0:  # If hidden, make it visible
-                    OaDB.updateQTemplatePosition(qtid, topic_id, -position)
+                    OaDB.update_qt_pos(qtid, topic_id, -position)
                     title = OaDB.get_qt_name(qtid)
                     flash("Made '%s' Visible" % title)
 
@@ -200,18 +200,18 @@ def doTopicPageCommands(request, topic_id, user_id):
                 new_maxscore = float(form.get('new_maxscore', 0))
             except ValueError:
                 new_maxscore = 0
-            newid = OaDB.createQTemplate(user_id, new_title, "No Description", 1, new_maxscore, 0)
+            newid = OaDB.create_qt(user_id, new_title, "No Description", 1, new_maxscore, 0)
             if newid:
                 mesg.append("Created new question, id %s" % newid)
-                OaDB.updateQTemplatePosition(newid, topic_id, new_position)
-                OaDB.createQTAttachment(newid, "qtemplate.html", "application/oasis-html", "empty", 1)
-                OaDB.createQTAttachment(newid, "qtemplate.html", "application/oasis-html", "empty", 1)
+                OaDB.update_qt_pos(newid, topic_id, new_position)
+                OaDB.create_qt_att(newid, "qtemplate.html", "application/oasis-html", "empty", 1)
+                OaDB.create_qt_att(newid, "qtemplate.html", "application/oasis-html", "empty", 1)
                 if new_qtype == "oqe":
                     mesg.append("Creating new question, id %s as OQE" % newid)
-                    OaDB.createQTAttachment(newid, "_editor.oqe", "application/oasis-oqe", "", 1)
+                    OaDB.create_qt_att(newid, "_editor.oqe", "application/oasis-oqe", "", 1)
                 if new_qtype == "raw":
                     mesg.append("Creating new question, id %s as RAW (%s)" % (newid, new_qtype))
-                    OaDB.createQTAttachment(newid, "datfile.txt", "application/oasis-dat", "0", 1)
+                    OaDB.create_qt_att(newid, "datfile.txt", "application/oasis-dat", "0", 1)
             else:
                 mesg.append("Error creating new question, id %s" % newid)
                 log(ERROR, "Unable to create new question (%s) (%s)" % (new_title, new_position))

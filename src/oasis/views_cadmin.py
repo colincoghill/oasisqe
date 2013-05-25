@@ -287,7 +287,7 @@ def cadmin_enrolments(course_id):
         return redirect(url_for('cadmin_top', course_id=course_id))
 
     groups = [Groups.getInfo(group_id)
-              for group_id in Courses.getGroupsInCourse(course_id)]
+              for group_id in Courses.get_groups(course_id)]
 
     # it's possible one was never created, legacy database, etc.
     if not len(groups):
@@ -299,9 +299,9 @@ def cadmin_enrolments(course_id):
                                  2,
                                  startdate=now,
                                  enddate=forever)
-        Courses.addGroupToCourse(group_id, course_id)
+        Courses.add_group(group_id, course_id)
         groups = [Groups.getInfo(group_id)
-                  for group_id in Courses.getGroupsInCourse(course_id)]
+                  for group_id in Courses.get_groups(course_id)]
         assert len(groups)
 
     for group in groups:
@@ -486,7 +486,8 @@ def cadmin_edit_topic(topic_id):
         'position': Topics.getPosition(topic_id),
         'name': Topics.get_name(topic_id)
     }
-    questions = [question for question in Topics.getQTemplates(topic_id).values()]
+    questions = [question
+                 for question in Topics.get_qts(topic_id).values()]
     for question in questions:
         question['embed_id'] = OaDB.getQTemplateEmbedID(question['id'])
         if question['embed_id']:
@@ -497,8 +498,9 @@ def cadmin_edit_topic(topic_id):
 
     all_courses = CourseAPI.getCourseList()
     all_courses = [cs
-                   for cs in all_courses if satisfyPerms(user_id, int(cs['id']),
-                                                        ("OASIS_QUESTIONEDITOR", "OASIS_COURSEADMIN", "OASIS_SUPERUSER"))]
+                   for cs in all_courses
+                   if satisfyPerms(user_id, int(cs['id']),
+                        ("OASIS_QUESTIONEDITOR", "OASIS_COURSEADMIN", "OASIS_SUPERUSER"))]
     all_courses.sort(lambda f, s: cmp(f['name'], s['name']))
 
     all_course_topics = []
@@ -578,7 +580,7 @@ def cadmin_view_topic(topic_id):
         'position': Topics.getPosition(topic_id),
         'name': Topics.get_name(topic_id)
     }
-    questions = [question for question in Topics.getQTemplates(topic_id).values()]
+    questions = [question for question in Topics.get_qts(topic_id).values()]
     for question in questions:
         question['embed_id'] = OaDB.getQTemplateEmbedID(question['id'])
         if question['embed_id']:
@@ -588,7 +590,9 @@ def cadmin_view_topic(topic_id):
         question['editor'] = OaDB.getQTemplateEditor(question['id'])
 
     all_courses = CourseAPI.getCourseList()
-    all_courses = [cs for cs in all_courses if satisfyPerms(user_id, int(cs['id']), (
+    all_courses = [cs
+                   for cs in all_courses
+                   if satisfyPerms(user_id, int(cs['id']), (
         "OASIS_QUESTIONEDITOR", "OASIS_COURSEADMIN", "OASIS_SUPERUSER"))]
     all_courses.sort(lambda f, s: cmp(f['name'], s['name']))
 

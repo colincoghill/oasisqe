@@ -285,13 +285,13 @@ def incrementQTVersion(qt_id):
     # FIXME: Not done in a parallel-safe manner. Could find a way to do this
     # in the database. Fairly low risk.
     assert isinstance(qt_id, int)
-    version = int(getQTVersion(qt_id))
+    version = int(get_qt_version(qt_id))
     version += 1
     run_sql("""UPDATE qtemplates SET version=%s WHERE qtemplate=%s;""", (version, qt_id))
     return version
 
 
-def getQTVersion(qt_id):
+def get_qt_version(qt_id):
     """ Fetch the version of a question template."""
     assert isinstance(qt_id, int)
     ret = run_sql("SELECT version FROM qtemplates WHERE qtemplate=%s;", (qt_id,))
@@ -300,7 +300,7 @@ def getQTVersion(qt_id):
     log(WARN, "Request for unknown question template %s." % qt_id)
 
 
-def getQTemplateMaxScore(qt_id):
+def get_qt_maxscore(qt_id):
     """ Fetch the maximum score of a question template."""
     assert isinstance(qt_id, int)
     key = "qtemplate-%d-maxscore" % (qt_id,)
@@ -318,7 +318,7 @@ def getQTemplateMaxScore(qt_id):
     log(WARN, "Request for unknown question template %s." % qt_id)
 
 
-def getQTemplateMarker(qt_id):
+def get_qt_marker(qt_id):
     """ Fetch the marker of a question template."""
     assert isinstance(qt_id, int)
     ret = run_sql("SELECT marker FROM qtemplates WHERE qtemplate=%s;", (qt_id,))
@@ -327,7 +327,7 @@ def getQTemplateMarker(qt_id):
     log(WARN, "Request for unknown question template %s." % qt_id)
 
 
-def getQTemplateOwner(qt_id):
+def get_qt_owner(qt_id):
     """ Fetch the owner of a question template.
         (The last person to make changes to it)
     """
@@ -364,14 +364,14 @@ def getQTemplateEmbedID(qt_id):
     log(WARN, "Request for unknown question template %s." % qt_id)
 
 
-def getQTAttachments(qt_id, version=1000000000):
+def get_qt_atts(qt_id, version=1000000000):
     """ Return a list of (names of) all attachments connected to
         this question template.
     """
     assert isinstance(qt_id, int)
     assert isinstance(version, int)
     if version == 1000000000:
-        version = getQTVersion(qt_id)
+        version = get_qt_version(qt_id)
     attachments = []
     ret = run_sql("SELECT name FROM qtattach WHERE qtemplate = %s "
                   "AND version <= %s GROUP BY name ORDER BY name;",
@@ -382,7 +382,7 @@ def getQTAttachments(qt_id, version=1000000000):
     return []
 
 
-def getQAttachmentMimeType(qt_id, name, variation, version=1000000000):
+def get_q_att_mimetype(qt_id, name, variation, version=1000000000):
     """ Return a string containing the mime type of the attachment.
     """
     assert isinstance(qt_id, int)
@@ -390,7 +390,7 @@ def getQAttachmentMimeType(qt_id, name, variation, version=1000000000):
     assert isinstance(variation, int)
     assert isinstance(name, str) or isinstance(name, unicode)
     if version == 1000000000:
-        version = getQTVersion(qt_id)
+        version = get_qt_version(qt_id)
     try:
         key = "questionattach/%d/%s/%d/%d/mimetype" % (qt_id, name, variation, version)
         (value, found) = fileCache.get(key)
@@ -415,7 +415,7 @@ def getQAttachmentMimeType(qt_id, name, variation, version=1000000000):
     return False
 
 
-def getQTAttachmentMimeType(qt_id, name, version=1000000000):
+def get_qt_att_mimetype(qt_id, name, version=1000000000):
     """ Fetch the mime type of a template attachment.
         If version is set to 0, will fetch the newest.
     """
@@ -423,7 +423,7 @@ def getQTAttachmentMimeType(qt_id, name, version=1000000000):
     assert isinstance(version, int)
     assert isinstance(name, str) or isinstance(name, unicode)
     if version == 1000000000:
-        version = getQTVersion(qt_id)
+        version = get_qt_version(qt_id)
     key = "qtemplateattach/%d/%s/%d/mimetype" % (qt_id, name, version)
     (value, found) = fileCache.get(key)
     if not found:
@@ -448,7 +448,7 @@ def getQTAttachmentMimeType(qt_id, name, version=1000000000):
     return value
 
 
-def getQAttachmentFilename(qt_id, name, variation, version=1000000000):
+def get_q_att_fname(qt_id, name, variation, version=1000000000):
     """ Fetch the on-disk filename where the attachment is stored.
         This may have to fetch it from the database.
         The intent is to save time by passing around a filename rather than the
@@ -459,7 +459,7 @@ def getQAttachmentFilename(qt_id, name, variation, version=1000000000):
     assert isinstance(variation, int)
     assert isinstance(name, str) or isinstance(name, unicode)
     if version == 1000000000:
-        version = getQTVersion(qt_id)
+        version = get_qt_version(qt_id)
     key = "questionattach/%d/%s/%d/%d" % (qt_id, name, variation, version)
     (filename, found) = fileCache.getFilename(key)
     if not found:
@@ -481,14 +481,14 @@ def getQAttachmentFilename(qt_id, name, variation, version=1000000000):
     return filename
 
 
-def getQAttachment(qt_id, name, variation, version=1000000000):
+def get_q_att(qt_id, name, variation, version=1000000000):
     """ Fetch an attachment for the question"""
     assert isinstance(qt_id, int)
     assert isinstance(version, int)
     assert isinstance(variation, int)
     assert isinstance(name, str) or isinstance(name, unicode)
     if version == 1000000000:
-        version = getQTVersion(qt_id)
+        version = get_qt_version(qt_id)
     key = "questionattach/%d/%s/%d/%d" % (qt_id, name, variation, version)
     (value, found) = fileCache.get(key)
     if not found:
@@ -516,7 +516,7 @@ def getQTAttachmentFilename(qt_id, name, version=1000000000):
     assert isinstance(version, int)
     assert isinstance(name, str) or isinstance(name, unicode)
     if version == 1000000000:
-        version = getQTVersion(qt_id)
+        version = get_qt_version(qt_id)
     key = "qtemplateattach/%d/%s/%d" % (qt_id, name, version)
     (filename, found) = fileCache.getFilename(key)
     if (not found) or version == 1000000000:
@@ -542,7 +542,7 @@ def getQTAttachment(qt_id, name, version=1000000000):
     assert isinstance(version, int)
     assert isinstance(name, str) or isinstance(name, unicode)
     if version == 1000000000:
-        version = getQTVersion(qt_id)
+        version = get_qt_version(qt_id)
     key = "qtemplateattach/%d/%s/%d" % (qt_id, name, version)
     (value, found) = fileCache.get(key)
     if (not found) or version == 1000000000:
@@ -608,7 +608,7 @@ def getQTVariations(qt_id, version=1000000000):
     assert isinstance(qt_id, int)
     assert isinstance(version, int)
     if version == 1000000000:
-        version = getQTVersion(qt_id)
+        version = get_qt_version(qt_id)
     ret = {}
     res = run_sql("SELECT variation, data FROM qtvariations WHERE qtemplate=%s AND version ="
                   " (SELECT MAX(version) FROM qtvariations WHERE "
@@ -628,7 +628,7 @@ def getQTVariation(qt_id, variation, version=1000000000):
     assert isinstance(version, int)
     assert isinstance(variation, int)
     if version == 1000000000:
-        version = getQTVersion(qt_id)
+        version = get_qt_version(qt_id)
     res = run_sql("SELECT data FROM qtvariations WHERE qtemplate=%s AND variation=%s AND version = "
                   "(SELECT MAX(version) FROM qtvariations WHERE "
                   "qtemplate=%s AND version <= %s)", (qt_id, variation, qt_id, version))
@@ -650,7 +650,7 @@ def getQTNumVariations(qt_id, version=1000000000):
     assert isinstance(qt_id, int)
     assert isinstance(version, int)
     if version == 1000000000:
-        version = getQTVersion(qt_id)
+        version = get_qt_version(qt_id)
     ret = run_sql("""SELECT MAX(variation) FROM qtvariations
                         WHERE qtemplate=%s AND version = (
                          SELECT MAX(version) FROM qtvariations
@@ -664,7 +664,7 @@ def getQTNumVariations(qt_id, version=1000000000):
     return num
 
 
-def createQAttachment(qt_id, variation, name, mimetype, data, version):
+def create_q_att(qt_id, variation, name, mimetype, data, version):
     """ Create a new Question Attachment using given data."""
     assert isinstance(qt_id, int)
     assert isinstance(variation, int)
@@ -677,7 +677,7 @@ def createQAttachment(qt_id, variation, name, mimetype, data, version):
                      VALUES (%s, %s, %s, %s, %s, %s);""", (qt_id, variation, mimetype, name, safedata, version))
 
 
-def createQTAttachment(qt_id, name, mimetype, data, version):
+def create_qt_att(qt_id, name, mimetype, data, version):
     """ Create a new Question Template Attachment using given data."""
     assert isinstance(qt_id, int)
     assert isinstance(name, str) or isinstance(name, unicode)
@@ -696,7 +696,7 @@ def createQTAttachment(qt_id, name, mimetype, data, version):
     return None
 
 
-def createQuestion(qt_id, name, student, status, variation, version, exam):
+def create_q(qt_id, name, student, status, variation, version, exam):
     """ Add a question (instance) to the database."""
     assert isinstance(qt_id, int)
     assert isinstance(name, str) or isinstance(name, unicode)
@@ -718,7 +718,7 @@ def createQuestion(qt_id, name, student, status, variation, version, exam):
     return res[0][0]
 
 
-def updateQTemplateTitle(qt_id, title):
+def update_qt_title(qt_id, title):
     """ Update the title of a question template. """
     assert isinstance(qt_id, int)
     assert isinstance(title, str) or isinstance(title, unicode)
@@ -729,7 +729,7 @@ def updateQTemplateTitle(qt_id, title):
     run_sql(sql, params)
 
 
-def updateQTemplateOwner(qt_id, owner):
+def update_qt_owner(qt_id, owner):
     """ Update the owner of a question template.
         Generally we say the owner is the last person to alter the qtemplate.
     """
@@ -742,7 +742,7 @@ def updateQTemplateOwner(qt_id, owner):
     run_sql(sql, params)
 
 
-def updateQTemplateMaxScore(qt_id, scoremax):
+def update_qt_maxscore(qt_id, scoremax):
     """ Update the maximum score of a question template. """
     assert isinstance(qt_id, int)
     assert isinstance(scoremax, float) or scoremax is None
@@ -753,16 +753,18 @@ def updateQTemplateMaxScore(qt_id, scoremax):
     run_sql(sql, params)
 
 
-def updateQTemplateMarker(qt_id, marker):
+def update_qt_marker(qt_id, marker):
     """ Update the marker of a question template."""
     assert isinstance(qt_id, int)
     assert isinstance(marker, int)
-    sql = """UPDATE qtemplates SET marker=%s WHERE qtemplate=%s;"""
+    sql = """UPDATE qtemplates
+             SET marker=%s
+             WHERE qtemplate=%s;"""
     params = (marker, qt_id)
     run_sql(sql, params)
 
 
-def updateExamQTemplatesInPosition(exam_id, position, qtlist):
+def update_exam_qt_in_pos(exam_id, position, qtlist):
     """ Set the qtemplates at a given position in the exam to match
         the passed list. If we get qtlist = [0], we remove that position.
     """
@@ -770,15 +772,18 @@ def updateExamQTemplatesInPosition(exam_id, position, qtlist):
     assert isinstance(position, int)
     assert isinstance(qtlist, list)
     # First remove the current set
-    run_sql("DELETE FROM examqtemplates WHERE exam=%s AND position=%s;", (exam_id, position))
+    run_sql("DELETE FROM examqtemplates "
+            "WHERE exam=%s "
+            "AND position=%s;", (exam_id, position))
     # Now insert the new set
     for alt in qtlist:
         if alt > 0:
-            run_sql("INSERT INTO examqtemplates (exam, position, qtemplate) VALUES (%s,%s,%s);",
+            run_sql("INSERT INTO examqtemplates (exam, position, qtemplate) "
+                    "VALUES (%s,%s,%s);",
                     (exam_id, position, alt))
 
 
-def updateQTemplatePosition(qt_id, topic_id, position):
+def update_qt_pos(qt_id, topic_id, position):
     """ Update the position a question template holds in a topic."""
     assert isinstance(qt_id, int)
     assert isinstance(position, int)
@@ -790,15 +795,18 @@ def updateQTemplatePosition(qt_id, topic_id, position):
     MC.delete(key)
     key = "topic-%d-qtemplates" % topic_id
     MC.delete(key)
-    sql = """UPDATE questiontopics SET position=%s WHERE topic=%s AND qtemplate=%s;"""
+    sql = """UPDATE questiontopics
+             SET position=%s
+             WHERE topic=%s
+             AND qtemplate=%s;"""
     params = (position, topic_id, qt_id)
     if not previous is False:
         run_sql(sql, params)
     else:
-        addQTemplateToTopic(qt_id, topic_id, position)
+        add_qt_to_topic(qt_id, topic_id, position)
 
 
-def moveQTemplateToTopic(qt_id, topic_id):
+def move_qt_to_topic(qt_id, topic_id):
     """ Move a question template to a different sub category."""
     assert isinstance(qt_id, int)
     assert isinstance(topic_id, int)
@@ -821,33 +829,35 @@ def moveQTemplateToTopic(qt_id, topic_id):
             MC.delete(key)
             key = "topic-%d-qtemplate-%d-position" % (fromtopic, qt_id)
             MC.delete(key)
-    run_sql("""UPDATE questiontopics SET topic=%s WHERE qtemplate=%s;""", (topic_id, qt_id))
+    run_sql("""UPDATE questiontopics
+         SET topic=%s WHERE qtemplate=%s;""", (topic_id, qt_id))
 
 
-def addQTemplateToTopic(qt_id, topic_id, position=0):
+def add_qt_to_topic(qt_id, topic_id, position=0):
     """ Put the question template into the topic."""
     assert isinstance(qt_id, int)
     assert isinstance(topic_id, int)
     assert isinstance(position, int)
-    run_sql("INSERT INTO questiontopics (qtemplate, topic, position) VALUES (%s, %s, %s)", (qt_id, topic_id, position))
+    run_sql("INSERT INTO questiontopics (qtemplate, topic, position) "
+            "VALUES (%s, %s, %s)", (qt_id, topic_id, position))
     key = "topic-%d-numquestions" % topic_id
     MC.delete(key)
     key = "topic-%d-qtemplates" % topic_id
     MC.delete(key)
 
 
-def copyQTemplateAll(qt_id):
+def copy_qt_all(qt_id):
     """ Make an identical copy of a question template,
         including all attachments.
     """
     assert isinstance(qt_id, int)
-    newid = copyQTemplate(qt_id)
+    newid = copy_qt(qt_id)
     if newid <= 0:
         return 0
-    attachments = getQTAttachments(qt_id)
-    newversion = getQTVersion(newid)
+    attachments = get_qt_atts(qt_id)
+    newversion = get_qt_version(newid)
     for name in attachments:
-        createQTAttachment(newid, name, getQTAttachmentMimeType(qt_id, name), getQTAttachment(qt_id, name), newversion)
+        create_qt_att(newid, name, get_qt_att_mimetype(qt_id, name), getQTAttachment(qt_id, name), newversion)
     try:
         variations = getQTVariations(qt_id)
         for variation in variations.keys():
@@ -857,7 +867,7 @@ def copyQTemplateAll(qt_id):
     return newid
 
 
-def copyQTemplate(qt_id):
+def copy_qt(qt_id):
     """ Make an identical copy of a question template entry.
         Returns the new qtemplate id.
     """
@@ -867,7 +877,7 @@ def copyQTemplate(qt_id):
     if not res:
         raise KeyError("QTemplate %d not found" % qt_id)
     orig = res[0]
-    newid = createQTemplate(int(orig[0]), orig[1], orig[2], orig[3], orig[4], int(orig[5]))
+    newid = create_qt(int(orig[0]), orig[1], orig[2], orig[3], orig[4], int(orig[5]))
     if newid <= 0:
         raise IOError("Unable to create copy of QTemplate %d" % qt_id)
     return newid
@@ -885,7 +895,7 @@ def addQTVariation(qt_id, variation, data, version):
             (qt_id, variation, safedata, version))
 
 
-def createQTemplate(owner, title, desc, marker, scoremax, status):
+def create_qt(owner, title, desc, marker, scoremax, status):
     """ Create a new Question Template. """
     assert isinstance(owner, int)
     assert isinstance(title, str) or isinstance(title, unicode)
@@ -1207,7 +1217,7 @@ def getQTemplateEditor(qt_id):
     """
     assert isinstance(qt_id, int)
     etype = "Raw"
-    atts = getQTAttachments(qt_id)
+    atts = get_qt_atts(qt_id)
     for att in atts:
         if att.endswith(".oqe"):
             etype = "OQE"

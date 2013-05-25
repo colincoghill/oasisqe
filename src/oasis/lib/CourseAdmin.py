@@ -209,7 +209,7 @@ def ExamEditSubmit(request, user_id, cid, exam_id):
         Exams.setInstant(exam_id, instant)
 
     for pos, qts in qns.iteritems():
-        OaDB.updateExamQTemplatesInPosition(exam_id, pos, qts)
+        OaDB.update_exam_qt_in_pos(exam_id, pos, qts)
 
     return exam_id
 
@@ -243,7 +243,7 @@ def _getSortedQuestionList(topic):
 
         return cmp(abs(a['position']), abs(b['position']))
 
-    questionlist = OaGeneral.getQuestionListing(topic, None, False)
+    questionlist = OaGeneral.get_q_list(topic, None, False)
 
     if questionlist:
         # At the moment we use -'ve positions to indicate that a question is hidden

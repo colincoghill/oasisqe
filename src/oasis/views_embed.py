@@ -38,7 +38,7 @@ def embed_question(embed_id):
 
     qid = OaPractice.get_practice_q(qtid, user_id)
     vers = OaDB.getQuestionVersion(qid)
-    if not vers >= OaDB.getQTVersion(qtid):
+    if not vers >= OaDB.get_qt_version(qtid):
         qid = OaGeneral.generateQuestion(qtid, user_id)
 
     q_body = OaGeneral.render_q_html(qid)

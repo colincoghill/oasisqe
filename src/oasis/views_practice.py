@@ -100,7 +100,7 @@ def practice_choose_question_stats(topic_id):
     topics = CourseAPI.get_topics_list(course_id)
     course = CourseAPI.get_course(course_id)
     topictitle = Topics.get_name(topic_id)
-    questions = OaPractice.get_sorted_questions_wstats(course_id, topic_id, user_id)
+    questions = OaPractice.get_sorted_qlist_wstats(course_id, topic_id, user_id)
 
     return render_template(
         "practicetopicstats.html",
@@ -113,10 +113,10 @@ def practice_choose_question_stats(topic_id):
     )
 
 
-@app.route("/practice/question/<int:topic_id>/<int:qtemplate_id>",
+@app.route("/practice/question/<int:topic_id>/<qt_id>",
            methods=['POST', 'GET'])
 @authenticated
-def practice_do_question(topic_id, qtemplate_id):
+def practice_do_question(topic_id, qt_id):
     """ Show them a question and allow them to fill in some answers """
     user_id = session['user_id']
     try:
@@ -135,22 +135,22 @@ def practice_do_question(topic_id, qtemplate_id):
     except KeyError:
         abort(404)
     try:
-        qt = OaDB.get_qtemplate(qtemplate_id)
+        qt = OaDB.get_qtemplate(qt_id)
     except KeyError:
         qt = None
         abort(404)
     questions = OaPractice.get_sorted_questions(course_id, topic_id, user_id)
     q_title = qt['title']
-    q_pos = OaDB.get_qtemplate_topic_pos(qtemplate_id, topic_id)
+    q_pos = OaDB.get_qtemplate_topic_pos(qt_id, topic_id)
 
-    blocked = OaPractice.is_q_blocked(user_id, course_id, topic_id, qtemplate_id)
+    blocked = OaPractice.is_q_blocked(user_id, course_id, topic_id, qt_id)
     if blocked:
         return render_template(
             "practicequestionblocked.html",
             mesg=blocked,
             topictitle=topictitle,
             topic_id=topic_id,
-            qt_id=qtemplate_id,
+            qt_id=qt_id,
             course=course,
             q_title=q_title,
             questions=questions,
@@ -158,15 +158,16 @@ def practice_do_question(topic_id, qtemplate_id):
         )
 
     try:
-        q_id = OaPractice.get_practice_q(qtemplate_id, user_id)
+        q_id = OaPractice.get_practice_q(qt_id, user_id)
     except (ValueError, TypeError), err:
-        log(ERROR, "OaPracticeBE:getPracticeQuestion(%s,%s) FAILED 1! %s" % (qtemplate_id, user_id, err))
+        log(ERROR,
+            "ERROR 1001  (%s,%s) %s" % (qt_id, user_id, err))
         return render_template(
             "practicequestionerror.html",
             mesg="Error generating question.",
             topictitle=topictitle,
             topic_id=topic_id,
-            qt_id=qtemplate_id,
+            qt_id=qt_id,
             course=course,
             q_title=q_title,
             questions=questions,
@@ -179,7 +180,7 @@ def practice_do_question(topic_id, qtemplate_id):
             mesg="Error generating question.",
             topictitle=topictitle,
             topic_id=topic_id,
-            qt_id=qtemplate_id,
+            qt_id=qt_id,
             course=course,
             q_title=q_title,
             questions=questions,
@@ -194,7 +195,7 @@ def practice_do_question(topic_id, qtemplate_id):
         q_body=q_body,
         topictitle=topictitle,
         topic_id=topic_id,
-        qt_id=qtemplate_id,
+        qt_id=qt_id,
         course=course,
         q_title=q_title,
         questions=questions,
