@@ -59,6 +59,13 @@ blah"""
     res = General.generateQuestionHTML(qvars, tmpl)
     assert res == html
 
+    tmpl = "blah<ANSWER1 MULTIF f,g,h,"
+    qvars = { 'f': 7, 'g': "joe", "h": "3.4", "i": 33, "j": "&amp;" }
+    html = """blah<ANSWER1 MULTIF f,g,h,"""
+    res = General.generateQuestionHTML(qvars, tmpl)
+    print res
+    assert res == html
+
 
 def test_instance_generate_multiv_answer():
     """ Convert some html templates + variables into resulting instance HTML
