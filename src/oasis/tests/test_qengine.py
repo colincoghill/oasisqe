@@ -63,7 +63,12 @@ blah"""
     qvars = { 'f': 7, 'g': "joe", "h": "3.4", "i": 33, "j": "&amp;" }
     html = """blah<ANSWER1 MULTIF f,g,h,"""
     res = General.generateQuestionHTML(qvars, tmpl)
-    print res
+    assert res == html
+
+    tmpl = "blah<ANSWER1 MULTIF f,g,h,i,j>"
+    qvars = { 'f': 7, 'g': "joe" }
+    html = """blah<table border=0><tr><td>Please choose one:</td><td CLASS='multichoicecell'><INPUT class='auto_save' TYPE='radio' NAME='ANS_1' VALUE='1' Oa_CHK_1_1>7</td><td CLASS='multichoicecell'><INPUT class='auto_save' TYPE='radio' NAME='ANS_1' VALUE='2' Oa_CHK_1_2>joe</td><FONT COLOR="red">ERROR IN QUESTION DATA</FONT><FONT COLOR="red">ERROR IN QUESTION DATA</FONT><FONT COLOR="red">ERROR IN QUESTION DATA</FONT></tr></table><br />\n"""
+    res = General.generateQuestionHTML(qvars, tmpl)
     assert res == html
 
 
