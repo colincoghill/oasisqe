@@ -49,7 +49,7 @@ def marker_log_fn(qid):
 
     def real_markerlog(priority, mesg):
         """__marker.py has log() 'ed an error"""
-        question_log(qid, priority, '__marker.py', mesg)
+        q_log(qid, priority, '__marker.py', mesg)
 
     return real_markerlog
 
@@ -58,12 +58,12 @@ def result_log_fn(qid):
 
     def real_resultlog(priority, mesg):
         """__result.py has log() 'ed an error"""
-        question_log(qid, priority, '__result.py', mesg)
+        q_log(qid, priority, '__result.py', mesg)
 
     return real_resultlog
 
 
-def question_log(qid, priority, facility, mesg):
+def q_log(qid, priority, facility, mesg):
     """function for question scripts (marker, render, generator, etc) to
        use to log messages. """
     qid = int(qid)

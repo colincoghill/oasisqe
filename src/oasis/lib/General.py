@@ -24,7 +24,7 @@ import jinja2
 from logging import log, INFO, WARN, ERROR
 from oasis.lib.OaExceptions import OaMarkerError
 from . import Courses, Groups, Exams
-from oasis.lib import OaConfig, DB, Topics, Courses2, script_funcs, OqeSmartmarkFuncs
+from oasis.lib import OaConfig, DB, Topics, script_funcs, OqeSmartmarkFuncs
 
 
 def htmlesc(text):
@@ -106,19 +106,19 @@ def getQuestionAttachmentFilename(qid, name):
     # otherwise check the question template first
     if name == "image.gif" or name == "qtemplate.html":
 
-        filename = DB.get_q_att_fname(qtid, name, variation, version)
-        if filename:
-            return DB.get_q_att_mimetype(qtid, name, variation, version), filename
-        filename = DB.get_qt_att_fname(qtid, name, version)
-        if filename:
-            return DB.get_qt_att_mimetype(qtid, name, version), filename
+        fname = DB.get_q_att_fname(qtid, name, variation, version)
+        if fname:
+            return DB.get_q_att_mimetype(qtid, name, variation, version), fname
+        fname = DB.get_qt_att_fname(qtid, name, version)
+        if fname:
+            return DB.get_qt_att_mimetype(qtid, name, version), fname
     else:
-        filename = DB.get_qt_att_fname(qtid, name, version)
-        if filename:
-            return DB.get_qt_att_mimetype(qtid, name, version), filename
-        filename = DB.get_q_att_fname(qtid, name, variation, version)
-        if filename:
-            return DB.get_q_att_mimetype(qtid, name, variation, version), filename
+        fname = DB.get_qt_att_fname(qtid, name, version)
+        if fname:
+            return DB.get_qt_att_mimetype(qtid, name, version), fname
+        fname = DB.get_q_att_fname(qtid, name, variation, version)
+        if fname:
+            return DB.get_q_att_mimetype(qtid, name, variation, version), fname
     return None, None
 
 
@@ -155,10 +155,12 @@ def generateExamQuestion(exam, position, student):
     """
     qtemplates = DB.getExamQTemplatesInPosition(exam, position)
     if not qtemplates:
-        log(WARN, "OaDB.getExamQTemplatesInPosition(%s,%s) returned a non list." % (exam, position))
+        log(WARN,
+            "OaDB.getExamQTemplatesInPosition(%s,%s) returned a non list." % (exam, position))
         return False
     if len(qtemplates) < 1:
-        log(WARN, "OaDB.getExamQTemplatesInPosition(%s,%s) returned an empty list." % (exam, position))
+        log(WARN,
+            "OaDB.getExamQTemplatesInPosition(%s,%s) returned an empty list." % (exam, position))
         return False
     whichqtemplate = random.randint(1, len(qtemplates))
     qtid = qtemplates[whichqtemplate - 1]   # lists count from 0
@@ -686,7 +688,7 @@ def markQuestionScript(qvars, script, answer):
         exec (script, qvars)
     except BaseException:
         (etype, value, tb) = sys.exc_info()
-        script_funcs.question_log(qid, "error", "__marker.py", "Falling back to standard marker:  __marker.py: %s" % (
+        script_funcs.q_log(qid, "error", "__marker.py", "Falling back to standard marker:  __marker.py: %s" % (
             traceback.format_exception(etype, value, tb)[-2:]))
     try:
         qid = qvars['OaQID']
@@ -771,11 +773,21 @@ def renderMarkResultsScript(qtid, qid, marks, script):
                              'int': int,
                              'resultsHTML': resultsHTML}
     qvars['markeroutput'] = marks
-    guesses = [int(var[1:]) for var in marks.keys() if re.search("^G([0-9]+)$", var) > 0]
-    answers = [int(var[1:]) for var in marks.keys() if re.search("^A([0-9]+)$", var) > 0]
-    tolerances = [int(var[1:]) for var in marks.keys() if re.search("^T([0-9]+)$", var) > 0]
-    scores = [int(var[1:]) for var in marks.keys() if re.search("^M([0-9]+)$", var) > 0]
-    comments = [int(var[1:]) for var in marks.keys() if re.search("^C([0-9]+)$", var) > 0]
+    guesses = [int(var[1:])
+               for var in marks.keys()
+               if re.search(r"^G([0-9]+)$", var) > 0]
+    answers = [int(var[1:])
+               for var in marks.keys()
+               if re.search(r"^A([0-9]+)$", var) > 0]
+    tolerances = [int(var[1:])
+                  for var in marks.keys()
+                  if re.search(r"^T([0-9]+)$", var) > 0]
+    scores = [int(var[1:])
+              for var in marks.keys()
+              if re.search(r"^M([0-9]+)$", var) > 0]
+    comments = [int(var[1:])
+                for var in marks.keys()
+                if re.search(r"^C([0-9]+)$", var) > 0]
     qvars['guesses'] = {}
     qvars['answers'] = {}
     qvars['tolerances'] = {}
@@ -797,11 +809,11 @@ def renderMarkResultsScript(qtid, qid, marks, script):
         exec (script, qvars)
     except BaseException:
         (etype, value, tb) = sys.exc_info()
-        script_funcs.question_log(qid,
-                                  "error",
-                                  "__results.py",
-                                  "Falling back to standard result display: __results.py: %s" % (
-                                      traceback.format_exception(etype, value, tb)[-2:]))
+        script_funcs.q_log(qid,
+                           "error",
+                           "__results.py",
+                           "Reverting to standard display: __results.py: %s" % (
+                           traceback.format_exception(etype, value, tb)[-2:]))
     if 'resultsHTML' in qvars:
         if len(qvars['resultsHTML']) > 2:
             resultsHTML = qvars['resultsHTML']
@@ -810,10 +822,10 @@ def renderMarkResultsScript(qtid, qid, marks, script):
                                                   '<IMG SRC="$OaQID$%s" />' % qvars[v])
             resultsHTML = resultsHTML.replace("$OaQID$", "%d/" % qid)
             return resultsHTML
-    script_funcs.question_log(qid,
-                              "error",
-                              "__results.py",
-                              "didn't set variable 'resultsHTML', using standard renderer instead.")
+    script_funcs.q_log(qid,
+                       "error",
+                       "__results.py",
+                       "didn't set variable 'resultsHTML', using standard renderer instead.")
     return renderMarkResultsStandard(qid, marks)
 
 
@@ -856,9 +868,11 @@ def markQuestion(qid, answers):
         markerscript = DB.get_qt_att(qtid, "__marker.py")
         if not markerscript:
             markerscript = DB.get_qt_att(qtid, "marker.py")
-            log(INFO, "Found legacy 'marker.py', should now be called '__marker.py' (qtid=%s)" % qtid)
+            log(INFO,
+                "Found legacy 'marker.py', should now be called '__marker.py' (qtid=%s)" % qtid)
         if not markerscript:
-            log(INFO, "Unable to retrieve marker script for smart marker question (qtid=%s)!" % qtid)
+            log(INFO,
+                "Unable to retrieve marker script for smart marker question (qtid=%s)!" % qtid)
             marks = markQuestionStandard(qvars, answers)
         else:
             marks = markQuestionScript(qvars, markerscript, answers)
@@ -935,7 +949,8 @@ def getExamQuestion(exam, page, user_id):
         qid = int(qid)
         assert qid > 0
     except (ValueError, TypeError, AssertionError):
-        log(WARN, "generateExamQuestion(%s,%s, %s) Failed (returned %s)" % (exam, page, user_id, qid))
+        log(WARN,
+            "generateExamQuestion(%s,%s, %s) Failed (returned %s)" % (exam, page, user_id, qid))
     DB.setQuestionViewTime(qid)
     return qid
 
