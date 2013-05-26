@@ -48,7 +48,9 @@ def setQuestionViewTime(question):
         nearly always the first time that we want.
     """
     assert isinstance(question, int)
-    run_sql("UPDATE questions SET firstview=NOW() WHERE question=%s;", (question,))
+    run_sql("""UPDATE questions
+               SET firstview=NOW()
+               WHERE question=%s;""", (question,))
 
 
 def setQuestionMarkTime(question):
@@ -57,7 +59,9 @@ def setQuestionMarkTime(question):
         we usually want the first time.
     """
     assert isinstance(question, int)
-    run_sql("UPDATE questions SET marktime=NOW() WHERE question=%s;", (question,))
+    run_sql("""UPDATE questions
+               SET marktime=NOW()
+               WHERE question=%s;""", (question,))
 
 
 def getQuestionViewTime(question):
@@ -65,7 +69,9 @@ def getQuestionViewTime(question):
         as a human readable string.
     """
     assert isinstance(question, int)
-    ret = run_sql("SELECT firstview FROM questions WHERE question=%s;", (question,))
+    ret = run_sql("""SELECT firstview
+                     FROM questions
+                     WHERE question=%s;""", (question,))
     if ret:
         firstview = ret[0][0]
         if firstview:
@@ -78,7 +84,9 @@ def getQuestionMarkTime(question):
         as a human readable string, or None if it hasn't been.
     """
     assert isinstance(question, int)
-    ret = run_sql("SELECT marktime FROM questions WHERE question=%s;", (question,))
+    ret = run_sql("""SELECT marktime
+                     FROM questions
+                     WHERE question=%s;""", (question,))
     if ret:
         marktime = ret[0][0]
         if marktime:
@@ -183,13 +191,17 @@ def saveGuess(q_id, part, value):
     assert isinstance(value, unicode)
     # noinspection PyComparisonWithNone
     if not value is None:  # "" is legit
-        run_sql("INSERT INTO guesses (question, created, part, guess) VALUES (%s, NOW(), %s, %s);", (q_id, part, value))
+        run_sql("""INSERT INTO guesses (question, created, part, guess)
+                   VALUES (%s, NOW(), %s, %s);""", (q_id, part, value))
 
 
 def getQuestionGuesses(q_id):
     """ Return a dictionary of the recent guesses in a question."""
     assert isinstance(q_id, int)
-    ret = run_sql("SELECT part, guess FROM guesses WHERE question = %s ORDER BY created DESC;", (q_id,))
+    ret = run_sql("""SELECT part, guess
+                     FROM guesses
+                     WHERE question = %s
+                     ORDER BY created DESC;""", (q_id,))
     if not ret:
         return {}
     guesses = {}
@@ -205,8 +217,12 @@ def getQuestionGuessesBeforeTime(q_id, lasttime):
     """
     assert isinstance(q_id, int)
     assert isinstance(lasttime, datetime.datetime)
-    ret = run_sql("SELECT part, guess FROM guesses WHERE question=%s AND created < %s ORDER BY created DESC;",
-                  (q_id, lasttime))
+    ret = run_sql("""SELECT part, guess
+                     FROM guesses
+                     WHERE question=%s
+                       AND created < %s
+                     ORDER BY created DESC;""",
+                     (q_id, lasttime))
     if not ret:
         return {}
     guesses = {}
@@ -236,12 +252,19 @@ def get_qtemplate(qt_id, version=None):
     assert isinstance(qt_id, int)
     assert isinstance(version, int) or version is None
     if version:
-        sql = """SELECT qtemplate, owner, title, description, marker, scoremax, version, status, embed_id
-                    FROM qtemplates WHERE qtemplate=%s and version=%s;"""
+        sql = """SELECT qtemplate, owner, title, description,
+                        marker, scoremax, version, status, embed_id
+                 FROM qtemplates
+                 WHERE qtemplate=%s
+                   AND version=%s;"""
         params = (qt_id, version)
     else:
-        sql = """SELECT qtemplate, owner, title, description, marker, scoremax, version, status, embed_id
-                    FROM qtemplates WHERE qtemplate=%s ORDER BY version DESC LIMIT 1;"""
+        sql = """SELECT qtemplate, owner, title, description,
+                        marker, scoremax, version, status, embed_id
+                 FROM qtemplates
+                 WHERE qtemplate=%s
+                 ORDER BY version DESC
+                 LIMIT 1;"""
         params = (qt_id,)
     ret = run_sql(sql, params)
     if len(ret) == 0:
@@ -287,14 +310,18 @@ def incrementQTVersion(qt_id):
     assert isinstance(qt_id, int)
     version = int(get_qt_version(qt_id))
     version += 1
-    run_sql("""UPDATE qtemplates SET version=%s WHERE qtemplate=%s;""", (version, qt_id))
+    run_sql("""UPDATE qtemplates
+               SET version=%s
+               WHERE qtemplate=%s;""", (version, qt_id))
     return version
 
 
 def get_qt_version(qt_id):
     """ Fetch the version of a question template."""
     assert isinstance(qt_id, int)
-    ret = run_sql("SELECT version FROM qtemplates WHERE qtemplate=%s;", (qt_id,))
+    ret = run_sql("""SELECT version
+                     FROM qtemplates
+                     WHERE qtemplate=%s;""", (qt_id,))
     if ret:
         return int(ret[0][0])
     log(WARN, "Request for unknown question template %s." % qt_id)
@@ -307,7 +334,9 @@ def get_qt_maxscore(qt_id):
     obj = MC.get(key)
     if not obj is None:  # 0 or [] or "" could be legit
         return obj
-    ret = run_sql("SELECT scoremax FROM qtemplates WHERE qtemplate=%s;", (qt_id,))
+    ret = run_sql("""SELECT scoremax
+                     FROM qtemplates
+                     WHERE qtemplate=%s;""", (qt_id,))
     if ret:
         try:
             scoremax = float(ret[0][0])
@@ -355,7 +384,9 @@ def get_qt_name(qt_id):
 def getQTemplateEmbedID(qt_id):
     """ Fetch the embed_id of a question template."""
     assert isinstance(qt_id, int)
-    ret = run_sql("SELECT embed_id FROM qtemplates WHERE qtemplate=%s;", (qt_id,))
+    ret = run_sql("""SELECT embed_id
+                     FROM qtemplates
+                     WHERE qtemplate=%s;""", (qt_id,))
     if ret:
         embed_id = ret[0][0]
         if not embed_id:
@@ -411,7 +442,8 @@ def get_q_att_mimetype(qt_id, name, variation, version=1000000000):
             return False
         return value
     except BaseException, err:
-        log(WARN, "%s args=(%s,%s,%s,%s)" % (err, qt_id, name, variation, version))
+        log(WARN,
+            "%s args=(%s,%s,%s,%s)" % (err, qt_id, name, variation, version))
     return False
 
 
@@ -554,9 +586,17 @@ def get_qt_att(qt_id, name, version=1000000000):
     key = "qtemplateattach/%d/%s/%d" % (qt_id, name, version)
     (value, found) = fileCache.get(key)
     if (not found) or version == 1000000000:
-        ret = run_sql("SELECT data FROM qtattach WHERE qtemplate = %s AND name = %s AND version = "
-                      "  (SELECT MAX(version) FROM qtattach WHERE "
-                      " qtemplate=%s AND version <= %s AND name=%s);", (qt_id, name, qt_id, version, name))
+        ret = run_sql("""SELECT data
+                         FROM qtattach
+                         WHERE qtemplate = %s
+                           AND name = %s
+                           AND version =
+                             (SELECT MAX(version)
+                              FROM qtattach
+                              WHERE qtemplate=%s
+                                AND version <= %s
+                                AND name=%s);""",
+                      (qt_id, name, qt_id, version, name))
         if ret:
             data = str(ret[0][0])
             fileCache.set(key, data)
@@ -567,10 +607,14 @@ def get_qt_att(qt_id, name, version=1000000000):
 
 
 def getExamQTemplatesInPosition(exam_id, position):
-    """ Return the question templates in the given position in the exam, or 0."""
+    """ Return the question templates in the given position in the exam, or 0.
+    """
     assert isinstance(exam_id, int)
     assert isinstance(position, int)
-    ret = run_sql("SELECT qtemplate FROM examqtemplates WHERE exam=%s AND position=%s;", (exam_id, position))
+    ret = run_sql("""SELECT qtemplate
+                     FROM examqtemplates
+                     WHERE exam=%s
+                       AND position=%s;""", (exam_id, position))
     if ret:
         qtemplates = [int(row[0]) for row in ret]
         return qtemplates
@@ -581,7 +625,10 @@ def get_qt_exam_pos(exam_id, qt_id):
     """Return the position a given question template holds in the exam"""
     assert isinstance(exam_id, int)
     assert isinstance(qt_id, int)
-    ret = run_sql("SELECT position FROM examqtemplates WHERE exam=%s AND qtemplate=%s;", (exam_id, qt_id))
+    ret = run_sql("""SELECT position
+                     FROM examqtemplates
+                     WHERE exam=%s
+                       AND qtemplate=%s;""", (exam_id, qt_id))
     if ret:
         return int(ret[0][0])
     return None
@@ -595,7 +642,9 @@ def get_qtemplate_topic_pos(qt_id, topic_id):
     obj = MC.get(key)
     if not obj is None:
         return int(obj)
-    ret = run_sql("SELECT position FROM questiontopics WHERE qtemplate=%s AND topic=%s;", (qt_id, topic_id))
+    ret = run_sql("""SELECT position
+                     FROM questiontopics
+                     WHERE qtemplate=%s AND topic=%s;""", (qt_id, topic_id))
     if ret:
         MC.set(key, ret[0][0], 120)  # remember for 2 minutes
         return int(ret[0][0])
@@ -605,7 +654,9 @@ def get_qtemplate_topic_pos(qt_id, topic_id):
 def getMaxQTemplatePositionInTopic(topic_id):
     """ Fetch the maximum position of a question template in a topic."""
     assert isinstance(topic_id, int)
-    res = run_sql("""SELECT MAX(position) FROM questiontopics WHERE topic=%s; """, (topic_id,))
+    res = run_sql("""SELECT MAX(position)
+                     FROM questiontopics
+                     WHERE topic=%s;""", (topic_id,))
     if not res:
         return 0
     return res[0][0]
@@ -618,11 +669,17 @@ def getQTVariations(qt_id, version=1000000000):
     if version == 1000000000:
         version = get_qt_version(qt_id)
     ret = {}
-    res = run_sql("SELECT variation, data FROM qtvariations WHERE qtemplate=%s AND version ="
-                  " (SELECT MAX(version) FROM qtvariations WHERE "
-                  "   qtemplate=%s AND version <= %s)", (qt_id, qt_id, version))
+    res = run_sql("""SELECT variation, data
+                     FROM qtvariations
+                     WHERE qtemplate=%s
+                       AND version =
+                         (SELECT MAX(version)
+                          FROM qtvariations
+                          WHERE qtemplate=%s
+                            AND version <= %s)""", (qt_id, qt_id, version))
     if not res:
-        log(WARN, "No Variation found for qtid=%d, version=%d" % (qt_id, version))
+        log(WARN,
+            "No Variation found for qtid=%d, version=%d" % (qt_id, version))
         return []
     for row in res:
         result = str(row[1])
@@ -637,11 +694,19 @@ def getQTVariation(qt_id, variation, version=1000000000):
     assert isinstance(variation, int)
     if version == 1000000000:
         version = get_qt_version(qt_id)
-    res = run_sql("SELECT data FROM qtvariations WHERE qtemplate=%s AND variation=%s AND version = "
-                  "(SELECT MAX(version) FROM qtvariations WHERE "
-                  "qtemplate=%s AND version <= %s)", (qt_id, variation, qt_id, version))
+    res = run_sql("""SELECT data
+                     FROM qtvariations
+                     WHERE qtemplate=%s
+                       AND variation=%s
+                       AND version =
+                         (SELECT MAX(version)
+                          FROM qtvariations
+                          WHERE qtemplate=%s
+                            AND version <= %s);""",
+                     (qt_id, variation, qt_id, version))
     if not res:
-        log(WARN, "Request for unknown question template variation. (%d, %d, %d)" % (qt_id, variation, version))
+        log(WARN,
+            "Request for unknown qt variation. (%d, %d, %d)" % (qt_id, variation, version))
         return None
     result = None
     data = None
@@ -649,7 +714,8 @@ def getQTVariation(qt_id, variation, version=1000000000):
         result = str(res[0][0])
         data = cPickle.loads(result)
     except TypeError:
-        log(WARN, "Type error trying to cpickle.loads(%s) for (%s, %s, %s)" % (type(result), qt_id, variation, version))
+        log(WARN,
+            "Type error trying to cpickle.loads(%s) for (%s, %s, %s)" % (type(result), qt_id, variation, version))
     return data
 
 
@@ -667,7 +733,8 @@ def getQTNumVariations(qt_id, version=1000000000):
     try:
         num = int(ret[0][0])
     except BaseException, err:
-        log(WARN, "No Variation found for qtid=%d, version=%d: %s" % (qt_id, version, err))
+        log(WARN,
+            "No Variation found for qtid=%d, version=%d: %s" % (qt_id, version, err))
         return 0
     return num
 
@@ -682,7 +749,8 @@ def create_q_att(qt_id, variation, name, mimetype, data, version):
     assert isinstance(version, int)
     safedata = psycopg2.Binary(data)
     run_sql("""INSERT INTO qattach (qtemplate, variation, mimetype, name, data, version)
-                     VALUES (%s, %s, %s, %s, %s, %s);""", (qt_id, variation, mimetype, name, safedata, version))
+               VALUES (%s, %s, %s, %s, %s, %s);""",
+               (qt_id, variation, mimetype, name, safedata, version))
 
 
 def create_qt_att(qt_id, name, mimetype, data, version):
@@ -700,7 +768,8 @@ def create_qt_att(qt_id, name, mimetype, data, version):
         data = data.encode("utf8")
     safedata = psycopg2.Binary(data)
     run_sql("""INSERT INTO qtattach (qtemplate, mimetype, name, data, version)
-                     VALUES (%s, %s, %s, %s, %s);""", (qt_id, mimetype, name, safedata, version))
+               VALUES (%s, %s, %s, %s, %s);""",
+               (qt_id, mimetype, name, safedata, version))
     return None
 
 
@@ -1246,7 +1315,9 @@ def getDBVersion():
 
     # We have a setting, easy
     try:
-        ret = run_sql("""SELECT "value" from config WHERE "name" = 'dbversion';""")
+        ret = run_sql("""SELECT "value"
+                         FROM config
+                         WHERE "name" = 'dbversion';""")
         if ret:
             return ret[0][0]
     except psycopg2.DatabaseError:
@@ -1278,6 +1349,8 @@ def upgradeDB():
     """
 
     # TODO: What do we do if we detect an empty DB?
+    # TODO: Get migration out of code? South? What if we need to run
+    #       business logic to convert data?
 
     versions = ['none', '3.6', '3.9.1', '3.9.2']
     dbver = getDBVersion()
