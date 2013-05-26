@@ -120,3 +120,12 @@ def test_instance_generate_variable():
     html = u"""The value is \x9f 3"""
     res = General.generateQuestionHTML(qvars, tmpl)
     assert res == html
+
+
+def test_html_esc():
+    """ Check that our HTML escaping works ok. ( & -> &amp;  etc)
+    """
+
+    assert "&amp;" == General.htmlesc("&")
+    assert "&lt;" == General.htmlesc("<")
+    assert "&gt;" == General.htmlesc(">")
