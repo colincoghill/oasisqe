@@ -429,7 +429,7 @@ def handleListbox(html, answer, qvars, shuffle=True):
         for p in paramlist:
             pcount += 1
             if p in qvars:
-                pout += ["""<OPTION VALUE='%d' Oa_SEL_%d_%d>%s</OPTION>""" % (pcount, answer, pcount, qvars[p])]
+                pout += ["""<OPTION VALUE='%d' Oa_SEL_%d_%d>%s</OPTION> """ % (pcount, answer, pcount, qvars[p])]
             else:
                 pout += ["""<OPTION><FONT COLOR="red">ERROR IN QUESTION DATA</FONT></OPTION>"""]
         # this should randomise the order in the list at least a little bit
