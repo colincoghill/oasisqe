@@ -108,6 +108,20 @@ def test_instance_generate_listbox_answer():
     assert res == html
 
 
+def test_instance_generate_multi_answer():
+    """ Convert some html templates + variables into resulting instance HTML
+        and make sure it's doing it right. Focus on multi "ANSWER MULTI"
+
+        No side effects.
+    """
+
+    tmpl = "blah<ANSWER1 MULTI f,g,h,i>blah"
+    qvars = { 'f': 7, 'g': "joe", "h": "3.4", "i": 33 }
+    html = """<table border=0><tr><th>Please choose one:</th><td CLASS='multichoicecell'><INPUT class='auto_save' TYPE='radio' NAME='ANS_1' VALUE='1' Oa_CHK_1_1> 7</td><td CLASS='multichoicecell'><INPUT class='auto_save' TYPE='radio' NAME='ANS_1' VALUE='2' Oa_CHK_1_2> joe</td><td CLASS='multichoicecell'><INPUT class='auto_save' TYPE='radio' NAME='ANS_1' VALUE='3' Oa_CHK_1_3> 3.4</td><td CLASS='multichoicecell'><INPUT class='auto_save' TYPE='radio' NAME='ANS_1' VALUE='4' Oa_CHK_1_4> 33</td></tr></table><br />\n"""
+    res = General.handleMulti(tmpl, 1, qvars, shuffle=False)[1]
+    assert res == html
+
+
 def test_instance_generate_variable():
     """ Convert some html templates + variables into resulting instance HTML
         and make sure it's doing it right. Focus on variable subs.
