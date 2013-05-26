@@ -874,7 +874,10 @@ def isBetween(date, start, end):
     """ Return True if the given date is between the start and end date.
         All arguments should be datetime objects.
     """
-    return end > date > start
+    if start < end:
+        return end > date > start
+
+    return start > date > end
 
 
 def isRecent(date):

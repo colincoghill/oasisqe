@@ -5,7 +5,7 @@
 # One day we'll break the qengine into its own API, for now we just hit
 # code from all over the place :)
 
-
+import datetime
 
 from oasis.lib import General, DB
 
@@ -167,3 +167,20 @@ def test_html_esc():
     assert "&amp;" == General.htmlesc("&")
     assert "&lt;" == General.htmlesc("<")
     assert "&gt;" == General.htmlesc(">")
+
+
+def test_date_ops():
+    """ Test our various date operations
+    """
+
+    a = datetime.date(2013,12,1)
+    b = datetime.date(2013,12,2)
+    c = datetime.date(2013,11,1)
+    d = datetime.date(2012,11,1)
+
+    assert General.isBetween(a,c,b) is True
+    assert General.isBetween(a,b,c) is True
+    assert General.isBetween(a,c,d) is False
+
+
+
