@@ -84,7 +84,6 @@ def test_instance_generate_multiv_answer():
     html = """blah<table border=0><tr><th>Please choose one:</th></tr><tr><th>a)</th><td><INPUT class='auto_save' TYPE='radio' NAME='ANS_1' VALUE='1' Oa_CHK_1_1></td><td CLASS='multichoicecell'> 7</td></tr><tr><th>b)</th><td><INPUT class='auto_save' TYPE='radio' NAME='ANS_1' VALUE='2' Oa_CHK_1_2></td><td CLASS='multichoicecell'> joe</td></tr><tr><th>c)</th><td><INPUT class='auto_save' TYPE='radio' NAME='ANS_1' VALUE='3' Oa_CHK_1_3></td><td CLASS='multichoicecell'> 3.4</td></tr><tr><th>d)</th><td><INPUT class='auto_save' TYPE='radio' NAME='ANS_1' VALUE='4' Oa_CHK_1_4></td><td CLASS='multichoicecell'> 33</td></tr></table><br />
 blah"""
     res = General.generateQuestionHTML(qvars, tmpl)
-    print res
     assert res == html
 
     tmpl = "blah<ANSWER1 MULTIV f,g,h,i,j>blah"
@@ -92,7 +91,20 @@ blah"""
     html = """blah<table border=0><tr><th>Please choose one:</th></tr><tr><th>a)</th><td><INPUT class='auto_save' TYPE='radio' NAME='ANS_1' VALUE='1' Oa_CHK_1_1></td><td CLASS='multichoicecell'> 7</td></tr><tr><th>b)</th><td><INPUT class='auto_save' TYPE='radio' NAME='ANS_1' VALUE='2' Oa_CHK_1_2></td><td CLASS='multichoicecell'> joe</td></tr><tr><th>c)</th><td><INPUT class='auto_save' TYPE='radio' NAME='ANS_1' VALUE='3' Oa_CHK_1_3></td><td CLASS='multichoicecell'> 3.4</td></tr><tr><th>d)</th><td><INPUT class='auto_save' TYPE='radio' NAME='ANS_1' VALUE='4' Oa_CHK_1_4></td><td CLASS='multichoicecell'> 33</td></tr><tr><th>e)</th><td><INPUT class='auto_save' TYPE='radio' NAME='ANS_1' VALUE='5' Oa_CHK_1_5></td><td CLASS='multichoicecell'> &amp;</td></tr></table><br />
 blah"""
     res = General.generateQuestionHTML(qvars, tmpl)
-    print res
+    assert res == html
+
+
+def test_instance_generate_listbox_answer():
+    """ Convert some html templates + variables into resulting instance HTML
+        and make sure it's doing it right. Focus on listbox "ANSWER SELECT"
+
+        No side effects.
+    """
+
+    tmpl = "blah<ANSWER1 SELECT f,g,h,i>blah"
+    qvars = { 'f': 7, 'g': "joe", "h": "3.4", "i": 33 }
+    html = """<SELECT class='auto_save' NAME='ANS_1'>Please choose:<OPTION VALUE='None'>--Choose--</OPTION><OPTION VALUE='1' Oa_SEL_1_1>7</OPTION><OPTION VALUE='2' Oa_SEL_1_2>joe</OPTION><OPTION VALUE='3' Oa_SEL_1_3>3.4</OPTION><OPTION VALUE='4' Oa_SEL_1_4>33</OPTION></SELECT>\n"""
+    res = General.handleListbox(tmpl, 1, qvars, shuffle=False)[1]
     assert res == html
 
 

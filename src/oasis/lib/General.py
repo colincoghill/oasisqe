@@ -367,7 +367,7 @@ def handleMultiVertical(html, answer, qvars):
     return match, ret
 
 
-def handleMulti(html, answer, qvars):
+def handleMulti(html, answer, qvars, shuffle=True):
     """ Convert MULTI answer tags into appropriate HTML. (radio buttons)
     """
     try:
@@ -395,28 +395,29 @@ def handleMulti(html, answer, qvars):
             else:
                 pout += ["""<FONT COLOR="red">ERROR IN QUESTION DATA</FONT>"""]
         # randomise the order in the list at least a little bit
-    random.shuffle(pout)
+    if shuffle:
+        random.shuffle(pout)
     ret = "<table border=0><tr><th>Please choose one:</th>"
     ret += ''.join(pout)
     ret += "</tr></table><br />\n"
     return match, ret
 
 
-def handleListbox(html, answer, qvars):
+def handleListbox(html, answer, qvars, shuffle=True):
     """ Convert SELECT answer tags into appropriate HTML (SELECT box)
 
         We expect    <ANSWERn SELECT a,b,c,d,e>
         with 2+ parameters (a,b,c,d,...)
     """
     try:
-        start = html.index("<ANSWER%d SELECT " % (answer,))
+        start = html.index("<ANSWER%d SELECT " % answer)
     except ValueError:
         return None, None
     try:
         end = html.index(">", start) + 1
     except ValueError:
         return None, None
-    params = html[start + len("<ANSWER%d SELECT " % (answer,)):end - 1]
+    params = html[start + len("<ANSWER%d SELECT " % answer):end - 1]
     match = html[start:end]
     paramlist = params.split(',')
     pout = ["", ]
@@ -430,8 +431,9 @@ def handleListbox(html, answer, qvars):
             else:
                 pout += ["""<OPTION><FONT COLOR="red">ERROR IN QUESTION DATA</FONT></OPTION>"""]
         # this should randomise the order in the list at least a little bit
-    random.shuffle(pout)
-    ret = """<SELECT class='auto_save' NAME='ANS_%d'>Please choose:""" % (answer,)
+    if shuffle:
+        random.shuffle(pout)
+    ret = """<SELECT class='auto_save' NAME='ANS_%d'>Please choose:""" % answer
     ret += """<OPTION VALUE='None'>--Choose--</OPTION>"""
     ret += ''.join(pout)
     ret += "</SELECT>\n"
