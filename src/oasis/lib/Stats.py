@@ -9,22 +9,6 @@
     other components to use.
 """
 
-#
-#   practice_question_incourse_stats
-#
-#      qtemplate    hour  day   month   year     number
-#
-#
-#     CREATE TABLE stats_prac_q_course (
-#          qtemplate  INTEGER NOT NULL,
-#          hour  INTEGER NOT NULL,
-#          day   INTEGER NOT NULL,
-#          month  INTEGER NOT NULL,
-#          year   INTEGER NOT NULL,
-#          number  INTEGER NOT NULL,
-#     );
-#
-
 import datetime
 import DB
 
@@ -122,12 +106,13 @@ def getQDailyPracticeCount(start_time, end_time, qtemplate_id):
     """ Return a list of daily count of practices for the given qtemplate
         over the time period
     """
-    sql = """ SELECT "year", "month", "day", sum("number") from "stats_prac_q_course"
-               WHERE "qtemplate"=%s
-               AND "when" >= %s
-               AND "when" <= %s
-               GROUP BY "year","month","day"
-               ORDER BY "year","month","day" ASC;"""
+    sql = """ SELECT "year", "month", "day", sum("number")
+              FROM "stats_prac_q_course"
+              WHERE "qtemplate"=%s
+                AND "when" >= %s
+                AND "when" <= %s
+              GROUP BY "year","month","day"
+              ORDER BY "year","month","day" ASC;"""
     params = (qtemplate_id, start_time, end_time)
     res = DB.run_sql(sql, params)
     if not res:
@@ -135,7 +120,8 @@ def getQDailyPracticeCount(start_time, end_time, qtemplate_id):
     data = []
     first = True
     for row in res:
-        if first: # if the data doesn't start with any values, set a 0 entry, so graphs scale correctly
+        if first:  # if the data doesn't start with a value,
+                   # set a 0 entry so graphs scale correctly
             if not (int(row[1]) == start_time.month and int(row[2]) == start_time.day and int(row[0] == start_time.year)):
                 data.append(("%04d-%02d-%02d" % (start_time.year, start_time.month, start_time.day), 0))
             first = False
@@ -152,12 +138,13 @@ def getQDailyPracticeScores(start_time, end_time, qtemplate_id):
     """ Return a list of daily count of practices for the given qtemplate over
        the time period
     """
-    sql = """SELECT "year", "month", "day", sum("number"), sum("avgscore") from "stats_prac_q_course"
-               WHERE "qtemplate"=%s
+    sql = """SELECT "year", "month", "day", sum("number"), sum("avgscore")
+             FROM "stats_prac_q_course"
+             WHERE "qtemplate"=%s
                AND "when" >= %s
                AND "when" <= %s
-               GROUP BY "year","month","day"
-               ORDER BY "year","month","day" ASC;"""
+             GROUP BY "year","month","day"
+             ORDER BY "year","month","day" ASC;"""
     params = (qtemplate_id, start_time, end_time)
     res = DB.run_sql(sql, params)
     if not res:
@@ -177,7 +164,7 @@ def getQDailyPracticeScores(start_time, end_time, qtemplate_id):
     return data
 
 
-def getQDailyPracticeLoad(start_time, end_time):
+def get_daily_practice_load(start_time, end_time):
     """ Return a list of daily counts of practices for the whole system """
     sql = """ SELECT "year", "month", "day", sum("number") from "stats_prac_q_course"
                WHERE "when" >= %s

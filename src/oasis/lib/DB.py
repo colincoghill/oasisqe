@@ -504,11 +504,11 @@ def get_q_att(qt_id, name, variation, version=1000000000):
             fileCache.set(key, data)
             return data
         fileCache.set(key, False)
-        return getQTAttachment(qt_id, name, version)
+        return get_qt_att(qt_id, name, version)
     return value
 
 
-def getQTAttachmentFilename(qt_id, name, version=1000000000):
+def get_qt_att_fname(qt_id, name, version=1000000000):
     """ Fetch a filename for the attachment in the question template.
         If version is set to 0, will fetch the newest.
     """
@@ -520,9 +520,17 @@ def getQTAttachmentFilename(qt_id, name, version=1000000000):
     key = "qtemplateattach/%d/%s/%d" % (qt_id, name, version)
     (filename, found) = fileCache.getFilename(key)
     if (not found) or version == 1000000000:
-        ret = run_sql("SELECT data FROM qtattach WHERE qtemplate = %s AND name = %s AND version = "
-                      "  (SELECT MAX(version) FROM qtattach WHERE "
-                      " qtemplate=%s AND version <= %s AND name=%s)", (qt_id, name, qt_id, version, name))
+        ret = run_sql("""SELECT data
+                         FROM qtattach
+                         WHERE qtemplate = %s
+                           AND name = %s
+                           AND version =
+                             (SELECT MAX(version)
+                              FROM qtattach
+                              WHERE qtemplate=%s
+                                AND version <= %s
+                                AND name=%s);""",
+                      (qt_id, name, qt_id, version, name))
         if ret:
             data = str(ret[0][0])
             fileCache.set(key, data)
@@ -534,7 +542,7 @@ def getQTAttachmentFilename(qt_id, name, version=1000000000):
     return filename
 
 
-def getQTAttachment(qt_id, name, version=1000000000):
+def get_qt_att(qt_id, name, version=1000000000):
     """ Fetch an attachment for the question template.
         If version is set to 0, will fetch the newest.
     """
@@ -569,7 +577,7 @@ def getExamQTemplatesInPosition(exam_id, position):
     return []
 
 
-def getQTemplatePositionInExam(exam_id, qt_id):
+def get_qt_exam_pos(exam_id, qt_id):
     """Return the position a given question template holds in the exam"""
     assert isinstance(exam_id, int)
     assert isinstance(qt_id, int)
@@ -857,7 +865,7 @@ def copy_qt_all(qt_id):
     attachments = get_qt_atts(qt_id)
     newversion = get_qt_version(newid)
     for name in attachments:
-        create_qt_att(newid, name, get_qt_att_mimetype(qt_id, name), getQTAttachment(qt_id, name), newversion)
+        create_qt_att(newid, name, get_qt_att_mimetype(qt_id, name), get_qt_att(qt_id, name), newversion)
     try:
         variations = getQTVariations(qt_id)
         for variation in variations.keys():

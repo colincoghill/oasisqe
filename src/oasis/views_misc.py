@@ -37,7 +37,7 @@ def attachment_question(qtemplate_id, version, variation, fname):
             return redirect(url_for('index'))
     if Attachment.is_restricted(fname):
         abort(403)
-    (mimetype, filename) = Attachment.getQuestionAttachmentDetails(qtemplate_id, version, variation, fname)
+    (mimetype, filename) = Attachment.get_q_att_details(qtemplate_id, version, variation, fname)
     if not mimetype:
         abort(404)
 
@@ -53,7 +53,7 @@ def attachment_qtemplate(qtemplate_id, version, variation, fname):
         if 'user_id' not in session:
             session['redirect'] = request.path
             return redirect(url_for('index'))
-    (mimetype, filename) = Attachment.getQuestionAttachmentDetails(qtemplate_id, version, variation, fname)
+    (mimetype, filename) = Attachment.get_q_att_details(qtemplate_id, version, variation, fname)
     if Attachment.is_restricted(fname):
         abort(403)
     if not mimetype:
@@ -158,10 +158,10 @@ def qedit_raw_edit(topic_id, qt_id):
     topic = Topics.getTopic(topic_id)
     qtemplate = DB.get_qtemplate(qt_id)
     try:
-        html = DB.getQTAttachment(qt_id, "qtemplate.html")
+        html = DB.get_qt_att(qt_id, "qtemplate.html")
     except KeyError:
         try:
-            html = DB.getQTAttachment(qt_id, "__qtemplate.html")
+            html = DB.get_qt_att(qt_id, "__qtemplate.html")
         except KeyError:
             html = "[question html goes here]"
 
@@ -294,7 +294,7 @@ def qedit_raw_attach(qt_id, fname):
         straight from DB so it's fresh
     """
     mimetype = DB.get_qt_att_mimetype(qt_id, fname)
-    data = DB.getQTAttachment(qt_id, fname)
+    data = DB.get_qt_att(qt_id, fname)
     if not data:
         abort(404)
     if not mimetype:

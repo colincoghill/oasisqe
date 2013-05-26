@@ -111,7 +111,7 @@ def renderOwnMarkedExam(student, exam):
         qtemplate = DB.get_q_parent(question)
 
         answers = DB.getQuestionGuessesBeforeTime(question, examsubmit)
-        pos = DB.getQTemplatePositionInExam(exam, qtemplate)
+        pos = DB.get_qt_exam_pos(exam, qtemplate)
         marks = General.markQuestion(question, answers)
         parts = [int(var[1:]) for var in marks.keys() if re.search("^A([0-9]+$)", var) > 0]
         parts.sort()

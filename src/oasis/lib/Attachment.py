@@ -25,7 +25,7 @@ def is_restricted(fname):
     return False
 
 
-def getQuestionAttachmentDetails(qtid, version, variation, name):
+def get_q_att_details(qtid, version, variation, name):
     """ Find a question attachment and return its details. """
     # for the two biggies we hit the question first,
     # otherwise check the question template first
@@ -33,11 +33,11 @@ def getQuestionAttachmentDetails(qtid, version, variation, name):
         fname = DB.get_q_att_fname(qtid, name, variation, version)
         if fname:
             return DB.get_q_att_mimetype(qtid, name, variation, version), fname
-        fname = DB.getQTAttachmentFilename(qtid, name, version)
+        fname = DB.get_qt_att_fname(qtid, name, version)
         if fname:
             return DB.get_qt_att_mimetype(qtid, name, version), fname
     else:
-        fname = DB.getQTAttachmentFilename(qtid, name, version)
+        fname = DB.get_qt_att_fname(qtid, name, version)
         if fname:
             return DB.get_qt_att_mimetype(qtid, name, version), fname
         fname = DB.get_q_att_fname(qtid, name, variation, version)

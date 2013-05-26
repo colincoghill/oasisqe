@@ -121,7 +121,7 @@ def api_stats_practice_load():
     end_time = now+days3
     start_time = now-month3
 
-    counts = Stats.getQDailyPracticeLoad(start_time, end_time)
+    counts = Stats.get_daily_practice_load(start_time, end_time)
     return jsonify(result=counts)
 
 
@@ -134,7 +134,7 @@ def api_stats_practice_load_year(year):
     start_time = datetime.datetime(year=year, month=1, day=1, hour=0)
     end_time = datetime.datetime(year=year, month=12, day=31, hour=23)
 
-    counts = Stats.getQDailyPracticeLoad(start_time, end_time)
+    counts = Stats.get_daily_practice_load(start_time, end_time)
     return jsonify(result=counts)
 
 

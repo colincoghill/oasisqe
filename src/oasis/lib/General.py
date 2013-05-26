@@ -109,11 +109,11 @@ def getQuestionAttachmentFilename(qid, name):
         filename = DB.get_q_att_fname(qtid, name, variation, version)
         if filename:
             return DB.get_q_att_mimetype(qtid, name, variation, version), filename
-        filename = DB.getQTAttachmentFilename(qtid, name, version)
+        filename = DB.get_qt_att_fname(qtid, name, version)
         if filename:
             return DB.get_qt_att_mimetype(qtid, name, version), filename
     else:
-        filename = DB.getQTAttachmentFilename(qtid, name, version)
+        filename = DB.get_qt_att_fname(qtid, name, version)
         if filename:
             return DB.get_qt_att_mimetype(qtid, name, version), filename
         filename = DB.get_q_att_fname(qtid, name, variation, version)
@@ -135,11 +135,11 @@ def getQuestionAttachment(qid, name):
         data = DB.get_q_att(qtid, name, variation, version)
         if data:
             return DB.get_q_att_mimetype(qtid, name, variation, version), data
-        data = DB.getQTAttachment(qtid, name, version)
+        data = DB.get_qt_att(qtid, name, version)
         if data:
             return DB.get_qt_att_mimetype(qtid, name, version), data
     else:
-        data = DB.getQTAttachment(qtid, name, version)
+        data = DB.get_qt_att(qtid, name, version)
         if data:
             return DB.get_qt_att_mimetype(qtid, name, version), data
         data = DB.get_q_att(qtid, name, variation, version)
@@ -196,7 +196,7 @@ def generateQuestionFromVar(qtid, student, exam, position, version, variation):
         if not qvars:
             qvars = DB.getQTVariation(qtid, variation, version)
         qvars['Oasis_qid'] = qid
-        image = DB.getQTAttachment(qtid, "image.gif", version)
+        image = DB.get_qt_att(qtid, "image.gif", version)
         if image:
             newimage = generateQuestionImage(qvars, image)
             DB.create_q_att(qtid, variation, "image.gif", "image/gif", newimage, version)
@@ -204,7 +204,7 @@ def generateQuestionFromVar(qtid, student, exam, position, version, variation):
     if not htmlexists:
         if not qvars:
             qvars = DB.getQTVariation(qtid, variation, version)
-        html = DB.getQTAttachment(qtid, "qtemplate.html", version)
+        html = DB.get_qt_att(qtid, "qtemplate.html", version)
         if html:
             qvars['Oasis_qid'] = qid
             newhtml = generateQuestionHTML(qvars, html)
@@ -824,7 +824,7 @@ def renderMarkResults(qid, marks):
        in an HTML page.
     """
     qtid = DB.get_q_parent(qid)
-    renderscript = DB.getQTAttachment(qtid, "__results.py")
+    renderscript = DB.get_qt_att(qtid, "__results.py")
     if not renderscript:
         resultsHTML = renderMarkResultsStandard(qid, marks)
     else:
@@ -851,9 +851,9 @@ def markQuestion(qid, answers):
         marks = markQuestionStandard(qvars, answers)
     else:
         # We want the latest version of the marker, so no version given
-        markerscript = DB.getQTAttachment(qtid, "__marker.py")
+        markerscript = DB.get_qt_att(qtid, "__marker.py")
         if not markerscript:
-            markerscript = DB.getQTAttachment(qtid, "marker.py")
+            markerscript = DB.get_qt_att(qtid, "marker.py")
             log(INFO, "Found legacy 'marker.py', should now be called '__marker.py' (qtid=%s)" % qtid)
         if not markerscript:
             log(INFO, "Unable to retrieve marker script for smart marker question (qtid=%s)!" % qtid)
