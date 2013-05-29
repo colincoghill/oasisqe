@@ -36,10 +36,6 @@ CREATE TABLE courses (
     owner integer,
     active integer DEFAULT 1,
     "type" integer,
-    enrol_type character varying DEFAULT 'manual'::character varying,
-    enrol_location character varying,
-    enrol_freq integer DEFAULT 120,
-    registration character varying DEFAULT 'controlled'::character varying,
     practice_visibility character varying DEFAULT 'all'::character varying,
     assess_visibility character varying DEFAULT 'enrol'::character varying
 );
@@ -97,27 +93,59 @@ CREATE TABLE groupcourses (
     course integer NOT NULL
 );
 
+CREATE SEQUENCE periods_id_seq START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;
+CREATE TABLE periods (
+    "id" integer DEFAULT nextval('periods_id_seq'::regclass) PRIMARY KEY,
+    "name" character varying(50) UNIQUE NOT NULL,
+    "title" character varying(250),
+    "start" date,
+    "finish" date,
+    "code" character varying(50) unique
+);
+
+INSERT INTO periods ("name", "title", "start", "finish", "code") VALUES ('Indefinite', 'Indefinite', '2000-01-01', '9999-12-31','');
+CREATE INDEX ON "periods" USING BTREE("name");
+CREATE INDEX ON "periods" USING BTREE("code");
+
+CREATE SEQUENCE group_feeds_id_seq START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;
+CREATE TABLE group_feeds (
+    "id" integer DEFAULT nextval('group_feeds_id_seq'::regclass) PRIMARY KEY,
+    "name" character varying UNIQUE,
+    "title" character varying,
+    "script" character varying,
+    "environment" character varying,
+    "frequency" integer default 2,   -- 1 = hourly, 2 = daily, 3 = manually
+    "comments" text
+);
+
 CREATE SEQUENCE groups_id_seq START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;
 CREATE TABLE groups (
-    id integer DEFAULT nextval('groups_id_seq'::regclass) NOT NULL,
-    title character varying(128) NOT NULL,
-    description text,
-    owner integer,
-    semester character varying(30),
-    "type" integer,
-    startdate timestamp without time zone,
-    enddate timestamp without time zone,
-    enrol_type character varying DEFAULT 'manual'::character varying,
-    enrol_location character varying DEFAULT ''::character varying,
-    registration character varying DEFAULT 'controlled'::character varying
+    "id" integer DEFAULT nextval('groups_id_seq'::regclass) NOT NULL,
+    "name" character varying UNIQUE,
+    "title" character varying,
+    "owner" integer,
+    "period" integer references periods ("id"),
+    "type" integer references grouptypes("type"),
+    "lastupdate" timestamptz,
+    "size" integer,
+    "source" character varying DEFAULT 'adhoc'::character varying,  -- "adhoc", "open", "feed"
+    "feed" integer references group_feeds("id") NULL
 );
 
 CREATE SEQUENCE grouptypes_type_seq START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;
 CREATE TABLE grouptypes (
     "type" integer DEFAULT nextval('grouptypes_type_seq'::regclass) NOT NULL,
-    title character varying(128) NOT NULL,
-    description text
+    "title" character varying(128) NOT NULL,
+    "description" text
 );
+
+INSERT INTO grouptypes ("type", "title", "description")
+  VALUES ('1', 'staff', 'Staff');
+INSERT INTO grouptypes ("type", "title", "description")
+  VALUES ('2', 'enrolment', 'Enrolment');
+INSERT INTO grouptypes ("type", "title", "description")
+  VALUES ('3', 'statistical', 'Statistical');
+SELECT SETVAL('grouptypes_type_seq', 3);
 
 CREATE SEQUENCE guesses_id_seq START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;
 CREATE TABLE guesses (
@@ -286,9 +314,7 @@ CREATE SEQUENCE usergroups_id_seq START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAX
 CREATE TABLE usergroups (
     id integer DEFAULT nextval('usergroups_id_seq'::regclass) NOT NULL,
     userid integer NOT NULL,
-    groupid integer NOT NULL,
-    "type" integer,
-    semester character varying
+    groupid integer NOT NULL
 );
 
 CREATE SEQUENCE users_id_seq START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;
@@ -306,6 +332,13 @@ CREATE TABLE users (
     confirmation_code character varying,
     confirmed character varying
 );
+
+CREATE TABLE config (
+    "name" character varying(50) unique,
+    "value" text
+);
+INSERT INTO config ("name", "value") VALUES ('dbversion', '3.9.2');
+
 
 CREATE SEQUENCE users_version_seq START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;
 
