@@ -107,7 +107,8 @@ Focus:  Finish moving/implementing functionality of 3.6 OASIS
 
 4.1  and beyond...
 ==================
- * LDAP integration.
+ * move to SQLAlchemy, or similar ORM to get all the SQL cleaned up.
+ * work on tidying up the internals a bit - go more object based where possible
  * Course/semester codes need to be redone every semester. Cope a lot better with historical enrolment data.
  * Assessment question weighting
  * Themes/Branding - allow admins to change the look of the system, link with external systems better.
