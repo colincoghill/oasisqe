@@ -212,3 +212,7 @@ table.att_table td {
 
 
 textarea { width: 100%; border: 1px solid #333; padding: 4px; }
+
+.datatable td,th {
+    font-size: small;
+}

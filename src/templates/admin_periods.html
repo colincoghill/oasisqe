@@ -1,40 +1,120 @@
 {% extends "page_nav.html" %}
 {% block body %}
-        <br/>
+    <br/>
     <p>Return to <a href="{{ cf.url }}admin/top">Admin Top</a></p>
-
     <H2>Manage Time Periods</H2>
-    <p>Time periods are used to match courses to real-world terms or semesters.
-       Enrolment groups can then be associated with them to allow access to
-       courses to start and end at the appropriate times.</p>
+
+
     <div class='container-fluid well'>
-        <h3>Active Periods</h3>
-        <table class='table table-condensed'>
+        <p>Time periods are used to match courses to real-world terms or
+            semesters.</p>
+
+        <p>
+            Enrolment groups can then be associated with them to allow
+            access to
+            courses to start and end at the appropriate times.</p>
+
+        <p>If you do not wish to use these, just use the included
+            'Indefinite' period.
+
+        </p>
+        <br>
+
+        <h4>Time Periods</h4>
+        <table class='table table-condensed datatable'>
+            <thead>
             <tr>
                 <th>Name</th>
                 <th>Title</th>
                 <th>Start</th>
                 <th>End</th>
+                <th>Code</th>
+                <th></th>
 
             </tr>
-            {% for period in periods %}
+            </thead>
+            <tbody>
+            {% for period in periods if not period.historical %}
                 <tr>
-                    <th>{{ period.name }}</th>
-                    <td>{{ period.title }}</td>
+                    <td>{{ period.name }}</td>
+                    <th>{{ period.title }}</th>
                     <td>{{ period.start }}</td>
                     <td>{{ period.finish }}</td>
+                    <td>{{ period.code }}</td>
 
+                    <td><a class='btn btn-mini'
+                           href='{{ cf.url }}admin/edit_period/{{ period.id }}'>Edit</a>
+                    </td>
                 </tr>
             {% endfor %}
-
+            </tbody>
         </table>
-        <br/>
+        <br/> <br/>
+        <a class='btn btn-small' href='{{ cf.url }}admin/add_period'><i
+                class='icon icon-plus'> </i>Add Time Period</a>
+        <br/> <br/>
+<br/><br/>
+        <a href='#' id='showhistorical'><i class='icon icon-play'> </i>
+            Historical Periods</a>
 
-        <h3>Historical Periods</h3>
+        <div class='hidden' id="historical">
+            <table class='table table-condensed datatable'>
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Title</th>
+                    <th>Start</th>
+                    <th>End</th>
+                    <th>Code</th>
 
-        <br/>
-        <a class='btn' href='{{ cf.url }}admin/add_period'><i class='icon icon-plus'> </i>Add Time Period</a>
+                </tr>
+                </thead>
+                <tbody>
+                {% for period in periods if period.historical %}
+                    <tr>
+                        <td>
+                            <a href='{{ cf.url }}admin/edit_period/{{ period.id }}'>{{ period.name }}</a>
+                        </td>
+                        <th>{{ period.title }}</th>
+                        <td>{{ period.start }}</td>
+                        <td>{{ period.finish }}</td>
+                        <td>{{ period.code }}</td>
+
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+   </div>
+
+
+    <p>Return to <a href="{{ cf.url }}admin/top">Admin Top</a></p>
+
+    <br/>
+    <br/>
+    <br/>
+    <br/>
+
     </div>
- <p>Return to <a href="{{ cf.url }}admin/top">Admin Top</a></p>
 {% endblock body %}
+{% block js %}
+    <script>
+
+        $(function () {
+            $(".datatable").dataTable({
+                        "bPaginate": false,
+                        "bLengthChange": false,
+                        "bFilter": false
+                    }
+            );
+
+            $('#showhistorical').click(function () {
+                        $('#historical').toggle();
+                    }
+            );
+        });
+
+
+    </script>
+{% endblock js %}
 {% block pagetitle %}Server Admin{% endblock %}

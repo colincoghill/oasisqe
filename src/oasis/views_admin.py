@@ -54,7 +54,7 @@ def admin_periods():
     if not check_perm(user_id, 0, "OASIS_SYSADMIN"):
         flash("You do not have system administrator permission")
         return redirect(url_for('setup_top'))
-    periods = Periods.all_dict()
+    periods = Periods.all_list()
 
     return render_template(
         "admin_periods.html",

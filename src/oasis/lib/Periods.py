@@ -7,6 +7,7 @@
 
 from ..lib.DB import run_sql
 from logging import log, ERROR
+import datetime
 
 class Period(object):
     """ A time period is relatively simple, mainly just name and
@@ -130,11 +131,20 @@ class Period(object):
                   self.id)
         ret = run_sql(sql, params)
 
+    def historical(self):
+        """ Is this period far enough in the past we can move it to "archive" or
+            "historical" lists.
+            Currently true if the finish date is more than a year in the past.
+        """
+
+        return (self.finish.year + 1) < datetime.datetime.now().year
+
+
     # def delete(self):
     # def groups(self):
 
 
-def all_dict():
+def all_list():
     """
         Return a list of all time periods in the system.
     """
@@ -146,9 +156,9 @@ def all_dict():
             'No time periods in Database? This should never happen.')
         return []
 
-    periods = {}
+    periods = []
     for row in ret:
         p_id = row[0]
-        periods[p_id] = Period(id=p_id)
+        periods.append(Period(id=p_id))
 
     return periods
