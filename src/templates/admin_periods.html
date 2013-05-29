@@ -34,7 +34,7 @@
             </tr>
             </thead>
             <tbody>
-            {% for period in periods if not period.historical %}
+            {% for period in periods if not period.historical() %}
                 <tr>
                     <td>{{ period.name }}</td>
                     <th>{{ period.title }}</th>
@@ -50,14 +50,13 @@
             </tbody>
         </table>
         <br/> <br/>
-        <a class='btn btn-small' href='{{ cf.url }}admin/add_period'><i
-                class='icon icon-plus'> </i>Add Time Period</a>
+        <a class='btn btn-small' href='{{ cf.url }}admin/add_period'>Add Time Period</a>
         <br/> <br/>
 <br/><br/>
-        <a href='#' id='showhistorical'><i class='icon icon-play'> </i>
+        <a href='#' id='showhistorical'><i class='icon icon-chevron-right historical'> </i><i style='display:none;' class='icon icon-chevron-down historical'> </i>
             Historical Periods</a>
 
-        <div class='hidden' id="historical">
+        <div class='hidden historical' id="historical">
             <table class='table table-condensed datatable'>
                 <thead>
                 <tr>
@@ -70,7 +69,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                {% for period in periods if period.historical %}
+                {% for period in periods if period.historical() %}
                     <tr>
                         <td>
                             <a href='{{ cf.url }}admin/edit_period/{{ period.id }}'>{{ period.name }}</a>
@@ -109,7 +108,7 @@
             );
 
             $('#showhistorical').click(function () {
-                        $('#historical').toggle();
+                        $('.historical').toggle();
                     }
             );
         });

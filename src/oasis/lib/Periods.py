@@ -137,7 +137,8 @@ class Period(object):
             Currently true if the finish date is more than a year in the past.
         """
 
-        return (self.finish.year + 1) < datetime.datetime.now().year
+        now = datetime.datetime.now().date()
+        return self.finish.year < now.year - 1
 
 
     # def delete(self):
