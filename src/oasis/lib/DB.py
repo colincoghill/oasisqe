@@ -1421,6 +1421,18 @@ def upgradeDB():
             INSERT INTO config ("name", "value") VALUES ('dbversion', '3.9.2');
 
             ALTER TABLE "public"."groups" ADD COLUMN "enrol_location" CHARACTER VARYING NULL;
+
+            CREATE TABLE periods (
+                "name" character varying(50) primary key,
+                "title" character varying(250),
+                "start" date,
+                "finish" date,
+                "code" character varying(50) unique
+            );
+
+            INSERT INTO periods ("name", "title", "start", "finish", "code")
+             VALUES ('Indefinite', 'Indefinite', '2000-01-01', '9999-12-31','');
+
             COMMIT;
         """)
         dbver = "3.9.2"
