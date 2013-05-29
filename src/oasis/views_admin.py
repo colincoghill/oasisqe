@@ -62,6 +62,21 @@ def admin_periods():
     )
 
 
+@app.route("/admin/edit_period/<int:p_id>")
+@authenticated
+def admin_edit_period(p_id):
+    """ Present page to edit a time period in the system """
+    user_id = session['user_id']
+    if not check_perm(user_id, 0, "OASIS_SYSADMIN"):
+        flash("You do not have system administrator permission")
+        return redirect(url_for('setup_top'))
+    period = Periods.Period(id=p_id)
+
+    return render_template(
+        "admin_editperiod.html",
+        period=period
+    )
+
 
 @app.route("/admin/course/<int:course_id>")
 @authenticated
