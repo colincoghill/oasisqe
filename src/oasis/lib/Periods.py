@@ -13,7 +13,9 @@ class Period(object):
         start and finish.
     """
 
-    def __init__(self, id=None, name=None, title=None, start=None, finish=None, code=None):
+    def __init__(self, id=None, name=None,
+                 title=None, start=None, finish=None,
+                 code=None):
         """ If just id, name or code is provided, load existing database
             record or raise KeyError.
 
@@ -51,6 +53,7 @@ class Period(object):
         if not ret:
             raise KeyError("Time Period with name '%s' not found" % name)
 
+        self.name = name
         self.id = ret[0][0]
         self.title = ret[0][1]
         self.start = ret[0][2]
@@ -72,6 +75,7 @@ class Period(object):
         if not ret:
             raise KeyError("Time Period with id '%s' not found" % p_id)
 
+        self.id = p_id
         self.name = ret[0][0]
         self.title = ret[0][1]
         self.start = ret[0][2]
@@ -93,6 +97,7 @@ class Period(object):
         if not ret:
             raise KeyError("Time Period with code '%s' not found" % code)
 
+        self.code = code
         self.name = ret[0][0]
         self.title = ret[0][1]
         self.start = ret[0][2]
@@ -120,9 +125,9 @@ class Period(object):
 
         sql = """UPDATE periods
                  SET name=%s, title=%s, start=%s, finish=%s, code=%s
-                 WHERE name=%s;"""
+                 WHERE id=%s;"""
         params = (self.name, self.title, self.start, self.finish, dbcode,
-                  self.name)
+                  self.id)
         ret = run_sql(sql, params)
 
     # def delete(self):
