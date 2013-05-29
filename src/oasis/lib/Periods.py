@@ -14,6 +14,7 @@ class Period(object):
         start and finish.
     """
 
+    # TODO:  SQLAlchemy this.
     def __init__(self, id=None, name=None,
                  title=None, start=None, finish=None,
                  code=None):
@@ -129,7 +130,7 @@ class Period(object):
                  WHERE id=%s;"""
         params = (self.name, self.title, self.start, self.finish, dbcode,
                   self.id)
-        ret = run_sql(sql, params)
+        run_sql(sql, params)
 
     def historical(self):
         """ Is this period far enough in the past we can move it to "archive" or
