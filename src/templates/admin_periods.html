@@ -1,0 +1,40 @@
+{% extends "page_nav.html" %}
+{% block body %}
+        <br/>
+    <p>Return to <a href="{{ cf.url }}admin/top">Admin Top</a></p>
+
+    <H2>Manage Time Periods</H2>
+    <p>Time periods are used to match courses to real-world terms or semesters.
+       Enrolment groups can then be associated with them to allow access to
+       courses to start and end at the appropriate times.</p>
+    <div class='container-fluid well'>
+        <h3>Active Periods</h3>
+        <table class='table table-condensed'>
+            <tr>
+                <th>Name</th>
+                <th>Title</th>
+                <th>Start</th>
+                <th>End</th>
+
+            </tr>
+            {% for period in periods %}
+                <tr>
+                    <th>{{ period.name }}</th>
+                    <td>{{ period.title }}</td>
+                    <td>{{ period.start }}</td>
+                    <td>{{ period.finish }}</td>
+
+                </tr>
+            {% endfor %}
+
+        </table>
+        <br/>
+
+        <h3>Historical Periods</h3>
+
+        <br/>
+        <a class='btn' href='{{ cf.url }}admin/add_period'><i class='icon icon-plus'> </i>Add Time Period</a>
+    </div>
+ <p>Return to <a href="{{ cf.url }}admin/top">Admin Top</a></p>
+{% endblock body %}
+{% block pagetitle %}Server Admin{% endblock %}

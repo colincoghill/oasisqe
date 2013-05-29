@@ -6,7 +6,7 @@
 """
 
 from ..lib.DB import run_sql
-
+from logging import log, ERROR
 
 class Period(object):
     """ A time period is relatively simple, mainly just name and
@@ -133,3 +133,22 @@ class Period(object):
     # def delete(self):
     # def groups(self):
 
+
+def all_dict():
+    """
+        Return a list of all time periods in the system.
+    """
+
+    sql = """SELECT id, finish FROM periods order by finish;"""
+    ret = run_sql(sql)
+    if not ret:
+        log(ERROR,
+            'No time periods in Database? This should never happen.')
+        return []
+
+    periods = {}
+    for row in ret:
+        p_id = row[0]
+        periods[p_id] = Period(id=p_id)
+
+    return periods

@@ -10,7 +10,7 @@ import datetime
 from flask import render_template, session, \
     request, redirect, abort, url_for, flash
 
-from .lib import Courses, Courses2, Setup
+from .lib import Courses, Courses2, Setup, Periods
 
 MYPATH = os.path.dirname(__file__)
 from .lib.UserDB import check_perm
@@ -44,6 +44,23 @@ def admin_courses():
         "admin_courselist.html",
         courses=courses
     )
+
+
+@app.route("/admin/periods")
+@authenticated
+def admin_periods():
+    """ Present page to administer time periods in the system """
+    user_id = session['user_id']
+    if not check_perm(user_id, 0, "OASIS_SYSADMIN"):
+        flash("You do not have system administrator permission")
+        return redirect(url_for('setup_top'))
+    periods = Periods.all_dict()
+
+    return render_template(
+        "admin_periods.html",
+        periods=periods
+    )
+
 
 
 @app.route("/admin/course/<int:course_id>")
