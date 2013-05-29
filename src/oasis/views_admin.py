@@ -70,12 +70,36 @@ def admin_edit_period(p_id):
     if not check_perm(user_id, 0, "OASIS_SYSADMIN"):
         flash("You do not have system administrator permission")
         return redirect(url_for('setup_top'))
-    period = Periods.Period(id=p_id)
+    try:
+        period = Periods.Period(id=p_id)
+    except KeyError:
+        abort(404)
 
     return render_template(
         "admin_editperiod.html",
         period=period
     )
+
+@app.route("/admin/edit_period_submit/<int:p_id>", methods=["POST",])
+@authenticated
+def admin_edit_period_submit(p_id):
+    """ Submit edit period form """
+    user_id = session['user_id']
+    if not check_perm(user_id, 0, "OASIS_SYSADMIN"):
+        flash("You do not have system administrator permission")
+        return redirect(url_for('setup_top'))
+
+    if "cancel" in request.form:
+        flash("Edit cancelled!")
+        return redirect(url_for("admin_periods"))
+
+    try:
+        period = Periods.Period(id=p_id)
+    except KeyError:
+        abort(404)
+
+    flash("Time period saved!")
+    return redirect(url_for("admin_periods"))
 
 
 @app.route("/admin/course/<int:course_id>")

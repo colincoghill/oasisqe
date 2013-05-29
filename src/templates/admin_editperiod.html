@@ -46,7 +46,7 @@
             </h1>
 
             <div class="well">
-                <form>
+                <form method='post' action='{{ cf.url }}admin/edit_period_submit/{{ period.id }}'>
                     <label>Short Name:</label>
                     <input placeholder="Short Name" class="input-medium"
                            type="text" name='name'>
@@ -65,13 +65,14 @@
                     <input class="input-medium datepicker" type="text">
                     <label>End: (inclusive)</label>
                     <input class="input-medium datepicker" type="text">
-                </form>
+
                 <div class="form-actions">
                     <input class='btn btn-primary' type="submit" name='save'
                            value='Save'>
                     <input class="btn btn-danger" value="Cancel" type="submit"
-                           name="cancel'">
+                           name="cancel">
                 </div>
+                     </form>
             </div>
             <ul></ul>
             <ul></ul>
