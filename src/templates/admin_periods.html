@@ -42,8 +42,8 @@
                     <td>{{ period.finish }}</td>
                     <td>{{ period.code }}</td>
 
-                    <td><a class='btn btn-mini'
-                           href='{{ cf.url }}admin/edit_period/{{ period.id }}'>Edit</a>
+                    <td>{% if period.editable() %}<a class='btn btn-mini'
+                           href='{{ cf.url }}admin/edit_period/{{ period.id }}'>Edit</a>{% endif %}
                     </td>
                 </tr>
             {% endfor %}

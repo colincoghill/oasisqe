@@ -141,6 +141,11 @@ class Period(object):
         now = datetime.datetime.now().date()
         return self.finish.year < now.year - 1
 
+    def editable(self):
+        """ Can this time period be edited, or is it "built-in"
+        """
+
+        return not (self.id == 1)
 
     # def delete(self):
     # def groups(self):

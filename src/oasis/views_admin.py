@@ -98,6 +98,10 @@ def admin_edit_period_submit(p_id):
     except KeyError:
         abort(404)
 
+    if not period.editable():
+        flash("That time period is not editable!")
+        return redirect(url_for("admin_periods"))
+
     flash("Time period saved!")
     return redirect(url_for("admin_periods"))
 
