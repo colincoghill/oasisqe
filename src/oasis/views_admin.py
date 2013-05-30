@@ -82,6 +82,7 @@ def admin_edit_period(p_id):
         period=period
     )
 
+
 @app.route("/admin/edit_period_submit/<int:p_id>", methods=["POST",])
 @authenticated
 def admin_edit_period_submit(p_id):
@@ -111,9 +112,18 @@ def admin_edit_period_submit(p_id):
     period.name = request.form['name']
     period.title = request.form['title']
     period.code = request.form['code']
+    period.start_date = period.start.strftime("%a %d %b %Y")
+    period.finish_date = period.finish.strftime("%a %d %b %Y")
 
-    period.save()
-    flash("Time period saved!")
+    try:
+        period.save()
+    except ValueError, err:  # Probably a duplicate or something
+        flash("Can't Save: %s" % err)
+        return render_template(
+            "admin_editperiod.html",
+            period=period
+        )
+    flash("Changes saved", category='success')
     return redirect(url_for("admin_periods"))
 
 

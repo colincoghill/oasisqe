@@ -17,6 +17,8 @@ import json
 
 from logging import log, INFO, WARN, ERROR, FATAL
 
+from psycopg2 import IntegrityError
+
 # Global dbpool
 import OaConfig
 import Pool

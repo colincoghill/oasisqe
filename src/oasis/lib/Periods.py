@@ -5,7 +5,7 @@
     Used mainly by Groups
 """
 
-from ..lib.DB import run_sql
+from ..lib.DB import run_sql, IntegrityError
 from logging import log, ERROR
 import datetime
 
@@ -121,7 +121,25 @@ class Period(object):
             sql = """INSERT INTO periods ("name", "title", "start", "finish", "code")
                        VALUES (%s, %s, %s, %s,%s);"""
             params = (self.name, self.title, self.start, self.finish, dbcode)
-            ret = run_sql(sql, params)
+            try:
+                ret = run_sql(sql, params)
+            except IntegrityError:
+                try:
+                    exists = Period(name=self.name)
+                except KeyError:
+                    pass
+                else:
+                    if exists.id != self.id:
+                        raise ValueError("Time Period with that name already exists")
+
+                try:
+                    exists = Period(code=self.code)
+                except KeyError:
+                    pass
+                else:
+                    if exists.id != self.id:
+                        raise ValueError("Time Period with that code already exists")
+
             self.new = False
             return
 
@@ -130,7 +148,25 @@ class Period(object):
                  WHERE id=%s;"""
         params = (self.name, self.title, self.start, self.finish, dbcode,
                   self.id)
-        run_sql(sql, params)
+        try:
+            ret = run_sql(sql, params)
+        except IntegrityError:
+            try:
+                exists = Period(name=self.name)
+            except KeyError:
+                pass
+            else:
+                if exists.id != self.id:
+                    raise ValueError("Time Period with that name already exists")
+
+            try:
+                exists = Period(code=self.code)
+            except KeyError:
+                pass
+            else:
+                if exists.id != self.id:
+                    raise ValueError("Time Period with that code already exists")
+
 
     def historical(self):
         """ Is this period far enough in the past we can move it to "archive" or
