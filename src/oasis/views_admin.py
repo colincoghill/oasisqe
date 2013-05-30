@@ -74,9 +74,9 @@ def admin_edit_period(p_id):
         period = Periods.Period(id=p_id)
     except KeyError:
         abort(404)
-
-    period.start_date = period.start.strftime("%a %d %b %Y")
-    period.finish_date = period.finish.strftime("%a %d %b %Y")
+    else:
+        period.start_date = period.start.strftime("%a %d %b %Y")
+        period.finish_date = period.finish.strftime("%a %d %b %Y")
     return render_template(
         "admin_editperiod.html",
         period=period
@@ -93,7 +93,8 @@ def admin_add_period():
         return redirect(url_for('setup_top'))
 
     return render_template(
-        "admin_addperiod.html"
+        "admin_editperiod.html",
+        period = {'id':0}
     )
 
 
@@ -111,23 +112,75 @@ def admin_edit_period_submit(p_id):
         return redirect(url_for("admin_periods"))
 
     try:
-        period = Periods.Period(id=p_id)
-    except KeyError:
-        abort(404)
+        start = datetime.datetime.strptime(request.form['start'], "%a %d %b %Y")
+    except ValueError:
+        start = None
+
+    try:
+        finish = datetime.datetime.strptime(request.form['finish'], "%a %d %b %Y")
+    except ValueError:
+        finish = None
+
+    name = request.form['name']
+    title = request.form['title']
+    code = request.form['code']
+    if start:
+        start_date = start.strftime("%a %d %b %Y")
+    else:
+        start_date = ""
+    if finish:
+        finish_date = finish.strftime("%a %d %b %Y")
+    else:
+        finish_date = ""
+
+    if p_id == 0:  # It's a new one being created
+        period = Periods.Period(
+            id=0,
+            name=name,
+            title=title,
+            code=code,
+            start=start,
+            finish=finish
+        )
+    else:
+        try:
+            period = Periods.Period(id=p_id)
+        except KeyError:
+            abort(404)
+
+    period.id = p_id
+    period.start = start
+    period.finish = finish
+    period.name = request.form['name']
+    period.title = request.form['title']
+    period.code = request.form['code']
+    period.start_date = start_date
+    period.finish_date = finish_date
+
+    if not start:
+        flash("Can't Save: can't understand start date.")
+        return render_template(
+            "admin_editperiod.html",
+            period=period
+        )
+
+    if not finish:
+        flash("Can't Save: can't understand finish date.")
+        return render_template(
+            "admin_editperiod.html",
+            period=period
+        )
+
+    if name == "":
+        flash("Can't Save: Name must be supplied")
+        return render_template(
+            "admin_editperiod.html",
+            period=period
+        )
 
     if not period.editable():
         flash("That time period is not editable!")
         return redirect(url_for("admin_periods"))
-
-    newstart = datetime.datetime.strptime(request.form['start'], "%a %d %b %Y")
-    newfinish = datetime.datetime.strptime(request.form['finish'], "%a %d %b %Y")
-    period.start = newstart
-    period.finish = newfinish
-    period.name = request.form['name']
-    period.title = request.form['title']
-    period.code = request.form['code']
-    period.start_date = period.start.strftime("%a %d %b %Y")
-    period.finish_date = period.finish.strftime("%a %d %b %Y")
 
     try:
         period.save()

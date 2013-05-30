@@ -190,7 +190,7 @@ def ExamEditSubmit(request, user_id, cid, exam_id):
     for k in request.form.keys():
         v = request.form.getlist(k)
         if k.startswith("question_"):
-            dummy, q, p = k.split("_")
+            _, q, p = k.split("_")
             if not q in qns:
                 qns[q] = []
             qns[q].append(v[0])

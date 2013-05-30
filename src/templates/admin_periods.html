@@ -65,21 +65,23 @@
                     <th>Start</th>
                     <th>End</th>
                     <th>Code</th>
+                    <td></td>
 
                 </tr>
                 </thead>
                 <tbody>
                 {% for period in periods if period.historical() %}
                     <tr>
-                        <td>
-                            <a href='{{ cf.url }}admin/edit_period/{{ period.id }}'>{{ period.name }}</a>
-                        </td>
-                        <th>{{ period.title }}</th>
-                        <td>{{ period.start }}</td>
-                        <td>{{ period.finish }}</td>
-                        <td>{{ period.code }}</td>
+                    <td>{{ period.name }}</td>
+                    <th>{{ period.title }}</th>
+                    <td>{{ period.start }}</td>
+                    <td>{{ period.finish }}</td>
+                    <td>{{ period.code }}</td>
 
-                    </tr>
+                    <td>{% if period.editable() %}<a class='btn btn-mini'
+                           href='{{ cf.url }}admin/edit_period/{{ period.id }}'>Edit</a>{% endif %}
+                    </td>
+                 </tr>
                 {% endfor %}
                 </tbody>
             </table>

@@ -34,7 +34,7 @@ class Period(object):
                 self._fetch_by_code(code)
 
         else:  # create new
-            self.id = None
+            self.id = 0
             self.name = name
             self.title = title
             self.start = start
@@ -60,6 +60,10 @@ class Period(object):
         self.start = ret[0][2]
         self.finish = ret[0][3]
         self.code = ret[0][4]
+        if not self.code:
+            self.code = ""
+        if not self.title:
+            self.title = ""
         self.new = False
 
         return
@@ -83,6 +87,10 @@ class Period(object):
         self.finish = ret[0][3]
         self.code = ret[0][4]
         self.new = False
+        if not self.code:
+            self.code = ""
+        if not self.title:
+            self.title = ""
 
         return
 

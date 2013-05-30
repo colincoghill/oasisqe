@@ -259,5 +259,5 @@ def generate_uuid_readable(length=9):
     """
     UUID_ALPHABET = "23456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
     # 57^n possibilities - about 6 million billion options for n=9. Hopefully pretty good.
-    return "".join([random.choice(UUID_ALPHABET) for _dummy in xrange(length)])
+    return "".join([random.choice(UUID_ALPHABET) for _ in xrange(length)])
 

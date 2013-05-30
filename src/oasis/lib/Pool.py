@@ -78,7 +78,7 @@ class DbPool:
 
     def __init__(self, connectstring, size):
         self.connqueue = Queue.Queue(size)
-        for dummy in range(0, size):
+        for _ in range(0, size):
             self.connqueue.put(DbConn(connectstring))
 
     def begin(self):
@@ -263,7 +263,7 @@ class MCPool:
         """
 
         self.connqueue = Queue.Queue(size)
-        for dummy in range(0, size):
+        for _ in range(0, size):
             try:
                 if not OaConfig.enableMemcache:
                     mc = FakeMCConn
