@@ -16,7 +16,7 @@ from oasis.lib import DB, General, Exams, Courses
 DATEFORMAT = "%d %b %H:%M"
 
 
-def markAssessment(user_id, exam_id):
+def mark_exam(user_id, exam_id):
     """ Submit the assessment and mark it.
         Returns True if it went well, or False if a problem.
     """
@@ -26,15 +26,15 @@ def markAssessment(user_id, exam_id):
     examtotal = 0.0
     for position in range(1, numQuestions + 1):
         q_id = General.getExamQuestion(exam_id, position, user_id)
-        answers = DB.getQuestionGuesses(q_id)
+        answers = DB.get_q_guesses(q_id)
         # There's a small chance they got here without ever seeing a question, make sure it exists.
         DB.addExamQuestion(user_id, exam_id, q_id, position)
 
         # First, mark the question
         try:
             marks = General.markQuestion(q_id, answers)
-            DB.setQuestionStatus(q_id, 3)    # 3 = marked
-            DB.setQuestionMarkTime(q_id)
+            DB.set_q_status(q_id, 3)    # 3 = marked
+            DB.set_q_marktime(q_id)
         except OaMarkerError:
             log(WARN, "Marker Error in question %s, exam %s, student %s!" % (q_id, exam_id, user_id))
             return False
@@ -49,7 +49,7 @@ def markAssessment(user_id, exam_id):
             except (KeyError, ValueError):
                 mark = 0
             total += mark
-            DB.updateQuestionScore(q_id, total)
+            DB.update_q_score(q_id, total)
         examtotal += total
 
     Exams.setUserStatus(user_id, exam_id, 5)
@@ -76,7 +76,7 @@ def student_exam_duration(student, exam_id):
     # earliest time a question in it was viewed
     # It's possible (although unlikely) that they viewed a question other than the first page, first.
     for question in questions:
-        questionview = DB.getQuestionViewTime(question)
+        questionview = DB.get_q_viewtime(question)
         if firstview:
             if questionview < firstview:
                 firstview = questionview
@@ -85,7 +85,7 @@ def student_exam_duration(student, exam_id):
     return firstview, examsubmit
 
 
-def renderOwnMarkedExam(student, exam):
+def render_own_marked_exam(student, exam):
     """ Return a students instance of the exam, with HTML version of the question,
         their answers, and a marking summary.
 
@@ -144,7 +144,7 @@ def renderOwnMarkedExam(student, exam):
     return results, examtotal
 
 
-def getSortedExamList(user_id, previous_years=False):
+def get_exam_list_sorted(user_id, previous_years=False):
     """ Return a list of exams for the given user. """
     courses = Courses.getAll()
     exams = []

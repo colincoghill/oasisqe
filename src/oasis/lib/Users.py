@@ -73,7 +73,8 @@ def getUserRecord(user_id):
     obj = MC.get(key)
     if obj:
         return json.loads(obj)
-    sql = """SELECT id, uname, givenname, familyname, student_id, acctstatus, email, expiry, source, confirmed
+    sql = """SELECT id, uname, givenname, familyname, student_id,
+                    acctstatus, email, expiry, source, confirmed
                     FROM users
                     WHERE id=%s"""
     params = (user_id,)
@@ -91,7 +92,12 @@ def getUserRecord(user_id):
                     'source': ret[0][8],
                     'confirmed': ret[0][9]
         }
-        if ret[0][9] is True or ret[0][9] == "true" or ret[0][9] == "TRUE" or ret[0][9] == "" or ret[0][9] is None:
+        if ret[0][9] is True \
+            or ret[0][9] == "true" \
+            or ret[0][9] == "TRUE" \
+            or ret[0][9] == "" \
+            or ret[0][9] is None:
+
             user_rec['confirmed'] = True
         else:
             user_rec['confirmed'] = False
@@ -183,14 +189,16 @@ def getUidByUname(uname):
 
 def find(search):
     """ return a list of user id's that reasonably match the search term.
-        Search username then student ID then surname then first name. Return results in that order.
+        Search username then student ID then surname then first name.
+        Return results in that order.
     """
     ret = run_sql("""SELECT id FROM users
                         WHERE LOWER(uname) LIKE LOWER(%s)
                         OR LOWER(familyname) LIKE LOWER(%s)
                         OR LOWER(givenname) LIKE LOWER(%s)
                         OR student_id LIKE %s
-                        OR LOWER(email) LIKE LOWER(%s);""", (search, search, search, search, search))
+                        OR LOWER(email) LIKE LOWER(%s);""",
+                  (search, search, search, search, search))
     res = []
     if ret:
         res = [user[0] for user in ret]
@@ -200,7 +208,8 @@ def find(search):
 def getGroups(user):
     """ Return a list of groups the user is a member of.  """
     assert isinstance(user, int)
-    ret = run_sql("""SELECT groupid FROM usergroups WHERE userid=%s;""", (user,))
+    ret = run_sql("""SELECT groupid FROM usergroups WHERE userid=%s;""",
+                  (user,))
     if ret:
         groups = [int(row[0]) for row in ret]
         return groups
@@ -221,11 +230,13 @@ def getCourses(user_id):
 
 
 def verifyConfirmationCode(code):
-    """ Given an email confirmation code, return the user_id it was given to, otherwise False.
+    """ Given an email confirmation code, return the user_id it was given to,
+        otherwise False.
     """
     if len(code) < 5:  # don't want to match if we get an empty one
         return False
-    ret = run_sql("""SELECT id FROM "users" WHERE confirmation_code=%s;""", (code,))
+    ret = run_sql("""SELECT id FROM "users" WHERE confirmation_code=%s;""",
+                  (code,))
     if ret:
         return ret[0][0]
     return False
@@ -238,7 +249,8 @@ def setConfirmed(uid):
 
 def setConfirmationCode(uid, code):
     """ Set a new code, possibly for password reset confirmation."""
-    run_sql("""UPDATE "users" SET confirmation_code=%s WHERE id=%s;""", (code, uid))
+    run_sql("""UPDATE "users" SET confirmation_code=%s WHERE id=%s;""",
+            (code, uid))
 
 
 def generateConfirmationCode():
@@ -250,14 +262,15 @@ def generateConfirmationCode():
 
 # Human readable symbols
 def generate_uuid_readable(length=9):
-    """ Create a new random uuid suitable for acting as a unique key in the database
+    """ Create a new random uuid suitable for acting as a unique key in the db
         Use this when it's an ID a user will see as it's a bit shorter.
-        Duplicates are still very unlikely, but don't use this in situations where
+        Duplicates are still unlikely, but don't use this in situations where
         a duplicate might cause problems (check for them!)
 
         :param length: The number of characters we want in the UUID
     """
     UUID_ALPHABET = "23456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
-    # 57^n possibilities - about 6 million billion options for n=9. Hopefully pretty good.
+    # 57^n possibilities - about 6 million billion options for n=9.
+    # Hopefully pretty good.
     return "".join([random.choice(UUID_ALPHABET) for _ in xrange(length)])
 

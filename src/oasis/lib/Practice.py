@@ -28,14 +28,14 @@ def get_practice_q(qt_id, user_id):
     qid = DB.getQuestionByQTStudent(qt_id, user_id)
     if not qid is False:
         return int(qid)
-    qid = General.generateQuestion(qt_id, user_id)
+    qid = General.gen_q(qt_id, user_id)
     try:
         qid = int(qid)
     except (ValueError, TypeError):
         log(WARN,
             "generateQuestion(%s,%s) Fail: returned %s" % (qt_id, user_id, qid))
     else:
-        DB.setQuestionViewTime(qid)
+        DB.set_q_viewtime(qid)
     return qid
 
 
@@ -87,7 +87,7 @@ def get_sorted_qlist_wstats(course_id, topic_id, user_id=None):
     for question in questions:
         question['maxscore'] = DB.get_qt_maxscore(question['qtid'])
 
-        stats_1 = DB.getStudentQuestionPracticeStats(user_id, question['qtid'], 3)
+        stats_1 = DB.get_student_q_practice_stats(user_id, question['qtid'], 3)
         if stats_1: # Last practices
             # Date of last practice
             question['age'] = stats_1[(len(stats_1) - 1)]['age']
@@ -193,16 +193,19 @@ def mark_q(user_id, topic_id, q_id, request):
             if newqid == q_id:
                 value = request.form[i]
                 answers["G%d" % part] = value
-                DB.saveGuess(newqid, part, value)
+                DB.save_guess(newqid, part, value)
             else:
                 log(WARN,
-                    "received guess for wrong question? (%d,%d,%d,%s)" % (user_id, topic_id, q_id, request.form))
+                    "received guess for wrong question? (%d,%d,%d,%s)" %
+                    (user_id, topic_id, q_id, request.form))
     try:
         marks = General.markQuestion(q_id, answers)
-        DB.setQuestionStatus(q_id, 3)    # 3 = marked
-        DB.setQuestionMarkTime(q_id)
+        DB.set_q_status(q_id, 3)    # 3 = marked
+        DB.set_q_marktime(q_id)
     except OaMarkerError:
-        log(WARN, "Marker Error - (%d, %d, %d, %s)" % (user_id, topic_id, q_id, request.form))
+        log(WARN,
+            "Marker Error - (%d, %d, %d, %s)" %
+            (user_id, topic_id, q_id, request.form))
         marks = {}
     q_body = General.renderMarkResults(q_id, marks)
     parts = [int(var[1:])
@@ -213,6 +216,6 @@ def mark_q(user_id, topic_id, q_id, request):
     for part in parts:
         if marks.has_key('M%d' % (part,)):
             total += float(marks['M%d' % (part,)])
-    DB.updateQuestionScore(q_id, total)    # 3 = marked
-    DB.setQuestionStatus(q_id, 2)
+    DB.update_q_score(q_id, total)    # 3 = marked
+    DB.set_q_status(q_id, 2)
     return q_body

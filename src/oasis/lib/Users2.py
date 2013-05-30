@@ -7,7 +7,8 @@
     All access to User info should come through here, and not through
     the db.Users or OaDB interface any more.
 
-    List of users is big and accessed frequently, so we try and cache stuff as it's used.
+    List of users is big and accessed frequently, so we try and cache stuff
+    as it's used.
 """
 
 # Get the latest version of the user info

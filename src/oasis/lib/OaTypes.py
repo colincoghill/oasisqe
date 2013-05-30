@@ -11,7 +11,8 @@ import datetime
 
 def todatetime(mydate):
     """ Convert the given thing to a datetime.datetime.
-        This is intended mainly to be used with the mx.DateTime that psycopg sometimes returns,
+        This is intended mainly to be used with the mx.DateTime that psycopg
+        sometimes returns,
         but could be extended in the future to take other types.
     """
     if isinstance(mydate, datetime.datetime):

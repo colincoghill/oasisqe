@@ -44,7 +44,7 @@ def run_sql(sql, params=None):
     return res
 
 
-def setQuestionViewTime(question):
+def set_q_viewtime(question):
     """ Record that the question has been viewed.
         Not a good idea to call multiple times since it's
         nearly always the first time that we want.
@@ -55,7 +55,7 @@ def setQuestionViewTime(question):
                WHERE question=%s;""", (question,))
 
 
-def setQuestionMarkTime(question):
+def set_q_marktime(question):
     """ Record that the question was marked.
         Probably best not to call multiple times since
         we usually want the first time.
@@ -66,7 +66,7 @@ def setQuestionMarkTime(question):
                WHERE question=%s;""", (question,))
 
 
-def getQuestionViewTime(question):
+def get_q_viewtime(question):
     """ Return the time that the question was first viewed
         as a human readable string.
     """
@@ -81,7 +81,7 @@ def getQuestionViewTime(question):
     return None
 
 
-def getQuestionMarkTime(question):
+def get_q_marktime(question):
     """ Return the time that the question was marked
         as a human readable string, or None if it hasn't been.
     """
@@ -139,7 +139,7 @@ def getQuestionByQTStudent(qt_id, student):
     return False
 
 
-def updateQuestionScore(q_id, score):
+def update_q_score(q_id, score):
     """ Set the score of a question."""
     assert isinstance(q_id, int)
     try:
@@ -151,14 +151,14 @@ def updateQuestionScore(q_id, score):
             ("%.1f" % sc, q_id))
 
 
-def setQuestionStatus(q_id, status):
+def set_q_status(q_id, status):
     """ Set the status of a question."""
     assert isinstance(q_id, int)
     assert isinstance(status, int)
     run_sql("UPDATE questions SET status=%s WHERE question=%s;", (status, q_id))
 
 
-def getQuestionVersion(q_id):
+def get_q_version(q_id):
     """ Return the template version this question was generated from """
     assert isinstance(q_id, int)
     ret = run_sql("SELECT version FROM questions WHERE question=%s;", (q_id,))
@@ -167,7 +167,7 @@ def getQuestionVersion(q_id):
     return None
 
 
-def getQuestionVariation(q_id):
+def get_q_variation(q_id):
     """ Return the template variation this question was generated from"""
     assert isinstance(q_id, int)
     ret = run_sql("SELECT variation FROM questions WHERE question=%s;", (q_id,))
@@ -186,7 +186,7 @@ def get_q_parent(q_id):
     return None
 
 
-def saveGuess(q_id, part, value):
+def save_guess(q_id, part, value):
     """ Store the guess in the database."""
     assert isinstance(q_id, int)
     assert isinstance(part, int)
@@ -197,7 +197,7 @@ def saveGuess(q_id, part, value):
                    VALUES (%s, NOW(), %s, %s);""", (q_id, part, value))
 
 
-def getQuestionGuesses(q_id):
+def get_q_guesses(q_id):
     """ Return a dictionary of the recent guesses in a question."""
     assert isinstance(q_id, int)
     ret = run_sql("""SELECT part, guess
@@ -305,7 +305,7 @@ def updateQTemplateEmbedID(qt_id, embed_id):
     return True
 
 
-def incrementQTVersion(qt_id):
+def incr_qt_version(qt_id):
     """ Increase the version number of the current question template"""
     # FIXME: Not done in a parallel-safe manner. Could find a way to do this
     # in the database. Fairly low risk.
@@ -383,7 +383,7 @@ def get_qt_name(qt_id):
     log(WARN, "Request for unknown question template %s." % qt_id)
 
 
-def getQTemplateEmbedID(qt_id):
+def get_qt_embedid(qt_id):
     """ Fetch the embed_id of a question template."""
     assert isinstance(qt_id, int)
     ret = run_sql("""SELECT embed_id
@@ -608,7 +608,7 @@ def get_qt_att(qt_id, name, version=1000000000):
     return value
 
 
-def getExamQTemplatesInPosition(exam_id, position):
+def get_exam_qts_in_pos(exam_id, position):
     """ Return the question templates in the given position in the exam, or 0.
     """
     assert isinstance(exam_id, int)
@@ -664,7 +664,7 @@ def getMaxQTemplatePositionInTopic(topic_id):
     return res[0][0]
 
 
-def getQTVariations(qt_id, version=1000000000):
+def get_qt_variations(qt_id, version=1000000000):
     """ Return all variations of a question template."""
     assert isinstance(qt_id, int)
     assert isinstance(version, int)
@@ -689,7 +689,7 @@ def getQTVariations(qt_id, version=1000000000):
     return ret
 
 
-def getQTVariation(qt_id, variation, version=1000000000):
+def get_qt_variation(qt_id, variation, version=1000000000):
     """ Return a specific variation of a question template."""
     assert isinstance(qt_id, int)
     assert isinstance(version, int)
@@ -938,7 +938,7 @@ def copy_qt_all(qt_id):
     for name in attachments:
         create_qt_att(newid, name, get_qt_att_mimetype(qt_id, name), get_qt_att(qt_id, name), newversion)
     try:
-        variations = getQTVariations(qt_id)
+        variations = get_qt_variations(qt_id)
         for variation in variations.keys():
             addQTVariation(newid, variation, variations[variation], newversion)
     except AttributeError, err:
@@ -1165,7 +1165,7 @@ def get_prac_stats_user_qt(user_id, qt_id):
     return None
 
 
-def getStudentQuestionPracticeStats(user_id, qt_id, num=3):
+def get_student_q_practice_stats(user_id, qt_id, num=3):
     """Return data on the scores obtained while practicing the given question
        the last 'num' times. Exclude assessed scores. If num is not provided,
        defaults to 3. If num is 0, give stats for all.

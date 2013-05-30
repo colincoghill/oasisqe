@@ -18,7 +18,7 @@ def audit(aclass, instigator, obj, module, message):
     run_sql(sql, params)
 
 
-def getRecordsByUser(uid, start=None, end=None, limit=100, offset=0):
+def get_records_by_user(uid, start=None, end=None, limit=100, offset=0):
     """ Return audit records created by (or on behalf of) the user.
         If start is provided, only searches for records after start.
         If end is also provided, only searches between start and end.

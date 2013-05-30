@@ -205,7 +205,7 @@ def qedit_raw_save(topic_id, qt_id):
         flash("Question editing cancelled, changes not saved.")
         return redirect(url_for("cadmin_edit_topic", topic_id=topic_id))
 
-    version = DB.incrementQTVersion(qt_id)
+    version = DB.incr_qt_version(qt_id)
     owner = Users2.getUser(user_id)
     DB.update_qt_owner(qt_id, user_id)
     audit(3, user_id, qt_id, "qeditor",

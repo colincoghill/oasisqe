@@ -175,7 +175,7 @@ def cadmin_create_exam(course_id):
     if not course:
         abort(404)
 
-    topics = CourseAdmin.getCreateExamQuestionList(course_id)
+    topics = CourseAdmin.get_create_exam_q_list(course_id)
 
     if not satisfyPerms(user_id, course_id, ("OASIS_CREATEASSESSMENT",)):
         flash("You do not have 'Create Assessment' permission on this course.")
@@ -257,7 +257,7 @@ def cadmin_edit_exam_submit(course_id, exam_id):
         flash("Assessment editing cancelled.")
         return redirect(url_for('cadmin_top', course_id=course_id))
 
-    exam_id = CourseAdmin.ExamEditSubmit(request, user_id, course_id, exam_id)
+    exam_id = CourseAdmin.exam_edit_submit(request, user_id, course_id, exam_id)
     exam = Exams.getExamStruct(exam_id, course_id)
     flash("Assessment saved.")
     return render_template(
@@ -453,7 +453,7 @@ def cadmin_edittopics_save(course_id):
         flash("Changes Cancelled!")
         return redirect(url_for('cadmin_top', course_id=course_id))
 
-    if CourseAdmin.doCourseTopicUpdate(course, request):
+    if CourseAdmin.do_topic_update(course, request):
         flash("Changes Saved!")
     else:
         flash("Error Saving!")
@@ -489,14 +489,14 @@ def cadmin_edit_topic(topic_id):
     questions = [question
                  for question in Topics.get_qts(topic_id).values()]
     for question in questions:
-        question['embed_id'] = DB.getQTemplateEmbedID(question['id'])
+        question['embed_id'] = DB.get_qt_embedid(question['id'])
         if question['embed_id']:
             question['embed_url'] = "%s/embed/question/%s/question.html" % (OaConfig.parentURL, question['embed_id'])
         else:
             question['embed_url'] = None
         question['editor'] = DB.getQTemplateEditor(question['id'])
 
-    all_courses = Courses2.getCourseList()
+    all_courses = Courses2.get_course_list()
     all_courses = [cs
                    for cs in all_courses
                    if satisfyPerms(user_id, int(cs['id']),
@@ -582,14 +582,14 @@ def cadmin_view_topic(topic_id):
     }
     questions = [question for question in Topics.get_qts(topic_id).values()]
     for question in questions:
-        question['embed_id'] = DB.getQTemplateEmbedID(question['id'])
+        question['embed_id'] = DB.get_qt_embedid(question['id'])
         if question['embed_id']:
             question['embed_url'] = "%s/embed/question/%s/question.html" % (OaConfig.parentURL, question['embed_id'])
         else:
             question['embed_url'] = None
         question['editor'] = DB.getQTemplateEditor(question['id'])
 
-    all_courses = Courses2.getCourseList()
+    all_courses = Courses2.get_course_list()
     all_courses = [cs
                    for cs in all_courses
                    if satisfyPerms(user_id, int(cs['id']), (
@@ -688,7 +688,7 @@ def cadmin_permissions_save(course_id):
         flash("Permission changes cancelled")
         return redirect(url_for("cadmin_top", course_id=course_id))
 
-    CourseAdmin.savePerms(request, course_id, user_id)
+    CourseAdmin.save_perms(request, course_id, user_id)
     flash("Changes saved")
     return redirect(url_for("cadmin_permissions", course_id=course_id))
 

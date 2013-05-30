@@ -40,15 +40,15 @@ def embed_question(embed_id):
                      if t in VALIDCHARS])
 
     qid = Practice.get_practice_q(qtid, user_id)
-    vers = DB.getQuestionVersion(qid)
+    vers = DB.get_q_version(qid)
     if not vers >= DB.get_qt_version(qtid):
-        qid = General.generateQuestion(qtid, user_id)
+        qid = General.gen_q(qtid, user_id)
 
     q_body = General.render_q_html(qid)
     return render_template(
         "embeddoquestion.html",
         q_body=q_body,
-        embed_id=DB.getQTemplateEmbedID(qtid),
+        embed_id=DB.get_qt_embedid(qtid),
         title=title,
         qid=qid,
     )
@@ -76,7 +76,7 @@ def embed_mark_question(embed_id):
     if not qid:
         abort(404)
 
-    marking = Embed.markQuestion(user_id, qtid, request)
+    marking = Embed.mark_q(user_id, qtid, request)
 
     return render_template(
         "embedmarkquestion.html",

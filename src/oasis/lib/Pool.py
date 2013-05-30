@@ -47,7 +47,7 @@ class DbConn:
 
         except BaseException, err:
             # it's possible that database connection timed out. Try once more.
-            log(ERROR, "Database Error (%s) '%s' (%s)" % (err, sql, repr(params)))
+            log(ERROR, "DB Error (%s) '%s' (%s)" % (err, sql, repr(params)))
             raise
 
         if sql.split()[0].upper() in ("SELECT", "SHOW", "DESC", "DESCRIBE"):
@@ -126,9 +126,9 @@ class fileCache:
                 os.makedirs("%s/%s" % (self.cachedir, key))
             except IOError:
                 log(ERROR,
-                    "Can't create file cache directory in %s/%s" % (self.cachedir, key))
+                    "Can't create cache in %s/%s" % (self.cachedir, key))
         try:
-            # create with a temporary name so we don't get concurrent access issues
+            # create with temporary name to avoid concurrent access issues
             fname = os.tempnam("%s/%s" % (self.cachedir, key), "oatmp")
             fptr = open(fname, "w")
             fptr.write(value)

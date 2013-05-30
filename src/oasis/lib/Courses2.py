@@ -26,24 +26,24 @@ COURSES_VERSION = -1
 COURSES = {}
 
 
-def loadCourses():
+def load_courses():
     """Read the list of courses into memory """
     global COURSES
     log(INFO, "Courses fetched from database.")
     COURSES = Courses.getFullCourseDict()
 
 
-def reloadCoursesIfNeeded():
+def reload_if_needed():
     """If the course table has changed, reload the info. """
     global COURSES_VERSION
     newversion = Courses.get_version()
     if newversion > COURSES_VERSION:
         COURSES_VERSION = newversion
-        loadCourses()
+        load_courses()
     return
 
 
-def getCourseDict(only_active=True):
+def get_course_dict(only_active=True):
     """ Return a dictionary of courses.
         By default only active courses.
         key will be course ID.
@@ -51,7 +51,7 @@ def getCourseDict(only_active=True):
         courses[cid] = {id:, name:, title:}
     """
     cdict = {}
-    reloadCoursesIfNeeded()
+    reload_if_needed()
     for course in COURSES:
         if only_active:
             if COURSES[course]['active'] == 1:
@@ -62,7 +62,7 @@ def getCourseDict(only_active=True):
     return cdict
 
 
-def getCourseList(only_active=True, sortedby="name"):
+def get_course_list(only_active=True, sortedby="name"):
     """ Return a list of courses.
         By default only active courses.
         will be ordered by given field.
@@ -70,7 +70,7 @@ def getCourseList(only_active=True, sortedby="name"):
        [{id:, name:, title:}, ]
     """
     clist = []
-    reloadCoursesIfNeeded()
+    reload_if_needed()
     for course in COURSES:
         if only_active:
             if COURSES[course]['active'] == 1:
@@ -82,9 +82,9 @@ def getCourseList(only_active=True, sortedby="name"):
     return clist
 
 
-def getTopicsInCourse(cid, archived=2):
+def get_topics(cid, archived=2):
     """ Return a dict of all topics in the course. """
-    reloadCoursesIfNeeded()
+    reload_if_needed()
     if not "topics" in COURSES[cid]:
         COURSES[cid]['topics'] = Courses.getTopicsInfoAll(cid, archived, True)
     return COURSES[cid]['topics']
@@ -94,7 +94,7 @@ def get_topics_list(course_id, archived=2):
     """ Return a list of all topics in the course.
     """
 
-    reloadCoursesIfNeeded()
+    reload_if_needed()
     if not "topics" in COURSES[course_id]:
         COURSES[course_id]['topics'] = Courses.getTopicsInfoAll(course_id, archived, True)
     topics = COURSES[course_id]['topics']
@@ -106,8 +106,8 @@ def get_course(course_id):
     """ Return a dict of the course fields.
     """
 
-    reloadCoursesIfNeeded()
+    reload_if_needed()
     return COURSES[course_id]
 
 
-reloadCoursesIfNeeded()
+reload_if_needed()

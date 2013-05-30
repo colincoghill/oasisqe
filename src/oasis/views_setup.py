@@ -16,7 +16,7 @@ from .lib import Users2, General, Exams, \
 
 MYPATH = os.path.dirname(__file__)
 
-from .lib.Audit import audit, getRecordsByUser
+from .lib.Audit import audit, get_records_by_user
 from .lib.UserDB import check_perm, satisfyPerms
 
 from oasis import app, authenticated
@@ -164,7 +164,7 @@ def setup_useraudit(audit_id):
         return redirect(url_for('setup_top'))
 
     user = Users2.getUser(audit_id)
-    audits = getRecordsByUser(audit_id)
+    audits = get_records_by_user(audit_id)
     for aud in audits:
         aud['humantime'] = General.humanDate(aud['time'])
     return render_template(

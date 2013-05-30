@@ -29,7 +29,7 @@ from oasis import app, authenticated
 def assess_top():
     """ Top level assessment page. Let them choose an assessment."""
     user_id = session['user_id']
-    exams = Assess.getSortedExamList(user_id=user_id, previous_years=False)
+    exams = Assess.get_exam_list_sorted(user_id=user_id, previous_years=False)
     current_num = len([e for e in exams if e['active']])
     upcoming_num = len([e for e in exams if e['future']])
     return render_template(
@@ -46,7 +46,7 @@ def assess_previousexams():
     """ Show a list of older exams - from previous years """
     user_id = session['user_id']
 
-    exams = Assess.getSortedExamList(user_id=user_id, previous_years=True)
+    exams = Assess.get_exam_list_sorted(user_id=user_id, previous_years=True)
     years = [e['start'].year for e in exams]
     years = list(set(years))
     years.sort(reverse=True)
@@ -152,7 +152,7 @@ def assess_assessmentpage(course_id, exam_id, page):
                                         exam_id=exam_id))
 
             if status < 6:
-                DB.saveGuess(q_id, part, value)
+                DB.save_guess(q_id, part, value)
         else:
             pass
 
@@ -233,7 +233,7 @@ def assess_presubmit(course_id, exam_id):
         q_id = DB.getExamQuestionByPositionStudent(exam_id, position, user_id)
         if q_id:
             qids.append(q_id)
-            guesses = DB.getQuestionGuesses(q_id)
+            guesses = DB.get_q_guesses(q_id)
             keys = guesses.keys()
             keys.sort()
             questions.append({
@@ -262,7 +262,7 @@ def assess_submit(course_id, exam_id):
     exam = Exams.getExamStruct(exam_id, course_id)
     status = Exams.getUserStatus(user_id, exam_id)
     if status < 5:
-        marked = Assess.markAssessment(user_id, exam_id)
+        marked = Assess.mark_exam(user_id, exam_id)
         if not marked:
             flash("There was a problem marking the assessment, staff have been notified.")
 
@@ -292,7 +292,7 @@ def assess_awaitresults(course_id, exam_id):
         q_id = DB.getExamQuestionByPositionStudent(exam_id, position, user_id)
         if q_id:
             qids.append(q_id)
-            guesses = DB.getQuestionGuesses(q_id)
+            guesses = DB.get_q_guesses(q_id)
             keys = guesses.keys()
             keys.sort()
             questions.append({
@@ -328,7 +328,7 @@ def assess_viewmarked(course_id, exam_id):
             exam=exam
         )
 
-    results, examtotal = Assess.renderOwnMarkedExam(user_id, exam_id)
+    results, examtotal = Assess.render_own_marked_exam(user_id, exam_id)
     datemarked = General.humanDate(Exams.getMarkTime(exam_id, user_id))
     datesubmit = General.humanDate(Exams.getSubmitTime(exam_id, user_id))
 

@@ -22,7 +22,7 @@ from oasis.lib.OaExceptions import OaMarkerError
 from oasis.lib import DB, General
 
 
-def markQuestion(user_id, qtid, request):
+def mark_q(user_id, qtid, request):
     """Mark the question and show a page containing marking results."""
 
     if "OaQID" in request.form:
@@ -40,13 +40,13 @@ def markQuestion(user_id, qtid, request):
 
             value = request.form[i]
             answers["G%d" % part] = value
-            DB.saveGuess(newqid, part, value)
+            DB.save_guess(newqid, part, value)
 
     if qid:
         try:
             marks = General.markQuestion(qid, answers)
-            DB.setQuestionStatus(qid, 3)    # 3 = marked
-            DB.setQuestionMarkTime(qid)
+            DB.set_q_status(qid, 3)    # 3 = marked
+            DB.set_q_marktime(qid)
         except OaMarkerError:
             log(INFO,
                 "getMarkQuestionPage(%d, %d, %s) Marker ERROR" % (user_id, qtid, request.form))

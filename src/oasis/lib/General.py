@@ -32,7 +32,7 @@ def htmlesc(text):
     return jinja2.escape(text)
 
 
-def getTopicListing(cid, numq=True):
+def get_topic_list(cid, numq=True):
     """ Return a list of dicts with topic information for the given course.
         [{ tid: int       Topic ID
           name: string   Name of Topic
@@ -57,7 +57,7 @@ def getTopicListing(cid, numq=True):
     return tlist
 
 
-def addCourse(name, description, owner, coursetype=1):
+def add_course(name, description, owner, coursetype=1):
     """ Add a course to the database.
         type:   1 = Standard Class
                 2 = OASIS Tutorial/Demonstration
@@ -95,13 +95,13 @@ def get_q_list(tid, uid=None, numdone=True):
     return qlist
 
 
-def getQuestionAttachmentFilename(qid, name):
+def get_q_att_fname(qid, name):
     """ Return (mimetype, filename) with the relevant filename.
         If it's not found in question, look in questiontemplate.
     """
     qtid = DB.get_q_parent(qid)
-    variation = DB.getQuestionVariation(qid)
-    version = DB.getQuestionVersion(qid)
+    variation = DB.get_q_variation(qid)
+    version = DB.get_q_version(qid)
     # for the two biggies we hit the question first,
     # otherwise check the question template first
     if name == "image.gif" or name == "qtemplate.html":
@@ -122,13 +122,13 @@ def getQuestionAttachmentFilename(qid, name):
     return None, None
 
 
-def getQuestionAttachment(qid, name):
+def get_q_att(qid, name):
     """ Return (mimetype, data) with the relevant attachment.
         If it's not found in question, look in questiontemplate.
     """
     qtid = DB.get_q_parent(qid)
-    variation = DB.getQuestionVariation(qid)
-    version = DB.getQuestionVersion(qid)
+    variation = DB.get_q_variation(qid)
+    version = DB.get_q_version(qid)
     # for the two biggies we hit the question first,
     # otherwise check the question template first
     if name == "image.gif" or name == "qtemplate.html":
@@ -148,26 +148,28 @@ def getQuestionAttachment(qid, name):
     return None, None
 
 
-def generateExamQuestion(exam, position, student):
+def gen_exam_q(exam, position, student):
     """ Generate an exam question instance for the given student and exam.
         If there are multiple qtemplates listed in a given position, one will
         be chosen at random.
     """
-    qtemplates = DB.getExamQTemplatesInPosition(exam, position)
+    qtemplates = DB.get_exam_qts_in_pos(exam, position)
     if not qtemplates:
         log(WARN,
-            "OaDB.getExamQTemplatesInPosition(%s,%s) returned a non list." % (exam, position))
+            "DB.get_exam_qts_in_pos(%s,%s) returned a non list." %
+            (exam, position))
         return False
     if len(qtemplates) < 1:
         log(WARN,
-            "OaDB.getExamQTemplatesInPosition(%s,%s) returned an empty list." % (exam, position))
+            "DB.get_exam_qts_in_pos(%s,%s) returned an empty list." %
+            (exam, position))
         return False
     whichqtemplate = random.randint(1, len(qtemplates))
     qtid = qtemplates[whichqtemplate - 1]   # lists count from 0
-    return generateQuestion(qtid, student, exam, position)
+    return gen_q(qtid, student, exam, position)
 
 
-def generateQuestion(qtid, student=0, exam=0, position=0):
+def gen_q(qtid, student=0, exam=0, position=0):
     """ Given a qtemplate, will generate a question instance.
         If student and/or exam is supplied it will be assigned appropriately.
         If exam is supplied, position must also be supplied.
@@ -181,10 +183,10 @@ def generateQuestion(qtid, student=0, exam=0, position=0):
     else:
         log(WARN, "No question variations (qtid=%d)" % qtid)
         return False
-    return generateQuestionFromVar(qtid, student, exam, position, version, variation)
+    return gen_q_from_var(qtid, student, exam, position, version, variation)
 
 
-def generateQuestionFromVar(qtid, student, exam, position, version, variation):
+def gen_q_from_var(qtid, student, exam, position, version, variation):
     """ Generate a question given a specific variation. """
     qvars = None
     qid = DB.create_q(qtid, DB.get_qt_name(qtid), student, 1, variation, version, exam)
@@ -196,33 +198,47 @@ def generateQuestionFromVar(qtid, student, exam, position, version, variation):
     imageexists = DB.get_q_att_mimetype(qtid, "image.gif", variation, version)
     if not imageexists:
         if not qvars:
-            qvars = DB.getQTVariation(qtid, variation, version)
+            qvars = DB.get_qt_variation(qtid, variation, version)
         qvars['Oasis_qid'] = qid
         image = DB.get_qt_att(qtid, "image.gif", version)
         if image:
-            newimage = generateQuestionImage(qvars, image)
-            DB.create_q_att(qtid, variation, "image.gif", "image/gif", newimage, version)
-    htmlexists = DB.get_q_att_mimetype(qtid, "qtemplate.html", variation, version)
+            newimage = gen_q_image(qvars, image)
+            DB.create_q_att(qtid,
+                            variation,
+                            "image.gif",
+                            "image/gif",
+                            newimage,
+                            version)
+    htmlexists = DB.get_q_att_mimetype(qtid,
+                                       "qtemplate.html",
+                                       variation,
+                                       version)
     if not htmlexists:
         if not qvars:
-            qvars = DB.getQTVariation(qtid, variation, version)
+            qvars = DB.get_qt_variation(qtid, variation, version)
         html = DB.get_qt_att(qtid, "qtemplate.html", version)
         if html:
             qvars['Oasis_qid'] = qid
-            newhtml = generateQuestionHTML(qvars, html)
+            newhtml = gen_q_html(qvars, html)
             log(INFO, "generating new qattach qtemplate.html for %s" % qid)
-            DB.create_q_att(qtid, variation, "qtemplate.html", "application/oasis-html", newhtml, version)
+            DB.create_q_att(qtid,
+                            variation,
+                            "qtemplate.html",
+                            "application/oasis-html",
+                            newhtml,
+                            version)
     try:
         qid = int(qid)
         assert (qid > 0)
     except (ValueError, TypeError, AssertionError):
-        log(ERROR, "generateQuestionFromVar(%s,%s), can't find qid %s? " % (qtid, student, qid))
+        log(ERROR, "generateQuestionFromVar(%s,%s), can't find qid %s? " %
+                   (qtid, student, qid))
     if exam >= 1:
         DB.addExamQuestion(student, exam, qid, position)
     return qid
 
 
-def generateQuestionHTML(qvars, html):
+def gen_q_html(qvars, html):
     """ Create an instance of the HTML """
     html = html.replace("<IMG SRC>", '<IMG SRC="$IMAGES$image.gif" />')
     # replace <ANSWERn size> with the correct HTML
@@ -247,22 +263,22 @@ def generateQuestionHTML(qvars, html):
     # TODO: need to replace with regex at some point
     #  '<ANSWER(.+?)\s+(.+?)\s+(.*?)>'
     for i in range(1, 49):
-        (match, repl) = handleMultiFixed(html, i, qvars)
+        (match, repl) = handle_multi_f(html, i, qvars)
         if match:
             html = html.replace(match, repl)
     for i in range(1, 49):
-        (match, repl) = handleMulti(html, i, qvars)
+        (match, repl) = handle_multi(html, i, qvars)
         if match:
             html = html.replace(match, repl)
     for i in range(1, 49):
-        (match, repl) = handleMultiVertical(html, i, qvars)
+        (match, repl) = handle_multi_v(html, i, qvars)
         if match:
             html = html.replace(match, repl)
         # Do listbox
     # TODO: need to replace with regex at some point
     #  '<ANSWER(.+?)\s+(.+?)\s+(.*?)>'
     for i in range(1, 49):
-        (match, repl) = handleListbox(html, i, qvars)
+        (match, repl) = handle_listbox(html, i, qvars)
         if match:
             html = html.replace(match, repl)
     for v in qvars.keys():
@@ -275,12 +291,11 @@ def generateQuestionHTML(qvars, html):
     return html
 
 
-def generateQuestionImage(qvars, image):
+def gen_q_image(qvars, image):
     """ Draw values onto the image provided. """
     img = Image.open(StringIO.StringIO(image)).convert("P", palette=Image.ADAPTIVE)
     imgdraw = ImageDraw.Draw(img)
     font = ImageFont.truetype("%s/fonts/Courier_New.ttf" % (OaConfig.homedir,), 14)
-    #    font = ImageFont.load("%s/fonts/Courier New_14_100.pil" % (OaConfig.homedir,))
     coords = [int(e[1:]) for e in qvars.keys() if re.search("^X([0-9]+)$", e) > 0]
     for coord in coords:
         (xcoord, ycoord, value) = (qvars["X%d" % coord], qvars["Y%d" % coord], qvars["Z%d" % coord])
@@ -289,13 +304,14 @@ def generateQuestionImage(qvars, image):
             try:
                 imgdraw.text((int(xcoord), int(ycoord)), value, font=font, fill=0)
             except UnicodeEncodeError, e:
-                log(WARN, u"Unicode error generating image: %s [%s]." % (e, value))
+                log(WARN,
+                    u"Unicode error generating image: %s [%s]." % (e, value))
     data = StringIO.StringIO("")
     img.save(data, "GIF")
     return data.getvalue()
 
 
-def handleMultiFixed(html, answer, qvars):
+def handle_multi_f(html, answer, qvars):
     """ Convert MULTIF answer tags into appropriate HTML. (radio buttons)
         Keeps the original order (doesn't shuffle the options)
 
@@ -331,7 +347,7 @@ def handleMultiFixed(html, answer, qvars):
     return match, ret
 
 
-def handleMultiVertical(html, answer, qvars):
+def handle_multi_v(html, answer, qvars):
     """ Convert MULTIV answer tags into appropriate HTML. (radio buttons)
         Keeps the original order (doesn't shuffle the options)
 
@@ -369,7 +385,7 @@ def handleMultiVertical(html, answer, qvars):
     return match, ret
 
 
-def handleMulti(html, answer, qvars, shuffle=True):
+def handle_multi(html, answer, qvars, shuffle=True):
     """ Convert MULTI answer tags into appropriate HTML. (radio buttons)
     """
     try:
@@ -405,7 +421,7 @@ def handleMulti(html, answer, qvars, shuffle=True):
     return match, ret
 
 
-def handleListbox(html, answer, qvars, shuffle=True):
+def handle_listbox(html, answer, qvars, shuffle=True):
     """ Convert SELECT answer tags into appropriate HTML (SELECT box)
 
         We expect    <ANSWERn SELECT a,b,c,d,e>
@@ -429,7 +445,8 @@ def handleListbox(html, answer, qvars, shuffle=True):
         for p in paramlist:
             pcount += 1
             if p in qvars:
-                pout += ["""<OPTION VALUE='%d' Oa_SEL_%d_%d>%s</OPTION>""" % (pcount, answer, pcount, qvars[p])]
+                pout += ["""<OPTION VALUE='%d' Oa_SEL_%d_%d>%s</OPTION>""" %
+                         (pcount, answer, pcount, qvars[p])]
             else:
                 pout += ["""<OPTION><FONT COLOR="red">ERROR IN QUESTION DATA</FONT></OPTION>"""]
         # this should randomise the order in the list at least a little bit
@@ -458,8 +475,8 @@ def render_q_html(q_id, readonly=False):
     except (ValueError, TypeError, AssertionError):
         log(WARN,
             "renderQuestionHTML(%s,%s), getparent failed? " % (q_id, readonly))
-    variation = DB.getQuestionVariation(q_id)
-    version = DB.getQuestionVersion(q_id)
+    variation = DB.get_q_variation(q_id)
+    version = DB.get_q_version(q_id)
     data = DB.get_q_att(qt_id, "qtemplate.html", variation, version)
     if not data:
         log(WARN,
@@ -469,7 +486,8 @@ def render_q_html(q_id, readonly=False):
         out = unicode(data, "utf-8")
     except UnicodeDecodeError:
         try:
-            out = unicode(DB.get_q_att(qt_id, "qtemplate.html", variation, version), "latin-1")
+            out = unicode(DB.get_q_att(qt_id, "qtemplate.html", variation, version),
+                          "latin-1")
         except UnicodeDecodeError, err:
             log(ERROR,
                 "unicode error decoding qtemplate for q_id %s: %s" % (q_id, err))
@@ -478,15 +496,18 @@ def render_q_html(q_id, readonly=False):
 
     out = out.replace("ANS_", "Q_%d_ANS_" % (q_id,))
     out = out.replace("$IMAGES$",
-                      "%s/att/qatt/%s/%s/%s/" % (OaConfig.parentURL, qt_id, version, variation))
+                      "%s/att/qatt/%s/%s/%s/" %
+                      (OaConfig.parentURL, qt_id, version, variation))
     out = out.replace("$APPLET$",
-                      "%s/att/qatt/%s/%s/%s/" % (OaConfig.parentURL, qt_id, version, variation))
+                      "%s/att/qatt/%s/%s/%s/" %
+                      (OaConfig.parentURL, qt_id, version, variation))
     out = out.replace("$STATIC$",
-                      "%s/att/qtatt/%s/%s/%s/" % (OaConfig.parentURL, qt_id, version, variation))
+                      "%s/att/qtatt/%s/%s/%s/" %
+                      (OaConfig.parentURL, qt_id, version, variation))
     if readonly:
         out = out.replace("<INPUT ", "<INPUT READONLY ")
         out = out.replace("<SELECT ", "<SELECT DISABLED=DISABLED STYLE='color: black;'")
-    guesses = DB.getQuestionGuesses(q_id)
+    guesses = DB.get_q_guesses(q_id)
     for guess in guesses.keys():
         # noinspection PyComparisonWithNone
         if guesses[guess] == None:  # If it's 0 we want to leave it alone
@@ -560,7 +581,9 @@ def markQuestionStandard(qvars, answers):
     if not qvars:
         log(WARN, "error: No qvars provided!")
         qvars = {}
-    parts = [var[1:] for var in qvars.keys() if re.search("^A([0-9]+$)", var) > 0]
+    parts = [var[1:]
+             for var in qvars.keys()
+             if re.search("^A([0-9]+$)", var) > 0]
     marks = {}
     for part in parts:
         try:
@@ -600,9 +623,10 @@ def markQuestionStandard(qvars, answers):
                     gtype = "float"
                 else:
                     gtype = "string"
-            except (KeyError, ValueError, TypeError):  # no, just treat it as a string
+            except (KeyError, ValueError, TypeError):  # no, treat it as string
                 gtype = "string"
-        if gtype == "string":   # Occasionally people use , instead of . which is ok in Europe.
+        if gtype == "string":   # Occasionally people use , instead of .
+                                # which is ok in Europe.
             guess = guess.replace(",", ".")
             try:   # See if we can convert it to numeric form
                 guess = float(guess)
@@ -638,7 +662,9 @@ def markQuestionScript(qvars, script, answer):
             qvars[name] = float(qvars[name])
         except (KeyError, ValueError, TypeError):  # Guess not
             pass
-    parts = [int(var[1:]) for var in qvars.keys() if re.search("^A([0-9]+)$", var) > 0]
+    parts = [int(var[1:])
+             for var in qvars.keys()
+             if re.search("^A([0-9]+)$", var) > 0]
     # Set up the functions scripts can call
     qvars["__builtins__"] = {'MyFuncs': OqeSmartmarkFuncs,
                              'withinTolerance': script_funcs.withinTolerance,
@@ -670,11 +696,12 @@ def markQuestionScript(qvars, script, answer):
                     (st, flt) = parseExpo(guess)
                     if flt:
                         qvars['G%d' % part] = flt
-                    else:    # Occasionally people use , instead of . which is ok in Europe.
+                    else:    # Occasionally people use , instead of .
+                             # which is ok in Europe.
                         guess = guess.replace(",", ".")
                         flt = float(guess)
                         qvars['G%d' % part] = flt
-                except (KeyError, ValueError, TypeError):  # no, just treat it as a string
+                except (KeyError, ValueError, TypeError):  # treat it as string
                     qvars['G%d' % part] = answer['G%d' % part]
         else:
             qvars['G%d' % part] = "None"
@@ -688,7 +715,10 @@ def markQuestionScript(qvars, script, answer):
         exec (script, qvars)
     except BaseException:
         (etype, value, tb) = sys.exc_info()
-        script_funcs.q_log(qid, "error", "__marker.py", "Falling back to standard marker:  __marker.py: %s" % (
+        script_funcs.q_log(qid,
+                           "error",
+                           "__marker.py",
+                           "Falling back to standard marker: __marker.py: %s" %(
             traceback.format_exception(etype, value, tb)[-2:]))
     try:
         qid = qvars['OaQID']
@@ -721,10 +751,12 @@ def markQuestionScript(qvars, script, answer):
     return marks
 
 
-def renderMarkResultsStandard(qid, marks):
+def render_mark_results_standard(qid, marks):
     """Display a nice little HTML table showing the marking for the question. """
     out = u""
-    parts = [int(var[1:]) for var in marks.keys() if re.search("^A([0-9]+)$", var) > 0]
+    parts = [int(var[1:])
+             for var in marks.keys()
+             if re.search("^A([0-9]+)$", var) > 0]
     parts.sort()
     out += u"<table class='results'><TR>"
     out += u"<TH>Part</th><th>Your Answer</th>"
@@ -753,11 +785,11 @@ def renderMarkResultsScript(qtid, qid, marks, script):
     """Run the provided script to show the marking for the
        question.
     """
-    version = DB.getQuestionVersion(qid)
-    variation = DB.getQuestionVariation(qid)
-    qvars = DB.getQTVariation(qtid, variation, version)
+    version = DB.get_q_version(qid)
+    variation = DB.get_q_variation(qid)
+    qvars = DB.get_qt_variation(qtid, variation, version)
     questionHTML = render_q_html(qid, readonly=True)
-    resultsHTML = ""
+    reshtml = ""
     qvars["__builtins__"] = {'MyFuncs': OqeSmartmarkFuncs,
                              'withinTolerance': script_funcs.withinTolerance,
                              'math': math,
@@ -771,7 +803,7 @@ def renderMarkResultsScript(qtid, qid, marks, script):
                              'False': False,
                              'questionHTML': questionHTML,
                              'int': int,
-                             'resultsHTML': resultsHTML}
+                             'resultsHTML': reshtml}
     qvars['markeroutput'] = marks
     guesses = [int(var[1:])
                for var in marks.keys()
@@ -816,17 +848,17 @@ def renderMarkResultsScript(qtid, qid, marks, script):
                            traceback.format_exception(etype, value, tb)[-2:]))
     if 'resultsHTML' in qvars:
         if len(qvars['resultsHTML']) > 2:
-            resultsHTML = qvars['resultsHTML']
+            reshtml = qvars['resultsHTML']
             for v in qvars.keys():
-                resultsHTML = resultsHTML.replace("<IMG SRC %s>" % v,
-                                                  '<IMG SRC="$OaQID$%s" />' % qvars[v])
-            resultsHTML = resultsHTML.replace("$OaQID$", "%d/" % qid)
-            return resultsHTML
+                reshtml = reshtml.replace("<IMG SRC %s>" % v,
+                                        '<IMG SRC="$OaQID$%s" />' % qvars[v])
+            reshtml = reshtml.replace("$OaQID$", "%d/" % qid)
+            return reshtml
     script_funcs.q_log(qid,
-                       "error",
-                       "__results.py",
-                       "didn't set variable 'resultsHTML', using standard renderer instead.")
-    return renderMarkResultsStandard(qid, marks)
+                      "error",
+                      "__results.py",
+                      "didn't set variable 'resultsHTML', using standard renderer.")
+    return render_mark_results_standard(qid, marks)
 
 
 def renderMarkResults(qid, marks):
@@ -840,7 +872,7 @@ def renderMarkResults(qid, marks):
     qtid = DB.get_q_parent(qid)
     renderscript = DB.get_qt_att(qtid, "__results.py")
     if not renderscript:
-        resultsHTML = renderMarkResultsStandard(qid, marks)
+        resultsHTML = render_mark_results_standard(qid, marks)
     else:
         resultsHTML = renderMarkResultsScript(qtid, qid, marks, renderscript)
     return resultsHTML
@@ -853,12 +885,14 @@ def markQuestion(qid, answers):
         return:   {"M1": Mark One, "C1": Comment One, "M2": Mark Two..... }
     """
     qtid = DB.get_q_parent(qid)
-    version = DB.getQuestionVersion(qid)
-    variation = DB.getQuestionVariation(qid)
-    qvars = DB.getQTVariation(qtid, variation, version)
+    version = DB.get_q_version(qid)
+    variation = DB.get_q_variation(qid)
+    qvars = DB.get_qt_variation(qtid, variation, version)
     if not qvars:
         qvars = {}
-        log(WARN, "markQuestion(%s, %s) unable to retrieve variables." % (qid, answers))
+        log(WARN,
+            "markQuestion(%s, %s) unable to retrieve variables." %
+            (qid, answers))
     qvars['OaQID'] = int(qid)
     marktype = DB.get_qt_marker(qtid)
     if marktype == 1:    # standard
@@ -869,7 +903,7 @@ def markQuestion(qid, answers):
         if not markerscript:
             markerscript = DB.get_qt_att(qtid, "marker.py")
             log(INFO,
-                "Found legacy 'marker.py', should now be called '__marker.py' (qtid=%s)" % qtid)
+                "Legacy 'marker.py', should now be called '__marker.py' (qtid=%s)" % qtid)
         if not markerscript:
             log(INFO,
                 "Unable to retrieve marker script for smart marker question (qtid=%s)!" % qtid)
@@ -944,14 +978,15 @@ def getExamQuestion(exam, page, user_id):
     qid = DB.getExamQuestionByPositionStudent(exam, page, user_id)
     if not qid is False:
         return int(qid)
-    qid = int(generateExamQuestion(exam, page, user_id))
+    qid = int(gen_exam_q(exam, page, user_id))
     try:
         qid = int(qid)
         assert qid > 0
     except (ValueError, TypeError, AssertionError):
         log(WARN,
-            "generateExamQuestion(%s,%s, %s) Failed (returned %s)" % (exam, page, user_id, qid))
-    DB.setQuestionViewTime(qid)
+            "generateExamQuestion(%s,%s, %s) Failed (returned %s)" %
+            (exam, page, user_id, qid))
+    DB.set_q_viewtime(qid)
     return qid
 
 
@@ -963,7 +998,7 @@ def getExamQuestions(student, exam):
     for position in range(1, numQTemplates + 1):
         question = getExamQuestion(exam, position, student)
         if not question:
-            question = int(generateExamQuestion(exam, position, student))
+            question = int(gen_exam_q(exam, position, student))
         questions.append(question)
     return questions
 
@@ -979,7 +1014,8 @@ def remarkExam(exam, student):
         try:
             marks = markQuestion(question, answers)
         except OaMarkerError:
-            log(WARN, "Marker Error, question %d while re-marking exam %s for student %s!" % (question, exam, student))
+            log(WARN,
+                "Marker Error, question %d while re-marking exam %s for student %s!" % (question, exam, student))
             marks = {}
         parts = [int(var[1:]) for var in marks.keys() if re.search("^A([0-9]+)$", var) > 0]
         parts.sort()
@@ -992,7 +1028,7 @@ def remarkExam(exam, student):
             except (ValueError, TypeError, KeyError):
                 mark = 0
             total += mark
-        DB.updateQuestionScore(question, total)
+        DB.update_q_score(question, total)
         #        OaDB.setQuestionStatus(question, 3)    # 3 = marked
         examtotal += total
     Exams.saveScore(exam, student, examtotal)
@@ -1002,12 +1038,14 @@ def remarkExam(exam, student):
 def remarkPractice(question):
     """ Re-mark the practice question and store the score back in the questions table.
     """
-    answers = DB.getQuestionGuesses(question)
+    answers = DB.get_q_guesses(question)
     try:
         marks = markQuestion(question, answers)
     except OaMarkerError:
         return None
-    parts = [int(var[1:]) for var in marks.keys() if re.search("^A([0-9]+)$", var) > 0]
+    parts = [int(var[1:])
+             for var in marks.keys()
+             if re.search("^A([0-9]+)$", var) > 0]
     parts.sort()
     total = 0.0
     for part in parts:
@@ -1016,8 +1054,8 @@ def remarkPractice(question):
         except (ValueError, TypeError, KeyError):
             mark = 0
         total += mark
-    DB.updateQuestionScore(question, total)
-    DB.setQuestionStatus(question, 3)    # 3 = marked
+    DB.update_q_score(question, total)
+    DB.set_q_status(question, 3)    # 3 = marked
     return total
 
 
@@ -1036,8 +1074,10 @@ def getExamTimeTaken(exam, student):
 
 
 def humanDatePeriod(start, end, html=True):
-    """ Return a string containing a nice human readable description of the time period.
-        eg. if the start and end are on the same day, it only gives the date once.
+    """ Return a string containing a nice human readable description of
+        the time period.
+        eg. if the start and end are on the same day, it only gives the date
+        once.
         If html is set to true, the string may contain HTML formatting codes.
     """
     # Period is in one date.

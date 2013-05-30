@@ -9,6 +9,7 @@ from ..lib.DB import run_sql, IntegrityError
 from logging import log, ERROR
 import datetime
 
+
 class Feed(object):
     """ A feed object tells us about the feed and where to get the scripts
         that do the main work of importing.

@@ -390,7 +390,7 @@ def admin_course_save(course_id):
             Courses.set_enrol_freq(course_id, enrol_freq)
 
     if changed:
-        Courses2.reloadCoursesIfNeeded()
+        Courses2.reload_if_needed()
         flash("Course changes saved!")
         return redirect(url_for("admin_courses"))
     course = Courses2.get_course(course_id)
@@ -451,7 +451,7 @@ def admin_add_course_save():
             active = False
         Courses.set_active(course_id, active)
 
-    Courses2.reloadCoursesIfNeeded()
+    Courses2.reload_if_needed()
     flash("Course %s added!" % name)
     course = Courses2.get_course(course_id)
     course['size'] = 0

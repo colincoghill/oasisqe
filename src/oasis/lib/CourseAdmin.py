@@ -13,7 +13,7 @@ from oasis.lib.Audit import audit
 from oasis.lib import Users2, DB, Topics, General, Exams, Courses
 
 
-def doCourseTopicUpdate(course, request):
+def do_topic_update(course, request):
     """Read the submitted form and make relevant changes to Topic information
     """
     # TODO: Describe what this is doing
@@ -53,7 +53,7 @@ def doCourseTopicUpdate(course, request):
 
 # This is taken from OaSetupFE, but should probably be moved into the database
 # at some point.
-def _getPermShort(pid):
+def get_perm_short(pid):
     """ Return a short human readable name for the permission."""
 
     pNames = {1: "Super User",
@@ -76,7 +76,7 @@ def _getPermShort(pid):
     return None
 
 
-def savePerms(request, cid, user_id):
+def save_perms(request, cid, user_id):
     """ Save permission changes
     """
 
@@ -117,7 +117,7 @@ def savePerms(request, cid, user_id):
                               user_id,
                               uid,
                               "CourseAdmin",
-                              "%s given %s permission by %s" % (uname, _getPermShort(perm), user_id,)
+                              "%s given %s permission by %s" % (uname, get_perm_short(perm), user_id,)
                         )
                 else:
                     if uname in perms and perm in perms[uname]:
@@ -126,7 +126,7 @@ def savePerms(request, cid, user_id):
                               user_id,
                               uid,
                               "CourseAdmin",
-                              "%s had %s permission revoked by %s" % (uname, _getPermShort(perm), user_id,)
+                              "%s had %s permission revoked by %s" % (uname, get_perm_short(perm), user_id,)
                         )
 
         for uname in newperms:
@@ -140,7 +140,7 @@ def savePerms(request, cid, user_id):
                               user_id,
                               uid,
                               "CourseAdmin",
-                              "%s given %s permission by %s" % (uname, _getPermShort(perm), user_id,)
+                              "%s given %s permission by %s" % (uname, get_perm_short(perm), user_id,)
                         )
         if "adduser" in form:
             newuname = form['adduser']
@@ -151,12 +151,12 @@ def savePerms(request, cid, user_id):
                   user_id,
                   newuid,
                   "CourseAdmin",
-                  "%s given '%s' permission by %s" % (newuname, _getPermShort(10), user_id,)
+                  "%s given '%s' permission by %s" % (newuname, get_perm_short(10), user_id,)
             )
     return
 
 
-def ExamEditSubmit(request, user_id, cid, exam_id):
+def exam_edit_submit(request, user_id, cid, exam_id):
     """ Accept the submitted exam edit/create form.
         If exam_id is not provided, create a new one.
     """
@@ -214,7 +214,7 @@ def ExamEditSubmit(request, user_id, cid, exam_id):
     return exam_id
 
 
-def _getSortedQuestionList(topic):
+def _get_q_list_sorted(topic):
     # TODO: Is this duplicated elsewhere?
     def cmp_question_position(a, b):
         """Order questions by the absolute value of their positions
@@ -226,10 +226,11 @@ def _getSortedQuestionList(topic):
     questionlist = General.get_q_list(topic, None, False)
 
     if questionlist:
-        # At the moment we use -'ve positions to indicate that a question is hidden
-        # but when displaying them we want to maintain the sort order.
+        # At the moment we use -'ve positions to indicate that a question
+        # is hidden but when displaying them we want to maintain the sort order.
         for question in questionlist:
-            # Usually questions with position 0 are broken or uninteresting so put them at the bottom.
+            # Usually questions with position 0 are broken or uninteresting
+            # so put them at the bottom.
             if question['position'] == 0:
                 question['position'] = -10000
         questionlist.sort(cmp_question_position)
@@ -239,13 +240,13 @@ def _getSortedQuestionList(topic):
     return questionlist
 
 
-def getCreateExamQuestionList(course):
+def get_create_exam_q_list(course):
     """ Return a list of questions that can be used to create an assessment
     """
 
     topics = Courses.getTopicsInfoAll(course, archived=0, numq=False)
     for num, topic in topics.iteritems():
         topic_id = topics[num]['id']
-        topics[num]['questions'] = _getSortedQuestionList(topic_id)
+        topics[num]['questions'] = _get_q_list_sorted(topic_id)
     return topics
 

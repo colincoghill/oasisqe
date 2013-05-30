@@ -105,7 +105,8 @@ def get_vis(topic_id):
 
 def set_vis(topic_id, vis):
     """Update the visibility of a topic."""
-    run_sql("""UPDATE topics SET visibility=%s WHERE topic=%s;""", (vis, topic_id))
+    run_sql("""UPDATE topics SET visibility=%s WHERE topic=%s;""",
+            (vis, topic_id))
     key = "topic-%s-record" % topic_id
     MC.delete(key)
 
@@ -128,10 +129,10 @@ def get_num_qs(topic_id):
             num = 0
         else:
             num = int(res[0][0])
-        MC.set(key, num, 180) # 3 minute cache
+        MC.set(key, num, 180)  # 3 minute cache
         return num
     except LookupError:
-        raise IOError, "Database connection failed"
+        raise IOError("Database connection failed")
 
 
 def get_qts(topic_id):

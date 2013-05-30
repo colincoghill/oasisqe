@@ -239,7 +239,7 @@ def get_sorted_courselist(with_stats=False, only_active=True):
          [  ('example101', { coursedict }),  ('sorted302', { coursedict } )  ]
     """
 
-    courses = Courses2.getCourseDict(only_active = only_active)
+    courses = Courses2.get_course_dict(only_active = only_active)
 
     inorder = []
     for cid, course in courses.iteritems():
