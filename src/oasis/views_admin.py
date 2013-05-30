@@ -83,6 +83,20 @@ def admin_edit_period(p_id):
     )
 
 
+@app.route("/admin/add_period")
+@authenticated
+def admin_add_period():
+    """ Present page to add a time period in the system """
+    user_id = session['user_id']
+    if not check_perm(user_id, 0, "OASIS_SYSADMIN"):
+        flash("You do not have system administrator permission")
+        return redirect(url_for('setup_top'))
+
+    return render_template(
+        "admin_addperiod.html"
+    )
+
+
 @app.route("/admin/edit_period_submit/<int:p_id>", methods=["POST",])
 @authenticated
 def admin_edit_period_submit(p_id):

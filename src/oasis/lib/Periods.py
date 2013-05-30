@@ -32,8 +32,7 @@ class Period(object):
                 self._fetch_by_name(name)
             elif code:
                 self._fetch_by_code(code)
-            else:
-                raise ValueError("Incorrect arguments provided.")
+
         else:  # create new
             self.id = None
             self.name = name
