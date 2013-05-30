@@ -1,0 +1,122 @@
+{% extends "page_nav.html" %}
+{% block body %}
+    <div>
+    <br/>
+       <p>Return to <a href="{{ cf.url }}admin/enrol/top">Enrolment Configuration</a></p>
+ <div class="row">
+    <div class="span2 help-block">
+      <h4>Group Feeds
+        <br>
+      </h4>
+      <p>Group feeds provide a way to import group membership information from
+        external systems into OASIS.
+        <br>
+      </p>
+      <p>Generally you would need only one or two.
+        <br>
+      </p>
+      <p>These are implemented as scripts stored in the {{ cf.feeddir }} folder
+        on the server. Working examples are included to cover several common cases,
+        but you can add your own. If you name them local_SOMETHING, they will not
+        be accidentally overwritten by future OASIS upgrades.
+        <br>
+      </p>
+      <p>A "feed script" should accept parameters saying which group and time period
+        to fetch, and should return the results as text output.
+        <br>
+      </p>
+      <p>If you need to pass confidential information to a script (eg. an LDAP&nbsp;
+        password), you can put it in the "Env. Variable"&nbsp; field, and this
+        will be supplied to the script in the environment variable "OASIS_FEED_ENV"
+        <br>
+      </p>
+      <dl></dl>
+    </div>
+    <div class="span9">
+      <h1>Edit Group Feed
+        <br>
+      </h1>
+      <div class="well">
+        <form>
+          <label>Short Name:</label>
+          <input placeholder="Short Name" class="input-medium"
+          type="text">
+          <label>Title:</label>
+          <input placeholder="Descriptive name" class="input-xxlarge"
+          type="text">
+          <div style="width: 220px; height: 82px;" class="drag-mask" data-ds-form="select"></div>
+          <p></p>
+          <label>Script Filename</label>
+          <select>
+            <option>feed_ldap.py</option>
+            <option>feed_url.py</option>
+            <option>feed_file.sh</option>
+          </select>
+          <a class="btn btn-mini">Refresh</a>
+          <label>Env. Variable: (optional)</label>
+          <input placeholder="1234" class="input-medium"
+          type="text">
+          <label>Comments: (optional)</label>
+          <textarea placeholder="This reads from a file which is populated nightly from our main database."
+          rows="6" class="input-block-level"></textarea>
+          <label>Update Frequency</label>
+          <p>OASIS will run this feed, once for each group, how often?</p>
+          <label class="radio"
+          for="radio">
+            <input value="true" id="radio" name="radio" type="radio"> Hourly</label>
+          <label class="radio" for="radio">
+            <input value="true" id="radio" name="radio" type="radio"> Daily</label>
+          <label class="radio" for="radio">
+            <input value="true" id="radio" name="radio" type="radio"> Manually</label>
+        </form>
+        <div class="form-actions">
+          <div class="well">
+            <label>Test:</label>
+            <input placeholder="groupname timecode" class="input-medium"
+            type="text">
+            <a class="btn">Test</a>
+          </div>
+          <button type="submit" class="btn btn-primary">Save</button>
+          <input class="btn" value="Reset" type="reset">
+        </div>
+      </div>
+      <ul></ul>
+      <ul></ul>
+      <p></p>
+    </div>
+  </div>
+
+
+
+
+
+    <p>Return to <a href="{{ cf.url }}admin/enrol/top">Enrolment Configuration</a></p>
+
+    <br/>
+    <br/>
+    <br/>
+    <br/>
+
+    </div>
+{% endblock body %}
+{% block js %}
+    <script>
+
+        $(function () {
+            $(".datatable").dataTable({
+                        "bPaginate": false,
+                        "bLengthChange": false,
+                        "bFilter": false
+                    }
+            );
+
+            $('#showhistorical').click(function () {
+                        $('.historical').toggle();
+                    }
+            );
+        });
+
+
+    </script>
+{% endblock js %}
+{% block pagetitle %}Server Admin{% endblock %}

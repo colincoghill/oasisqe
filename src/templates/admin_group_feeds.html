@@ -1,27 +1,32 @@
 {% extends "page_nav.html" %}
 {% block body %}
-    <br/>
-       <p>Return to <a href="{{ cf.url }}admin/enrol/top">Enrolment Configuration</a></p>
-    <H2>Manage Time Periods</H2>
+    <div>
+        <br/>
+
+        <p>Return to <a href="{{ cf.url }}admin/enrol/top">Enrolment
+            Configuration</a></p>
+
+        <H2>Group Feeds</H2>
 
 
+            <p>Group feeds provide a way to import group membership information
+                from
+                external systems into OASIS.
+                <br>
+            </p>
 
-        <p>Time periods are used to match courses to real-world terms or
-            semesters.</p>
+            <p>Generally you would need only one or two.
+                <br>
+            </p>
 
-        <p>
-            Enrolment groups can then be associated with them to allow
-            access to
-            courses to start and end at the appropriate times.</p>
+            <p>These are implemented as scripts stored in the {{ cf.feeddir }}
+                folder on the server.
+                <br>
+            </p>
+            <div class='container-fluid well'>
 
-        <p>If you do not wish to use these, just use the included
-            'Indefinite' period.
 
-        </p>
-        <div class='container-fluid well'>
-        <br>
-
-        <h4>Time Periods</h4>
+                <h4>Active Feeds</h4>
         <table class='table table-condensed datatable'>
             <thead>
             <tr>
@@ -55,7 +60,7 @@
         <br/> <br/>
 <br/><br/>
         <a href='#' id='showhistorical'><i class='icon icon-chevron-right historical'> </i><i style='display:none;' class='icon icon-chevron-down historical'> </i>
-            Historical Periods</a>
+            Inactive Feeds</a>
 
         <div class='hidden historical' id="historical">
             <table class='table table-condensed datatable'>
@@ -87,17 +92,35 @@
                 </tbody>
             </table>
         </div>
-   </div>
 
 
-    <p>Return to <a href="{{ cf.url }}admin/enrol/top">Enrolment Configuration</a></p>
 
-    <br/>
-    <br/>
-    <br/>
-    <br/>
 
+
+
+
+
+
+
+
+
+
+
+        </div>
     </div>
+
+
+
+
+
+    <p>Return to <a href="{{ cf.url }}admin/enrol/top">Enrolment
+        Configuration</a></p>
+
+    <br/>
+    <br/>
+    <br/>
+    <br/>
+
 {% endblock body %}
 {% block js %}
     <script>

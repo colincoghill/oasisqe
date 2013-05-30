@@ -60,6 +60,20 @@ def admin_enrol_top():
     )
 
 
+@app.route("/admin/feeds")
+@authenticated
+def admin_feeds():
+    """ Present menu page of enrolment related options """
+    user_id = session['user_id']
+    if not check_perm(user_id, 0, "OASIS_SYSADMIN"):
+        flash("You do not have system administrator permission")
+        return redirect(url_for('setup_top'))
+
+    return render_template(
+        "admin_group_feeds.html"
+    )
+
+
 
 @app.route("/admin/periods")
 @authenticated
