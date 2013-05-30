@@ -33,9 +33,8 @@
       <dl></dl>
     </div>
     <div class="span9">
-      <h1>Edit Group Feed
-        <br>
-      </h1>
+      <h3>Edit Group Feed</h3>
+
       <div class="well">
         <form>
           <label>Short Name:</label>
@@ -44,8 +43,7 @@
           <label>Title:</label>
           <input placeholder="Descriptive name" class="input-xxlarge"
           type="text">
-          <div style="width: 220px; height: 82px;" class="drag-mask" data-ds-form="select"></div>
-          <p></p>
+
           <label>Script Filename</label>
           <select>
             <option>feed_ldap.py</option>
@@ -68,17 +66,14 @@
             <input value="true" id="radio" name="radio" type="radio"> Daily</label>
           <label class="radio" for="radio">
             <input value="true" id="radio" name="radio" type="radio"> Manually</label>
-        </form>
+
         <div class="form-actions">
-          <div class="well">
-            <label>Test:</label>
-            <input placeholder="groupname timecode" class="input-medium"
-            type="text">
-            <a class="btn">Test</a>
-          </div>
-          <button type="submit" class="btn btn-primary">Save</button>
-          <input class="btn" value="Reset" type="reset">
+<input class='btn btn-primary' type="submit" name='save'
+                           value='Save'>
+                    <input class="btn btn-danger" value="Cancel" type="submit"
+                           name="cancel">
         </div>
+                  </form>
       </div>
       <ul></ul>
       <ul></ul>

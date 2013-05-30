@@ -10,7 +10,7 @@ import datetime
 from flask import render_template, session, \
     request, redirect, abort, url_for, flash
 
-from .lib import Courses, Courses2, Setup, Periods
+from .lib import Courses, Courses2, Setup, Periods, Feeds
 
 MYPATH = os.path.dirname(__file__)
 from .lib.UserDB import check_perm
@@ -74,7 +74,6 @@ def admin_feeds():
     )
 
 
-
 @app.route("/admin/periods")
 @authenticated
 def admin_periods():
@@ -109,6 +108,39 @@ def admin_edit_period(p_id):
     return render_template(
         "admin_editperiod.html",
         period=period
+    )
+
+
+@app.route("/admin/edit_feed/<int:feed_id>")
+@authenticated
+def admin_edit_feed(feed_id):
+    """ Present page to edit a feed in the system """
+    user_id = session['user_id']
+    if not check_perm(user_id, 0, "OASIS_SYSADMIN"):
+        flash("You do not have system administrator permission")
+        return redirect(url_for('setup_top'))
+    try:
+        feed = Feeds.Feed(id=feed_id)
+    except KeyError:
+        abort(404)
+    return render_template(
+        "admin_edit_group_feed.html",
+        feed=feed
+    )
+
+
+@app.route("/admin/add_feed")
+@authenticated
+def admin_add_feed():
+    """ Present page to add a feed to the system """
+    user_id = session['user_id']
+    if not check_perm(user_id, 0, "OASIS_SYSADMIN"):
+        flash("You do not have system administrator permission")
+        return redirect(url_for('setup_top'))
+
+    return render_template(
+        "admin_edit_group_feed.html",
+        feed = {'id':0}
     )
 
 

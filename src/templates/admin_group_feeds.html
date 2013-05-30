@@ -32,86 +32,69 @@
             <tr>
                 <th>Name</th>
                 <th>Title</th>
-                <th>Start</th>
-                <th>End</th>
-                <th>Code</th>
+                <th>Script</th>
+                <th>Updates</th>
+                <th>Status</th>
                 <th></th>
 
             </tr>
             </thead>
             <tbody>
-            {% for period in periods if not period.historical() %}
+            {% for feed in feeds if feed.active %}
                 <tr>
-                    <td>{{ period.name }}</td>
-                    <th>{{ period.title }}</th>
-                    <td>{{ period.start }}</td>
-                    <td>{{ period.finish }}</td>
-                    <td>{{ period.code }}</td>
+                    <td>{{ feed.name }}</td>
+                    <th>{{ feed.title }}</th>
+                    <td>{{ feed.script }}</td>
+                    <td>{{ feed.freq }}</td>
+                    <td>{{ feed.status }}</td>
 
-                    <td>{% if period.editable() %}<a class='btn btn-mini'
-                           href='{{ cf.url }}admin/edit_period/{{ period.id }}'>Edit</a>{% endif %}
+                    <td>{% if feed.editable() %}<a class='btn btn-mini'
+                           href='{{ cf.url }}admin/edit_feed/{{ feed.id }}'>Edit</a>{% endif %}
                     </td>
                 </tr>
             {% endfor %}
             </tbody>
         </table>
         <br/> <br/>
-        <a class='btn btn-small' href='{{ cf.url }}admin/add_period'>Add Time Period</a>
+        <a class='btn btn-small' href='{{ cf.url }}admin/add_feed'>Add Feed</a>
         <br/> <br/>
 <br/><br/>
-        <a href='#' id='showhistorical'><i class='icon icon-chevron-right historical'> </i><i style='display:none;' class='icon icon-chevron-down historical'> </i>
+        <a href='#' id='showoldfeed'><i class='icon icon-chevron-right oldfeed'> </i><i style='display:none;' class='icon icon-chevron-down oldfeed'> </i>
             Inactive Feeds</a>
 
-        <div class='hidden historical' id="historical">
-            <table class='table table-condensed datatable'>
-                <thead>
+        <div class='hidden oldfeed' id="oldfeed">
+           <table class='table table-condensed datatable'>
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Title</th>
+                <th>Script</th>
+                <th>Updates</th>
+                <th>Status</th>
+                <th></th>
+
+            </tr>
+            </thead>
+            <tbody>
+            {% for feed in feeds if not feed.active %}
                 <tr>
-                    <th>Name</th>
-                    <th>Title</th>
-                    <th>Start</th>
-                    <th>End</th>
-                    <th>Code</th>
-                    <td></td>
+                    <td>{{ feed.name }}</td>
+                    <th>{{ feed.title }}</th>
+                    <td>{{ feed.script }}</td>
+                    <td>{{ feed.freq }}</td>
+                    <td>{{ feed.status }}</td>
 
-                </tr>
-                </thead>
-                <tbody>
-                {% for period in periods if period.historical() %}
-                    <tr>
-                    <td>{{ period.name }}</td>
-                    <th>{{ period.title }}</th>
-                    <td>{{ period.start }}</td>
-                    <td>{{ period.finish }}</td>
-                    <td>{{ period.code }}</td>
-
-                    <td>{% if period.editable() %}<a class='btn btn-mini'
-                           href='{{ cf.url }}admin/edit_period/{{ period.id }}'>Edit</a>{% endif %}
+                    <td>{% if feed.editable() %}<a class='btn btn-mini'
+                           href='{{ cf.url }}admin/edit_feed/{{ feed.id }}'>Edit</a>{% endif %}
                     </td>
-                 </tr>
-                {% endfor %}
-                </tbody>
-            </table>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
         </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
 
         </div>
     </div>
-
-
-
-
 
     <p>Return to <a href="{{ cf.url }}admin/enrol/top">Enrolment
         Configuration</a></p>
@@ -133,8 +116,8 @@
                     }
             );
 
-            $('#showhistorical').click(function () {
-                        $('.historical').toggle();
+            $('#showoldfeed').click(function () {
+                        $('.oldfeed').toggle();
                     }
             );
         });

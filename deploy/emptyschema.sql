@@ -113,9 +113,12 @@ CREATE TABLE group_feeds (
     "name" character varying UNIQUE,
     "title" character varying,
     "script" character varying,
-    "environment" character varying,
-    "frequency" integer default 2,   -- 1 = hourly, 2 = daily, 3 = manually
-    "comments" text
+    "envvar" character varying,
+    "freq" integer default 2,   -- 1 = hourly, 2 = daily, 3 = manually
+    "comments" text,
+    "status" character varying,
+    "error" character varying,
+    "active" boolean default False
 );
 
 CREATE SEQUENCE groups_id_seq START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;
