@@ -15,7 +15,7 @@ import datetime
 # WARNING: name and title are stored in the database as: title, description
 
 
-def getVersion():
+def get_version():
     """ Fetch the current version of the course table.
         This will be incremented when anything in the courses table is changed.
         The idea is that while the version hasn't changed, course information
@@ -33,7 +33,7 @@ def getVersion():
     return -1
 
 
-def incrementVersion():
+def incr_version():
     """ Increment the course table version."""
     key = "coursetable-version"
     MC.delete(key)
@@ -45,27 +45,28 @@ def incrementVersion():
     return -1
 
 
-def setName(course_id, name):
+def set_name(course_id, name):
     """ Set the name of a course."""
     assert isinstance(course_id, int)
     assert isinstance(name, str) or isinstance(name, unicode)
-    incrementVersion()
+    incr_version()
     run_sql("UPDATE courses SET title=%s WHERE course=%s;", (name, course_id))
     key = "course-%s-name" % course_id
     MC.delete(key)
 
 
-def setTitle(course_id, title):
+def set_title(course_id, title):
     """ Set the title of a course."""
     assert isinstance(course_id, int)
     assert isinstance(title, str) or isinstance(title, unicode)
-    incrementVersion()
-    run_sql("UPDATE courses SET description=%s WHERE course=%s;", (title, course_id))
+    incr_version()
+    run_sql("UPDATE courses SET description=%s WHERE course=%s;",
+            (title, course_id))
     key = "course-%s-title" % course_id
     MC.delete(key)
 
 
-def getActive(course_id):
+def get_active(course_id):
     """ Fetch the active flag"""
     assert isinstance(course_id, int)
     key = "course-%s-active" % course_id
@@ -80,7 +81,7 @@ def getActive(course_id):
     return None
 
 
-def setActive(course_id, active):
+def set_active(course_id, active):
     """ Set the active flag of a course."""
     assert isinstance(course_id, int)
     assert isinstance(active, bool)
@@ -89,68 +90,74 @@ def setActive(course_id, active):
     else:
         val = 0
     run_sql("UPDATE courses SET active=%s WHERE course=%s;", (val, course_id))
-    incrementVersion()
+    incr_version()
     key = "course-%s-active" % course_id
     MC.delete(key)
     key = "courses-active"
     MC.delete(key)
 
 
-def setEnrolType(course_id, enrol_type):
+def set_enrol_type(course_id, enrol_type):
     """ Set the enrolment type of a course."""
     assert isinstance(course_id, int)
     assert isinstance(enrol_type, str) or isinstance(enrol_type, unicode)
 
-    run_sql("UPDATE courses SET enrol_type=%s WHERE course=%s;", (enrol_type, course_id))
-    incrementVersion()
+    run_sql("UPDATE courses SET enrol_type=%s WHERE course=%s;",
+            (enrol_type, course_id))
+    incr_version()
 
 
-def setRegistration(course_id, registration):
+def set_registration(course_id, registration):
     """ Set the registration type of a course."""
     assert isinstance(course_id, int)
     assert isinstance(registration, str) or isinstance(registration, unicode)
 
-    run_sql("UPDATE courses SET registration=%s WHERE course=%s;", (registration, course_id))
-    incrementVersion()
+    run_sql("UPDATE courses SET registration=%s WHERE course=%s;",
+            (registration, course_id))
+    incr_version()
 
 
-def setPracticeVisibility(cid, visibility):
+def set_practice_visibility(cid, visibility):
     """ Who can do practice questions."""
     assert isinstance(cid, int)
     assert isinstance(visibility, str) or isinstance(visibility, unicode)
 
-    run_sql("UPDATE courses SET practice_visibility=%s WHERE course=%s;", (visibility, cid))
-    incrementVersion()
+    run_sql("UPDATE courses SET practice_visibility=%s WHERE course=%s;",
+            (visibility, cid))
+    incr_version()
 
 
-def setAssessVisibility(cid, visibility):
+def set_assess_visibility(cid, visibility):
     """ Who can do assessments."""
     assert isinstance(cid, int)
     assert isinstance(visibility, str) or isinstance(visibility, unicode)
 
-    run_sql("UPDATE courses SET assess_visibility=%s WHERE course=%s;", (visibility, cid))
-    incrementVersion()
+    run_sql("UPDATE courses SET assess_visibility=%s WHERE course=%s;",
+            (visibility, cid))
+    incr_version()
 
 
-def setEnrolLocation(cid, enrol_location):
+def set_enrol_location(cid, enrol_location):
     """ Set the enrolment location of a course."""
     assert isinstance(cid, int)
     assert isinstance(enrol_location, str) or isinstance(enrol_location, unicode)
 
-    run_sql("UPDATE courses SET enrol_location=%s WHERE course=%s;", (enrol_location, cid))
-    incrementVersion()
+    run_sql("UPDATE courses SET enrol_location=%s WHERE course=%s;",
+            (enrol_location, cid))
+    incr_version()
 
 
-def setEnrolFreq(cid, enrol_freq):
+def set_enrol_freq(cid, enrol_freq):
     """ Set the enrolment sync frequency of a course in minutes."""
     assert isinstance(cid, int)
     assert isinstance(enrol_freq, int)
 
-    run_sql("UPDATE courses SET enrol_freq=%s WHERE course=%s;", (enrol_freq, cid))
-    incrementVersion()
+    run_sql("UPDATE courses SET enrol_freq=%s WHERE course=%s;",
+            (enrol_freq, cid))
+    incr_version()
 
 
-def getUsersInCourse(course):
+def get_users(course):
     """ Return a list of users in the course"""
     groups = get_groups(course)
     allusers = []
@@ -262,7 +269,7 @@ def create(name, description, owner, coursetype):
                     (name, description, owner, coursetype))
     res = conn.run_sql("SELECT currval('courses_course_seq')")
     dbpool.commit(conn)
-    incrementVersion()
+    incr_version()
     key = "courses-active"
     MC.delete(key)
     key = "courses-all"
@@ -365,7 +372,7 @@ def getTopicsInfoAll(course, archived=2, numq=True):
     return info
 
 
-def getTopics(cid):
+def get_topics(cid):
     """ Return a list of all topics in the course."""
     key = "course-%s-topics" % cid
     obj = MC.get(key)
@@ -382,7 +389,7 @@ def getTopics(cid):
     return []
 
 
-def getExams(cid, previous_years=False):
+def get_exams(cid, previous_years=False):
     """ Return a list of all assessments in the course."""
     assert isinstance(cid, int)
     assert isinstance(previous_years, bool)

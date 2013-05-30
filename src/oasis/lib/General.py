@@ -44,7 +44,7 @@ def getTopicListing(cid, numq=True):
         },]
     """     # TODO: magic numbers!
     tlist = []
-    topics = Courses.getTopics(int(cid))
+    topics = Courses.get_topics(int(cid))
     for topic in topics:
         if numq:
             num = Topics.get_num_qs(topic)

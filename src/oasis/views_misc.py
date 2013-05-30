@@ -37,11 +37,11 @@ def attachment_question(qtemplate_id, version, variation, fname):
             return redirect(url_for('index'))
     if Attachment.is_restricted(fname):
         abort(403)
-    (mimetype, filename) = Attachment.get_q_att_details(qtemplate_id, version, variation, fname)
-    if not mimetype:
+    (mtype, fname) = Attachment.get_q_att_details(qtemplate_id, version, variation, fname)
+    if not mtype:
         abort(404)
 
-    return send_file(filename, mimetype)
+    return send_file(fname, mtype)
 
 
 @app.route("/att/qtatt/<int:qtemplate_id>/<int:version>/<int:variation>/<fname>")
@@ -189,6 +189,7 @@ def qedit_raw_edit(topic_id, qt_id):
 @authenticated
 def qedit_raw_save(topic_id, qt_id):
     """ Accept the question editor form and save the results. """
+    VALID_EMBED="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
     user_id = session['user_id']
     course_id = Topics.get_course_id(topic_id)
     if not (check_perm(user_id, course_id, "OASIS_COURSECOORD")
@@ -219,12 +220,14 @@ def qedit_raw_save(topic_id, qt_id):
     if 'embed_id' in form:
         embed_id = form['embed_id']
         embed_id = ''.join([ch for ch in embed_id
-                            if ch in "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"])
+                            if ch in VALID_EMBED])
         if not DB.updateQTemplateEmbedID(qt_id, embed_id):
-            flash("Error updating EmbedID, possibly the value is already used elsewhere.")
+            flash("Error updating EmbedID, "
+                  "possibly the value is already used elsewhere.")
 
     # They entered something into the html field and didn't upload a qtemplate.html
-    if not ('newattachmentname' in form and form['newattachmentname'] == "qtemplate.html"):
+    if not ('newattachmentname' in form
+            and form['newattachmentname'] == "qtemplate.html"):
         if 'newhtml' in form:
             html = form['newhtml'].encode("utf8")
             DB.create_qt_att(qt_id, "qtemplate.html", "text/plain", html, version)

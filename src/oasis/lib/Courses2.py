@@ -36,7 +36,7 @@ def loadCourses():
 def reloadCoursesIfNeeded():
     """If the course table has changed, reload the info. """
     global COURSES_VERSION
-    newversion = Courses.getVersion()
+    newversion = Courses.get_version()
     if newversion > COURSES_VERSION:
         COURSES_VERSION = newversion
         loadCourses()

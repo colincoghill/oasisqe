@@ -91,7 +91,13 @@ def setup_usercreate():
             else:   # yaay, it's ok
                 # uname, passwd, givenname, familyname, acctstatus,
                 # studentid, email=None, expiry=None, source="local"
-                Users2.create(new_uname, "nologin-creation", new_fname, new_sname, 2, '', new_email)
+                Users2.create(new_uname,
+                              "nologin-creation",
+                              new_fname,
+                              new_sname,
+                              2,
+                              '',
+                              new_email)
                 Users2.setPassword(Users2.getUidByUname(new_uname), new_pass)
                 flash("New User Account Created for %s" % new_uname)
                 new_uname = ""

@@ -63,7 +63,7 @@ def api_stats_qtemplates_year(qtemplate_id, year):
 
 @app.route("/api/stats/practice/qtemplate/<int:qtemplate_id>/<int:year>/scores")
 @authenticated
-def api_stats_qtemplates_year_scores(qtemplate_id, year):
+def api_stats_qt_year_scores(qtemplate_id, year):
     """ Return the number of times the qtemplate was practiced in the given
         year, broken down by day
     """

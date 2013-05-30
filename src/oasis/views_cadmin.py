@@ -34,7 +34,7 @@ def cadmin_top(course_id):
 
     topics = Courses2.get_topics_list(course_id)
     exams = [Exams.getExamStruct(e, course_id)
-             for e in Courses.getExams(course_id, previous_years=False)]
+             for e in Courses.get_exams(course_id, previous_years=False)]
 
     if not satisfyPerms(user_id, course_id,
                         ("OASIS_QUESTIONEDITOR", "OASIS_VIEWMARKS",
@@ -106,26 +106,26 @@ def cadmin_config_submit(course_id):
         if not (3 <= len(new_name) <= 20):
             flash("Course Name must be between 3 and 20 characters.")
         else:
-            Courses.setName(course['id'], new_name)
+            Courses.set_name(course['id'], new_name)
             saved = True
     if not new_title == course['title']:
         if not (3 <= len(new_title) <= 100):
             flash("Course Title must be between 3 and 100 characters.")
         else:
-            Courses.setTitle(course['id'], new_title)
+            Courses.set_title(course['id'], new_title)
             saved = True
 
     if 'registration' in form:
         registration = form['registration']
         if not (registration == course['registration']):
             saved = True
-            Courses.setRegistration(course_id, registration)
+            Courses.set_registration(course_id, registration)
 
     if 'practice_visibility' in form:
         practice_visibility = form['practice_visibility']
         if not (practice_visibility == course['practice_visibility']):
             saved = True
-            Courses.setPracticeVisibility(course_id, practice_visibility)
+            Courses.set_practice_visibility(course_id, practice_visibility)
 
     if saved:
         flash("Changes Saved")

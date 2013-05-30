@@ -20,6 +20,8 @@ def embed_question(embed_id):
     """ Find an embed question and serve it.
         This should be suitable for including in an IFRAME or similar
     """
+
+    VALIDCHARS=" abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!.,?$@&"
     if 'user_id' not in session:
         user_id = Users2.getUidByUname("guest")
     else:
@@ -34,7 +36,8 @@ def embed_question(embed_id):
         abort(404)
 
     title = request.args.get('title', DB.get_qt_name(qtid))
-    title = ''.join([t for t in title if t in " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!.,?$@&"])
+    title = ''.join([t for t in title
+                     if t in VALIDCHARS])
 
     qid = Practice.get_practice_q(qtid, user_id)
     vers = DB.getQuestionVersion(qid)

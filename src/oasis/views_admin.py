@@ -3,6 +3,11 @@
 # This code is under the GNU Affero General Public License
 # http://www.gnu.org/licenses/agpl-3.0.html
 
+""" Provide the UI for admin related tasks, such as configuring the system,
+    Adding courses, configuring feeds, etc.
+"""
+
+
 
 import os
 import datetime
@@ -272,7 +277,7 @@ def admin_course(course_id):
         return redirect(url_for('setup_top'))
 
     course = Courses2.get_course(course_id)
-    course['size'] = len(Courses.getUsersInCourse(course_id))
+    course['size'] = len(Courses.get_users(course_id))
 
     groups = [Groups.getInfo(group_id)
               for group_id in Courses.get_groups(course_id)]
@@ -340,13 +345,13 @@ def admin_course_save(course_id):
         name = form['course_name']
         if not name == course['name']:
             changed = True
-            Courses.setName(course_id, name)
+            Courses.set_name(course_id, name)
 
     if 'course_title' in form:
         title = form['course_title']
         if not title == course['title']:
             changed = True
-            Courses.setTitle(course_id, title)
+            Courses.set_title(course_id, title)
 
     if 'course_active' in form:
         active = form['course_active']
@@ -356,25 +361,25 @@ def admin_course_save(course_id):
             active = False
         if not (active == course['active']):
             changed = True
-            Courses.setActive(course_id, active)
+            Courses.set_active(course_id, active)
 
     if 'enrol_type' in form:
         enrol_type = form['enrol_type']
         if not (enrol_type == course['enrol_type']):
             changed = True
-            Courses.setEnrolType(course_id, enrol_type)
+            Courses.set_enrol_type(course_id, enrol_type)
 
     if 'registration' in form:
         registration = form['registration']
         if not (registration == course['registration']):
             changed = True
-            Courses.setRegistration(course_id, registration)
+            Courses.set_registration(course_id, registration)
 
     if 'enrol_location' in form:
         enrol_location = form['enrol_location']
         if not (enrol_location == course['enrol_location']):
             changed = True
-            Courses.setEnrolLocation(course_id, enrol_location)
+            Courses.set_enrol_location(course_id, enrol_location)
 
     if 'enrol_freq' in form:
         enrol_freq = form['enrol_freq']
@@ -382,14 +387,14 @@ def admin_course_save(course_id):
             changed = True
             # form says hours, we want minutes.
             enrol_freq = int(float(enrol_freq) * 60)
-            Courses.setEnrolFreq(course_id, enrol_freq)
+            Courses.set_enrol_freq(course_id, enrol_freq)
 
     if changed:
         Courses2.reloadCoursesIfNeeded()
         flash("Course changes saved!")
         return redirect(url_for("admin_courses"))
     course = Courses2.get_course(course_id)
-    course['size'] = len(Courses.getUsersInCourse(course_id))
+    course['size'] = len(Courses.get_users(course_id))
     return render_template(
         "admin_course.html",
         course=course
@@ -444,7 +449,7 @@ def admin_add_course_save():
             active = True
         else:
             active = False
-        Courses.setActive(course_id, active)
+        Courses.set_active(course_id, active)
 
     Courses2.reloadCoursesIfNeeded()
     flash("Course %s added!" % name)

@@ -46,12 +46,12 @@ if not app.debug:  # Log warnings or higher
         fh = RotatingFileHandler(filename=OaConfig.logfile)
         fh.setLevel(logging.WARNING)
         fh.setFormatter(logging.Formatter(
-           "%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]"
+            "%(asctime)s %(levelname)s: %(message)s | %(pathname)s:%(lineno)d"
         ))
         app.logger.addHandler(fh)
         logging.log(logging.INFO, "File logger starting up" )
     except IOError, err:  # Probably a permission denied or folder not exist
-        logging.log(logging.ERROR, "Unable to open log file: %s"% err)
+        logging.log(logging.ERROR, "Unable to open log file: %s" % err)
 
 
 @app.context_processor
@@ -146,7 +146,8 @@ def login_local_submit():
 
     user = Users2.getUser(user_id)
     if not user['confirmed']:
-        flash("Your account is not yet confirmed. You should have received an email with instructions in it to do so")
+        flash("""Your account is not yet confirmed. You should have received
+                 an email with instructions in it to do so.""")
         return redirect(url_for("login_local"))
     session['username'] = username
     session['user_id'] = user_id
@@ -199,7 +200,8 @@ def login_forgot_pass_submit():
     username = request.form['username']
 
     if username == "admin":
-        flash("The admin account cannot do an email password reset, please see the Installation instructions.")
+        flash("""The admin account cannot do an email password reset,
+                 please see the Installation instructions.""")
         return redirect(url_for("login_forgot_pass"))
 
     user_id = Users2.getUidByUname(username)
@@ -209,7 +211,8 @@ def login_forgot_pass_submit():
 
     user = Users2.getUser(user_id)
     if not user['source'] == "local":
-        flash("Your password is managed by a different system, please contact IT Support.")
+        flash("Your password is not managed by OASIS, "
+              "please contact IT Support.")
         return redirect(url_for("login_forgot_pass"))
 
     code = Users.generateConfirmationCode()
@@ -217,12 +220,17 @@ def login_forgot_pass_submit():
 
     email = user['email']
     if not email:
-        flash("We do not appear to have an email address on file for that account.")
+        flash("We do not appear to have an email address on file for "
+              "that account.")
         return redirect(url_for("login_forgot_pass"))
 
     text_body = render_template("email/forgot_pass.txt", code=code)
     html_body = render_template("email/forgot_pass.html", code=code)
-    send_email(user['email'], from_addr=None, subject = "OASIS Password Reset", text_body=text_body, html_body=html_body)
+    send_email(user['email'],
+               from_addr=None,
+               subject = "OASIS Password Reset",
+               text_body=text_body,
+               html_body=html_body)
 
     return render_template("login_forgot_pass_submit.html")
 
@@ -246,9 +254,10 @@ def login_confirm(code):
 
 @app.route("/login/email_passreset/<string:code>")
 def login_email_passreset(code):
-    """ They've clicked on a password reset link. Log them in (might as well) and send them to
-        the password reset page."""
-    # This will also confirm their email if they haven't. Doesn't seem to be any harm in it.
+    """ They've clicked on a password reset link.
+        Log them in (might as well) and send them to the password reset page."""
+    # This will also confirm their email if they haven't.
+    # Doesn't seem to be any harm in doing that
 
     if len(code) > 20:
         abort(404)
@@ -266,7 +275,7 @@ def login_email_passreset(code):
     session['user_fullname'] = user['fullname']
     session['user_authtype'] = "local"
     audit(1, uid, uid, "UserAuth",
-          "%s successfully logged in using password reset email" % (session['username'],))
+          "%s logged in using password reset email" % (session['username'],))
 
     flash("Please change your password")
     return redirect(url_for("setup_change_pass"))
@@ -274,13 +283,16 @@ def login_email_passreset(code):
 
 @app.route("/login/signup/submit", methods=['POST', ])
 def login_signup_submit():
-    """ They've entered some information and want an account. Do some checks and send them a confirmation
-        email if all looks good.
+    """ They've entered some information and want an account.
+        Do some checks and send them a confirmation email if all looks good.
     """
     if not OaConfig.open_registration:
         abort(404)
     form = request.form
-    if not ('username' in form and 'password' in form and 'confirm' in form and 'email' in form):
+    if not ('username' in form
+            and 'password' in form
+            and 'confirm' in form
+            and 'email' in form):
         flash("Please fill in all fields")
         return redirect(url_for("login_signup"))
 
@@ -305,25 +317,38 @@ def login_signup_submit():
 
     existing = Users2.getUidByUname(username)
     if existing:
-        flash("An account with that name already exists, please try something else.")
+        flash("An account with that name already exists, "
+              "please try another username.")
         return redirect(url_for("login_signup"))
 
     code = Users.generateConfirmationCode()
-    newuid = Users.create(uname=username, passwd="NOLOGIN", email=email,
-                             givenname=username, familyname="", acctstatus=1, studentid="",
-                            source="local", confirm_code=code, confirm=False)
+    newuid = Users.create(uname=username,
+                          passwd="NOLOGIN",
+                          email=email,
+                          givenname=username,
+                          familyname="",
+                          acctstatus=1,
+                          studentid="",
+                          source="local",
+                          confirm_code=code,
+                          confirm=False)
     Users2.setPassword(newuid, password)
 
     text_body = render_template("email/confirmation.txt", code=code)
     html_body = render_template("email/confirmation.html", code=code)
-    send_email(email, from_addr=None, subject = "OASIS Signup Confirmation", text_body=text_body, html_body=html_body)
+    send_email(email,
+               from_addr=None,
+               subject="OASIS Signup Confirmation",
+               text_body=text_body,
+               html_body=html_body)
 
     return render_template("login_signup_submit.html", email=email)
 
 
 @app.route("/login/webauth/submit")
 def login_webauth_submit():
-    """ The web server should have verified their credentials and provide it in env['REMOTE_USER']
+    """ The web server should have verified their credentials and
+        provide it in env['REMOTE_USER']
         Check them, then set up the session or redirect back with an error. """
     if not 'REMOTE_USER' in request.environ:
         flash("Incorrect name or password.")
@@ -357,27 +382,29 @@ def login_webauth_submit():
     return redirect(url_for("main_top"))
 
 
-def send_email(to_addr, from_addr=None, subject = "Message from OASIS", text_body=None, html_body=None):
+def send_email(to_addr, from_addr=None, subject="Message from OASIS",
+               text_body=None, html_body=None):
     """ Send an email to the given address.
-            You must provide both an html body and a text body.
+        You must provide both an html body and a text body.
 
-            If "from_addr" is not specified, will use the default from the config file.
+        If "from_addr" is not specified, use the default from the config file.
 
-            Will not attempt to validate the email addresses, please do so before calling,
-            but will check the database for blacklisted addresses.
+        Will not attempt to validate the email addresses, please do so before
+        calling, but will check the database for blacklisted addresses.
 
-            Returns True if successful, and a string containing a human readable error
-            message of it fails, or refuses.
+        Returns True if successful, and a string containing human readable error
+        message of it fails, or refuses.
 
-            :param to_addr:  string containing the email address to send to
-            :param from_addr: string containing the email address the mail is from
-            :param subject: string containing the text to put in the Subject line
-            :param text_body: the main text of the email
-            :param html_body: an HTML version of the main text, for recipients that support it.
-        """
+        :param to_addr:  string containing the email address to send to
+        :param from_addr: string containing the email address the mail is from
+        :param subject: string containing the text to put in the Subject line
+        :param text_body: the main text of the email
+        :param html_body: an HTML version of the main text, for recipients
+                          that support it.
+    """
 
-    # TODO: attempt to not send email to the same address too often, to prevent us
-    # being used to annoy someone.
+    # TODO: attempt to not send email to the same address too often,
+    # to prevent us being used to annoy someone.
 
     _blacklist = []
 
@@ -407,11 +434,11 @@ def send_email(to_addr, from_addr=None, subject = "Message from OASIS", text_bod
     _msg.attach(_part2)
 
     # Send the message via local SMTP server.
-    _s = smtplib.SMTP(OaConfig.smtp_server)
+    _smtp = smtplib.SMTP(OaConfig.smtp_server)
     # sendmail function takes 3 arguments: sender's address, recipient's address
     # and message to send - here it is sent as one string.
-    _s.sendmail(from_addr, to_addr, _msg.as_string())
-    _s.quit()
+    _smtp.sendmail(from_addr, to_addr, _msg.as_string())
+    _smtp.quit()
 
     return True
 

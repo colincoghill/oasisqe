@@ -40,11 +40,11 @@ def doCourseTopicUpdate(course, request):
                 Topics.set_pos(i['id'], i['position'])
                 Topics.set_name(int(i['id']), i['name'])
                 Topics.set_vis(i['id'], i['visibility'])
-                Courses.incrementVersion()
+                Courses.incr_version()
             else:
                 if not i['name'] == "[Name of new topic]":
                     Topics.create(course['id'], i['name'], int(i['visibility']), i['position'])
-                    Courses.incrementVersion()
+                    Courses.incr_version()
 
         return True
 

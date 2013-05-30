@@ -244,7 +244,7 @@ def get_sorted_courselist(with_stats=False, only_active=True):
     inorder = []
     for cid, course in courses.iteritems():
         if with_stats:
-            course['students'] = Courses.getUsersInCourse(cid)
+            course['students'] = Courses.get_users(cid)
             course['size'] = len(course['students'])
         inorder.append((course['name'], course))
     inorder.sort()
