@@ -69,6 +69,7 @@ def admin_feeds():
         flash("You do not have system administrator permission")
         return redirect(url_for('setup_top'))
 
+
     feeds = Feeds.all_list()
     return render_template(
         "admin_group_feeds.html",
@@ -124,10 +125,13 @@ def admin_edit_feed(feed_id):
     try:
         feed = Feeds.Feed(id=feed_id)
     except KeyError:
+        feed = None
         abort(404)
+    scripts = ['feed_url.py', 'feed_ldap.py', 'feed_spreadsheet.py']
     return render_template(
         "admin_edit_group_feed.html",
-        feed=feed
+        feed=feed,
+        scripts=scripts
     )
 
 
@@ -139,10 +143,11 @@ def admin_add_feed():
     if not check_perm(user_id, 0, "OASIS_SYSADMIN"):
         flash("You do not have system administrator permission")
         return redirect(url_for('setup_top'))
-
+    scripts = ['feed_url.py', 'feed_ldap.py', 'feed_spreadsheet.py']
     return render_template(
         "admin_edit_group_feed.html",
-        feed = {'id':0}
+        feed={'id': 0},
+        scripts=scripts
     )
 
 
@@ -157,7 +162,7 @@ def admin_add_period():
 
     return render_template(
         "admin_editperiod.html",
-        period = {'id':0}
+        period={'id':0}
     )
 
 

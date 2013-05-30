@@ -45,26 +45,26 @@
           type="text">
 
           <label>Script Filename: {{ cf.group_feeds_dir }}</label>
-          <select>
-            <option>feed_ldap.py</option>
-            <option>feed_url.py</option>
-            <option>feed_file.sh</option>
+          <select name='script' value='{{ feed.script }}'>
+              {% for script in scripts %}
+            <option value='{{ script }}'>{{ script }}</option>
+              {% endfor %}
           </select>
           <label>Env. Variable: (optional)</label>
-          <input placeholder="1234" class="input-medium"
+          <input placeholder="1234" class="input-medium" value="{{ feed.envvar }}"
           type="text">
           <label>Comments: (optional)</label>
           <textarea placeholder="This reads from a file which is populated nightly from our main database."
-          rows="6" class="input-block-level"></textarea>
+          rows="6" class="input-block-level">{{ feed.comments }}</textarea>
           <label>Update Frequency</label>
           <p>OASIS will run this feed, once for each group, how often?</p>
           <label class="radio"
-          for="radio">
-            <input value="true" id="radio" name="radio" type="radio"> Hourly</label>
-          <label class="radio" for="radio">
-            <input value="true" id="radio" name="radio" type="radio"> Daily</label>
-          <label class="radio" for="radio">
-            <input value="true" id="radio" name="radio" type="radio"> Manually</label>
+          for="hourly">
+            <input value="hourly" id="hourly" name="freq" type="radio"> Hourly</label>
+          <label class="radio" for="daily">
+            <input value="daily" id="daily" name="freq" type="radio"> Daily</label>
+          <label class="radio" for="manual">
+            <input value="manual" id="manual" name="freq" type="radio"> Manually</label>
 
         <div class="form-actions">
 <input class='btn btn-primary' type="submit" name='save'
@@ -79,9 +79,6 @@
       <p></p>
     </div>
   </div>
-
-
-
 
 
     <p>Return to <a href="{{ cf.url }}admin/enrol/top">Enrolment Configuration</a></p>
