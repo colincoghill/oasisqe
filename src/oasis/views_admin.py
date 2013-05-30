@@ -75,6 +75,8 @@ def admin_edit_period(p_id):
     except KeyError:
         abort(404)
 
+    period.start_date = period.start.strftime("%a %d %b %Y")
+    period.finish_date = period.finish.strftime("%a %d %b %Y")
     return render_template(
         "admin_editperiod.html",
         period=period
@@ -102,6 +104,15 @@ def admin_edit_period_submit(p_id):
         flash("That time period is not editable!")
         return redirect(url_for("admin_periods"))
 
+    newstart = datetime.datetime.strptime(request.form['start'], "%a %d %b %Y")
+    newfinish = datetime.datetime.strptime(request.form['finish'], "%a %d %b %Y")
+    period.start = newstart
+    period.finish = newfinish
+    period.name = request.form['name']
+    period.title = request.form['title']
+    period.code = request.form['code']
+
+    period.save()
     flash("Time period saved!")
     return redirect(url_for("admin_periods"))
 

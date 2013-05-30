@@ -49,22 +49,22 @@
                 <form method='post' action='{{ cf.url }}admin/edit_period_submit/{{ period.id }}'>
                     <label>Short Name:</label>
                     <input placeholder="Short Name" class="input-medium"
-                           type="text" name='name'>
+                           type="text" name='name' value="{{ period.name }}">
 
                     <label>Title:</label>
                     <input placeholder="Descriptive name" class="input-xxlarge"
-                           type="text" name='title'>
+                           type="text" name='title' value="{{ period.title }}">
                     <label>Code:</label>
-                    <input class="input-medium" type="text" name='code'>
+                    <input class="input-medium" type="text" name='code'  value="{{ period.code }}">
 
                     <h4>Dates</h4>
                     <label>Start:</label>
                     <h4></h4>
 
                     <p></p>
-                    <input class="input-medium datepicker" type="text">
-                    <label>End: (inclusive)</label>
-                    <input class="input-medium datepicker" type="text">
+                    <input class="input-medium datepicker" type="text" name='start' value='{{ period.start_date }}'>
+                    <label>End:</label>
+                    <input class="input-medium datepicker" type="text" name='finish' value='{{ period.finish_date }}'>
 
                 <div class="form-actions">
                     <input class='btn btn-primary' type="submit" name='save'
