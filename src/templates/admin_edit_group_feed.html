@@ -44,13 +44,12 @@
           <input placeholder="Descriptive name" class="input-xxlarge"
           type="text">
 
-          <label>Script Filename</label>
+          <label>Script Filename: {{ cf.group_feeds_dir }}</label>
           <select>
             <option>feed_ldap.py</option>
             <option>feed_url.py</option>
             <option>feed_file.sh</option>
           </select>
-          <a class="btn btn-mini">Refresh</a>
           <label>Env. Variable: (optional)</label>
           <input placeholder="1234" class="input-medium"
           type="text">

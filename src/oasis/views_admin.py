@@ -69,8 +69,10 @@ def admin_feeds():
         flash("You do not have system administrator permission")
         return redirect(url_for('setup_top'))
 
+    feeds = Feeds.all_list()
     return render_template(
-        "admin_group_feeds.html"
+        "admin_group_feeds.html",
+        feeds=feeds
     )
 
 

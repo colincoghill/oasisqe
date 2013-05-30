@@ -107,8 +107,8 @@ INSERT INTO periods ("name", "title", "start", "finish", "code") VALUES ('Indefi
 CREATE INDEX ON "periods" USING BTREE("name");
 CREATE INDEX ON "periods" USING BTREE("code");
 
-CREATE SEQUENCE group_feeds_id_seq START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;
-CREATE TABLE group_feeds (
+CREATE SEQUENCE feeds_id_seq START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;
+CREATE TABLE feeds (
     "id" integer DEFAULT nextval('group_feeds_id_seq'::regclass) PRIMARY KEY,
     "name" character varying UNIQUE,
     "title" character varying,
@@ -132,7 +132,7 @@ CREATE TABLE groups (
     "lastupdate" timestamptz,
     "size" integer,
     "source" character varying DEFAULT 'adhoc'::character varying,  -- "adhoc", "open", "feed"
-    "feed" integer references group_feeds("id") NULL
+    "feed" integer references feeds("id") NULL
 );
 
 CREATE SEQUENCE grouptypes_type_seq START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;

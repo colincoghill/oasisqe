@@ -115,16 +115,14 @@ def all_list():
         Return a list of all time periods in the system.
     """
 
-    sql = """SELECT id, finish FROM periods order by finish;"""
+    sql = """SELECT id FROM feeds;"""
     ret = run_sql(sql)
     if not ret:
-        log(ERROR,
-            'No time periods in Database? This should never happen.')
         return []
 
-    periods = []
+    feeds = []
     for row in ret:
-        p_id = row[0]
-        periods.append(Period(id=p_id))
+        feed_id = row[0]
+        feeds.append(Feed(id=feed_id))
 
-    return periods
+    return feeds
