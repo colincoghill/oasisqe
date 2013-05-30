@@ -46,6 +46,21 @@ def admin_courses():
     )
 
 
+@app.route("/admin/enrol/top")
+@authenticated
+def admin_enrol_top():
+    """ Present menu page of enrolment related options """
+    user_id = session['user_id']
+    if not check_perm(user_id, 0, "OASIS_SYSADMIN"):
+        flash("You do not have system administrator permission")
+        return redirect(url_for('setup_top'))
+
+    return render_template(
+        "admin_enrol_top.html"
+    )
+
+
+
 @app.route("/admin/periods")
 @authenticated
 def admin_periods():
