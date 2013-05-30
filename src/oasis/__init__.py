@@ -121,7 +121,7 @@ def index():
 def login_local():
     """ Present a login page for people with local OASIS accounts to log in"""
 
-    mesg_login = DB.getMessage("loginmotd")
+    mesg_login = DB.get_message("loginmotd")
     return render_template("login_screen_local.html", mesg_login=mesg_login)
 
 
@@ -452,4 +452,4 @@ from oasis import views_api
 from oasis import views_embed
 from oasis import views_misc
 
-DB.upgradeDB()
+DB.upgrade_db()

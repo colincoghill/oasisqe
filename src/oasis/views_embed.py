@@ -30,7 +30,7 @@ def embed_question(embed_id):
     if len(embed_id) < 1:
         abort(404)
     try:
-        qtid = DB.getQTemplateByEmbedID(embed_id)
+        qtid = DB.get_qt_by_embedid(embed_id)
     except KeyError:
         qtid = None
         abort(404)
@@ -65,7 +65,7 @@ def embed_mark_question(embed_id):
     else:
         user_id = session['user_id']
 
-    qtid = DB.getQTemplateByEmbedID(embed_id)
+    qtid = DB.get_qt_by_embedid(embed_id)
     if not qtid:
         abort(404)
 

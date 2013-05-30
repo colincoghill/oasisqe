@@ -25,7 +25,7 @@ def get_practice_q(qt_id, user_id):
         assert qt_id > 0
     except (ValueError, TypeError, AssertionError):
         log(WARN, "Called with bad qtid %s?" % qt_id)
-    qid = DB.getQuestionByQTStudent(qt_id, user_id)
+    qid = DB.get_q_by_qt_student(qt_id, user_id)
     if not qid is False:
         return int(qid)
     qid = General.gen_q(qt_id, user_id)

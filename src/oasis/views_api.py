@@ -48,35 +48,35 @@ def api_exam_qtemplates(course_id, exam_id):
     return jsonify(result=qtemplates)
 
 
-@app.route("/api/stats/practice/qtemplate/<int:qtemplate_id>/<int:year>")
+@app.route("/api/stats/practice/qtemplate/<int:qt_id>/<int:year>")
 @authenticated
-def api_stats_qtemplates_year(qtemplate_id, year):
+def api_stats_qtemplates_year(qt_id, year):
     """ Return the number of times the qtemplate was practiced in
         the given year, broken down by day
     """
     start_time = datetime.datetime(year=year, month=1, day=1, hour=0)
     end_time = datetime.datetime(year=year, month=12, day=31, hour=23)
 
-    counts = Stats.getQDailyPracticeCount(start_time, end_time, qtemplate_id)
+    counts = Stats.getQDailyPracticeCount(start_time, end_time, qt_id)
     return jsonify(result=counts)
 
 
-@app.route("/api/stats/practice/qtemplate/<int:qtemplate_id>/<int:year>/scores")
+@app.route("/api/stats/practice/qtemplate/<int:qt_id>/<int:year>/scores")
 @authenticated
-def api_stats_qt_year_scores(qtemplate_id, year):
+def api_stats_qt_year_scores(qt_id, year):
     """ Return the number of times the qtemplate was practiced in the given
         year, broken down by day
     """
     start_time = datetime.datetime(year=year, month=1, day=1, hour=0)
     end_time = datetime.datetime(year=year, month=12, day=31, hour=23)
 
-    scores = Stats.getQDailyPracticeScores(start_time, end_time, qtemplate_id)
+    scores = Stats.getQDailyPracticeScores(start_time, end_time, qt_id)
     return jsonify(result=scores)
 
 
-@app.route("/api/stats/practice/qtemplate/<int:qtemplate_id>/3months/scores")
+@app.route("/api/stats/practice/qtemplate/<int:qt_id>/3months/scores")
 @authenticated
-def api_stats_qtemplates_3month_scores(qtemplate_id):
+def api_stats_qtemplates_3month_scores(qt_id):
     """ Return the number of times the qtemplate was practiced in approx
         the last three months
     """
@@ -87,13 +87,13 @@ def api_stats_qtemplates_3month_scores(qtemplate_id):
     end_time = now+days3
     start_time = now-month3
 
-    scores = Stats.getQDailyPracticeScores(start_time, end_time, qtemplate_id)
+    scores = Stats.getQDailyPracticeScores(start_time, end_time, qt_id)
     return jsonify(result=scores)
 
 
-@app.route("/api/stats/practice/qtemplate/<int:qtemplate_id>/3months")
+@app.route("/api/stats/practice/qtemplate/<int:qt_id>/3months")
 @authenticated
-def api_stats_qtemplates_3month(qtemplate_id):
+def api_stats_qtemplates_3month(qt_id):
     """ Return the number of times the qtemplate was practiced in approx
         the last three months
     """
@@ -104,7 +104,7 @@ def api_stats_qtemplates_3month(qtemplate_id):
     end_time = now+days3
     start_time = now-month3
 
-    counts = Stats.getQDailyPracticeCount(start_time, end_time, qtemplate_id)
+    counts = Stats.getQDailyPracticeCount(start_time, end_time, qt_id)
     return jsonify(result=counts)
 
 

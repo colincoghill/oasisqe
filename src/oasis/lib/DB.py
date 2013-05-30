@@ -96,7 +96,7 @@ def get_q_marktime(question):
     return None
 
 
-def getExamQuestionByPositionStudent(exam, position, student):
+def get_exam_q_by_pos_student(exam, position, student):
     """ Return the question at the given position in the exam for the student.
         Return False if there is no question assigned yet.
     """
@@ -112,7 +112,7 @@ def getExamQuestionByPositionStudent(exam, position, student):
     return False
 
 
-def getExamQuestionByQTStudent(exam, qt_id, student):
+def get_exam_q_by_qt_student(exam, qt_id, student):
     """ Fetch an assessment question by student"""
     assert isinstance(exam, int)
     assert isinstance(qt_id, int)
@@ -126,7 +126,7 @@ def getExamQuestionByQTStudent(exam, qt_id, student):
     return False
 
 
-def getQuestionByQTStudent(qt_id, student):
+def get_q_by_qt_student(qt_id, student):
     """ Fetch a question by student"""
     assert isinstance(qt_id, int)
     assert isinstance(student, int)
@@ -213,7 +213,7 @@ def get_q_guesses(q_id):
     return guesses
 
 
-def getQuestionGuessesBeforeTime(q_id, lasttime):
+def get_q_guesses_before_time(q_id, lasttime):
     """ Return a dictionary of the recent guesses in a question,
         from before it was marked.
     """
@@ -234,7 +234,7 @@ def getQuestionGuessesBeforeTime(q_id, lasttime):
     return guesses
 
 
-def getQTemplateByEmbedID(embed_id):
+def get_qt_by_embedid(embed_id):
     """ Find the question template with the given embed_id,
         or raise KeyError if not found.
     """
@@ -292,7 +292,7 @@ def get_qtemplate(qt_id, version=None):
     return qtemplate
 
 
-def updateQTemplateEmbedID(qt_id, embed_id):
+def update_qt_embedid(qt_id, embed_id):
     """ Set the QTemplate's embed_id"""
     assert isinstance(qt_id, int)
     assert isinstance(embed_id, unicode) or isinstance(embed_id, str)
@@ -653,7 +653,7 @@ def get_qtemplate_topic_pos(qt_id, topic_id):
     return False
 
 
-def getMaxQTemplatePositionInTopic(topic_id):
+def get_qt_max_pos_in_topic(topic_id):
     """ Fetch the maximum position of a question template in a topic."""
     assert isinstance(topic_id, int)
     res = run_sql("""SELECT MAX(position)
@@ -721,7 +721,7 @@ def get_qt_variation(qt_id, variation, version=1000000000):
     return data
 
 
-def getQTNumVariations(qt_id, version=1000000000):
+def get_qt_num_variations(qt_id, version=1000000000):
     """ Return the number of variations for a question template. """
     assert isinstance(qt_id, int)
     assert isinstance(version, int)
@@ -940,7 +940,7 @@ def copy_qt_all(qt_id):
     try:
         variations = get_qt_variations(qt_id)
         for variation in variations.keys():
-            addQTVariation(newid, variation, variations[variation], newversion)
+            add_qt_variation(newid, variation, variations[variation], newversion)
     except AttributeError, err:
         log(WARN, "Copying a qtemplate %s with no variations. '%s'" % (qt_id, err))
     return newid
@@ -964,7 +964,7 @@ def copy_qt(qt_id):
     return newid
 
 
-def addQTVariation(qt_id, variation, data, version):
+def add_qt_variation(qt_id, variation, data, version):
     """ Add a variation to the question template. """
     assert isinstance(qt_id, int)
     assert isinstance(variation, int)
@@ -1022,7 +1022,7 @@ def _deserialize_courseexaminfo(obj):
     return info
 
 
-def getCourseExamInfoAll(course_id, previous_years=False):
+def get_course_exam_all(course_id, previous_years=False):
     """ Return a summary of information about all current exams in the course
         {id, course, name, description, start, duration, end, type}
     """
@@ -1070,7 +1070,7 @@ def getCourseExamInfoAll(course_id, previous_years=False):
     return info
 
 
-def addExamQuestion(user, exam, question, position):
+def add_exam_q(user, exam, question, position):
     """Record that the student was assigned the given question for assessment.
     """
     assert isinstance(user, int)
@@ -1089,7 +1089,7 @@ def addExamQuestion(user, exam, question, position):
     run_sql("INSERT INTO examquestions (exam, student, position, question) "
             "VALUES (%s, %s, %s, %s);",
             (exam, user, position, question))
-    touchUserExam(exam, user)
+    touch_user_exam(exam, user)
 
 #
 # def getExamQuestions(user, exam):
@@ -1105,7 +1105,7 @@ def addExamQuestion(user, exam, question, position):
 #         return questions
 #     return []
 
-def getStudentQuestionPracticeNum(user_id, qt_id):
+def get_student_q_practice_num(user_id, qt_id):
     """Return the number of times the given student has practiced the question
        Exclude assessed scores.
     """
@@ -1136,7 +1136,7 @@ def getStudentQuestionPracticeNum(user_id, qt_id):
         return 0
 
 
-def convertSecondsToHuman(seconds):
+def secs_to_human(seconds):
     """Convert a number of seconds to a human readable string, eg  "8 days"
     """
     assert isinstance(seconds, int) or isinstance(seconds, float)
@@ -1204,7 +1204,7 @@ def get_student_q_practice_stats(user_id, qt_id, num=3):
                 if age > 63000000:    # more than two years
                     age = "more than 2 years"
                 else:
-                    age = convertSecondsToHuman(age)
+                    age = secs_to_human(age)
             except (TypeError, ValueError):
                 age = "more than 2 years"
             stats.append({'score': float(row[0]),
@@ -1257,7 +1257,7 @@ def get_q_stats_class(course, qt_id):
             return stats
 
 
-def setMessage(name, message):
+def set_message(name, message):
     """Store a message
     """
     assert isinstance(name, str) or isinstance(name, unicode)
@@ -1272,7 +1272,7 @@ def setMessage(name, message):
         log(INFO, "Message %s inserted as %s." % (name, message))
 
 
-def getMessage(name):
+def get_message(name):
     """Retrieve a message
     """
     assert isinstance(name, str) or isinstance(name, unicode)
@@ -1283,21 +1283,21 @@ def getMessage(name):
     return ret[0][0]
 
 
-def touchUserExam(exam, user):
+def touch_user_exam(exam_id, user_id):
     """ Update the lastchange field on a user exam so other places can tell that
         something changed. This should probably be done any time one of the
         following changes:
             userexam fields on that row
             question/guess in the exam changes
     """
-    assert isinstance(exam, int)
-    assert isinstance(user, int)
+    assert isinstance(exam_id, int)
+    assert isinstance(user_id, int)
     sql = "UPDATE userexams SET lastchange = NOW() WHERE exam=%s AND student=%s;"
-    params = (exam, user)
+    params = (exam_id, user_id)
     run_sql(sql, params)
 
 
-def getQTemplateEditor(qt_id):
+def get_qt_editor(qt_id):
     """ Return which type of editor the question should use.
         OQE | Raw
     """
@@ -1310,7 +1310,7 @@ def getQTemplateEditor(qt_id):
     return etype
 
 
-def getDBVersion():
+def get_db_version():
     """ Return an string representing the database version
         If it's too old to have a configuration field, then use some heuristics.
     """
@@ -1346,7 +1346,7 @@ def getDBVersion():
     return "none"
 
 
-def upgradeDB():
+def upgrade_db():
     """ See if the database needs upgrading and, if so, do it
     """
 
@@ -1355,7 +1355,7 @@ def upgradeDB():
     #       business logic to convert data?
 
     versions = ['none', '3.6', '3.9.1', '3.9.2']
-    dbver = getDBVersion()
+    dbver = get_db_version()
     if not dbver in versions:
         log(FATAL, "Unknown Database version '%s'" % dbver)
         raise ValueError("Unknown Database version '%s'" % dbver)

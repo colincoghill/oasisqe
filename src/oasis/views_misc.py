@@ -16,7 +16,7 @@ from flask import render_template, session, \
 from logging import log, INFO
 
 from .lib import Users2, DB, Topics, \
-    Courses2, Attachment, QEditor
+    Courses2, Attach, QEditor
 
 MYPATH = os.path.dirname(__file__)
 
@@ -27,34 +27,34 @@ from oasis import app, authenticated
 
 
 # Does its own auth because it may be used in embedded questions
-@app.route("/att/qatt/<int:qtemplate_id>/<int:version>/<int:variation>/<fname>")
-def attachment_question(qtemplate_id, version, variation, fname):
+@app.route("/att/qatt/<int:qt_id>/<int:version>/<int:variation>/<fname>")
+def attachment_question(qt_id, version, variation, fname):
     """ Serve the given question attachment """
-    qt = DB.get_qtemplate(qtemplate_id)
+    qt = DB.get_qtemplate(qt_id)
     if len(qt['embed_id']) < 1:  # if it's not embedded, check auth
         if 'user_id' not in session:
             session['redirect'] = request.path
             return redirect(url_for('index'))
-    if Attachment.is_restricted(fname):
+    if Attach.is_restricted(fname):
         abort(403)
-    (mtype, fname) = Attachment.get_q_att_details(qtemplate_id, version, variation, fname)
+    (mtype, fname) = Attach.get_q_att_details(qt_id, version, variation, fname)
     if not mtype:
         abort(404)
 
     return send_file(fname, mtype)
 
 
-@app.route("/att/qtatt/<int:qtemplate_id>/<int:version>/<int:variation>/<fname>")
+@app.route("/att/qtatt/<int:qt_id>/<int:version>/<int:variation>/<fname>")
 # Does its own auth because it may be used in embedded questions
-def attachment_qtemplate(qtemplate_id, version, variation, fname):
+def attachment_qtemplate(qt_id, version, variation, fname):
     """ Serve the given question attachment """
-    qt = DB.get_qtemplate(qtemplate_id)
+    qt = DB.get_qtemplate(qt_id)
     if len(qt['embed_id']) < 1:  # if it's not embedded, check auth
         if 'user_id' not in session:
             session['redirect'] = request.path
             return redirect(url_for('index'))
-    (mimetype, filename) = Attachment.get_q_att_details(qtemplate_id, version, variation, fname)
-    if Attachment.is_restricted(fname):
+    (mimetype, filename) = Attach.get_q_att_details(qt_id, version, variation, fname)
+    if Attach.is_restricted(fname):
         abort(403)
     if not mimetype:
         abort(404)
@@ -117,7 +117,7 @@ def main_news():
     """ Present the top menu page """
     return render_template(
         "news.html",
-        news=DB.getMessage("news"),
+        news=DB.get_message("news"),
     )
 
 
@@ -125,7 +125,7 @@ def main_news():
 @authenticated
 def qedit_redirect(topic_id, qt_id):
     """ Work out the appropriate question editor and redirect to it """
-    etype = DB.getQTemplateEditor(qt_id)
+    etype = DB.get_qt_editor(qt_id)
     if etype == "Raw":
         return redirect(url_for("qedit_raw_edit",
                                 topic_id=topic_id,
@@ -209,7 +209,8 @@ def qedit_raw_save(topic_id, qt_id):
     owner = Users2.getUser(user_id)
     DB.update_qt_owner(qt_id, user_id)
     audit(3, user_id, qt_id, "qeditor",
-          "version=%s,message=%s" % (version, "Edited: ownership set to %s" % owner['uname']))
+          "version=%s,message=%s" %
+          (version, "Edited: ownership set to %s" % owner['uname']))
 
     if 'qtitle' in form:
         qtitle = form['qtitle']
@@ -221,11 +222,12 @@ def qedit_raw_save(topic_id, qt_id):
         embed_id = form['embed_id']
         embed_id = ''.join([ch for ch in embed_id
                             if ch in VALID_EMBED])
-        if not DB.updateQTemplateEmbedID(qt_id, embed_id):
+        if not DB.update_qt_embedid(qt_id, embed_id):
             flash("Error updating EmbedID, "
                   "possibly the value is already used elsewhere.")
 
-    # They entered something into the html field and didn't upload a qtemplate.html
+    # They entered something into the html field and didn't upload a
+    # qtemplate.html
     if not ('newattachmentname' in form
             and form['newattachmentname'] == "qtemplate.html"):
         if 'newhtml' in form:
@@ -247,7 +249,7 @@ def qedit_raw_save(topic_id, qt_id):
             DB.create_qt_att(qt_id, "datfile.txt", "text/plain", df, version)
             qvars = QEditor.parseDatfile(df)
             for row in range(0, len(qvars)):
-                DB.addQTVariation(qt_id, row + 1, qvars[row], version)
+                DB.add_qt_variation(qt_id, row + 1, qvars[row], version)
 
                 # They uploaded a new image file
     if 'newimgfile' in request.files:

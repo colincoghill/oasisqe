@@ -145,7 +145,7 @@ def cadmin_prev_assessments(course_id):
         abort(404)
 
     exams = [Exams.getExamStruct(e, course_id)
-             for e in DB.getCourseExamInfoAll(course_id, previous_years=True)]
+             for e in DB.get_course_exam_all(course_id, previous_years=True)]
 
     if not satisfyPerms(user_id, course_id,
                         ("OASIS_QUESTIONEDITOR", "OASIS_VIEWMARKS",
@@ -494,7 +494,7 @@ def cadmin_edit_topic(topic_id):
             question['embed_url'] = "%s/embed/question/%s/question.html" % (OaConfig.parentURL, question['embed_id'])
         else:
             question['embed_url'] = None
-        question['editor'] = DB.getQTemplateEditor(question['id'])
+        question['editor'] = DB.get_qt_editor(question['id'])
 
     all_courses = Courses2.get_course_list()
     all_courses = [cs
@@ -587,7 +587,7 @@ def cadmin_view_topic(topic_id):
             question['embed_url'] = "%s/embed/question/%s/question.html" % (OaConfig.parentURL, question['embed_id'])
         else:
             question['embed_url'] = None
-        question['editor'] = DB.getQTemplateEditor(question['id'])
+        question['editor'] = DB.get_qt_editor(question['id'])
 
     all_courses = Courses2.get_course_list()
     all_courses = [cs

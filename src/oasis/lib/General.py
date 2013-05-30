@@ -83,7 +83,7 @@ def get_q_list(tid, uid=None, numdone=True):
     qtemplates = Topics.get_qts(int(tid))
     for qtid in qtemplates:
         if uid and numdone:
-            num = DB.getStudentQuestionPracticeNum(uid, qtid)
+            num = DB.get_student_q_practice_num(uid, qtid)
         else:
             num = 0
         qlist.append({'qtid': qtid,
@@ -177,7 +177,7 @@ def gen_q(qtid, student=0, exam=0, position=0):
     """
     # Pick a variation randomly
     version = DB.get_qt_version(qtid)
-    numvars = DB.getQTNumVariations(qtid, version)
+    numvars = DB.get_qt_num_variations(qtid, version)
     if numvars > 0:
         variation = random.randint(1, numvars)
     else:
@@ -234,7 +234,7 @@ def gen_q_from_var(qtid, student, exam, position, version, variation):
         log(ERROR, "generateQuestionFromVar(%s,%s), can't find qid %s? " %
                    (qtid, student, qid))
     if exam >= 1:
-        DB.addExamQuestion(student, exam, qid, position)
+        DB.add_exam_q(student, exam, qid, position)
     return qid
 
 
@@ -975,7 +975,7 @@ def getExamQuestion(exam, page, user_id):
     """ Find the appropriate exam question for the user.
         Generate it if there isn't one already.
     """
-    qid = DB.getExamQuestionByPositionStudent(exam, page, user_id)
+    qid = DB.get_exam_q_by_pos_student(exam, page, user_id)
     if not qid is False:
         return int(qid)
     qid = int(gen_exam_q(exam, page, user_id))
@@ -1009,8 +1009,8 @@ def remarkExam(exam, student):
     examtotal = 0.0
     end = Exams.getMarkTime(exam, student)
     for qtemplate in qtemplates:
-        question = DB.getExamQuestionByQTStudent(exam, qtemplate, student)
-        answers = DB.getQuestionGuessesBeforeTime(question, end)
+        question = DB.get_exam_q_by_qt_student(exam, qtemplate, student)
+        answers = DB.get_q_guesses_before_time(question, end)
         try:
             marks = markQuestion(question, answers)
         except OaMarkerError:

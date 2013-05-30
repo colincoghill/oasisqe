@@ -230,7 +230,7 @@ def assess_presubmit(course_id, exam_id):
     qids = []
     questions = []
     for position in range(1, numquestions + 1):
-        q_id = DB.getExamQuestionByPositionStudent(exam_id, position, user_id)
+        q_id = DB.get_exam_q_by_pos_student(exam_id, position, user_id)
         if q_id:
             qids.append(q_id)
             guesses = DB.get_q_guesses(q_id)
@@ -289,7 +289,7 @@ def assess_awaitresults(course_id, exam_id):
     qids = []
     questions = []
     for position in range(1, numquestions + 1):
-        q_id = DB.getExamQuestionByPositionStudent(exam_id, position, user_id)
+        q_id = DB.get_exam_q_by_pos_student(exam_id, position, user_id)
         if q_id:
             qids.append(q_id)
             guesses = DB.get_q_guesses(q_id)

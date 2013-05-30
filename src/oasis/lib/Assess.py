@@ -28,7 +28,7 @@ def mark_exam(user_id, exam_id):
         q_id = General.getExamQuestion(exam_id, position, user_id)
         answers = DB.get_q_guesses(q_id)
         # There's a small chance they got here without ever seeing a question, make sure it exists.
-        DB.addExamQuestion(user_id, exam_id, q_id, position)
+        DB.add_exam_q(user_id, exam_id, q_id, position)
 
         # First, mark the question
         try:
@@ -110,7 +110,7 @@ def render_own_marked_exam(student, exam):
     for question in questions:
         qtemplate = DB.get_q_parent(question)
 
-        answers = DB.getQuestionGuessesBeforeTime(question, examsubmit)
+        answers = DB.get_q_guesses_before_time(question, examsubmit)
         pos = DB.get_qt_exam_pos(exam, qtemplate)
         marks = General.markQuestion(question, answers)
         parts = [int(var[1:]) for var in marks.keys() if re.search("^A([0-9]+$)", var) > 0]

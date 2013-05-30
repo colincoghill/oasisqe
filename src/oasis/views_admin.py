@@ -27,7 +27,7 @@ from oasis import app, authenticated
 @authenticated
 def admin_top():
     """ Present the top level admin page """
-    db_version = DB.getDBVersion()
+    db_version = DB.get_db_version()
     return render_template(
         "admintop.html",
         courses=Setup.get_sorted_courselist(),
@@ -470,8 +470,8 @@ def admin_editmessages():
     if not check_perm(user_id, 0, "OASIS_SYSADMIN"):
         flash("You do not have system administrator permission")
         return redirect(url_for('setup_top'))
-    mesg_news = DB.getMessage("news")
-    mesg_login = DB.getMessage("loginmotd")
+    mesg_news = DB.get_message("news")
+    mesg_login = DB.get_message("loginmotd")
     return render_template(
         "admin_editmessages.html",
         mesg_news = mesg_news,
@@ -496,8 +496,8 @@ def admin_savemessages():
         return redirect(url_for("admin_top"))
 
     if 'mesg_news' in form:
-        DB.setMessage("news", form['mesg_news'])
+        DB.set_message("news", form['mesg_news'])
     if 'mesg_news' in form:
-        DB.setMessage("loginmotd", form['mesg_login'])
+        DB.set_message("loginmotd", form['mesg_login'])
     flash("Changes saved")
     return redirect(url_for("admin_top"))

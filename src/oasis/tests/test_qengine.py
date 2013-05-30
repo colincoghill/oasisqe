@@ -9,7 +9,7 @@ import datetime
 
 from oasis.lib import General, DB
 
-DB.upgradeDB()
+DB.upgrade_db()
 
 
 def test_instance_generate_simple_answer():

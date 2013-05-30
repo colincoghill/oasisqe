@@ -96,7 +96,7 @@ def doTopicPageCommands(request, topic_id, user_id):
             for qtid in qtids:
                 position = DB.get_qtemplate_topic_pos(qtid, topic_id)
                 if position == 0:  # If hidden, make it visible
-                    newpos = DB.getMaxQTemplatePositionInTopic(topic_id)
+                    newpos = DB.get_qt_max_pos_in_topic(topic_id)
                     DB.update_qt_pos(qtid, topic_id, newpos + 1)
                     title = DB.get_qt_name(qtid)
                     flash("Made '%s' Visible" % title)

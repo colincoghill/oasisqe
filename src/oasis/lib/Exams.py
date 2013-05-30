@@ -466,7 +466,7 @@ def touchUserExam(exam, user):
     """
     assert isinstance(exam, int)
     assert isinstance(user, int)
-    DB.touchUserExam(exam, user)
+    DB.touch_user_exam(exam, user)
 
 
 def resetMark(exam, user):

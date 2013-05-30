@@ -102,7 +102,7 @@ def populateStatsPracQCourse(start=None, end=None):
             updatePracQCourse(data['year'], data['month'], data['day'], data['hour'], data['qtemplate'], data['count'], data['avgscore'])
 
 
-def getQDailyPracticeCount(start_time, end_time, qtemplate_id):
+def getQDailyPracticeCount(start_time, end_time, qt_id):
     """ Return a list of daily count of practices for the given qtemplate
         over the time period
     """
@@ -113,7 +113,7 @@ def getQDailyPracticeCount(start_time, end_time, qtemplate_id):
                 AND "when" <= %s
               GROUP BY "year","month","day"
               ORDER BY "year","month","day" ASC;"""
-    params = (qtemplate_id, start_time, end_time)
+    params = (qt_id, start_time, end_time)
     res = DB.run_sql(sql, params)
     if not res:
         res = []
@@ -134,7 +134,7 @@ def getQDailyPracticeCount(start_time, end_time, qtemplate_id):
     return data
 
 
-def getQDailyPracticeScores(start_time, end_time, qtemplate_id):
+def getQDailyPracticeScores(start_time, end_time, qt_id):
     """ Return a list of daily count of practices for the given qtemplate over
        the time period
     """
@@ -145,7 +145,7 @@ def getQDailyPracticeScores(start_time, end_time, qtemplate_id):
                AND "when" <= %s
              GROUP BY "year","month","day"
              ORDER BY "year","month","day" ASC;"""
-    params = (qtemplate_id, start_time, end_time)
+    params = (qt_id, start_time, end_time)
     res = DB.run_sql(sql, params)
     if not res:
         res = []
@@ -154,12 +154,17 @@ def getQDailyPracticeScores(start_time, end_time, qtemplate_id):
     for row in res:
         if first: # if the data doesn't start with any values, set a 0 entry,
                   #  so graphs scale correctly
-            if not (int(row[1]) == start_time.month and int(row[2]) == start_time.day and int(row[0] == start_time.year)):
+            if not (int(row[1]) == start_time.month
+                    and int(row[2]) == start_time.day
+                    and int(row[0] == start_time.year)):
+
                 data.append(("%04d-%02d-%02d" % (start_time.year, start_time.month, start_time.day), 0))
             first = False
         dt = datetime.datetime.strptime("%04d-%02d-%02d" %(int(row[0]), int(row[1]), int(row[2])), "%Y-%m-%d")
         data.append((dt.strftime("%Y-%m-%d"), row[4] / row[3]))
-    if len(res) >= 1 and not data[-1][0] == "%04d-%02d-%02d" % (end_time.year, end_time.month, end_time.day):
+    if len(res) >= 1 \
+        and not data[-1][0] == "%04d-%02d-%02d" % (end_time.year, end_time.month, end_time.day):
+
         data.append(("%04d-%02d-%02d" % (end_time.year, end_time.month, end_time.day), 0))
     return data
 
@@ -180,12 +185,16 @@ def get_daily_practice_load(start_time, end_time):
     for row in res:
         if first: # if the data doesn't start with any values, set a 0 entry,
                   # so graphs scale correctly
-            if not (int(row[1]) == start_time.month and int(row[2]) == start_time.day and int(row[0] == start_time.year)):
+            if not (int(row[1]) == start_time.month
+                    and int(row[2]) == start_time.day
+                    and int(row[0] == start_time.year)):
                 data.append(("%04d-%02d-%02d" % (start_time.year, start_time.month, start_time.day), 0))
             first = False
-        dt = datetime.datetime.strptime("%04d-%02d-%02d" %(int(row[0]), int(row[1]), int(row[2])), "%Y-%m-%d")
+        dt = datetime.datetime.strptime("%04d-%02d-%02d" % (int(row[0]), int(row[1]), int(row[2])), "%Y-%m-%d")
         data.append((dt.strftime("%Y-%m-%d"), row[3]))
-    if len(res) >= 1 and not data[-1][0] == "%04d-%02d-%02d" % (end_time.year, end_time.month, end_time.day):
+    if len(res) >= 1 \
+        and not data[-1][0] == "%04d-%02d-%02d" % (end_time.year, end_time.month, end_time.day):
+
         data.append(("%04d-%02d-%02d" % (end_time.year, end_time.month, end_time.day), 0))
     return data
 
