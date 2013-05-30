@@ -46,7 +46,7 @@
             </h1>
 
             <div class="well">
-                <form method='post' action='{{ cf.url }}admin/edit_period_submit/{{ period.id }}' data-validate="parsley">
+                <form method='post' id="form" action='{{ cf.url }}admin/edit_period_submit/{{ period.id }}' data-validate="parsley">
                     <label>Short Name:</label>
                     <input placeholder="Short Name" class="required input-medium"
                            type="text" name='name' value="{{ period.name }}">
@@ -69,7 +69,8 @@
                 <div class="form-actions">
                     <input class='btn btn-primary' type="submit" name='save'
                            value='Save'>
-                    <a class='btn btn-danger' href="{{ cf.url }}admin/periods">Cancel</a>
+                    <input class='btn btn-danger' type="submit" name='cancel'
+                           value='Cancel' id="cancel">
                 </div>
                      </form>
             </div>
@@ -94,6 +95,11 @@
                 todayBtn: true,
                 todayHighlight: true,
                 autoclose: true
+            });
+
+            $( '#cancel' ).click(function() {
+                $('#form').parsley( 'destroy' );
+                $('#form').submit();
             });
         });
 

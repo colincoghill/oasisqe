@@ -36,9 +36,9 @@
       <h3>Edit Group Feed</h3>
 
       <div class="well">
-        <form>
+        <form id='form' method='post' action='{{ cf.url }}admin/edit_group_feed_submit/{{ feed.id }}' data-validate="parsley">
           <label>Short Name:</label>
-          <input placeholder="Short Name" class="input-medium"
+          <input placeholder="Short Name" class="required input-medium"
           type="text">
           <label>Title:</label>
           <input placeholder="Descriptive name" class="input-xxlarge"
@@ -70,7 +70,7 @@
 <input class='btn btn-primary' type="submit" name='save'
                            value='Save'>
                     <input class="btn btn-danger" value="Cancel" type="submit"
-                           name="cancel">
+                           name="cancel" id='cancel'>
         </div>
                   </form>
       </div>
@@ -105,6 +105,11 @@
                         $('.historical').toggle();
                     }
             );
+
+            $( '#cancel' ).click(function() {
+                $('#form').parsley( 'destroy' );
+                $('#form').submit();
+            });
         });
 
 

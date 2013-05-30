@@ -28,15 +28,15 @@
     <p>Return to <a href="{{ cf.url }}admin/courses">Course Choice</a></p>
 
     <h3>Adding a new course</h3>
-    <form method='post' action='{{ cf.url }}admin/add_course/save'>
+    <form id="form" method='post' action='{{ cf.url }}admin/add_course/save' data-validate="parsley">
         <div class="container-fluid well">
             <h4>Course</h4>
 
             <div class='input'>
-                <label>Name: <input type='text' name='course_name' value='{{ course.name }}'> (eg. ELECTENG101)</label>
+                <label>Name: <input type='text' class='required' name='course_name' value='{{ course.name }}'> (eg. ELECTENG101)</label>
             </div>
             <div class='input'>
-                <label>Title: <input type='text' name='course_title' value='{{ course.title }}'> (eg. Introduction to Electrical Engineering)</label>
+                <label>Title: <input type='text' class='required' name='course_title' value='{{ course.title }}'> (eg. Introduction to Electrical Engineering)</label>
             </div>
 
             <div class='input'>
@@ -62,7 +62,7 @@
 
         <div class='pull-right'>
             <input type="submit" name="save_changes" value="Create Course" class='btn btn-primary'>
-            <input type="submit" name="cancel_edit" value="Cancel" class='btn btn-danger'>
+            <input type="submit" name="cancel_edit" id="cancel" value="Cancel" class='btn btn-danger'>
         </div>
 
 
@@ -71,4 +71,10 @@
     <br/>
 
 {% endblock body %}
+        $(function () {
+            $( '#cancel' ).click(function() {
+                $('#form').parsley( 'destroy' );
+                $('#form').submit();
+            });
+        });
 {% block pagetitle %}Server Admin{% endblock %}
