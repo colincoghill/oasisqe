@@ -1,0 +1,14 @@
+#!/usr/bin/python2.7
+
+
+import sys
+sys.path.append("/opt/oasisqe/3.9/src")
+
+from oasis.lib import Feeds
+
+print "Running hourly feeds"
+
+feeds = Feeds.active_hourly()
+for feed in feeds:
+    print "-", feed.name
+    feed.run()

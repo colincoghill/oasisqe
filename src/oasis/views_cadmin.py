@@ -33,7 +33,7 @@ def cadmin_top(course_id):
         abort(404)
 
     topics = Courses2.get_topics_list(course_id)
-    exams = [Exams.getExamStruct(exam_id, course_id)
+    exams = [Exams.get_exam_struct(exam_id, course_id)
              for exam_id in Courses.get_exams(course_id, previous_years=False)]
 
     if not satisfyPerms(user_id, course_id,
@@ -144,7 +144,7 @@ def cadmin_prev_assessments(course_id):
     if not course:
         abort(404)
 
-    exams = [Exams.getExamStruct(exam_id, course_id)
+    exams = [Exams.get_exam_struct(exam_id, course_id)
              for exam_id in DB.get_course_exam_all(course_id, previous_years=True)]
 
     if not satisfyPerms(user_id, course_id,
@@ -218,7 +218,7 @@ def cadmin_edit_exam(course_id, exam_id):
     if not course:
         abort(404)
 
-    exam = Exams.getExamStruct(exam_id, course_id)
+    exam = Exams.get_exam_struct(exam_id, course_id)
     if not exam:
         abort(404)
 
@@ -258,7 +258,7 @@ def cadmin_edit_exam_submit(course_id, exam_id):
         return redirect(url_for('cadmin_top', course_id=course_id))
 
     exam_id = CourseAdmin.exam_edit_submit(request, user_id, course_id, exam_id)
-    exam = Exams.getExamStruct(exam_id, course_id)
+    exam = Exams.get_exam_struct(exam_id, course_id)
     flash("Assessment saved.")
     return render_template(
         "exam_edit_submit.html",

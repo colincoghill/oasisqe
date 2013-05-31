@@ -185,10 +185,10 @@ def setup_usersummary(view_id):
         return redirect(url_for('setup_top'))
 
     user = Users2.getUser(view_id)
-    examids = Exams.getExamsDone(view_id)
+    examids = Exams.get_exams_done(view_id)
     exams = []
     for examid in examids:
-        exam = Exams.getExamStruct(examid)
+        exam = Exams.get_exam_struct(examid)
         started = General.humanDate(exam['start'])
         exam['started'] = started
 

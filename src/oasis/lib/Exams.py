@@ -19,48 +19,36 @@ from .UserDB import check_perm
 import DB, General
 
 
-def saveScore(exam, student, examtotal):
+def save_score(exam_id, student, examtotal):
     """ Store the exam score.
         Currently puts it into the marklog.
     """
-    assert isinstance(exam, int)
+    assert isinstance(exam_id, int)
     assert isinstance(student, int)
     assert isinstance(examtotal, float) or isinstance(examtotal, int)
     run_sql("""INSERT INTO marklog (eventtime, exam, student, marker, operation, value)
                  VALUES (NOW(), %s, %s, 1, 'Submitted', %s);""",
-            (exam, student, "%.1f" % examtotal))
-    touchUserExam(exam, student)
+            (exam_id, student, "%.1f" % examtotal))
+    touchUserExam(exam_id, student)
 
 
-def setDuration(exam, duration):
+def set_duration(exam_id, duration):
     """ Set the duration of an assessment."""
-    assert isinstance(exam, int)
+    assert isinstance(exam_id, int)
     assert isinstance(duration, int) or isinstance(duration, float)
-    run_sql("""UPDATE exams SET duration=%s WHERE exam=%s;""", (duration, exam))
+    run_sql("""UPDATE exams SET duration=%s WHERE exam=%s;""",
+            (duration, exam_id))
 
 
-def setInstant(exam, instant):
+def set_instant(exam_id, instant):
     """ Set the instant results status of an assessment."""
-    assert isinstance(exam, int)
+    assert isinstance(exam_id, int)
     assert isinstance(instant, int)
-    run_sql("""UPDATE exams SET instant=%s WHERE exam=%s;""", (instant, exam))
+    run_sql("""UPDATE exams SET instant=%s WHERE exam=%s;""",
+            (instant, exam_id))
 
 
-def getStudentStartTimeString(exam, student):
-    """ Return the time the student started an assessment in
-        human readable format.
-    """
-    assert isinstance(exam, int)
-    assert isinstance(student, int)
-    ret = run_sql("""SELECT MIN(firstview) FROM questions WHERE exam = %s AND student = %s;""", (exam, student))
-    if ret:
-        firstview = ret[0][0]
-        if firstview:
-            return firstview.strftime("%Y %b %d %H:%M")
-    return None
-
-
-def getStudentStartTime(exam, student):
+def get_student_start_time(exam, student):
     """ Return the time the student started an assessment as
         a datetime object or None
     """
@@ -75,7 +63,7 @@ def getStudentStartTime(exam, student):
     return None
 
 
-def getMarkTime(exam, student):
+def get_mark_time(exam, student):
     """ Return the time the student submitted an assessment
         Returns a datetime object or None
     """
@@ -90,62 +78,36 @@ def getMarkTime(exam, student):
     return None
 
 
-def getMarkDate(user, exam):
-    """ Fetch the most recent mark date of an exam. """
-    assert isinstance(exam, int)
-    assert isinstance(user, int)
-    ret = run_sql("""SELECT eventtime FROM marklog WHERE exam=%s AND student=%s;""", (exam, user))
-    if ret:
-        return ret[len(ret) - 1][0]
-    return "notmarked"
-
-
-def setType(exam, examtype):
+def set_type(exam, examtype):
     """ Set the type of an assessment."""
     assert isinstance(exam, int)
     assert isinstance(examtype, int)
     run_sql("""UPDATE exams SET "type"=%s WHERE exam=%s;""", (examtype, exam,))
 
 
-def setTitle(exam, title):
+def set_title(exam, title):
     """ Set the title of an assessment. """
     assert isinstance(exam, int)
     assert isinstance(title, str) or isinstance(title, unicode)
     run_sql("""UPDATE exams SET title=%s WHERE exam=%s;""", (title, exam))
 
 
-def setCode(exam, code):
+def set_code(exam, code):
     """ Set the code of an assessment. """
     assert isinstance(exam, int)
     assert isinstance(code, str) or isinstance(code, unicode)
     run_sql("""UPDATE exams SET code=%s WHERE exam=%s;""", (code, exam))
 
 
-def getStartEpoch(exam):
-    """ Fetch the start time of an assessment as an EPOCH float"""
-    assert isinstance(exam, int)
-    key = "exams-%d-startepoch" % exam
-    obj = MC.get(key)
-    if not obj is None:
-        return obj
-    sql = 'SELECT EXTRACT(EPOCH FROM "start") FROM exams WHERE exam = %s;'
-    params = (exam,)
-    ret = run_sql(sql, params)
-    if ret:
-        MC.set(key, float(ret[0][0]))
-        return float(ret[0][0])
-    log(ERROR, "Request for unknown exam %s." % exam)
-    return None
-
-
-def getSubmitTime(exam, student):
+def get_submit_time(exam_id, student):
     """ Return the time the exam was submitted for marking.
         Returns a datetime object or None
     """
-    assert isinstance(exam, int)
+    assert isinstance(exam_id, int)
     assert isinstance(student, int)
     submittime = None
-    res = run_sql("SELECT submittime FROM userexams WHERE exam = %s AND student = %s;", (exam, student))
+    res = run_sql("SELECT submittime FROM userexams WHERE exam = %s AND student = %s;",
+                  (exam_id, student))
     if res:
         submittime = res[0][0]
     if submittime is None:
@@ -153,30 +115,21 @@ def getSubmitTime(exam, student):
     return todatetime(submittime)
 
 
-def getStudents(exam):
-    """ Return a list of students who have done the exam."""
-    assert isinstance(exam, int)
-    res = run_sql("""SELECT student FROM examquestions WHERE exam=%s GROUP BY student;""", (exam,))
-    students = []
-    if res:
-        for row in res:
-            students.append(int(row[0]))
-    return students
-
-
-def isDoneBy(user, exam):
+def is_done_by(user, exam):
     """ Return True if the user has submitted the exam. We currently look for an entry in marklog."""
     assert isinstance(user, int)
     assert isinstance(exam, int)
-    ret = run_sql("""SELECT marker FROM marklog WHERE exam=%s AND student=%s;""", (exam, user))
-    # FIXME:  This can now be handled by the userexams status, but since we have a lot of old data
-    # that hasn't been updated we need to stay doing this the old way for now.
+    ret = run_sql("SELECT marker FROM marklog WHERE exam=%s AND student=%s;",
+                  (exam, user))
+    # FIXME:  This can now be handled by the userexams status, but since
+    # we have a lot of old data that hasn't been updated we need to stay
+    # doing this the old way for now.
     if ret:
         return True
     return False
 
 
-def getUserStatus(student, exam):
+def get_user_status(student, exam):
     """ Returns the status of the particular exam instance.
         -1 = instance not found
         0 = not generated
@@ -197,48 +150,61 @@ def getUserStatus(student, exam):
     return -1
 
 
-def setUserStatus(student, exam, status):
+def set_user_status(student, exam, status):
     """ Set the status of a particular exam instance. """
     assert isinstance(student, int)
     assert isinstance(exam, int)
     assert isinstance(status, int)
-    prevstatus = getUserStatus(student, exam)
+    prevstatus = get_user_status(student, exam)
     if prevstatus <= 0:
-        createUserExam(student, exam)
+        create_user_exam(student, exam)
     run_sql("""UPDATE userexams SET status=%s WHERE exam=%s AND student=%s;""", (status, exam, student))
-    newstatus = getUserStatus(student, exam)
+    newstatus = get_user_status(student, exam)
     if not newstatus == status:
         log(ERROR, "Failed to set new status:  setUserStatus(%s, %s, %s)" % (student, exam, status))
     touchUserExam(exam, student)
 
 
-def createUserExam(student, exam):
+def create_user_exam(student, exam):
     """ Create a new instance of an exam for a student."""
     assert isinstance(student, int)
     assert isinstance(exam, int)
-    status = getUserStatus(student, exam)
+    status = get_user_status(student, exam)
     if status == -1:
         run_sql("""INSERT INTO userexams (exam, student, status, score)
                     VALUES (%s, %s, '1', '-1'); """, (exam, student))
 
 
-def create(course, owner, title, examtype, duration, start, end, instructions, code=None, instant=1):
+def create(course, owner, title, examtype, duration, start, end,
+           instructions, code=None, instant=1):
     """ Add an assessment to the database."""
     assert isinstance(course, int)
     assert isinstance(owner, int)
-    assert isinstance(title, str) or isinstance(title, unicode)
+    assert isinstance(title, str) \
+        or isinstance(title, unicode)
     assert isinstance(examtype, int)
-    assert isinstance(duration, int) or isinstance(duration, float)
-    assert isinstance(start, datetime.datetime) or isinstance(start, str) or isinstance(start, unicode)
-    assert isinstance(end, datetime.datetime) or isinstance(end, str) or isinstance(end, unicode)
-    assert isinstance(instructions, str) or isinstance(instructions, unicode)
-    assert isinstance(code, str) or isinstance(code, unicode) or code is None
+    assert isinstance(duration, int) \
+        or isinstance(duration, float)
+    assert isinstance(start, datetime.datetime) \
+        or isinstance(start, str) \
+        or isinstance(start, unicode)
+    assert isinstance(end, datetime.datetime) \
+        or isinstance(end, str) \
+        or isinstance(end, unicode)
+    assert isinstance(instructions, str) \
+        or isinstance(instructions, unicode)
+    assert isinstance(code, str) \
+        or isinstance(code, unicode) \
+        or code is None
     assert isinstance(instant, int)
     conn = dbpool.begin()
-    sql = """INSERT INTO exams (title, owner, type, start, "end", description, course, duration, code, instant)
+    sql = """INSERT INTO exams (title, owner, type, start, "end", description,
+                                course, duration, code, instant)
                         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"""
-    params = (title, owner, examtype, start, end, instructions, course, duration, code, instant)
-    log(INFO, "Create Exam on course %s: [%s][%s]" % (course, sql, params))
+    params = (title, owner, examtype, start, end, instructions,
+              course, duration, code, instant)
+    log(INFO,
+        "Create Exam on course %s: [%s][%s]" % (course, sql, params))
     conn.run_sql(sql, params)
     res = conn.run_sql("SELECT currval('exams_exam_seq')")
     dbpool.commit(conn)
@@ -248,14 +214,15 @@ def create(course, owner, title, examtype, duration, start, end, instructions, c
     return 0
 
 
-def setDescription(exam, description):
+def set_description(exam_id, description):
     """ Set the description of an assessment."""
-    assert isinstance(exam, int)
+    assert isinstance(exam_id, int)
     assert isinstance(description, str) or isinstance(description, unicode)
-    run_sql("""UPDATE exams SET description=%s WHERE exam=%s;""", (description, exam))
+    run_sql("""UPDATE exams SET description=%s WHERE exam=%s;""",
+            (description, exam_id))
 
 
-def getEndTime(exam, user):
+def get_end_time(exam, user):
     """ Return the time that an exam ends for the given user. """
     assert isinstance(exam, int)
     assert isinstance(user, int)
@@ -271,7 +238,7 @@ def getEndTime(exam, user):
     return float(endtime)
 
 
-def setEnd(exam, examend):
+def set_end_time(exam, examend):
     """ Set the end time of an assessment. """
     assert isinstance(exam, int)
     assert isinstance(examend, datetime.datetime) or isinstance(examend, str) or isinstance(examend, unicode)
@@ -280,7 +247,7 @@ def setEnd(exam, examend):
     run_sql("""UPDATE exams SET "end"=%s WHERE exam=%s;""", (examend, exam))
 
 
-def setStart(exam, examstart):
+def set_start_time(exam, examstart):
     """ Set the start time of an assessment."""
     assert isinstance(exam, int)
     assert isinstance(examstart, datetime.datetime) or isinstance(examstart, str) or isinstance(examstart, unicode)
@@ -289,39 +256,17 @@ def setStart(exam, examstart):
     run_sql("""UPDATE exams SET "start"=%s WHERE exam=%s;""", (examstart, exam))
 
 
-def getMarker(user, exam):
-    """ Fetch the most recent marker of an exam. """
-    assert isinstance(exam, int)
-    assert isinstance(user, int)
-    ret = run_sql("""SELECT eventtime, marker FROM marklog WHERE exam=%s AND student=%s;""", (exam, user))
-    if ret:
-        return int(ret[len(ret) - 1][1])
-    log(ERROR, "Request for unknown exam %s/user %s." % (user, exam))
-    return None
-
-
-def getMarkTotal(user, exam):
-    """ Fetch the most recent total mark."""
-    assert isinstance(exam, int)
-    assert isinstance(user, int)
-    ret = run_sql("""SELECT eventtime, total FROM marklog WHERE exam=%s AND student=%s;""", (exam, user))
-    if ret:
-        return float(ret[len(ret) - 1][1])
-    log(ERROR, "Request for unknown exam %s/user %s." % (user, exam))
-    return None
-
-
-def getNumQuestions(exam):
+def get_num_questions(exam_id):
     """ Return the number of questions in the exam."""
-    assert isinstance(exam, int)
-    ret = run_sql("""SELECT position FROM examqtemplates WHERE exam=%s GROUP BY position;""", (exam,))
+    assert isinstance(exam_id, int)
+    ret = run_sql("""SELECT position FROM examqtemplates WHERE exam=%s GROUP BY position;""", (exam_id,))
     if ret:
         return len(ret)
-    log(ERROR, "Request for unknown exam %s" % exam)
+    log(ERROR, "Request for unknown exam %s" % exam_id)
     return 0
 
 
-def getExamsDone(user):
+def get_exams_done(user):
     """ Return a list of assessments done by the user."""
     assert isinstance(user, int)
     ret = run_sql("SELECT exam FROM examquestions WHERE student = %s GROUP BY exam", (user,))
@@ -331,98 +276,7 @@ def getExamsDone(user):
     return exams
 
 
-def logMark(exam, marking, student, position, qtemplate, question,
-            part, marker, manual, official, operation, new, score):
-    """ Record the mark for the given exam question.
-        If "marking" is None, also assign a new marking value and
-        return it so it can be passed in next time.
-    """
-    assert isinstance(exam, int)
-    assert isinstance(marking, int)
-    assert isinstance(student, int)
-    assert isinstance(position, int)
-    assert isinstance(qtemplate, int)
-    assert isinstance(question, int)
-    assert isinstance(part, int)
-    assert isinstance(marker, int)
-    assert isinstance(official, int)
-    assert isinstance(operation, int)
-    assert isinstance(new, int)
-    assert isinstance(score, int) or isinstance(score, float)
-    if not marking:
-        sql = """SELECT max(marking) FROM marks;"""
-        res = run_sql(sql)
-        try:
-            marking = int(res[0][0])
-            marking += 1
-        except (ValueError, TypeError, IndexError, KeyError):
-            marking = 1
-
-    if manual:
-        manual = 'yes'
-    else:
-        manual = 'no'
-    if official:
-        official = 'yes'
-    else:
-        official = 'no'
-    if new:
-        new = 'yes'
-    else:
-        new = 'no'
-    sql = """INSERT INTO marks (eventtime, exam, marking, student, position,
-                                qtemplate, question, part, marker, manual,
-                                official, operation, changed, score)
-            VALUES (NOW(), %s, %s, %s, %s,
-                     %s, %s, %s, %s, %s,
-                     %s, %s, %s, %s);"""
-
-    run_sql(sql, (exam, marking, student, position, qtemplate, question,
-                  part, marker, manual, official, operation, new, score))
-    touchUserExam(exam, student)
-    return marking
-
-
-def getAnswersForPart(exam, qtid, part, group=None):
-    """ Returns a list of all answers given for a particular question template part.
-        If group is given, will only return answers for users in that group.
-    """
-    assert isinstance(exam, int)
-    assert isinstance(qtid, int)
-    assert isinstance(part, int)
-    assert isinstance(group, int) or group is None
-    if group is None:
-        sql = """select guesses.guess
-                from userexams, users, questions, guesses
-                where userexams.exam=%s
-                and users.id=userexams.student
-                and questions.exam=%s
-                and questions.question = guesses.question
-                and questions.student=userexams.student
-                and guesses.part=%s
-                and questions.qtemplate=%s"""
-        params = (exam, exam, part, qtid)
-    else:
-        sql = """select guesses.guess
-                from userexams, users, questions, guesses, usergroups
-                where userexams.exam=%s
-                and users.id=userexams.student
-                and questions.exam=%s
-                and questions.question = guesses.question
-                and questions.student=userexams.student
-                and guesses.part=%s and questions.qtemplate=%s
-                and usergroups.userid=userexams.student
-                and usergroups.groupid=%s"""
-        params = (exam, exam, part, qtid, group)
-
-    ret = run_sql(sql, params)
-    if ret:
-        answers = [row[0] for row in ret]
-        return answers
-    return []
-
-
-def setSubmitTime(student, exam, submittime=None):
+def set_submit_time(student, exam, submittime=None):
     """Set the submit time of the exam instance to a given time, or NOW() """
     assert isinstance(student, int)
     assert isinstance(exam, int)
@@ -444,7 +298,7 @@ def resetEndTime(exam, user):
     touchUserExam(exam, user)
 
 
-def resetSubmitTime(exam, user):
+def reset_submit_time(exam, user):
     """ Reset the Exam submit time for the student. This should let them resit
         the exam.
     """
@@ -469,7 +323,7 @@ def touchUserExam(exam, user):
     DB.touch_user_exam(exam, user)
 
 
-def resetMark(exam, user):
+def reset_mark(exam, user):
     """ Remove the final mark for the student. This should let them resit the exam. """
     assert isinstance(exam, int)
     assert isinstance(user, int)
@@ -478,39 +332,7 @@ def resetMark(exam, user):
     touchUserExam(exam, user)
 
 
-def getQuestionMarks(group, exam, qtemplate):
-    """ get the marks for a particular question template from an exam """
-    assert isinstance(exam, int)
-    assert isinstance(group, int)
-    assert isinstance(qtemplate, int)
-    ret = run_sql("""SELECT
-                        score, COUNT(score)
-                FROM
-                        questions
-                WHERE
-                        qtemplate=%s
-                AND
-                        marktime < NOW()
-                AND
-                        exam > 0
-                AND
-                        question in
-                (SELECT question from examquestions WHERE exam=%s)
-                AND
-                        student in
-                (SELECT userid FROM usergroups WHERE groupid=%s)
-
-        GROUP BY
-                        score
-        ORDER BY
-                        score
-        ;
-        """, (qtemplate, exam, group))
-    if ret:
-        return ret
-
-
-def getQTemplates(exam):
+def get_qts(exam):
     """Return an ordered list of qtemplates used in the exam. """
     assert isinstance(exam, int)
     ret = run_sql("""SELECT position, qtemplate FROM examqtemplates WHERE exam=%s ORDER BY position;""", (exam,))
@@ -520,34 +342,12 @@ def getQTemplates(exam):
     return []
 
 
-def getQTemplatesInfo(exam):
-    """Return information about the qtemplates used in the exam as a dictionary, keyed by position."""
-    assert isinstance(exam, int)
-    ret = run_sql("""SELECT examqtemplates.qtemplate, examqtemplates.position, qtemplates.title,
-                            questiontopics.topic, questiontopics.position
-                     FROM examqtemplates, qtemplates, questiontopics
-                     WHERE examqtemplates.qtemplate=qtemplates.qtemplate
-                        AND questiontopics.qtemplate=examqtemplates.qtemplate
-                        AND examqtemplates.exam=%s
-                     ORDER BY examqtemplates.position;""", (exam,))
-    positions = {}
-    if ret:
-        position = None
-        for row in ret:
-            if not position == int(row[1]):
-                position = int(row[1])
-                positions[position] = []
-            positions[position].append({'id': int(row[0]), 'name': row[2],
-                                        'position': int(row[1]), 'topic': int(row[3]),
-                                        'topicposition': int(row[4])})
-    return positions
-
-
-def getQTemplatesList(exam):
+def get_qts_list(exam):
     """Return a list of qtemplates used in the exam."""
     assert isinstance(exam, int)
-    ret = run_sql("""SELECT examqtemplates.qtemplate, examqtemplates.position, qtemplates.title,
-                            questiontopics.topic, questiontopics.position
+    ret = run_sql("""SELECT examqtemplates.qtemplate, examqtemplates.position,
+                            qtemplates.title, questiontopics.topic,
+                            questiontopics.position
                      FROM examqtemplates, qtemplates, questiontopics
                      WHERE examqtemplates.qtemplate=qtemplates.qtemplate
                        AND questiontopics.qtemplate=examqtemplates.qtemplate
@@ -568,7 +368,7 @@ def getQTemplatesList(exam):
     return [positions[p] for p in positions.keys()]
 
 
-def getNumDone(exam, group=None):
+def get_num_done(exam, group=None):
     """Return the number of exams completed by the given group"""
     assert isinstance(exam, int)
     assert isinstance(group, int) or group is None
@@ -595,14 +395,14 @@ def unsubmit(exam, student):
     """ Undo the submission of an exam and reset the timer. """
     assert isinstance(exam, int)
     assert isinstance(student, int)
-    resetMark(exam, student)
+    reset_mark(exam, student)
     resetEndTime(exam, student)
-    resetSubmitTime(exam, student)
-    setUserStatus(student, exam, 1)
+    reset_submit_time(exam, student)
+    set_user_status(student, exam, 1)
     touchUserExam(exam, student)
 
 
-def setMarkStatus(exam, status):
+def set_mark_status(exam, status):
     """ Set the marking status of the exam.
         see getMarkStatus for values.
     """
@@ -640,12 +440,14 @@ def _deserialize_examstruct(obj):
 
 
 # TODO: Optimize. This is called quite a lot
-def getExamStruct(exam_id, user_id=None, include_qtemplates=False, include_stats=False):
-    """ Return a dictionary of useful data about the given exam for the given user.
+def get_exam_struct(exam_id, user_id=None, include_qtemplates=False,
+                    include_stats=False):
+    """ Return a dictionary of useful data about the given exam for the user.
         Including stats is a performance hit so don't unless you need them.
     """
     assert isinstance(exam_id, int)
-    assert isinstance(user_id, int) or user_id is None
+    assert isinstance(user_id, int) \
+        or user_id is None
     assert isinstance(include_qtemplates, bool)
     assert isinstance(include_stats, bool)
     key = "exam-%s-struct" % exam_id
@@ -679,26 +481,26 @@ def getExamStruct(exam_id, user_id=None, include_qtemplates=False, include_stats
         }
 
         MC.set(key, _serialize_examstruct(exam),
-               60) # 60 second cache. enough to take the edge off an exam start peak load
+               60)  # 60 second cache. to take the edge off exam start peak load
     course = Courses2.get_course(exam['cid'])
     exam['future'] = General.isFuture2(exam['start'])
     exam['past'] = General.isPast2(exam['end'])
     exam['soon'] = General.isSoon(exam['start'])
     exam['recent'] = General.isRecent(exam['end'])
     exam['active'] = General.isNow(exam['start'], exam['end'])
-    exam['start_epoch'] = int(exam['start'].strftime("%s"))  # useful for sorting
+    exam['start_epoch'] = int(exam['start'].strftime("%s")) # useful for sorting
     exam['period'] = General.humanDatePeriod(exam['start'], exam['end'])
     exam['course'] = course
     exam['start_human'] = exam['start'].strftime("%a %d %b")
 
     if include_qtemplates:
-        exam['qtemplates'] = getQTemplates(exam_id)
+        exam['qtemplates'] = get_qts(exam_id)
         exam['num_questions'] = len(exam['qtemplates'])
     if include_stats:
-        exam['coursedone'] = getNumDone(exam_id, exam['cid'])
-        exam['notcoursedone'] = getNumDone(exam_id), exam['coursedone']
+        exam['coursedone'] = get_num_done(exam_id, exam['cid'])
+        exam['notcoursedone'] = get_num_done(exam_id), exam['coursedone']
     if user_id:
-        exam['is_done'] = isDoneBy(user_id, exam_id)
+        exam['is_done'] = is_done_by(user_id, exam_id)
         exam['can_preview'] = check_perm(user_id, exam['cid'], "OASIS_PREVIEWASSESSMENT")
 
     return exam

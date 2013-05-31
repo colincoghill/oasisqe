@@ -993,7 +993,7 @@ def getExamQuestion(exam, page, user_id):
 def getExamQuestions(student, exam):
     """ Get the list of exam questions the user has been assigned.
         generate blank ones if needed. """
-    numQTemplates = Exams.getNumQuestions(exam)
+    numQTemplates = Exams.get_num_questions(exam)
     questions = []
     for position in range(1, numQTemplates + 1):
         question = getExamQuestion(exam, position, student)
@@ -1005,9 +1005,9 @@ def getExamQuestions(student, exam):
 
 def remarkExam(exam, student):
     """Re-mark the exam using the latest marking. """
-    qtemplates = Exams.getQTemplates(exam)
+    qtemplates = Exams.get_qts(exam)
     examtotal = 0.0
-    end = Exams.getMarkTime(exam, student)
+    end = Exams.get_mark_time(exam, student)
     for qtemplate in qtemplates:
         question = DB.get_exam_q_by_qt_student(exam, qtemplate, student)
         answers = DB.get_q_guesses_before_time(question, end)
@@ -1031,7 +1031,7 @@ def remarkExam(exam, student):
         DB.update_q_score(question, total)
         #        OaDB.setQuestionStatus(question, 3)    # 3 = marked
         examtotal += total
-    Exams.saveScore(exam, student, examtotal)
+    Exams.save_score(exam, student, examtotal)
     return examtotal
 
 
@@ -1064,8 +1064,8 @@ def getExamTimeTaken(exam, student):
         exam. This is the time from their first view of the first question
         to the time they pressed the submit button.
     """
-    start = Exams.getStudentStartTime(exam, student)
-    end = Exams.getSubmitTime(exam, student)
+    start = Exams.get_student_start_time(exam, student)
+    end = Exams.get_submit_time(exam, student)
     if start is None:
         return -1
     if end is None:

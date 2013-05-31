@@ -20,8 +20,8 @@ def mark_exam(user_id, exam_id):
     """ Submit the assessment and mark it.
         Returns True if it went well, or False if a problem.
     """
-    numQuestions = Exams.getNumQuestions(exam_id)
-    status = Exams.getUserStatus(user_id, exam_id)
+    numQuestions = Exams.get_num_questions(exam_id)
+    status = Exams.get_user_status(user_id, exam_id)
     log(INFO, "Marking assessment %s for %s, status is %s" % (exam_id, user_id, status))
     examtotal = 0.0
     for position in range(1, numQuestions + 1):
@@ -52,9 +52,9 @@ def mark_exam(user_id, exam_id):
             DB.update_q_score(q_id, total)
         examtotal += total
 
-    Exams.setUserStatus(user_id, exam_id, 5)
-    Exams.setSubmitTime(user_id, exam_id)
-    Exams.saveScore(exam_id, user_id, examtotal)
+    Exams.set_user_status(user_id, exam_id, 5)
+    Exams.set_submit_time(user_id, exam_id)
+    Exams.save_score(exam_id, user_id, examtotal)
     Exams.touchUserExam(exam_id, user_id)
 
     log(INFO, "user %s scored %s total on exam %s" % (user_id, examtotal, exam_id))
@@ -69,7 +69,7 @@ def student_exam_duration(student, exam_id):
 
     firstview = None
 
-    examsubmit = Exams.getSubmitTime(exam_id, student)
+    examsubmit = Exams.get_submit_time(exam_id, student)
     questions = General.getExamQuestions(student, exam_id)
 
     # we're working out the first time the assessment was viewed is the
@@ -150,7 +150,7 @@ def get_exam_list_sorted(user_id, previous_years=False):
     exams = []
     for cid in courses:
         try:
-            exams += [Exams.getExamStruct(e, user_id) for e in Courses.get_exams(cid, previous_years=previous_years)]
+            exams += [Exams.get_exam_struct(e, user_id) for e in Courses.get_exams(cid, previous_years=previous_years)]
         except KeyError, err:
             log(ERROR, "Failed fetching exam list for user %s: %s" % (user_id, err))
     exams.sort(key=lambda y: y['start_epoch'], reverse=True)

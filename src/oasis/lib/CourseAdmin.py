@@ -199,14 +199,14 @@ def exam_edit_submit(request, user_id, cid, exam_id):
         exam_id = Exams.create(cid, user_id, title, atype, duration, astart,
                                aend, instructions, code=code, instant=instant)
     else:  # update
-        Exams.setTitle(exam_id, title)
-        Exams.setDuration(exam_id, duration)
-        Exams.setType(exam_id, atype)
-        Exams.setDescription(exam_id, instructions)
-        Exams.setStart(exam_id, astart)
-        Exams.setEnd(exam_id, aend)
-        Exams.setCode(exam_id, code)
-        Exams.setInstant(exam_id, instant)
+        Exams.set_title(exam_id, title)
+        Exams.set_duration(exam_id, duration)
+        Exams.set_type(exam_id, atype)
+        Exams.set_description(exam_id, instructions)
+        Exams.set_start_time(exam_id, astart)
+        Exams.set_end_time(exam_id, aend)
+        Exams.set_code(exam_id, code)
+        Exams.set_instant(exam_id, instant)
 
     for pos, qts in qns.iteritems():
         DB.update_exam_qt_in_pos(exam_id, pos, qts)

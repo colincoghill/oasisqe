@@ -64,7 +64,7 @@ def assess_unlock(course_id, exam_id):
     """ An unlock code has been entered. """
     user_id = session['user_id']
 
-    exam = Exams.getExamStruct(exam_id, user_id)
+    exam = Exams.get_exam_struct(exam_id, user_id)
 
     if not check_perm(user_id, course_id, "OASIS_PREVIEWASSESSMENT"):
         if exam['future']:
@@ -94,7 +94,7 @@ def assess_unlock(course_id, exam_id):
 def assess_startexam(course_id, exam_id):
     """ Show the start page of the exam """
     user_id = session['user_id']
-    exam = Exams.getExamStruct(exam_id, user_id)
+    exam = Exams.get_exam_struct(exam_id, user_id)
 
     if not check_perm(user_id, course_id, "OASIS_PREVIEWASSESSMENT"):
         if exam['future']:
@@ -105,7 +105,7 @@ def assess_startexam(course_id, exam_id):
             flash("That assessment is closed.")
             return redirect(url_for("assess_top"))
 
-    Exams.createUserExam(user_id, exam_id)  # get it cached and ready to start
+    Exams.create_user_exam(user_id, exam_id)  # get it cached and ready to start
 
     if 'code' in session:
         ucode = session['code']
@@ -132,9 +132,9 @@ def assess_assessmentpage(course_id, exam_id, page):
     """
     user_id = session['user_id']
 
-    status = Exams.getUserStatus(user_id, exam_id)
+    status = Exams.get_user_status(user_id, exam_id)
     if status == 1:  # if it's not started, mark it as started
-        Exams.setUserStatus(user_id, exam_id, 2)
+        Exams.set_user_status(user_id, exam_id, 2)
         Exams.touchUserExam(exam_id, user_id)
 
     form = request.form
@@ -144,7 +144,7 @@ def assess_assessmentpage(course_id, exam_id, page):
             q_id = int(qinfo.groups()[0])
             part = int(qinfo.groups()[1])
             value = form[field]
-            timeremain = Exams.getEndTime(exam_id, user_id) - time.time()
+            timeremain = Exams.get_end_time(exam_id, user_id) - time.time()
             if timeremain < -30:
                 flash("Time Exceeded, automatically submitting...")
                 return redirect(url_for("assess_submit",
@@ -179,8 +179,8 @@ def assess_assessmentpage(course_id, exam_id, page):
         page = int(goto.split(' ', 2)[1])
 
     q_id = General.getExamQuestion(exam_id, page, user_id)
-    timeleft = Exams.getEndTime(exam_id, user_id) - time.time()
-    exam = Exams.getExamStruct(exam_id, course_id)
+    timeleft = Exams.get_end_time(exam_id, user_id) - time.time()
+    exam = Exams.get_exam_struct(exam_id, course_id)
 
     if 'code' in session:
         ucode = session['code']
@@ -193,7 +193,7 @@ def assess_assessmentpage(course_id, exam_id, page):
                                 exam_id=exam_id))
 
     course = Courses2.get_course(course_id)
-    if Exams.isDoneBy(user_id, exam_id):
+    if Exams.is_done_by(user_id, exam_id):
         exam['is_done'] = True
         html = General.render_q_html(q_id, readonly=True)
     else:
@@ -203,7 +203,7 @@ def assess_assessmentpage(course_id, exam_id, page):
         is_timed = 1
     else:
         is_timed = 0
-    numquestions = Exams.getNumQuestions(exam_id)
+    numquestions = Exams.get_num_questions(exam_id)
     return render_template(
         "assess_page.html",
         exam=exam,
@@ -224,9 +224,9 @@ def assess_presubmit(course_id, exam_id):
     """  Ask if they're sure they want to submit. """
     user_id = session['user_id']
 
-    exam = Exams.getExamStruct(exam_id, course_id)
+    exam = Exams.get_exam_struct(exam_id, course_id)
     course = Courses2.get_course(course_id)
-    numquestions = Exams.getNumQuestions(exam_id)
+    numquestions = Exams.get_num_questions(exam_id)
     qids = []
     questions = []
     for position in range(1, numquestions + 1):
@@ -259,8 +259,8 @@ def assess_submit(course_id, exam_id):
     """  Submit and mark """
     user_id = session['user_id']
 
-    exam = Exams.getExamStruct(exam_id, course_id)
-    status = Exams.getUserStatus(user_id, exam_id)
+    exam = Exams.get_exam_struct(exam_id, course_id)
+    status = Exams.get_user_status(user_id, exam_id)
     if status < 5:
         marked = Assess.mark_exam(user_id, exam_id)
         if not marked:
@@ -283,9 +283,9 @@ def assess_awaitresults(course_id, exam_id):
     """  Thank them and tell them the results will be available later.
     """
     user_id = session['user_id']
-    exam = Exams.getExamStruct(exam_id, course_id)
+    exam = Exams.get_exam_struct(exam_id, course_id)
     course = Courses2.get_course(course_id)
-    numquestions = Exams.getNumQuestions(exam_id)
+    numquestions = Exams.get_num_questions(exam_id)
     qids = []
     questions = []
     for position in range(1, numquestions + 1):
@@ -315,11 +315,11 @@ def assess_viewmarked(course_id, exam_id):
     user_id = session['user_id']
     course = Courses2.get_course(course_id)
     try:
-        exam = Exams.getExamStruct(exam_id, course_id)
+        exam = Exams.get_exam_struct(exam_id, course_id)
     except KeyError:
         exam = {}
         abort(404)
-    status = Exams.getUserStatus(user_id, exam_id)
+    status = Exams.get_user_status(user_id, exam_id)
     if not status >= 5:
         flash("Assessment is not marked yet.")
         return render_template(
@@ -329,8 +329,8 @@ def assess_viewmarked(course_id, exam_id):
         )
 
     results, examtotal = Assess.render_own_marked_exam(user_id, exam_id)
-    datemarked = General.humanDate(Exams.getMarkTime(exam_id, user_id))
-    datesubmit = General.humanDate(Exams.getSubmitTime(exam_id, user_id))
+    datemarked = General.humanDate(Exams.get_mark_time(exam_id, user_id))
+    datesubmit = General.humanDate(Exams.get_submit_time(exam_id, user_id))
 
     if "user_fullname" in session:
         fullname = session['user_fullname']

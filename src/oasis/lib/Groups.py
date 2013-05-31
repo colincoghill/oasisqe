@@ -121,3 +121,33 @@ def getInfoAll():
             }
             count += 1
     return info
+
+
+def get_by_feed(feed_id):
+    """ Return a summary of all active or future groups with the given feed
+    """
+    ret = run_sql(
+        """SELECT id, title, description, startdate, enddate, owner,
+                  semester, "type", enrol_type, enrol_location
+           FROM groups
+           WHERE enddate > NOW()
+           AND "feed" = %s
+           ORDER BY title ;""", (feed_id,))
+    info = {}
+    if ret:
+        count = 0
+        for row in ret:
+            info[count] = {
+                'id': int(row[0]),
+                'title': row[1],
+                'description': row[2],
+                'startdate': row[3],
+                'enddate': row[4],
+                'owner': row[5],
+                'semester': row[6],
+                'type': row[7],
+                'enrol_type': row[8],
+                'enrol_location': row[9]
+            }
+            count += 1
+    return info

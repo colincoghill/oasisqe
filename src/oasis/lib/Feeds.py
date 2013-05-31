@@ -77,8 +77,6 @@ class Feed(object):
         """ Save ourselves back to database.
         """
 
-
-
         if self.new:
             sql = """INSERT INTO feeds ("name", "title", "script", "envvar",
                                         "comments", "freq", "status", "error",
@@ -108,7 +106,6 @@ class Feed(object):
 
         run_sql(sql, params)
 
-
     def freq_name(self):
         """ Feed frequency as a human readable word.
         """
@@ -121,18 +118,68 @@ class Feed(object):
             return "manual"
         return "unknown"
 
+    def run(self):
+        """ Run the given feed.
+            Will find all current or future groups attached to the feed,
+            then run the external script once for each.
+        """
+
+        pass
+
+
+    def run_for_group(self, group):
+        """ Run the feed for the given group.
+        """
+
+        pass
+
+
     # def delete(self):
     # def groups(self):
-
-
 
 
 def all_list():
     """
         Return a list of all time periods in the system.
     """
-
+    #  Need a way to do this with one query.
     sql = """SELECT id FROM feeds;"""
+    ret = run_sql(sql)
+    if not ret:
+        return []
+
+    feeds = []
+    for row in ret:
+        feed_id = row[0]
+        feeds.append(Feed(id=feed_id))
+
+    return feeds
+
+
+def active_hourly():
+    """
+        Return a list of active hourly feeds.
+    """
+    #  Need a way to do this with one query.
+    sql = """SELECT id FROM feeds WHERE active=True AND freq='1';"""
+    ret = run_sql(sql)
+    if not ret:
+        return []
+
+    feeds = []
+    for row in ret:
+        feed_id = row[0]
+        feeds.append(Feed(id=feed_id))
+
+    return feeds
+
+
+def active_daily():
+    """
+        Return a list of active daily feeds.
+    """
+    #  Need a way to do this with one query.
+    sql = """SELECT id FROM feeds WHERE active=True AND freq='2';"""
     ret = run_sql(sql)
     if not ret:
         return []
