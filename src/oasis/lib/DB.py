@@ -425,7 +425,8 @@ def get_q_att_mimetype(qt_id, name, variation, version=1000000000):
     if version == 1000000000:
         version = get_qt_version(qt_id)
     try:
-        key = "questionattach/%d/%s/%d/%d/mimetype" % (qt_id, name, variation, version)
+        key = "questionattach/%d/%s/%d/%d/mimetype" % \
+              (qt_id, name, variation, version)
         (value, found) = fileCache.get(key)
         if not found:
             ret = run_sql("""SELECT qtemplate, mimetype
@@ -708,7 +709,8 @@ def get_qt_variation(qt_id, variation, version=1000000000):
                      (qt_id, variation, qt_id, version))
     if not res:
         log(WARN,
-            "Request for unknown qt variation. (%d, %d, %d)" % (qt_id, variation, version))
+            "Request for unknown qt variation. (%d, %d, %d)" %
+            (qt_id, variation, version))
         return None
     result = None
     data = None
@@ -717,7 +719,8 @@ def get_qt_variation(qt_id, variation, version=1000000000):
         data = cPickle.loads(result)
     except TypeError:
         log(WARN,
-            "Type error trying to cpickle.loads(%s) for (%s, %s, %s)" % (type(result), qt_id, variation, version))
+            "Type error trying to cpickle.loads(%s) for (%s, %s, %s)" %
+            (type(result), qt_id, variation, version))
     return data
 
 
@@ -736,7 +739,8 @@ def get_qt_num_variations(qt_id, version=1000000000):
         num = int(ret[0][0])
     except BaseException, err:
         log(WARN,
-            "No Variation found for qtid=%d, version=%d: %s" % (qt_id, version, err))
+            "No Variation found for qtid=%d, version=%d: %s" %
+            (qt_id, version, err))
         return 0
     return num
 
@@ -786,7 +790,8 @@ def create_q(qt_id, name, student, status, variation, version, exam):
     assert isinstance(exam, int)
     conn = dbpool.begin()
     conn.run_sql("""INSERT INTO questions (qtemplate, name, student, status, variation, version, exam)
-               VALUES (%s, %s, %s, %s, %s, %s, %s);""", (qt_id, name, student, status, variation, version, exam ))
+               VALUES (%s, %s, %s, %s, %s, %s, %s);""",
+                 (qt_id, name, student, status, variation, version, exam ))
     res = conn.run_sql("SELECT currval('questions_question_seq')")
     dbpool.commit(conn)
     if not res:
@@ -936,13 +941,22 @@ def copy_qt_all(qt_id):
     attachments = get_qt_atts(qt_id)
     newversion = get_qt_version(newid)
     for name in attachments:
-        create_qt_att(newid, name, get_qt_att_mimetype(qt_id, name), get_qt_att(qt_id, name), newversion)
+        create_qt_att(newid,
+                      name,
+                      get_qt_att_mimetype(qt_id, name),
+                      get_qt_att(qt_id, name),
+                      newversion)
     try:
         variations = get_qt_variations(qt_id)
         for variation in variations.keys():
-            add_qt_variation(newid, variation, variations[variation], newversion)
+            add_qt_variation(newid,
+                             variation,
+                             variations[variation],
+                             newversion)
     except AttributeError, err:
-        log(WARN, "Copying a qtemplate %s with no variations. '%s'" % (qt_id, err))
+        log(WARN,
+            "Copying a qtemplate %s with no variations. '%s'" %
+            (qt_id, err))
     return newid
 
 
@@ -958,7 +972,13 @@ def copy_qt(qt_id):
     if not res:
         raise KeyError("QTemplate %d not found" % qt_id)
     orig = res[0]
-    newid = create_qt(int(orig[0]), orig[1], orig[2], orig[3], orig[4], int(orig[5]))
+    newid = create_qt(int(orig[0]),
+                      orig[1],
+                      orig[2],
+                      orig[3],
+                      orig[4],
+                      int(orig[5])
+    )
     if newid <= 0:
         raise IOError("Unable to create copy of QTemplate %d" % qt_id)
     return newid
@@ -994,7 +1014,8 @@ def create_qt(owner, title, desc, marker, scoremax, status):
     if res:
         return int(res[0][0])
     log(ERROR,
-        "create_qt error (%d, %s, %s, %d, %s, %s)" % (owner, title, desc, marker, scoremax, status))
+        "create_qt error (%d, %s, %s, %d, %s, %s)" %
+        (owner, title, desc, marker, scoremax, status))
 
 
 def _serialize_courseexaminfo(info):
@@ -1263,12 +1284,15 @@ def set_message(name, message):
     assert isinstance(name, str) or isinstance(name, unicode)
     assert isinstance(message, str) or isinstance(message, unicode)
 
-    ret = run_sql("SELECT COUNT(message) FROM messages WHERE name=%s;", (name,))
+    ret = run_sql("SELECT COUNT(message) FROM messages WHERE name=%s;",
+                  (name,))
     if ret and len(ret) and int(ret[0][0]) >= 1:
-        run_sql("UPDATE messages SET message=%s WHERE name=%s;", (message, name))
+        run_sql("UPDATE messages SET message=%s WHERE name=%s;",
+                (message, name))
         log(INFO, "Message %s updated to %s." % (name, message))
     else:
-        run_sql("INSERT INTO messages (name, message) VALUES (%s, %s);", (name, message))
+        run_sql("INSERT INTO messages (name, message) VALUES (%s, %s);",
+                (name, message))
         log(INFO, "Message %s inserted as %s." % (name, message))
 
 
@@ -1277,7 +1301,8 @@ def get_message(name):
     """
     assert isinstance(name, str) or isinstance(name, unicode)
 
-    ret = run_sql("SELECT message FROM messages WHERE name=%s;", (name,))
+    ret = run_sql("SELECT message FROM messages WHERE name=%s;",
+                  (name,))
     if not ret:
         return ""
     return ret[0][0]
@@ -1381,6 +1406,7 @@ def upgrade_db():
         #   dbver = "3.9.2"
         return True
 
-    log(INFO, "Database not upgraded.")
+    log(INFO,
+        "Database not upgraded.")
     return False
 

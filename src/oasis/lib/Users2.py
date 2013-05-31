@@ -32,7 +32,7 @@ def reloadUsersIfNeeded():
     global USERS_VERSION
     global USERS
 
-    newversion = Users.getVersion()
+    newversion = Users.get_version()
     if newversion > USERS_VERSION:
         USERS_VERSION = newversion
         USERS = {}
@@ -46,16 +46,16 @@ def getUser(user_id):
 
     reloadUsersIfNeeded()
     if not user_id in USERS:
-        USERS[user_id] = Users.getUserRecord(user_id)
+        USERS[user_id] = Users.get_user_record(user_id)
 
     return USERS[user_id]
 
 
-getUidByUname = Users.getUidByUname
-verifyPass = Users.verifyPass
+getUidByUname = Users.get_uid_by_uname
+verifyPass = Users.verify_password
 create = Users.create
 find = Users.find
-getCourses = Users.getCourses
-setPassword = Users.setPassword
+getCourses = Users.get_courses
+setPassword = Users.set_password
 
 reloadUsersIfNeeded()

@@ -215,8 +215,8 @@ def login_forgot_pass_submit():
               "please contact IT Support.")
         return redirect(url_for("login_forgot_pass"))
 
-    code = Users.generateConfirmationCode()
-    Users.setConfirmationCode(user_id, code)
+    code = Users.gen_confirm_code()
+    Users.set_confirm_code(user_id, code)
 
     email = user['email']
     if not email:
@@ -244,11 +244,11 @@ def login_confirm(code):
     if len(code) > 20:
         abort(404)
 
-    uid = Users.verifyConfirmationCode(code)
+    uid = Users.verify_confirm_code(code)
     if not uid:
         abort(404)
-    Users.setConfirmed(uid)
-    Users.setConfirmationCode(uid, "")
+    Users.set_confirm(uid)
+    Users.set_confirm_code(uid, "")
     return render_template("login_signup_confirmed.html")
 
 
@@ -262,11 +262,11 @@ def login_email_passreset(code):
     if len(code) > 20:
         abort(404)
 
-    uid = Users.verifyConfirmationCode(code)
+    uid = Users.verify_confirm_code(code)
     if not uid:
         abort(404)
-    Users.setConfirmed(uid)
-    Users.setConfirmationCode(uid, "")
+    Users.set_confirm(uid)
+    Users.set_confirm_code(uid, "")
     user = Users2.getUser(uid)
     session['username'] = user['uname']
     session['user_id'] = uid
@@ -321,7 +321,7 @@ def login_signup_submit():
               "please try another username.")
         return redirect(url_for("login_signup"))
 
-    code = Users.generateConfirmationCode()
+    code = Users.gen_confirm_code()
     newuid = Users.create(uname=username,
                           passwd="NOLOGIN",
                           email=email,

@@ -17,7 +17,7 @@ from oasis.lib.DB import run_sql, MC
 from logging import log, WARN, ERROR, INFO
 
 
-def getVersion():
+def get_version():
     """ Fetch the current version of the user table.
         This will be incremented when anything in the users table is changed.
         The idea is that while the version hasn't changed, user information
@@ -36,7 +36,7 @@ def getVersion():
     return -1
 
 
-def incrementVersion():
+def incr_version():
     """ Increment the user table version.
     """
     key = "userstable-version"
@@ -49,22 +49,7 @@ def incrementVersion():
     return -1
 
 
-def getFamilyName(uid):
-    """ Fetch the surname of the user """
-    return getUserRecord(uid)['familyname']
-
-
-def getGivenName(uid):
-    """ Fetch the first  name of the user"""
-    return getUserRecord(uid)['givenname']
-
-
-def getFullName(uid):
-    """ Fetch the full name of the user """
-    return getUserRecord(uid)['fullname']
-
-
-def getUserRecord(user_id):
+def get_user_record(user_id):
     """ Fetch info about the user
         returns  {'id', 'uname', 'givenname', 'lastname', 'fullname'}
     """
@@ -105,12 +90,7 @@ def getUserRecord(user_id):
         return user_rec
 
 
-def getUname(uid):
-    """ Fetch the (login) name of the user"""
-    return getUserRecord(uid)['uname']
-
-
-def setPassword(user_id, clearpass):
+def set_password(user_id, clearpass):
     """ Updates a users password. """
     hashed = bcrypt.hashpw(clearpass, bcrypt.gensalt())
     sql = """UPDATE "users" SET "passwd"=%s WHERE "id"=%s;"""
@@ -123,7 +103,7 @@ def setPassword(user_id, clearpass):
     return True
 
 
-def verifyPass(uname, clearpass):
+def verify_password(uname, clearpass):
     """ Confirm the password is correct for the given user name.
         We first try bcrypt, if it fails we try md5 to see if they have
         an old password, and if so, upgrade the stored password to bcrypt.
@@ -151,30 +131,34 @@ def verifyPass(uname, clearpass):
     md5hashed = hashgen.hexdigest()
     if stored_pw == md5hashed:
         # Ok, now we need to upgrade them to something more secure
-        setPassword(user_id, clearpass)
+        set_password(user_id, clearpass)
         log(INFO, "Upgrading MD5 password to bcrypt for %s" % uname)
         return user_id
     return False
 
 
-def create(uname, passwd, givenname, familyname, acctstatus, studentid, email=None,
-           expiry=None, source="local", confirm_code=None, confirm=True):
+def create(uname, passwd, givenname, familyname, acctstatus, studentid,
+           email=None, expiry=None, source="local",
+           confirm_code=None, confirm=True):
     """ Add a user to the database. """
     log(INFO, "Users.py:create(%s)" % uname)
     if not confirm_code:
         confirm_code = ""
-    run_sql("""INSERT INTO users (uname, passwd, givenname, familyname, acctstatus, student_id,
-                                  email, expiry, source, confirmation_code, confirmed)
+    run_sql("""INSERT INTO users (uname, passwd, givenname, familyname,
+                                  acctstatus, student_id, email, expiry,
+                                  source, confirmation_code, confirmed)
                VALUES (%s, %s, %s, %s, %s, %s,
                        %s, %s, %s, %s, %s);""",
-            (uname, passwd, givenname, familyname, acctstatus, studentid, email, expiry, source, confirm_code, confirm ))
-    incrementVersion()
-    uid = getUidByUname(uname)
+            (uname, passwd, givenname, familyname,
+             acctstatus, studentid, email, expiry,
+             source, confirm_code, confirm ))
+    incr_version()
+    uid = get_uid_by_uname(uname)
     log(INFO, "User created with uid %d." % uid)
     return uid
 
 
-def getUidByUname(uname):
+def get_uid_by_uname(uname):
     """ Lookup the users internal ID number given their login name. """
     key = "user-%s-unametouid" % (uname,)
     obj = MC.get(key)
@@ -205,7 +189,7 @@ def find(search):
     return res
 
 
-def getGroups(user):
+def get_groups(user):
     """ Return a list of groups the user is a member of.  """
     assert isinstance(user, int)
     ret = run_sql("""SELECT groupid FROM usergroups WHERE userid=%s;""",
@@ -217,9 +201,9 @@ def getGroups(user):
     return []
 
 
-def getCourses(user_id):
+def get_courses(user_id):
     """ Return a list of the Course IDs of the courses the user is in """
-    groups = getGroups(user_id)
+    groups = get_groups(user_id)
     courses = []
     for group in groups:
         res = run_sql("""SELECT course FROM groupcourses WHERE active=1 AND groupid=%s LIMIT 1;""", (group,))
@@ -229,7 +213,7 @@ def getCourses(user_id):
     return courses
 
 
-def verifyConfirmationCode(code):
+def verify_confirm_code(code):
     """ Given an email confirmation code, return the user_id it was given to,
         otherwise False.
     """
@@ -242,18 +226,18 @@ def verifyConfirmationCode(code):
     return False
 
 
-def setConfirmed(uid):
+def set_confirm(uid):
     """ The user has confirmed, mark their record."""
     run_sql("""UPDATE "users" SET confirmed='TRUE' WHERE id=%s;""", (uid,))
 
 
-def setConfirmationCode(uid, code):
+def set_confirm_code(uid, code):
     """ Set a new code, possibly for password reset confirmation."""
     run_sql("""UPDATE "users" SET confirmation_code=%s WHERE id=%s;""",
             (code, uid))
 
 
-def generateConfirmationCode():
+def gen_confirm_code():
     """ Generate a new email confirmation code and return it
     """
 

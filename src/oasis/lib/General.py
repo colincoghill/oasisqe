@@ -3,10 +3,10 @@
 # This code is under the GNU Affero General Public License
 # http://www.gnu.org/licenses/agpl-3.0.html
 
-""" OaGeneral.py
+""" General.py
     General and miscellaneous OASIS backend stuff
 
-    Functions needed by several of the Oasis frontend (FE) components.
+    Functions needed by several of the Oasis views
 """
 
 import Image
@@ -14,7 +14,7 @@ import ImageDraw
 import ImageFont
 import re
 import random
-import StringIO
+from StringIO import StringIO
 import math
 import sys
 import traceback
@@ -186,56 +186,62 @@ def gen_q(qtid, student=0, exam=0, position=0):
     return gen_q_from_var(qtid, student, exam, position, version, variation)
 
 
-def gen_q_from_var(qtid, student, exam, position, version, variation):
+def gen_q_from_var(qt_id, student, exam, position, version, variation):
     """ Generate a question given a specific variation. """
     qvars = None
-    qid = DB.create_q(qtid, DB.get_qt_name(qtid), student, 1, variation, version, exam)
+    q_id = DB.create_q(qt_id,
+                      DB.get_qt_name(qt_id),
+                      student,
+                      1,
+                      variation,
+                      version,
+                      exam)
     try:
-        qid = int(qid)
-        assert (qid > 0)
+        q_id = int(q_id)
+        assert (q_id > 0)
     except (ValueError, TypeError, AssertionError):
-        log(ERROR, "OaDB.createQuestion(%s,...) FAILED" % qtid)
-    imageexists = DB.get_q_att_mimetype(qtid, "image.gif", variation, version)
+        log(ERROR, "OaDB.createQuestion(%s,...) FAILED" % qt_id)
+    imageexists = DB.get_q_att_mimetype(qt_id, "image.gif", variation, version)
     if not imageexists:
         if not qvars:
-            qvars = DB.get_qt_variation(qtid, variation, version)
-        qvars['Oasis_qid'] = qid
-        image = DB.get_qt_att(qtid, "image.gif", version)
+            qvars = DB.get_qt_variation(qt_id, variation, version)
+        qvars['Oasis_qid'] = q_id
+        image = DB.get_qt_att(qt_id, "image.gif", version)
         if image:
             newimage = gen_q_image(qvars, image)
-            DB.create_q_att(qtid,
+            DB.create_q_att(qt_id,
                             variation,
                             "image.gif",
                             "image/gif",
                             newimage,
                             version)
-    htmlexists = DB.get_q_att_mimetype(qtid,
+    htmlexists = DB.get_q_att_mimetype(qt_id,
                                        "qtemplate.html",
                                        variation,
                                        version)
     if not htmlexists:
         if not qvars:
-            qvars = DB.get_qt_variation(qtid, variation, version)
-        html = DB.get_qt_att(qtid, "qtemplate.html", version)
+            qvars = DB.get_qt_variation(qt_id, variation, version)
+        html = DB.get_qt_att(qt_id, "qtemplate.html", version)
         if html:
-            qvars['Oasis_qid'] = qid
+            qvars['Oasis_qid'] = q_id
             newhtml = gen_q_html(qvars, html)
-            log(INFO, "generating new qattach qtemplate.html for %s" % qid)
-            DB.create_q_att(qtid,
+            log(INFO, "generating new qattach qtemplate.html for %s" % q_id)
+            DB.create_q_att(qt_id,
                             variation,
                             "qtemplate.html",
                             "application/oasis-html",
                             newhtml,
                             version)
     try:
-        qid = int(qid)
-        assert (qid > 0)
+        q_id = int(q_id)
+        assert (q_id > 0)
     except (ValueError, TypeError, AssertionError):
         log(ERROR, "generateQuestionFromVar(%s,%s), can't find qid %s? " %
-                   (qtid, student, qid))
+                   (qt_id, student, q_id))
     if exam >= 1:
-        DB.add_exam_q(student, exam, qid, position)
-    return qid
+        DB.add_exam_q(student, exam, q_id, position)
+    return q_id
 
 
 def gen_q_html(qvars, html):
@@ -293,20 +299,24 @@ def gen_q_html(qvars, html):
 
 def gen_q_image(qvars, image):
     """ Draw values onto the image provided. """
-    img = Image.open(StringIO.StringIO(image)).convert("P", palette=Image.ADAPTIVE)
+    img = Image.open(StringIO(image)).convert("P", palette=Image.ADAPTIVE)
     imgdraw = ImageDraw.Draw(img)
-    font = ImageFont.truetype("%s/fonts/Courier_New.ttf" % (OaConfig.homedir,), 14)
-    coords = [int(e[1:]) for e in qvars.keys() if re.search("^X([0-9]+)$", e) > 0]
+    font = ImageFont.truetype("%s/fonts/Courier_New.ttf" % OaConfig.homedir, 14)
+    coords = [int(name[1:])
+              for name in qvars.keys()
+              if re.search("^X([0-9]+)$", name) > 0]
     for coord in coords:
-        (xcoord, ycoord, value) = (qvars["X%d" % coord], qvars["Y%d" % coord], qvars["Z%d" % coord])
+        (xcoord, ycoord, value) = (qvars["X%d" % coord],
+                                   qvars["Y%d" % coord],
+                                   qvars["Z%d" % coord])
         if (xcoord > -1) and (ycoord > -1):
             value = unicode(value, "utf-8")    # convert to unicode
             try:
                 imgdraw.text((int(xcoord), int(ycoord)), value, font=font, fill=0)
-            except UnicodeEncodeError, e:
+            except UnicodeEncodeError, err:
                 log(WARN,
-                    u"Unicode error generating image: %s [%s]." % (e, value))
-    data = StringIO.StringIO("")
+                    u"Unicode error generating image: %s [%s]." % (err, value))
+    data = StringIO("")
     img.save(data, "GIF")
     return data.getvalue()
 
@@ -332,12 +342,12 @@ def handle_multi_f(html, answer, qvars):
     if paramlist:
         pout = ["", ]
         pcount = 0
-        for p in paramlist:
+        for param in paramlist:
             pcount += 1
-            if p in qvars:
+            if param in qvars:
                 pout += ["<td CLASS='multichoicecell'>"]
                 pout += ["<INPUT class='auto_save' TYPE='radio' NAME='ANS_%d' VALUE='%d' Oa_CHK_%d_%d>%s</td>" % (
-                    answer, pcount, answer, pcount, qvars[p])]
+                    answer, pcount, answer, pcount, qvars[param])]
             else:
                 pout += ["""<FONT COLOR="red">ERROR IN QUESTION DATA</FONT>"""]
 
@@ -368,14 +378,14 @@ def handle_multi_v(html, answer, qvars):
     if paramlist:
         pout = ["", ]
         pcount = 0
-        for p in paramlist:
+        for param in paramlist:
             pcount += 1
             pt = 'abcdefghijklmnopqrstuvwxyz'[pcount - 1]
-            if qvars.has_key(p):
+            if qvars.has_key(param):
                 pout += ["<tr><th>%s)</th><td>" % pt, ]
                 pout += "<INPUT class='auto_save' TYPE='radio' NAME='ANS_%d' VALUE='%d' Oa_CHK_%d_%d>" % (
                     answer, pcount, answer, pcount)
-                pout += "</td><td CLASS='multichoicecell'> %s</td></tr>" % qvars[p]
+                pout += "</td><td CLASS='multichoicecell'> %s</td></tr>" % qvars[param]
 
             else:
                 pout += ["""<tr><td>&nbsp;</td><td><FONT COLOR="red">ERROR IN QUESTION DATA</FONT></td></tr>"""]
@@ -442,11 +452,11 @@ def handle_listbox(html, answer, qvars, shuffle=True):
     if paramlist:
         pout = ["", ]
         pcount = 0
-        for p in paramlist:
+        for param in paramlist:
             pcount += 1
-            if p in qvars:
+            if param in qvars:
                 pout += ["""<OPTION VALUE='%d' Oa_SEL_%d_%d>%s</OPTION>""" %
-                         (pcount, answer, pcount, qvars[p])]
+                         (pcount, answer, pcount, qvars[param])]
             else:
                 pout += ["""<OPTION><FONT COLOR="red">ERROR IN QUESTION DATA</FONT></OPTION>"""]
         # this should randomise the order in the list at least a little bit
@@ -857,7 +867,7 @@ def renderMarkResultsScript(qtid, qid, marks, script):
     script_funcs.q_log(qid,
                       "error",
                       "__results.py",
-                      "didn't set variable 'resultsHTML', using standard renderer.")
+                      "'resultsHTML' not set, using standard renderer.")
     return render_mark_results_standard(qid, marks)
 
 
@@ -903,7 +913,7 @@ def markQuestion(qid, answers):
         if not markerscript:
             markerscript = DB.get_qt_att(qtid, "marker.py")
             log(INFO,
-                "Legacy 'marker.py', should now be called '__marker.py' (qtid=%s)" % qtid)
+                "'marker.py' should now be called '__marker.py' (qtid=%s)" % qtid)
         if not markerscript:
             log(INFO,
                 "Unable to retrieve marker script for smart marker question (qtid=%s)!" % qtid)
@@ -1036,7 +1046,8 @@ def remarkExam(exam, student):
 
 
 def remarkPractice(question):
-    """ Re-mark the practice question and store the score back in the questions table.
+    """ Re-mark the practice question and store the score back
+        in the questions table.
     """
     answers = DB.get_q_guesses(question)
     try:
