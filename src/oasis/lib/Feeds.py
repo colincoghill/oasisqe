@@ -66,6 +66,7 @@ class Feed(object):
         self.status = ret[0][6]
         self.error = ret[0][7]
         self.active = ret[0][8]
+        self.new = False
         if not self.name:
             self.name = ""
         if not self.title:
@@ -107,8 +108,23 @@ class Feed(object):
 
         run_sql(sql, params)
 
+
+    def freq_name(self):
+        """ Feed frequency as a human readable word.
+        """
+
+        if self.freq in ('1', 1):
+            return "hourly"
+        if self.freq in ('2', 2):
+            return "daily"
+        if self.freq in ('3', 3):
+            return "manual"
+        return "unknown"
+
     # def delete(self):
     # def groups(self):
+
+
 
 
 def all_list():

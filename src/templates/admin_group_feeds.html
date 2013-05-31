@@ -45,11 +45,11 @@
                     <td>{{ feed.name }}</td>
                     <th>{{ feed.title }}</th>
                     <td>{{ feed.script }}</td>
-                    <td>{{ feed.freq }}</td>
+                    <td>{{ feed.freq_name() }}</td>
                     <td>{{ feed.status }}</td>
 
-                    <td>{% if feed.editable() %}<a class='btn btn-mini'
-                           href='{{ cf.url }}admin/edit_feed/{{ feed.id }}'>Edit</a>{% endif %}
+                    <td><a class='btn btn-mini'
+                           href='{{ cf.url }}admin/edit_feed/{{ feed.id }}'>Edit</a>
                     </td>
                 </tr>
             {% endfor %}
@@ -81,11 +81,11 @@
                     <td>{{ feed.name }}</td>
                     <th>{{ feed.title }}</th>
                     <td>{{ feed.script }}</td>
-                    <td>{{ feed.freq }}</td>
+                    <td>{{ feed.freq_name() }}</td>
                     <td>{{ feed.status }}</td>
 
-                    <td>{% if feed.editable() %}<a class='btn btn-mini'
-                           href='{{ cf.url }}admin/edit_feed/{{ feed.id }}'>Edit</a>{% endif %}
+                    <td><a class='btn btn-mini'
+                           href='{{ cf.url }}admin/edit_feed/{{ feed.id }}'>Edit</a>
                     </td>
                 </tr>
             {% endfor %}

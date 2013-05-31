@@ -36,7 +36,7 @@ def get_users(group_id):
     return []
 
 
-def getName(group_id):
+def get_name(group_id):
     """ Return the name of the group."""
     ret = run_sql("""SELECT title FROM groups WHERE "id"=%s;""", (group_id,))
     if ret:

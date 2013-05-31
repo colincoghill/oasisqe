@@ -30,27 +30,27 @@ def embed_question(embed_id):
     if len(embed_id) < 1:
         abort(404)
     try:
-        qtid = DB.get_qt_by_embedid(embed_id)
+        qt_id = DB.get_qt_by_embedid(embed_id)
     except KeyError:
-        qtid = None
+        qt_id = None
         abort(404)
 
-    title = request.args.get('title', DB.get_qt_name(qtid))
+    title = request.args.get('title', DB.get_qt_name(qt_id))
     title = ''.join([t for t in title
                      if t in VALIDCHARS])
 
-    qid = Practice.get_practice_q(qtid, user_id)
-    vers = DB.get_q_version(qid)
-    if not vers >= DB.get_qt_version(qtid):
-        qid = General.gen_q(qtid, user_id)
+    q_id = Practice.get_practice_q(qt_id, user_id)
+    vers = DB.get_q_version(q_id)
+    if not vers >= DB.get_qt_version(qt_id):
+        q_id = General.gen_q(qt_id, user_id)
 
-    q_body = General.render_q_html(qid)
+    q_body = General.render_q_html(q_id)
     return render_template(
         "embeddoquestion.html",
         q_body=q_body,
-        embed_id=DB.get_qt_embedid(qtid),
+        embed_id=DB.get_qt_embedid(qt_id),
         title=title,
-        qid=qid,
+        qid=q_id,
     )
 
 
@@ -65,18 +65,18 @@ def embed_mark_question(embed_id):
     else:
         user_id = session['user_id']
 
-    qtid = DB.get_qt_by_embedid(embed_id)
-    if not qtid:
+    qt_id = DB.get_qt_by_embedid(embed_id)
+    if not qt_id:
         abort(404)
 
     if "OaQID" in request.form:
-        qid = int(request.form["OaQID"])
+        q_id = int(request.form["OaQID"])
     else:
-        qid = None
-    if not qid:
+        q_id = None
+    if not q_id:
         abort(404)
 
-    marking = Embed.mark_q(user_id, qtid, request)
+    marking = Embed.mark_q(user_id, qt_id, request)
 
     return render_template(
         "embedmarkquestion.html",

@@ -171,6 +171,74 @@ def admin_add_period():
     )
 
 
+
+@app.route("/admin/edit_group_feed_submit/<int:feed_id>", methods=["POST",])
+@authenticated
+def admin_edit_group_feed_submit(feed_id):
+    """ Submit edit feed form """
+    user_id = session['user_id']
+    if not check_perm(user_id, 0, "OASIS_SYSADMIN"):
+        flash("You do not have system administrator permission")
+        return redirect(url_for('setup_top'))
+
+    if "cancel" in request.form:
+        flash("Edit cancelled!")
+        return redirect(url_for("admin_feeds"))
+
+    name = request.form.get('name', '')
+    title = request.form.get('title', '')
+    script = request.form.get('script', '')
+    envvar = request.form.get('envvar', '')
+    comments = request.form.get('comments', '')
+    freq = int(request.form.get('freq', 1))
+    active = request.form.get('active', 'inactive') == 'active'
+
+    if feed_id == 0:  # It's a new one being created
+        feed = Feeds.Feed(
+            id=0,
+            name=name,
+            title=title,
+            script=script,
+            envvar=envvar,
+            comments=comments,
+            freq=freq,
+            active=active
+        )
+    else:
+        try:
+            feed = Feeds.Feed(id=feed_id)
+        except KeyError:
+            feed = None
+            abort(404)
+
+    feed.id = feed_id
+    feed.name = name
+    feed.title = title
+    feed.script = script
+    feed.envvar = envvar
+    feed.comments = comments
+    feed.freq = freq
+    feed.active = active
+
+    if name == "":
+        flash("Can't Save: Name must be supplied")
+        return render_template(
+            "admin_edit_group_feed.html",
+            feed=feed
+        )
+
+    try:
+        feed.save()
+    except ValueError, err:  # Probably a duplicate or something
+        flash("Can't Save: %s" % err)
+        return render_template(
+            "admin_edit_group_feed.html",
+            feed=feed
+        )
+    flash("Changes saved", category='success')
+    return redirect(url_for("admin_feeds"))
+
+
 @app.route("/admin/edit_period_submit/<int:p_id>", methods=["POST",])
 @authenticated
 def admin_edit_period_submit(p_id):

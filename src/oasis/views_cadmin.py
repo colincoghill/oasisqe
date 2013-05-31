@@ -33,8 +33,8 @@ def cadmin_top(course_id):
         abort(404)
 
     topics = Courses2.get_topics_list(course_id)
-    exams = [Exams.getExamStruct(e, course_id)
-             for e in Courses.get_exams(course_id, previous_years=False)]
+    exams = [Exams.getExamStruct(exam_id, course_id)
+             for exam_id in Courses.get_exams(course_id, previous_years=False)]
 
     if not satisfyPerms(user_id, course_id,
                         ("OASIS_QUESTIONEDITOR", "OASIS_VIEWMARKS",
@@ -144,8 +144,8 @@ def cadmin_prev_assessments(course_id):
     if not course:
         abort(404)
 
-    exams = [Exams.getExamStruct(e, course_id)
-             for e in DB.get_course_exam_all(course_id, previous_years=True)]
+    exams = [Exams.getExamStruct(exam_id, course_id)
+             for exam_id in DB.get_course_exam_all(course_id, previous_years=True)]
 
     if not satisfyPerms(user_id, course_id,
                         ("OASIS_QUESTIONEDITOR", "OASIS_VIEWMARKS",
@@ -153,7 +153,7 @@ def cadmin_prev_assessments(course_id):
         flash("You do not have admin permission on course %s" % course['name'])
         return redirect(url_for('setup_courses'))
 
-    years = [e['start'].year for e in exams]
+    years = [exam['start'].year for exam in exams]
     years = list(set(years))
     years.sort(reverse=True)
     exams.sort(key=lambda y: y['start_epoch'])
