@@ -19,11 +19,12 @@ from .lib import Courses, Courses2, Setup, Periods, Feeds
 MYPATH = os.path.dirname(__file__)
 from .lib.UserDB import check_perm
 from .lib import DB, Groups
-from oasis import app, authenticated
+from oasis import app, authenticated, require_perm
+from logging import log, INFO, ERROR
 
 
 @app.route("/admin/top")
-@authenticated
+@require_perm('OASIS_SYSADMIN', ('setup_top',))
 def admin_top():
     """ Present the top level admin page """
     db_version = DB.get_db_version()
@@ -35,13 +36,9 @@ def admin_top():
 
 
 @app.route("/admin/courses")
-@authenticated
+@require_perm('OASIS_SYSADMIN', ('setup_top',))
 def admin_courses():
     """ Present page to administer courses in the system """
-    user_id = session['user_id']
-    if not check_perm(user_id, 0, "OASIS_SYSADMIN"):
-        flash("You do not have system administrator permission")
-        return redirect(url_for('setup_top'))
     courses = Setup.get_sorted_courselist(with_stats=True, only_active=False)
 
     return render_template(
@@ -51,28 +48,19 @@ def admin_courses():
 
 
 @app.route("/admin/enrol/top")
-@authenticated
+@require_perm('OASIS_SYSADMIN', ('setup_top',))
 def admin_enrol_top():
     """ Present menu page of enrolment related options """
-    user_id = session['user_id']
-    if not check_perm(user_id, 0, "OASIS_SYSADMIN"):
-        flash("You do not have system administrator permission")
-        return redirect(url_for('setup_top'))
-
+    log(INFO, "Enrol top")
     return render_template(
         "admin_enrol_top.html"
     )
 
 
 @app.route("/admin/feeds")
-@authenticated
+@require_perm('OASIS_SYSADMIN', ('setup_top',))
 def admin_feeds():
     """ Present menu page of enrolment related options """
-    user_id = session['user_id']
-    if not check_perm(user_id, 0, "OASIS_SYSADMIN"):
-        flash("You do not have system administrator permission")
-        return redirect(url_for('setup_top'))
-
 
     feeds = Feeds.all_list()
     return render_template(
@@ -82,13 +70,9 @@ def admin_feeds():
 
 
 @app.route("/admin/periods")
-@authenticated
+@require_perm('OASIS_SYSADMIN', ('setup_top',))
 def admin_periods():
     """ Present page to administer time periods in the system """
-    user_id = session['user_id']
-    if not check_perm(user_id, 0, "OASIS_SYSADMIN"):
-        flash("You do not have system administrator permission")
-        return redirect(url_for('setup_top'))
     periods = Periods.all_list()
 
     return render_template(
@@ -98,13 +82,9 @@ def admin_periods():
 
 
 @app.route("/admin/edit_period/<int:p_id>")
-@authenticated
+@require_perm('OASIS_SYSADMIN', ('setup_top',))
 def admin_edit_period(p_id):
     """ Present page to edit a time period in the system """
-    user_id = session['user_id']
-    if not check_perm(user_id, 0, "OASIS_SYSADMIN"):
-        flash("You do not have system administrator permission")
-        return redirect(url_for('setup_top'))
     try:
         period = Periods.Period(id=p_id)
     except KeyError:
@@ -119,13 +99,9 @@ def admin_edit_period(p_id):
 
 
 @app.route("/admin/edit_feed/<int:feed_id>")
-@authenticated
+@require_perm('OASIS_SYSADMIN', ('setup_top',))
 def admin_edit_feed(feed_id):
     """ Present page to edit a feed in the system """
-    user_id = session['user_id']
-    if not check_perm(user_id, 0, "OASIS_SYSADMIN"):
-        flash("You do not have system administrator permission")
-        return redirect(url_for('setup_top'))
     try:
         feed = Feeds.Feed(id=feed_id)
     except KeyError:
@@ -140,13 +116,9 @@ def admin_edit_feed(feed_id):
 
 
 @app.route("/admin/add_feed")
-@authenticated
+@require_perm('OASIS_SYSADMIN', ('setup_top',))
 def admin_add_feed():
     """ Present page to add a feed to the system """
-    user_id = session['user_id']
-    if not check_perm(user_id, 0, "OASIS_SYSADMIN"):
-        flash("You do not have system administrator permission")
-        return redirect(url_for('setup_top'))
     scripts = ['feed_url.py', 'feed_ldap.py', 'feed_spreadsheet.py']
     return render_template(
         "admin_edit_group_feed.html",
@@ -156,14 +128,9 @@ def admin_add_feed():
 
 
 @app.route("/admin/add_period")
-@authenticated
+@require_perm('OASIS_SYSADMIN', ('setup_top',))
 def admin_add_period():
     """ Present page to add a time period in the system """
-    user_id = session['user_id']
-    if not check_perm(user_id, 0, "OASIS_SYSADMIN"):
-        flash("You do not have system administrator permission")
-        return redirect(url_for('setup_top'))
-
     return render_template(
         "admin_editperiod.html",
         period={'id':0}
@@ -172,14 +139,9 @@ def admin_add_period():
 
 
 @app.route("/admin/edit_group_feed_submit/<int:feed_id>", methods=["POST",])
-@authenticated
+@require_perm('OASIS_SYSADMIN', ('setup_top',))
 def admin_edit_group_feed_submit(feed_id):
     """ Submit edit feed form """
-    user_id = session['user_id']
-    if not check_perm(user_id, 0, "OASIS_SYSADMIN"):
-        flash("You do not have system administrator permission")
-        return redirect(url_for('setup_top'))
-
     if "cancel" in request.form:
         flash("Edit cancelled!")
         return redirect(url_for("admin_feeds"))
@@ -239,14 +201,9 @@ def admin_edit_group_feed_submit(feed_id):
 
 
 @app.route("/admin/edit_period_submit/<int:p_id>", methods=["POST",])
-@authenticated
+@require_perm('OASIS_SYSADMIN', ('setup_top',))
 def admin_edit_period_submit(p_id):
     """ Submit edit period form """
-    user_id = session['user_id']
-    if not check_perm(user_id, 0, "OASIS_SYSADMIN"):
-        flash("You do not have system administrator permission")
-        return redirect(url_for('setup_top'))
-
     if "cancel" in request.form:
         flash("Edit cancelled!")
         return redirect(url_for("admin_periods"))
@@ -335,13 +292,9 @@ def admin_edit_period_submit(p_id):
 
 
 @app.route("/admin/course/<int:course_id>")
-@authenticated
+@require_perm('OASIS_SYSADMIN', ('setup_top',))
 def admin_course(course_id):
     """ Present page to administer settings for a given course"""
-    user_id = session['user_id']
-    if not check_perm(user_id, 0, "OASIS_SYSADMIN"):
-        flash("You do not have system administrator permission")
-        return redirect(url_for('setup_top'))
 
     course = Courses2.get_course(course_id)
     course['size'] = len(Courses.get_users(course_id))
@@ -371,13 +324,9 @@ def admin_course(course_id):
 
 
 @app.route("/admin/add_course")
-@authenticated
+@require_perm('OASIS_SYSADMIN', ('setup_top',))
 def admin_add_course():
     """ Present page to administer settings for a given course """
-    user_id = session['user_id']
-    if not check_perm(user_id, 0, "OASIS_SYSADMIN"):
-        flash("You do not have system administrator permission")
-        return redirect(url_for('setup_top'))
     course = {
         'course_name': '',
         'course_title': '',
@@ -390,14 +339,9 @@ def admin_add_course():
 
 
 @app.route("/admin/course/save/<int:course_id>", methods=['POST', ])
-@authenticated
+@require_perm('OASIS_SYSADMIN', ('setup_top',))
 def admin_course_save(course_id):
     """ accept saved settings """
-    user_id = session['user_id']
-    if not check_perm(user_id, 0, "OASIS_SYSADMIN"):
-        flash("You do not have system administrator permission")
-        return redirect(url_for('setup_top'))
-
     form = request.form
     if 'cancel_edit' in form:
         flash("Course edits cancelled")
@@ -469,14 +413,9 @@ def admin_course_save(course_id):
 
 
 @app.route("/admin/add_course/save", methods=['POST', ])
-@authenticated
+@require_perm('OASIS_SYSADMIN', ('setup_top',))
 def admin_add_course_save():
     """ accept saved settings for a new course"""
-
-    user_id = session['user_id']
-    if not check_perm(user_id, 0, "OASIS_SYSADMIN"):
-        flash("You do not have system administrator permission")
-        return redirect(url_for('setup_top'))
 
     form = request.form
     if 'cancel_edit' in form:
@@ -529,14 +468,10 @@ def admin_add_course_save():
 
 
 @app.route("/admin/edit_messages")
-@authenticated
+@require_perm('OASIS_SYSADMIN', ('setup_top',))
 def admin_editmessages():
     """ Present page to administer messages in the system """
 
-    user_id = session['user_id']
-    if not check_perm(user_id, 0, "OASIS_SYSADMIN"):
-        flash("You do not have system administrator permission")
-        return redirect(url_for('setup_top'))
     mesg_news = DB.get_message("news")
     mesg_login = DB.get_message("loginmotd")
     return render_template(
@@ -548,14 +483,9 @@ def admin_editmessages():
 
 @app.route("/admin/save_messages",
            methods=["POST", ])
-@authenticated
+@require_perm('OASIS_SYSADMIN', ('setup_top',))
 def admin_savemessages():
     """ Save messages in the system """
-
-    user_id = session['user_id']
-    if not check_perm(user_id, 0, "OASIS_SYSADMIN"):
-        flash("You do not have system administrator permission")
-        return redirect(url_for('setup_top'))
 
     form = request.form
     if 'cancel' in form:

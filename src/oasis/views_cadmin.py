@@ -12,7 +12,7 @@ from logging import log, ERROR
 from flask import render_template, session, request, redirect, \
     abort, url_for, flash
 
-from .lib import OaConfig, Users2, DB, Topics, UserDB, General, \
+from .lib import OaConfig, Users2, DB, Topics, UserDB, \
     Exams, Courses, Courses2, Setup, CourseAdmin, Groups
 
 MYPATH = os.path.dirname(__file__)

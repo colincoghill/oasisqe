@@ -12,7 +12,7 @@ from flask import Flask, session, redirect, url_for, request, \
     render_template, flash, abort
 import datetime
 import logging
-from logging import log, INFO
+from logging import log, INFO, ERROR
 from logging.handlers import SMTPHandler, RotatingFileHandler
 from functools import wraps
 import smtplib
@@ -21,7 +21,7 @@ from email.mime.text import MIMEText
 
 from .lib import OaConfig, Users2, Users, DB
 from .lib.Audit import audit
-
+from .lib.UserDB import satisfyPerms
 
 app = Flask(__name__,
             template_folder=OaConfig.homedir + "/templates",
@@ -41,10 +41,10 @@ if OaConfig.email_admins:
 
 app.debug = False
 
-if not app.debug:  # Log warnings or higher
+if not app.debug:  # Log info or higher
     try:
         fh = RotatingFileHandler(filename=OaConfig.logfile)
-        fh.setLevel(logging.WARNING)
+        fh.setLevel(logging.INFO)
         fh.setFormatter(logging.Formatter(
             "%(asctime)s %(levelname)s: %(message)s | %(pathname)s:%(lineno)d"
         ))
@@ -99,6 +99,50 @@ def authenticated(func):
         return func(*args, **kwargs)
 
     return call_fn
+
+
+def require_perm(perms, redir):
+    """ Decorator to check the user has at least one of a given list of global
+        perms.
+        Will flash() a message to them and redirect if they don't.
+
+        example:
+
+        @app.route(...)
+        @require_perm('sysadmin', url_for('index'))
+        def do_stuff():
+
+        or
+
+        @app.route(...)
+        @require_perm(['sysadmin', 'useradmin'], url_for['admin'])
+        def do_stuff():
+    """
+
+    def decorator(func):
+        @wraps(func)
+        def call_fn(*args, **kwargs):
+            """ check auth first, can't have perms if we're not.
+            """
+            if 'user_id' not in session:
+                session['redirect'] = request.path
+                return redirect(url_for('index'))
+
+            user_id = session['user_id']
+
+            if isinstance(perms, str):
+                permlist = (perms,)
+            else:
+                permlist = perms
+
+            if satisfyPerms(user_id, 0, permlist):
+                return func(*args, **kwargs)
+            flash("You do not have permission to do that.")
+            return redirect(url_for(*redir))
+
+        return call_fn
+
+    return decorator
 
 
 @app.route("/")
