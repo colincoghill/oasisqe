@@ -420,7 +420,7 @@ def cadmin_edit_topic(course_id, topic_id):
 
     all_course_topics = []
     for cs in all_courses:
-        topics = Courses.getTopicsInfoAll(cs['id'], numq=False)
+        topics = Courses.get_topics_all(cs['id'], numq=False)
         if topics:
             all_course_topics.append({'course': cs['name'], 'topics': topics})
 
@@ -495,7 +495,7 @@ def cadmin_view_topic(course_id, topic_id):
 
     all_course_topics = []
     for cs in all_courses:
-        topics = Courses.getTopicsInfoAll(cs['id'], numq=False)
+        topics = Courses.get_topics_all(cs['id'], numq=False)
         if topics:
             all_course_topics.append({'course': cs['name'], 'topics': topics})
 

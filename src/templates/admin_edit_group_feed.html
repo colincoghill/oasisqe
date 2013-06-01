@@ -66,7 +66,8 @@
                         <label>Script Filename: {{ cf.group_feeds_dir }}</label>
                         <select name='script' value='{{ feed.script }}'>
                             {% for script in scripts %}
-                                <option value='{{ script }}' {% if script == feed.script %}selected{% endif %}>{{ script }}</option>
+                                <option value='{{ script }}'
+                                        {% if script == feed.script %}selected{% endif %}>{{ script }}</option>
                             {% endfor %}
                         </select>
                         <label>Env. Variable: (optional)</label>
@@ -85,17 +86,25 @@
                         <label class="radio"
                                for="hourly">
                             <input value="1" id="hourly" name="freq"
-                                   type="radio" {% if feed.freq == 1 %}checked{% endif %}> Hourly</label>
+                                   type="radio"
+                                   {% if feed.freq == 1 %}checked{% endif %}>
+                            Hourly</label>
                         <label class="radio" for="daily">
                             <input value="2" id="daily" name="freq"
-                                   type="radio" {% if feed.freq == 2 %}checked{% endif %}> Daily</label>
+                                   type="radio"
+                                   {% if feed.freq == 2 %}checked{% endif %}>
+                            Daily</label>
                         <label class="radio" for="manual">
                             <input value="3" id="manual" name="freq"
-                                   type="radio" {% if feed.freq == 3 %}checked{% endif %}> Manually</label>
-                    <br/>
+                                   type="radio"
+                                   {% if feed.freq == 3 %}checked{% endif %}>
+                            Manually</label>
+                        <br/>
                         <label>Activate Feed:
-                    <input name='active' type='checkbox' value='active' {% if feed.active %} checked{% endif %}>
+                            <input name='active' type='checkbox' value='active'
+                                    {% if feed.active %} checked{% endif %}>
                         </label>
+
                         <div class="form-actions">
                             <input class='btn btn-primary' type="submit"
                                    name='save'

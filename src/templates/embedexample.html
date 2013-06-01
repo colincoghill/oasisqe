@@ -1,6 +1,7 @@
 <h2> Question Embedding</h2>
 <p>
-    With OASIS, it is possible to embed interactive questions into other web pages or applications.
+    With OASIS, it is possible to embed interactive questions into other web
+    pages or applications.
 </p>
 <p>
     The easiest way is to use the IFRAME tag:
@@ -12,23 +13,31 @@
 </pre>
 <p>Which has the following effect:
 </p>
-<iframe src='{{ cf.url }}embed/question/whichpot4/question.html' width="600" height="600" scrolling="auto"
+<iframe src='{{ cf.url }}embed/question/whichpot4/question.html' width="600"
+        height="600" scrolling="auto"
         frameborder="1"></iframe>
-<p> This allows the student to practice the question without leaving the parent web page. </p>
+<p> This allows the student to practice the question without leaving the parent
+    web page. </p>
 
 <p>You can also embed as a popup:</p>
-<a target='OaPopup' href='{{ cf.url }}embed/question/fuse1/question.html'>click here</a>
-<p>Although people with tabbed browsers will see it appear in a new tab rather than a popup window.</p>
+<a target='OaPopup' href='{{ cf.url }}embed/question/fuse1/question.html'>click
+    here</a>
+<p>Although people with tabbed browsers will see it appear in a new tab rather
+    than a popup window.</p>
 <hr/>
 
-<p>You can have multiple questions on one page, although the difficulty of controlling their height and width might
-    make this awkward unless the questions are short.</p><p>You can also use CSS to make things a little more
+<p>You can have multiple questions on one page, although the difficulty of
+    controlling their height and width might
+    make this awkward unless the questions are short.</p><p>You can also use CSS
+    to make things a little more
     attractive:</p><br/>
 <div style='border: solid 1px blue; padding: 8px; background-color: #8888f0; width: 640px; margin-left: 80px;-moz-border-radius: 9px;'>
-    <iframe src='{{ cf.url }}embed/question/fuse3/question.html' width="600" height="600" scrolling="auto"
+    <iframe src='{{ cf.url }}embed/question/fuse3/question.html' width="600"
+            height="600" scrolling="auto"
             frameborder="0"></iframe>
 </div>
-<p>An AJAX solution where the question is embedded inline into the page might also be possible, but hasn't yet
+<p>An AJAX solution where the question is embedded inline into the page might
+    also be possible, but hasn't yet
     been investigated.</p>
 
 

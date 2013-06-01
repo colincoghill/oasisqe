@@ -6,7 +6,8 @@
 
         <H3>{{ exam.title }}</H3>
 
-        <FORM METHOD='post' ACTION='{{ cf.url }}assess/presubmit/{{ course_id }}/{{ exam.id }}'>
+        <FORM METHOD='post'
+              ACTION='{{ cf.url }}assess/presubmit/{{ course_id }}/{{ exam.id }}'>
             <h2>Your Answers</h2>
             {% for q in questions %}
                 <h5>Page {{ q.pos }}</h5>
@@ -23,7 +24,8 @@
 
             {% endfor %}
 
-            <div class='alert alert-info'><h2>Your answers have been submitted and results will be available later.</h2>
+            <div class='alert alert-info'><h2>Your answers have been submitted
+                and results will be available later.</h2>
             </div>
             <br/>
 

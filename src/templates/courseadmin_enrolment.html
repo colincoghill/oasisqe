@@ -27,15 +27,18 @@
                         <td>{{ group.nummembers }}</td>
                         <td>{{ group.startdate }}</td>
                         <td>{{ group.enddate }}</td>
-                        <td><a href="{{ cf.url }}cadmin/{{ course_id }}/editgroup/{{ group.id }}" class='btn-mini btn'>Edit
-                            Members</a></td>
+                        <td>
+                            <a href="{{ cf.url }}cadmin/{{ course_id }}/editgroup/{{ group.id }}"
+                               class='btn-mini btn'>Edit
+                                Members</a></td>
                     </tr>
                 {% endif %}
             {% endfor %}
 
             </tbody>
         </table>
-    <a class="btn" href="{{ cf.url }}cadmin/{{ course.id }}/addgroup"><i class="icon icon-plus"> </i> Add Group</a>
+        <a class="btn" href="{{ cf.url }}cadmin/{{ course.id }}/addgroup"><i
+                class="icon icon-plus"> </i> Add Group</a>
         <!--        <h5>Previous Groups</h5>
             <table class="table table-condensed">
                 <thead>
@@ -57,7 +60,8 @@
                             <td>{{ group.nummembers }}</td>
                             <td>{{ group.startdate }}</td>
                             <td>{{ group.enddate }}</td>
-                            <td><a href="{{ cf.url }}courseadmin/editenrolment/{{ group.id }}" class='btn-mini btn'>Edit
+                            <td><a href="{{ cf.url }}courseadmin/editenrolment/
+            {{ group.id }}" class='btn-mini btn'>Edit
                                 Members</a></td>
                         </tr>
                     {% endif %}

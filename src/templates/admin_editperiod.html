@@ -46,33 +46,42 @@
             </h1>
 
             <div class="well">
-                <form method='post' id="form" action='{{ cf.url }}admin/edit_period_submit/{{ period.id }}' data-validate="parsley">
+                <form method='post' id="form"
+                      action='{{ cf.url }}admin/edit_period_submit/{{ period.id }}'
+                      data-validate="parsley">
                     <label>Short Name:</label>
-                    <input placeholder="Short Name" class="required input-medium"
+                    <input placeholder="Short Name"
+                           class="required input-medium"
                            type="text" name='name' value="{{ period.name }}">
 
                     <label>Title:</label>
                     <input placeholder="Descriptive name" class="input-xxlarge"
                            type="text" name='title' value="{{ period.title }}">
                     <label>Code:</label>
-                    <input class="input-medium" type="text" name='code'  value="{{ period.code }}">
+                    <input class="input-medium" type="text" name='code'
+                           value="{{ period.code }}">
 
                     <h4>Dates</h4>
                     <label>Start:</label>
                     <h4></h4>
 
                     <p></p>
-                    <input class="input-medium datepicker required" type="text" readonly name='start' value='{{ period.start_date }}'>
+                    <input class="input-medium datepicker required" type="text"
+                           readonly name='start'
+                           value='{{ period.start_date }}'>
                     <label>End:</label>
-                    <input class="input-medium datepicker required" type="text" readonly name='finish' value='{{ period.finish_date }}'>
+                    <input class="input-medium datepicker required" type="text"
+                           readonly name='finish'
+                           value='{{ period.finish_date }}'>
 
-                <div class="form-actions">
-                    <input class='btn btn-primary' type="submit" name='save'
-                           value='Save'>
-                    <input class='btn btn-danger' type="submit" name='cancel'
-                           value='Cancel' id="cancel">
-                </div>
-                     </form>
+                    <div class="form-actions">
+                        <input class='btn btn-primary' type="submit" name='save'
+                               value='Save'>
+                        <input class='btn btn-danger' type="submit"
+                               name='cancel'
+                               value='Cancel' id="cancel">
+                    </div>
+                </form>
             </div>
             <ul></ul>
             <ul></ul>
@@ -97,8 +106,8 @@
                 autoclose: true
             });
 
-            $( '#cancel' ).click(function() {
-                $('#form').parsley( 'destroy' );
+            $('#cancel').click(function () {
+                $('#form').parsley('destroy');
                 $('#form').submit();
             });
         });

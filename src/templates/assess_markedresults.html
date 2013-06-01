@@ -4,7 +4,8 @@
     <p>Back to <a href='{{ cf.url }}assess/top'>Assessment List</a></p>
     <h2>{{ course.name }}({{ course.title }})</h2>
     <H3>{{ exam.title }}</H3>
-    <p>{% if fullname %}<b>{{ fullname }}</b>{% endif %} {% if uname %}<b>{{ uname }}</b>{% endif %}</p>
+    <p>{% if fullname %}<b>{{ fullname }}</b>{% endif %} {% if uname %}<b>
+        {{ uname }}</b>{% endif %}</p>
     <p>{% if datesubmit %}<b>Submitted:</b> {{ datesubmit }}{% endif %}</p>
     <p>{% if datemarked %}<b>Marked:</b> {{ datemarked }}{% endif %}</p>
     <div>
@@ -36,7 +37,8 @@
                         <td> {{ m.correct }}</td>
                         <td>
                             {% if m.mark > 0 %}
-                                <i style='color: darkgreen;' class='icon-thumbs-up'></i>
+                                <i style='color: darkgreen;'
+                                   class='icon-thumbs-up'></i>
                             {% else %}
                                 <span style='color: brown;'>X</span>
                             {% endif %}
@@ -50,7 +52,8 @@
             <br/><br/>
 
             <div class='pull-right' style='padding-right: 80px;'>Total: <span
-                    style='font-size: x-large; border: solid grey 1px; padding: 8px;'>{{ examtotal }}</span></div>
+                    style='font-size: x-large; border: solid grey 1px; padding: 8px;'>{{ examtotal }}</span>
+            </div>
             <br/><br/>
         </div>
         <br/>

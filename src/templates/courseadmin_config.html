@@ -1,11 +1,13 @@
 {% extends "page_courseadmin.html" %}
 {% block body %}
     <br>
-    <p>Return to <a href="{{ cf.url }}cadmin/{{ course.id }}/top">Course Admin</a></p>
+    <p>Return to <a href="{{ cf.url }}cadmin/{{ course.id }}/top">Course
+        Admin</a></p>
 
     <h2>{{ course.name }} ({{ course.title }})</h2>
     <h3>Configuration</h3>
-    <form method="POST" action="{{ cf.url }}cadmin/{{ course.id }}/config_submit">
+    <form method="POST"
+          action="{{ cf.url }}cadmin/{{ course.id }}/config_submit">
         <div class="container-fluid well">
             <h5>Course Name</h5>
 
@@ -17,62 +19,84 @@
                     <input type='text' name='title' value='{{ course.title }}'>
                 </label>
 
-                <p>Please note that if linked to external systems, such as university enrolment databases,
-                    the course "name" may be used to find information, so be careful when changing it.</p>
+                <p>Please note that if linked to external systems, such as
+                    university enrolment databases,
+                    the course "name" may be used to find information, so be
+                    careful when changing it.</p>
             </div>
 
             <h5>Enrolment</h5>
 
             <div class="">
                 <label>Student enrolment:
-                     <select name='registration'>
-        <option value='open' {% if course.registration == 'open' %}SELECTED{% endif %}>Open (Anyone can add themselves)</option>
-  <!--      <option value='controlled' {% if course.registration == 'controlled' %}SELECTED{% endif %}>Controlled (Managed by course administrator)</option> -->
-    </select>
+                    <select name='registration'>
+                        <option value='open'
+                                {% if course.registration == 'open' %}SELECTED{% endif %}>
+                            Open (Anyone can add themselves)
+                        </option>
+                        <!--      <option value='controlled'
+                                {% if course.registration == 'controlled' %}
+                                    SELECTED{% endif %}>Controlled (Managed by course administrator)</option> -->
+                    </select>
                 </label>
 
-                <p>With "open" enrolment, students can enrol themselves in the course. This is good for demonstrations
+                <p>With "open" enrolment, students can enrol themselves in the
+                    course. This is good for demonstrations
                     or non academic related content. <!-- A more traditional course should be controlled by the course
                     admin. --></p>
-</div>
-                <h5>Course Visibility</h5>
+            </div>
+            <h5>Course Visibility</h5>
 
-                <div class="">
-                    <label>Visibility in Practice Section:
-                        <select name="practice_visibility">
-                            <option value='all' {% if course.practice_visibility == 'all' %}SELECTED{% endif %}>All, including guests.</option>
-        <!--                     <option value='enrol' {% if course.practice_visibility == 'enrol' %}SELECTED{% endif %}>Enrolled in course only</option>
-                            <option value='staff' {% if course.practice_visibility == 'staff' %}SELECTED{% endif %}>Staff only</option>   -->
-                        </select>
+            <div class="">
+                <label>Visibility in Practice Section:
+                    <select name="practice_visibility">
+                        <option value='all'
+                                {% if course.practice_visibility == 'all' %}SELECTED{% endif %}>
+                            All, including guests.
+                        </option>
+                        <!--                     <option value='enrol'
+                                {% if course.practice_visibility == 'enrol' %}
+                                    SELECTED{% endif %}>Enrolled in course only</option>
+                            <option value='staff'
+                                {% if course.practice_visibility == 'staff' %}
+                                    SELECTED{% endif %}>Staff only</option>   -->
+                    </select>
 
-                    </label>
+                </label>
 
-                    <p>Who can access the course practice content. If set to "All" then people who are not enrolled
-                        in the course can practice questions, but will not show up in course statistics. This can be
-                        overridden topic by topic, and is a good way to allow students to refresh practice on courses
-                        they've taken previously, or try out a course they're considering.</p>
-                    <!--               <label>Visibility in Assessment Section:
-                                   <select name="practice_visibility">
-                                       <option value='all'>All, including guests.</option>
-                                       <option value='all'>Enrolled in course only</option>
-                                       <option value='all'>Staff only</option>
-                                   </select>
+                <p>Who can access the course practice content. If set to "All"
+                    then people who are not enrolled
+                    in the course can practice questions, but will not show up
+                    in course statistics. This can be
+                    overridden topic by topic, and is a good way to allow
+                    students to refresh practice on courses
+                    they've taken previously, or try out a course they're
+                    considering.</p>
+                <!--               <label>Visibility in Assessment Section:
+                               <select name="practice_visibility">
+                                   <option value='all'>All, including guests.</option>
+                                   <option value='all'>Enrolled in course only</option>
+                                   <option value='all'>Staff only</option>
+                               </select>
 
-                                   </label>
-                                    -->
-
-                </div>
+                               </label>
+                                -->
 
             </div>
-            <div class='pull-right'>
-                <input type="submit" name="save_changes" value="Apply Changes" class='btn btn-primary'>
-                <input type="submit" name="cancel_edit" value="Cancel" class='btn btn-danger'>
-            </div>
+
+        </div>
+        <div class='pull-right'>
+            <input type="submit" name="save_changes" value="Apply Changes"
+                   class='btn btn-primary'>
+            <input type="submit" name="cancel_edit" value="Cancel"
+                   class='btn btn-danger'>
+        </div>
     </form>
     <br>
 
     <br/>
-    <p>Return to <a href="{{ cf.url }}cadmin/{{ course.id }}/top">Course Admin</a></p>
+    <p>Return to <a href="{{ cf.url }}cadmin/{{ course.id }}/top">Course
+        Admin</a></p>
 
 
 {% endblock body %}

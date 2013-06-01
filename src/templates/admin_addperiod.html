@@ -44,10 +44,11 @@
             <h1>Create Time Period</h1>
 
             <div class="well">
-                <form method='post' action='{{ cf.url }}admin/edit_period_create'>
+                <form method='post'
+                      action='{{ cf.url }}admin/edit_period_create'>
                     <label>Short Name:</label>
                     <input placeholder="Short Name" class="input-medium"
-                           type="text" name='name'">
+                           type="text" name='name'>
 
                     <label>Title:</label>
                     <input placeholder="Descriptive name" class="input-xxlarge"
@@ -60,17 +61,20 @@
                     <h4></h4>
 
                     <p></p>
-                    <input class="input-medium datepicker" type="text" readonly name='start'>
+                    <input class="input-medium datepicker" type="text" readonly
+                           name='start'>
                     <label>End:</label>
-                    <input class="input-medium datepicker" type="text" readonly name='finish'>
+                    <input class="input-medium datepicker" type="text" readonly
+                           name='finish'>
 
-                <div class="form-actions">
-                    <input class='btn btn-primary' type="submit" name='save'
-                           value='Save'>
-                    <input class="btn btn-danger" value="Cancel" type="submit"
-                           name="cancel">
-                </div>
-                     </form>
+                    <div class="form-actions">
+                        <input class='btn btn-primary' type="submit" name='save'
+                               value='Save'>
+                        <input class="btn btn-danger" value="Cancel"
+                               type="submit"
+                               name="cancel">
+                    </div>
+                </form>
             </div>
             <ul></ul>
             <ul></ul>

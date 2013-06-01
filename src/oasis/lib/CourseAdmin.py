@@ -244,7 +244,7 @@ def get_create_exam_q_list(course):
     """ Return a list of questions that can be used to create an assessment
     """
 
-    topics = Courses.getTopicsInfoAll(course, archived=0, numq=False)
+    topics = Courses.get_topics_all(course, archived=0, numq=False)
     for num, topic in topics.iteritems():
         topic_id = topics[num]['id']
         topics[num]['questions'] = _get_q_list_sorted(topic_id)

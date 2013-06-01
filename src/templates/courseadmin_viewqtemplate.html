@@ -87,7 +87,9 @@
 {% endblock js %}
 {% block body %}
     <br/>
-    Back to <a href="{{ cf.url }}cadmin/{{ course_id }}/topic/{{ topic.id }}">Topic Page</a>
+    Back to
+    <a href="{{ cf.url }}cadmin/{{ course_id }}/topic/{{ topic.id }}">Topic
+        Page</a>
     <h4>{{ course.name }} ({{ course.title }})</h4>
     <h2>{{ topic.position }}. {{ topic.name }}</h2>
     <div class="container-fluid well">
@@ -99,7 +101,8 @@
                     <td><h3>{{ year }}</h3>
                     </td>
                     <td>
-                        <div style='height:120px; width:600px;' id='chart_{{ year }}'>
+                        <div style='height:120px; width:600px;'
+                             id='chart_{{ year }}'>
                         </div>
                     </td>
                 </tr>
@@ -114,7 +117,8 @@
                     <td><h3>{{ year }}</h3>
                     </td>
                     <td>
-                        <div style='height:120px; width:600px;' id='chart2_{{ year }}'>
+                        <div style='height:120px; width:600px;'
+                             id='chart2_{{ year }}'>
                         </div>
                     </td>
                 </tr>

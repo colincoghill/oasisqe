@@ -293,20 +293,6 @@ def get_groups(course):
     return groups
 
 
-def getCourseGroupMap(only_active=True):
-    """ Return a dictionary mapping course ids to (multiple) group ids.
-        eg. { 5: [1,2,3], 6: [2,3] }
-        says that groups 1,2,3 are associated with course 5,and 2,3 with
-        course 6.
-        if only_active is set to False, will include inactive courses.
-    """
-    courses = getAll(only_active)
-    coursemap = {}
-    for course in courses:
-        coursemap[course] = get_groups(course)
-    return coursemap
-
-
 def add_group(group_id, course_id):
     """ Add a group to a course."""
     sql = "INSERT INTO groupcourses (groupid, active, course) " \
@@ -317,7 +303,7 @@ def add_group(group_id, course_id):
 
 # TODO most of this should be in Topics. Especially the SQL parts, so it's
 #  easier to cache without getting confused.
-def getTopicsInfoAll(course, archived=2, numq=True):
+def get_topics_all(course, archived=2, numq=True):
     """ Return a summary of all topics in the course.
         if archived=0, only return non archived courses
         if archived=1, only return archived courses

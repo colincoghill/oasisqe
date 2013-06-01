@@ -5,23 +5,29 @@
     <h2>{{ course.name }}({{ course.title }})</h2>
     <H3>{{ exam.title }}</H3>
     <div class="container-fluid well ">
-        <FORM METHOD='post' ACTION='{{ cf.url }}assess/assessmentpage/{{ course_id }}/{{ exam.id }}/{{ page }}'>
+        <FORM METHOD='post'
+              ACTION='{{ cf.url }}assess/assessmentpage/{{ course_id }}/{{ exam.id }}/{{ page }}'>
 
             <div class='navbar'>
                 <div class='navbar-inner'>
                     <span class='brand'> Go To:</span>
                     <ul class='nav'>
-                        <li><INPUT CLASS='btn' TYPE='submit' NAME='goto' VALUE='Start'></li>
+                        <li><INPUT CLASS='btn' TYPE='submit' NAME='goto'
+                                   VALUE='Start'></li>
                         <li class='divider-vertical'></li>
                         {% for i in pages %}
                             {% if i == page %}
-                                <li><INPUT CLASS='btn active' TYPE='submit' NAME='goto' VALUE='Page {{ i }}'></li>
+                                <li><INPUT CLASS='btn active' TYPE='submit'
+                                           NAME='goto' VALUE='Page {{ i }}'>
+                                </li>
                             {% else %}
-                                <li><INPUT CLASS='btn' TYPE='submit' NAME='goto' VALUE='Page {{ i }}'></li>
+                                <li><INPUT CLASS='btn' TYPE='submit' NAME='goto'
+                                           VALUE='Page {{ i }}'></li>
                             {% endif %}
                         {% endfor %}
                         <li class='divider-vertical'></li>
-                        <li><INPUT CLASS='btn btn-danger' TYPE='submit' NAME='goto' VALUE='Finish'></li>
+                        <li><INPUT CLASS='btn btn-danger' TYPE='submit'
+                                   NAME='goto' VALUE='Finish'></li>
                     </ul>
                 </div>
             </div>

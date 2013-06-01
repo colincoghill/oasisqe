@@ -16,19 +16,23 @@ def create(name, description, owner, grouptype, startdate=None, enddate=None):
     """ Add a group to the database. """
     conn = dbpool.begin()
     conn.run_sql("""INSERT INTO groups (title, description, owner, "type", startdate, enddate)
-               VALUES (%s, %s, %s, %s, %s, %s);""", (name, description, owner, grouptype, startdate, enddate))
+               VALUES (%s, %s, %s, %s, %s, %s);""",
+                 (name, description, owner, grouptype, startdate, enddate))
     res = conn.run_sql("SELECT currval('groups_id_seq')")
-    log(INFO, "create('%s', '%s', %d, %d) Added Group" % (name, description, owner, grouptype))
+    log(INFO, "create('%s', '%s', %d, %d) Added Group" % (
+    name, description, owner, grouptype))
     dbpool.commit(conn)
     if res:
         return int(res[0][0])
-    log(INFO, "create('%s', '%s', %d, %d, %s, %s) FAILED" % (name, description, owner, grouptype, startdate, enddate))
+    log(INFO, "create('%s', '%s', %d, %d, %s, %s) FAILED" % (
+    name, description, owner, grouptype, startdate, enddate))
     return None
 
 
 def get_users(group_id):
     """ Return a list of users in the group. """
-    ret = run_sql("""SELECT userid FROM usergroups WHERE groupid=%s;""", (int(group_id),))
+    ret = run_sql("""SELECT userid FROM usergroups WHERE groupid=%s;""",
+                  (int(group_id),))
     if ret:
         users = [int(row[0]) for row in ret]
         return users
@@ -47,14 +51,18 @@ def get_name(group_id):
 
 def add_user(uid, group_id):
     """ Adds given user to the list of people enrolled in the given group."""
-    run_sql("""INSERT INTO usergroups (userid, groupid, "type") VALUES (%s, %s, 2) """, (uid, group_id))
+    run_sql(
+        """INSERT INTO usergroups (userid, groupid, "type") VALUES (%s, %s, 2) """,
+        (uid, group_id))
 
 
 def getInfo(group_id):
     """ Return a summary of the group.
         { 'id':id, 'name':name, 'title':title }
     """
-    ret = run_sql("""SELECT id, title, description, startdate, enddate FROM groups WHERE id = %s;""", (group_id,))
+    ret = run_sql(
+        """SELECT id, title, description, startdate, enddate FROM groups WHERE id = %s;""",
+        (group_id,))
     info = {}
     if ret:
         info = {
@@ -85,7 +93,8 @@ def get_course(group_id):
     """ Return the course_id of the course this group is associated with.
     """
 
-    ret = run_sql("""SELECT course FROM groupcourses WHERE groupid=%s;""", (group_id,))
+    ret = run_sql("""SELECT course FROM groupcourses WHERE groupid=%s;""",
+                  (group_id,))
     if ret:
         return int(ret[0][0])
     raise KeyError

@@ -121,7 +121,7 @@
             enable_save();
             alert("form is valid!");
         } else {
-            alert("form is NOT VALID ("+ errcount+" errors)");
+            alert("form is NOT VALID (" + errcount + " errors)");
         }
     }
 
@@ -247,7 +247,7 @@
 
             });
 
-    $(function() {
+    $(function () {
         validate_form();
     });
 
@@ -258,7 +258,8 @@
     <H2>Assessment {% if exam %}Edit{% else %}Create{% endif %}</H2>
     <h4>{{ course.name }} ({{ course.title }})</h4>
 
-    <form method="post" action="{{ cf.url }}courseadmin/exam_edit_submit/{{ course.id }}/{{ exam.id }}"
+    <form method="post"
+          action="{{ cf.url }}courseadmin/exam_edit_submit/{{ course.id }}/{{ exam.id }}"
           name="create_assessment">
         <br>
         {% if exam %}
@@ -267,26 +268,32 @@
         <input class='btn btn-primary save_button' name="exam_create"
                value="{% if exam %}Save{% else %}Create{% endif %} Assessment"
                type="submit">
-        <input class='btn btn-danger' name="exam_cancel" value="Cancel" type="submit">
+        <input class='btn btn-danger' name="exam_cancel" value="Cancel"
+               type="submit">
 
         <br/>
 
         <div class="container-fluid well">
-            <p>NOTE: You can change any of these fields until one student has started the assessment. After that you
+            <p>NOTE: You can change any of these fields until one student has
+                started the assessment. After that you
                 should not
-                change the questions, although you can change the other fields. If you find a mistake in the questions
+                change the questions, although you can change the other fields.
+                If you find a mistake in the questions
                 after the assessment
                 has started, you should create a new assessment.</p>
             <br>
             <h5>Assessment Title</h5>
 
-            <label>Title: <input name="assess_title" id="title" value="{{ exam.title }}"> (for example "Assignment One")</label>
+            <label>Title: <input name="assess_title" id="title"
+                                 value="{{ exam.title }}"> (for example
+                "Assignment One")</label>
 
             <div id="titleerrors"></div>
             <br>
             <h5>Assessment Type</h5>
 
-            <p>Exams are assumed to be run in a supervised environment such as a computer lab.
+            <p>Exams are assumed to be run in a supervised environment such as a
+                computer lab.
             </p>
 
             <p>Assignments are less controlled
@@ -294,58 +301,76 @@
 
             <label>Type:
                 <select name="assess_type">
-                    <option value='2' {% if exam.type == 2 or exam.type == 4 %}selected="selected"{% endif %}>
+                    <option value='2'
+                            {% if exam.type == 2 or exam.type == 4 %}selected="selected"{% endif %}>
                         Assignment
                     </option>
-                    <option value='3' {% if exam.type == 3 or exam.type == 5 %}selected="selected"{% endif %}>Exam
+                    <option value='3'
+                            {% if exam.type == 3 or exam.type == 5 %}selected="selected"{% endif %}>
+                        Exam
                     </option>
                     {% if exam.type == 6 %}
-                        <option value='6' selected>Survey (no longer available)</option>{% endif %}
+                        <option value='6' selected>Survey (no longer
+                            available)
+                        </option>{% endif %}
                 </select>
             </label>
             <br>
             <h5>Assessment Code</h5>
 
-            <p>If you provide an assessment code, the student will have to type it in to unlock the assessment. Use this
+            <p>If you provide an assessment code, the student will have to type
+                it in to unlock the assessment. Use this
                 to prevent people
                 from taking tests from unsupervised locations.</p>
             <label>Code:
-                <input name="assess_code" id="code" value="{% if exam.code %}{{ exam.code }}{% endif %}"> (leave blank
+                <input name="assess_code" id="code"
+                       value="{% if exam.code %}{{ exam.code }}{% endif %}">
+                (leave blank
                 to disable)
             </label>
             <br>
             <h5>Make Available:</h5>
 
             <div>
-                From: <input type='text' id="startdate" name="startdate" value="{{ exam.start }}"
+                From: <input type='text' id="startdate" name="startdate"
+                             value="{{ exam.start }}"
                              class="input-medium datepicker date" readonly=1>
-                at <select class="select-mini" id="start_hour" name="examstart_hour">
+                at <select class="select-mini" id="start_hour"
+                           name="examstart_hour">
                 <option>--</option>
                 {% for num in range(0,24) %}
-                    <option value='{{ num }}' {% if num == exam.start.hour %}SELECTED{% endif %}>{{ "%02d"|format(num) }}</option>
+                    <option value='{{ num }}'
+                            {% if num == exam.start.hour %}SELECTED{% endif %}>{{ "%02d"|format(num) }}</option>
                 {% endfor %}
             </select>:
-                <select class="select-mini" id="start_minute" name="examstart_minute">
+                <select class="select-mini" id="start_minute"
+                        name="examstart_minute">
                     <option>--</option>
                     {% for num in range(0,60) %}
-                        <option value='{{ num }}' {% if num == exam.start.minute %}SELECTED{% endif %}>{{ "%02d"|format(num) }}</option>
+                        <option value='{{ num }}'
+                                {% if num == exam.start.minute %}SELECTED{% endif %}>{{ "%02d"|format(num) }}</option>
                     {% endfor %}
                 </select> (24 hour time)
             </div>
 
             <div id="dateerrors"><br/>.</div>
-            <div>Until: <input type='text' name="enddate" id="enddate" value="{{ exam.end_date }}"
+            <div>Until: <input type='text' name="enddate" id="enddate"
+                               value="{{ exam.end_date }}"
                                class="input-medium datepicker date" readonly=1>
-                at <select class="select-mini" id="end_hour" name="examend_hour">
+                at <select class="select-mini" id="end_hour"
+                           name="examend_hour">
                     <option>--</option>
                     {% for num in range(0,24) %}
-                        <option value='{{ num }}' {% if num == exam.end.hour %}SELECTED{% endif %}>{{ "%02d"|format(num) }}</option>
+                        <option value='{{ num }}'
+                                {% if num == exam.end.hour %}SELECTED{% endif %}>{{ "%02d"|format(num) }}</option>
                     {% endfor %}
                 </select>:
-                <select class="select-mini" id="end_minute" name="examend_minute">
+                <select class="select-mini" id="end_minute"
+                        name="examend_minute">
                     <option>--</option>
                     {% for num in range(0,60) %}
-                        <option value='{{ num }}' {% if num == exam.end.minute %}SELECTED{% endif %}>{{ "%02d"|format(num) }}</option>
+                        <option value='{{ num }}'
+                                {% if num == exam.end.minute %}SELECTED{% endif %}>{{ "%02d"|format(num) }}</option>
                     {% endfor %}
                 </select> (24 hour time)
             </div>
@@ -353,21 +378,31 @@
             <br/>
             <h5>Duration</h5>
 
-            <p>Once started, the student will have <input name="duration" id="duration" class='input-mini'
-                     value="{% if exam %}{{ exam.duration }}{% else %}60{% endif %}">minutes to complete.<br>
+            <p>Once started, the student will have <input name="duration"
+                                                          id="duration"
+                                                          class='input-mini'
+                                                          value="
+                                                                  {% if exam %}{{ exam.duration }}{% else %}60{% endif %}">minutes
+                to complete.<br>
 
             <div id="durationerrors"></div>
             <br/>
 
             <h5>Instant Results</h5>
 
-            <p>Show the student the results immediately upon submitting the assessment?
+            <p>Show the student the results immediately upon submitting the
+                assessment?
             </p>
 
             <label>Instant Results:
                 <select name="assess_instant">
-                    <option value='1' {% if exam.instant == 1 %}selected="selected"{% endif %}>Yes</option>
-                    <option value='2' {% if exam.instant == 2 %}selected="selected"{% endif %}>Wait until assessment
+                    <option value='1'
+                            {% if exam.instant == 1 %}selected="selected"{% endif %}>
+                        Yes
+                    </option>
+                    <option value='2'
+                            {% if exam.instant == 2 %}selected="selected"{% endif %}>
+                        Wait until assessment
                         period is over
                     </option>
                 </select>
@@ -377,27 +412,35 @@
 
             <h5>Extra Instructions</h5>
 
-            <p>Will be displayed to the student before they start. This is a good opportunity to remind them if they
+            <p>Will be displayed to the student before they start. This is a
+                good opportunity to remind them if they
                 need a calculator, working paper, etc.</p>
-            <textarea class="input-xlarge" rows="8" name="instructions">{{ exam.instructions }}</textarea><br>
+            <textarea class="input-xlarge" rows="8"
+                      name="instructions">{{ exam.instructions }}</textarea><br>
         </div>
         <div class="container-fluid well">
             <br>
             <h4>Questions</h4>
 
-            <p>If more than one alternative is chosen for a question, students will be presented with one of the
+            <p>If more than one alternative is chosen for a question, students
+                will be presented with one of the
                 alternatives at random.
-                It's important to ensure that each alternative is worth the same number of marks.</p>
+                It's important to ensure that each alternative is worth the same
+                number of marks.</p>
+
             <div id='qtemplateerrors'></div>
             <div id="qtemplates"></div>
-            <a class="btn btn-small" id="add_question_pos" href="#"><i class='icon-plus'> </i> Add Question</a>
-            <br/>(to remove a question/alternative, simply leave it as blank '---'. It will be ignored when you
+            <a class="btn btn-small" id="add_question_pos" href="#"><i
+                    class='icon-plus'> </i> Add Question</a>
+            <br/>(to remove a question/alternative, simply leave it as blank
+            '---'. It will be ignored when you
             save)<br/>
             <br/><br/>
             <input class='btn btn-primary save_button' name="exam_create"
                    value="{% if exam %}Save{% else %}Create{% endif %} Assessment"
                    type="submit">
-            <input class='btn btn-danger' name="exam_cancel" value="Cancel" type="submit">
+            <input class='btn btn-danger' name="exam_cancel" value="Cancel"
+                   type="submit">
 
             <div class="errormessages"></div>
             <br/>
@@ -408,5 +451,5 @@
 
     </form>
     <br/><br/><br/><br/><br/><br/>
-{{ test }}
+    {{ test }}
 {% endblock body %}

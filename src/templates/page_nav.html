@@ -5,20 +5,29 @@
         <div id="page">
         <div id="head">
             <a href="" id="logolink"></a>
+
             <div id="headerright">
                 <div id='whoami'>{{ cf.userfullname }}</div>
-                <span id="page_title">{% block pagetitle %}Home{% endblock pagetitle %}</span>
+                <span id="page_title">{% block pagetitle %}
+                    Home{% endblock pagetitle %}</span>
             </div>
         </div>
         <div id="navigation">
             <ul class='navbar'>
-                <li class='page'><A NAME='nav_home' CLASS='topmenu' HREF='{{ cf.url }}main/top'>Home</A></li>
-                <li class="page"><A NAME='nav_news' CLASS='topmenu' HREF='{{ cf.url }}main/news'>News</A></li>
-                <li class="page"><A NAME='nav_practice' CLASS='topmenu' HREF='{{ cf.url }}practice/top'>Practice</A>
+                <li class='page'><A NAME='nav_home' CLASS='topmenu'
+                                    HREF='{{ cf.url }}main/top'>Home</A></li>
+                <li class="page"><A NAME='nav_news' CLASS='topmenu'
+                                    HREF='{{ cf.url }}main/news'>News</A></li>
+                <li class="page"><A NAME='nav_practice' CLASS='topmenu'
+                                    HREF='{{ cf.url }}practice/top'>Practice</A>
                 </li>
-       <!-- <li class="page"><A NAME='nav_assess' CLASS='topmenu' HREF='{{ cf.url }}assess/top'>Assess</A></li> -->
-                <li class="page"><A NAME='nav_setup' CLASS='topmenu' HREF='{{ cf.url }}setup/top'>Setup</A></li>
-            {% if cf.auth_type =="local" %}  <li class="page"><A id='nav_logout' CLASS='topmenu' HREF="{{ cf.url }}logout">Logout</A></li>{% endif %}
+                <!-- <li class="page"><A NAME='nav_assess' CLASS='topmenu' HREF='{{ cf.url }}assess/top'>Assess</A></li> -->
+                <li class="page"><A NAME='nav_setup' CLASS='topmenu'
+                                    HREF='{{ cf.url }}setup/top'>Setup</A></li>
+                {% if cf.auth_type =="local" %}
+                    <li class="page"><A id='nav_logout' CLASS='topmenu'
+                                        HREF="{{ cf.url }}logout">Logout</A>
+                    </li>{% endif %}
             </ul>
         </div>
         {% with messages = get_flashed_messages() %}
@@ -35,8 +44,10 @@
     {% endblock body %}
 </div>
 <div id="foot">
-    OASIS v3.9.2 is an Open Source project, originally created at the <a href='http://www.auckland.ac.nz'>University of Auckland</a>.<br/>
-    Please see <a href='https://www.oasisqe.com/'>http://www.oasisqe.com/</a> if you want more information.
+    OASIS v3.9.2 is an Open Source project, originally created at the <a
+        href='http://www.auckland.ac.nz'>University of Auckland</a>.<br/>
+    Please see <a href='https://www.oasisqe.com/'>http://www.oasisqe.com/</a> if
+    you want more information.
 </div>
 </div>
 {% endblock page %}

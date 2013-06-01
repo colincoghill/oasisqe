@@ -4,9 +4,10 @@
     Back to <a href="{{ cf.url }}cadmin/{{ course.id }}/top">Course Page</a>
     <h4>{{ course.name }} ({{ course.title }})</h4>
     <H2>Add a New Group</H2>
-    <form id='addperson_form' method='post' action='{{ cf.url }}cadmin/{{ course.id }}/addgroup_submit'>
-    <div class="container-fluid well">
-        <h5>Group information</h5>
+    <form id='addperson_form' method='post'
+          action='{{ cf.url }}cadmin/{{ course.id }}/addgroup_submit'>
+        <div class="container-fluid well">
+            <h5>Group information</h5>
 
             <table class="table">
                 <thead>
@@ -28,21 +29,21 @@
             </table>
 
 
-    <br/>
- <!--   <button class='btn'><i class='icon icon-upload'> </i> Upload Spreadsheet</button> -->
-    </div>
-     </form>
+            <br/>
+            <!--   <button class='btn'><i class='icon icon-upload'> </i> Upload Spreadsheet</button> -->
+        </div>
+    </form>
 {% endblock body %}
 {% block js %}
     <script>
-    $(function (){
+        $(function () {
 
-        $("#addperson_btn").click(function () {
-            $("#addperson_form").submit();
+            $("#addperson_btn").click(function () {
+                $("#addperson_form").submit();
+
+            });
+
 
         });
-
-
-    });
     </script>
 {% endblock %}

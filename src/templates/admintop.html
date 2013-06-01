@@ -1,6 +1,6 @@
 {% extends "page_nav.html" %}
 {% block js %}
-  <script>
+    <script>
 
         function drawgraph(dom_id, title, line, col) {
             $.jqplot(dom_id, [line], {
@@ -23,7 +23,7 @@
                     xaxis: {
                         renderer: $.jqplot.DateAxisRenderer,
                         tickOptions: {formatString: '%#d&nbsp;%b',
-                        fontSize: '12px'
+                            fontSize: '12px'
                         }
                     },
                     yaxis: {
@@ -45,7 +45,7 @@
         function bargraph(dom_id, title) {
             $.ajax({
                 async: true,
-                url: "{{ cf.url }}api/stats/practice/3months" ,
+                url: "{{ cf.url }}api/stats/practice/3months",
                 dataType: "json",
                 success: function (data) {
 
@@ -53,19 +53,19 @@
                     if (line.length > 1) {
                         drawgraph(dom_id, title, line, "black")
                     } else {
-                        $("#"+dom_id).html("")
+                        $("#" + dom_id).html("")
                     }
                 }
             });
         }
 
-      $(document).ready(function () {
+        $(document).ready(function () {
 
-           bargraph( "chart", "Questions Marked Per Day");
+            bargraph("chart", "Questions Marked Per Day");
 
         });
 
-</script>
+    </script>
 {% endblock js %}
 {% block body %}
     <br/>
@@ -79,7 +79,8 @@
             <div class='span5'>
                 <B><A HREF='{{ cf.url }}admin/edit_messages'>Messages</A></B>
 
-                <P>Configure messages to display to the users in various parts of OASIS.</P><br>
+                <P>Configure messages to display to the users in various parts
+                    of OASIS.</P><br>
             </div>
 
             <div class='span5'>
@@ -88,15 +89,17 @@
 
                 <P>Add, remove, or hide courses. Configure some options.</P><br>
             </div>
-</div>
+        </div>
         <div class='row'>
 
 
             <div class='span5'>
 
-                <B><A HREF='{{ cf.url }}admin/enrol/top'>Enrolment Configuration</A></B>
+                <B><A HREF='{{ cf.url }}admin/enrol/top'>Enrolment
+                    Configuration</A></B>
 
-                <P>Enrolment feed settings, how to match students to courses.</P><br>
+                <P>Enrolment feed settings, how to match students to
+                    courses.</P><br>
             </div>
 
             <BR/>

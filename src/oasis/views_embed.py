@@ -14,6 +14,7 @@ MYPATH = os.path.dirname(__file__)
 
 from oasis import app
 
+
 @app.route("/embed/question/<embed_id>/question.html")
 # Does its own auth because it may be used in embedded questions
 def embed_question(embed_id):
@@ -21,7 +22,7 @@ def embed_question(embed_id):
         This should be suitable for including in an IFRAME or similar
     """
 
-    VALIDCHARS=" abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!.,?$@&"
+    valid = " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!.,?$@&"
     if 'user_id' not in session:
         user_id = Users2.getUidByUname("guest")
     else:
@@ -37,7 +38,7 @@ def embed_question(embed_id):
 
     title = request.args.get('title', DB.get_qt_name(qt_id))
     title = ''.join([t for t in title
-                     if t in VALIDCHARS])
+                     if t in valid])
 
     q_id = Practice.get_practice_q(qt_id, user_id)
     vers = DB.get_q_version(q_id)

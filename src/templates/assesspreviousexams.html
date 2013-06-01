@@ -15,10 +15,10 @@
                     <div class="row">{% if exam.is_done %}
                         <a href="{{ cf.url }}assess/viewmarked/{{ exam.cid }}/{{ exam.id }}">{% endif %}
 
-                    <div class="span2"><b>{{ exam.title }}</b></div>
-                    <div class="span5">{{ exam.start_human }}</div>
-                    {% if exam.is_done %}
-                        <div class="span1 btn">results</div></a>{% endif %}
+                        <div class="span2"><b>{{ exam.title }}</b></div>
+                        <div class="span5">{{ exam.start_human }}</div>
+                        {% if exam.is_done %}
+                            <div class="span1 btn">results</div></a>{% endif %}
                     </div>
                 {% else %}
 

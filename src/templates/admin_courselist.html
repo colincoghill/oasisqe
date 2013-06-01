@@ -1,10 +1,11 @@
 {% extends "page_nav.html" %}
 {% block body %}
-        <br/>
+    <br/>
     <p>Return to <a href="{{ cf.url }}admin/top">Admin Top</a></p>
 
     <H2>Manage Courses</H2>
-    <p>Add, remove, or configure the courses in OASIS. Choose a course to edit its configuration.</p>
+    <p>Add, remove, or configure the courses in OASIS. Choose a course to edit
+        its configuration.</p>
     <div class='container-fluid well'>
         <h3>Active Courses</h3>
         <table class='table table-condensed'>
@@ -17,7 +18,8 @@
             </tr>
             {% for name, course in courses if course.active %}
                 <tr>
-                    <th><a href='{{ cf.url }}admin/course/{{ course.id }}'>{{ course.name }}</a>
+                    <th>
+                        <a href='{{ cf.url }}admin/course/{{ course.id }}'>{{ course.name }}</a>
                     </th>
                     <td>{{ course.size }}</td>
                     <td>{{ course.enrol_type }}</td>
@@ -39,7 +41,8 @@
             </tr>
             {% for name, course in courses if not course.active %}
                 <tr>
-                    <th><a href='{{ cf.url }}admin/course/{{ course.id }}'>{{ course.name }}</a>
+                    <th>
+                        <a href='{{ cf.url }}admin/course/{{ course.id }}'>{{ course.name }}</a>
                     </th>
                     <td>{{ course.size }}</td>
                     <td>{{ course.enrol_type }}</td>
@@ -49,8 +52,9 @@
 
         </table>
         <br/>
-        <a class='btn' href='{{ cf.url }}admin/add_course'><i class='icon icon-plus'> </i>Add Course</a>
+        <a class='btn' href='{{ cf.url }}admin/add_course'><i
+                class='icon icon-plus'> </i>Add Course</a>
     </div>
- <p>Return to <a href="{{ cf.url }}admin/top">Admin Top</a></p>
+    <p>Return to <a href="{{ cf.url }}admin/top">Admin Top</a></p>
 {% endblock body %}
 {% block pagetitle %}Server Admin{% endblock %}

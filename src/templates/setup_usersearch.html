@@ -16,8 +16,10 @@
             <h2>User Account Search</h2>
 
             <FORM METHOD='post' ACTION='{{ cf.url }}setup/usersearch'>
-                <label>Search for: <INPUT TYPE='text' NAME='usersearch_name' VALUE='{{ findname }}'></label>
-                <input class='btn btn-primary' type='submit' name='submit' value='Search'>
+                <label>Search for: <INPUT TYPE='text' NAME='usersearch_name'
+                                          VALUE='{{ findname }}'></label>
+                <input class='btn btn-primary' type='submit' name='submit'
+                       value='Search'>
             </FORM>
         </div>
 
@@ -26,8 +28,9 @@
             <table class="table">
                 {% for user in users %}
                     <tr>
-                        <th><a href='{{ cf.url }}setup/userview/{{ user.id }}'>{{ user.uname }}
-                            ({{ user.fullname }})</a></th>
+                        <th>
+                            <a href='{{ cf.url }}setup/userview/{{ user.id }}'>{{ user.uname }}
+                                ({{ user.fullname }})</a></th>
                     </tr>
                 {% endfor %}
             </table>
@@ -36,7 +39,8 @@
         {% endif %}
 
 
-        <br/><a class='btn' href='{{ cf.url }}setup/usercreate'>Create New</a> User Account
+        <br/><a class='btn' href='{{ cf.url }}setup/usercreate'>Create New</a>
+        User Account
 
     </div>
 

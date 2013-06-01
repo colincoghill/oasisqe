@@ -73,12 +73,20 @@
                                         {% endfor %}
                                     </td>
                                 {% else %}
-                                    <td><span style='color: #E56717; text-align: center;'>never</span></td>
-                                    <td><span style='text-align: center;'>-</span></td>
+                                    <td><span
+                                            style='color: #E56717; text-align: center;'>never</span>
+                                    </td>
+                                    <td><span
+                                            style='text-align: center;'>-</span>
+                                    </td>
                                 {% endif %}
 
-                                <td><span style='text-align: center;'>{{ q.indivpercent }}</span></td>
-                                <td><span style='text-align: center;'>{{ q.classpercent }}</span></td>
+                                <td><span
+                                        style='text-align: center;'>{{ q.indivpercent }}</span>
+                                </td>
+                                <td><span
+                                        style='text-align: center;'>{{ q.classpercent }}</span>
+                                </td>
                             </tr>
                         {% endfor %}
                         </tbody>
@@ -89,7 +97,8 @@
 
             </div>
 
-            <p><a href='{{ cf.url }}practice/coursequestions/{{ course.id }}'>Return</a> to subcategory selection.</p>
+            <p><a href='{{ cf.url }}practice/coursequestions/{{ course.id }}'>Return</a>
+                to subcategory selection.</p>
         </div>
     </div>
 

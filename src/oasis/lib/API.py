@@ -40,7 +40,7 @@ def getSortedQuestionList(topic):
 def getCreateExamQuestionList(course):
     """ Return a list of questions that can be used to create an assessment
     """
-    topics = Courses.getTopicsInfoAll(course, archived=0, numq=False)
+    topics = Courses.get_topics_all(course, archived=0, numq=False)
     for num, topic in topics.iteritems():
         topic_id = topics[num]['id']
         topics[num]['questions'] = getSortedQuestionList(topic_id)
