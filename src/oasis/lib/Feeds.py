@@ -6,8 +6,6 @@
 """
 
 from ..lib.DB import run_sql
-import datetime
-
 
 class Feed(object):
     """ A feed object tells us about the feed and where to get the scripts

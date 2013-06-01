@@ -9,7 +9,7 @@
     other components to use.
 """
 
-import datetime
+from datetime import datetime, timedelta
 import DB
 
 
@@ -34,9 +34,13 @@ def fetchPracQCourseRow(year, month, day, hour, qtemplate):
 
 def insertPracQCourse(year, month, day, hour, qtemplate, count, avgscore):
     """ Insert a practice count for the given time/qtemplate """
-    sql = """INSERT INTO stats_prac_q_course ("qtemplate", "hour", "day", "month", "year", "number", "when", "avgscore")
+    sql = """INSERT INTO stats_prac_q_course ("qtemplate", "hour", "day",
+                                              "month", "year", "number",
+                                              "when", "avgscore")
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s);"""
-    params = (qtemplate,  hour, day, month, year, count, datetime.datetime(year=year, hour=hour, day=day, month=month), avgscore)
+    params = (qtemplate,  hour, day,
+              month, year, count,
+              datetime(year=year, hour=hour, day=day, month=month), avgscore)
     DB.run_sql(sql, params)
 
 
@@ -59,9 +63,9 @@ def populateStatsPracQCourse(start=None, end=None):
          given go until now.
     """
     if not end:
-        end = datetime.datetime.now()
+        end = datetime.now()
     if not start:
-        start = datetime.datetime(2000, 1, 1)
+        start = datetime(2000, 1, 1)
 
     sql = """ SELECT COUNT(question) AS practices,
                 EXTRACT (YEAR FROM marktime) as year,
@@ -128,7 +132,7 @@ def getQDailyPracticeCount(start_time, end_time, qt_id):
                 data.append(("%04d-%02d-%02d" % (start_time.year, start_time.month, start_time.day), 0))
             first = False
 
-        dt = datetime.datetime.strptime("%04d-%02d-%02d" %(int(row[0]), int(row[1]), int(row[2])), "%Y-%m-%d")
+        dt = datetime.strptime("%04d-%02d-%02d" %(int(row[0]), int(row[1]), int(row[2])), "%Y-%m-%d")
         data.append((dt.strftime("%Y-%m-%d"), int(row[3])))
 
     if len(res) >= 1 and not data[-1][0] == "%04d-%02d-%02d" % (end_time.year, end_time.month, end_time.day):
@@ -162,7 +166,7 @@ def getQDailyPracticeScores(start_time, end_time, qt_id):
 
                 data.append(("%04d-%02d-%02d" % (start_time.year, start_time.month, start_time.day), 0))
             first = False
-        dt = datetime.datetime.strptime("%04d-%02d-%02d" %(int(row[0]), int(row[1]), int(row[2])), "%Y-%m-%d")
+        dt = datetime.strptime("%04d-%02d-%02d" %(int(row[0]), int(row[1]), int(row[2])), "%Y-%m-%d")
         data.append((dt.strftime("%Y-%m-%d"), row[4] / row[3]))
     if len(res) >= 1 \
         and not data[-1][0] == "%04d-%02d-%02d" % (end_time.year, end_time.month, end_time.day):
@@ -192,7 +196,7 @@ def get_daily_practice_load(start_time, end_time):
                     and int(row[0] == start_time.year)):
                 data.append(("%04d-%02d-%02d" % (start_time.year, start_time.month, start_time.day), 0))
             first = False
-        dt = datetime.datetime.strptime("%04d-%02d-%02d" % (int(row[0]), int(row[1]), int(row[2])), "%Y-%m-%d")
+        dt = datetime.strptime("%04d-%02d-%02d" % (int(row[0]), int(row[1]), int(row[2])), "%Y-%m-%d")
         data.append((dt.strftime("%Y-%m-%d"), row[3]))
     if len(res) >= 1 \
         and not data[-1][0] == "%04d-%02d-%02d" % (end_time.year, end_time.month, end_time.day):
@@ -206,8 +210,8 @@ def dailyStatsUpdate():
         Do the last two weeks, should cover most temporary outages
     """
 
-    now = datetime.datetime.now()
-    twoweek = datetime.timedelta(days=14)
+    now = datetime.now()
+    twoweek = timedelta(days=14)
     st = now-twoweek
     populateStatsPracQCourse(start=st)
 
