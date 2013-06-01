@@ -6,6 +6,8 @@
 """
 
 from ..lib.DB import run_sql
+from ..lib import Groups
+
 
 class Feed(object):
     """ A feed object tells us about the feed and where to get the scripts
@@ -120,19 +122,14 @@ class Feed(object):
             Will find all current or future groups attached to the feed,
             then run the external script once for each.
         """
-
-        pass
-
+        groups = Groups.get_by_feed(self.id)
+        for group in groups:
+            self.run_for_group(group)
 
     def run_for_group(self, group):
         """ Run the feed for the given group.
         """
-
         pass
-
-
-    # def delete(self):
-    # def groups(self):
 
 
 def all_list():
