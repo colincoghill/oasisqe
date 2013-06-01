@@ -113,7 +113,7 @@ def practice_choose_question_stats(topic_id):
     )
 
 
-@app.route("/practice/question/<int:topic_id>/<qt_id>",
+@app.route("/practice/question/<int:topic_id>/<int:qt_id>",
            methods=['POST', 'GET'])
 @authenticated
 def practice_do_question(topic_id, qt_id):
