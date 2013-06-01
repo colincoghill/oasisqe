@@ -67,18 +67,12 @@ def setup_usercreate():
             return redirect(url_for('setup_usersearch'))
 
         if "usercreate_save" in form:
-            if 'new_uname' in form:
-                new_uname = form['new_uname']
-            if 'new_fname' in form:
-                new_fname = form['new_fname']
-            if 'new_sname' in form:
-                new_sname = form['new_sname']
-            if 'new_email' in form:
-                new_email = form['new_email']
-            if 'new_pass' in form:
-                new_pass = form['new_pass']
-            if 'new_confirm' in form:
-                new_confirm = form['new_confirm']
+            new_uname = form.get('new_uname', "")
+            new_fname = form.get('new_fname', "")
+            new_sname = form.get('new_sname', "")
+            new_email = form.get('new_email', "")
+            new_pass = form.get('new_pass', "")
+            new_confirm = form.get('new_confirm', "")
 
             if not all((new_uname, new_email, new_pass, new_confirm)):
                 error = "Please fill in all fields."
@@ -192,10 +186,7 @@ def setup_usersummary(view_id):
         started = General.humanDate(exam['start'])
         exam['started'] = started
 
-        if satisfyPerms(user_id, exam['cid'], ("OASIS_VIEWMARKS", )):
-            exam['viewable'] = True
-        else:
-            exam['viewable'] = False
+        exam['viewable'] = satisfyPerms(user_id, exam['cid'], ("OASIS_VIEWMARKS", ))
 
         exams.append(exam)
     exams.sort(key=lambda x: x['start_epoch'], reverse=True)

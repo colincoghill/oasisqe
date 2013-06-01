@@ -135,12 +135,12 @@ def practice_do_question(topic_id, qt_id):
     except KeyError:
         abort(404)
     try:
-        qt = DB.get_qtemplate(qt_id)
+        qtemplate = DB.get_qtemplate(qt_id)
     except KeyError:
-        qt = None
+        qtemplate = None
         abort(404)
     questions = Practice.get_sorted_questions(course_id, topic_id, user_id)
-    q_title = qt['title']
+    q_title = qtemplate['title']
     q_pos = DB.get_qtemplate_topic_pos(qt_id, topic_id)
 
     blocked = Practice.is_q_blocked(user_id, course_id, topic_id, qt_id)

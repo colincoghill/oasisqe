@@ -85,10 +85,10 @@ def template_context():
     }}
 
 
-def authenticated(fn):
+def authenticated(func):
     """ Decorator to check the user is currently authenticated and
         deal with the session/redirect """
-    @wraps(fn)
+    @wraps(func)
     def call_fn(*args, **kwargs):
         """ If they're not in session, redirect them and remember where
             they were going.
@@ -96,7 +96,7 @@ def authenticated(fn):
         if 'user_id' not in session:
             session['redirect'] = request.path
             return redirect(url_for('index'))
-        return fn(*args, **kwargs)
+        return func(*args, **kwargs)
 
     return call_fn
 

@@ -1043,13 +1043,13 @@ def _deserialize_courseexaminfo(obj):
     return info
 
 
-def get_course_exam_all(course_id, previous_years=False):
+def get_course_exam_all(course_id, prev_years=False):
     """ Return a summary of information about all current exams in the course
         {id, course, name, description, start, duration, end, type}
     """
     assert isinstance(course_id, int)
-    assert isinstance(previous_years, bool)
-    if previous_years:
+    assert isinstance(prev_years, bool)
+    if prev_years:
         key = "course-exam-all-%s-prevyears" % course_id
     else:
         key = "course-exam-all-%s" % course_id
@@ -1057,7 +1057,7 @@ def get_course_exam_all(course_id, previous_years=False):
     if obj:
         return _deserialize_courseexaminfo(obj)
 
-    if previous_years:
+    if prev_years:
         sql = """SELECT exam, course, title, "type", "start", "end",
                     description, duration, to_char("start", 'DD Mon'),
                     to_char("start", 'hh:mm'), to_char("end", 'DD Mon'),

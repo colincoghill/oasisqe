@@ -8,9 +8,8 @@
 """
 
 
-
 import os
-import datetime
+from datetime import datetime
 
 from flask import render_template, session, \
     request, redirect, abort, url_for, flash
@@ -253,12 +252,12 @@ def admin_edit_period_submit(p_id):
         return redirect(url_for("admin_periods"))
 
     try:
-        start = datetime.datetime.strptime(request.form['start'], "%a %d %b %Y")
+        start = datetime.strptime(request.form['start'], "%a %d %b %Y")
     except ValueError:
         start = None
 
     try:
-        finish = datetime.datetime.strptime(request.form['finish'], "%a %d %b %Y")
+        finish = datetime.strptime(request.form['finish'], "%a %d %b %Y")
     except ValueError:
         finish = None
 
@@ -353,7 +352,7 @@ def admin_course(course_id):
     for group in groups:
         if not group['enddate']:
             group['enddate'] = "-"
-        elif group['enddate'] > datetime.datetime(year=9990, month=1, day=1):
+        elif group['enddate'] > datetime(year=9990, month=1, day=1):
             group['enddate'] = "-"
 
         if group['startdate']:

@@ -94,13 +94,8 @@ def cadmin_config_submit(course_id):
         return redirect(url_for("cadmin_top", course_id=course_id))
 
     saved = False
-    new_name = course['name']
-    if "name" in form:
-        new_name = form['name']
 
-    new_title = course['title']
-    if "title" in form:
-        new_title = form['title']
+    new_name = form.get('name', course['name'])
 
     if not new_name == course['name']:
         if not (3 <= len(new_name) <= 20):
@@ -108,6 +103,8 @@ def cadmin_config_submit(course_id):
         else:
             Courses.set_name(course['id'], new_name)
             saved = True
+
+    new_title = form.get('title', course['title'])
     if not new_title == course['title']:
         if not (3 <= len(new_title) <= 100):
             flash("Course Title must be between 3 and 100 characters.")
@@ -115,17 +112,16 @@ def cadmin_config_submit(course_id):
             Courses.set_title(course['id'], new_title)
             saved = True
 
-    if 'registration' in form:
-        registration = form['registration']
-        if not (registration == course['registration']):
-            saved = True
-            Courses.set_registration(course_id, registration)
+    registration = form.get('registration', course['registration'])
+    if registration != course['registration']:
+        saved = True
+        Courses.set_registration(course_id, registration)
 
-    if 'practice_visibility' in form:
-        practice_visibility = form['practice_visibility']
-        if not (practice_visibility == course['practice_visibility']):
-            saved = True
-            Courses.set_practice_visibility(course_id, practice_visibility)
+    practice_visibility = form.get('practice_visibility',
+                                   course['practice_visibility'])
+    if not (practice_visibility == course['practice_visibility']):
+        saved = True
+        Courses.set_practice_visibility(course_id, practice_visibility)
 
     if saved:
         flash("Changes Saved")
@@ -145,7 +141,7 @@ def cadmin_prev_assessments(course_id):
         abort(404)
 
     exams = [Exams.get_exam_struct(exam_id, course_id)
-             for exam_id in DB.get_course_exam_all(course_id, previous_years=True)]
+             for exam_id in DB.get_course_exam_all(course_id, prev_years=True)]
 
     if not satisfyPerms(user_id, course_id,
                         ("OASIS_QUESTIONEDITOR", "OASIS_VIEWMARKS",
@@ -491,7 +487,8 @@ def cadmin_edit_topic(topic_id):
     for question in questions:
         question['embed_id'] = DB.get_qt_embedid(question['id'])
         if question['embed_id']:
-            question['embed_url'] = "%s/embed/question/%s/question.html" % (OaConfig.parentURL, question['embed_id'])
+            question['embed_url'] = "%s/embed/question/%s/question.html" % \
+                                    (OaConfig.parentURL, question['embed_id'])
         else:
             question['embed_url'] = None
         question['editor'] = DB.get_qt_editor(question['id'])
@@ -500,7 +497,8 @@ def cadmin_edit_topic(topic_id):
     all_courses = [cs
                    for cs in all_courses
                    if satisfyPerms(user_id, int(cs['id']),
-                        ("OASIS_QUESTIONEDITOR", "OASIS_COURSEADMIN", "OASIS_SUPERUSER"))]
+                        ("OASIS_QUESTIONEDITOR", "OASIS_COURSEADMIN",
+                         "OASIS_SUPERUSER"))]
     all_courses.sort(lambda f, s: cmp(f['name'], s['name']))
 
     all_course_topics = []
@@ -584,7 +582,8 @@ def cadmin_view_topic(topic_id):
     for question in questions:
         question['embed_id'] = DB.get_qt_embedid(question['id'])
         if question['embed_id']:
-            question['embed_url'] = "%s/embed/question/%s/question.html" % (OaConfig.parentURL, question['embed_id'])
+            question['embed_url'] = "%s/embed/question/%s/question.html" % \
+                                    (OaConfig.parentURL, question['embed_id'])
         else:
             question['embed_url'] = None
         question['editor'] = DB.get_qt_editor(question['id'])
