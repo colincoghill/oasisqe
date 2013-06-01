@@ -14,15 +14,18 @@
 {% endblock js %}
 {% block body %}
     <br/>
-    Back to <a href="{{ cf.url }}courseadmin/top/{{ course.id }}">Course Page</a>
+    Back to <a href="{{ cf.url }}cadmin/{{ course.id }}/top">Course Page</a>
     <h4>{{ course.name }} ({{ course.title }})</h4>
     <H2>{{ topic.position }}. {{ topic.name }}</H2>
-    <p>Note: Questions will be displayed in order of their position. It is ok for multiple questions to have the same
-        position or for there to be gaps. The user will see the numbering, however.</p>
+    <p>Note: Questions will be displayed in order of their position. It is ok
+        for multiple questions to have the same
+        position or for there to be gaps. The user will see the numbering,
+        however.</p>
     <div class="container-fluid well">
         <h5>Visible Questions</h5>
 
-        <form method="POST" action="{{ cf.url }}courseadmin/topic_save/{{ topic.id }}">
+        <form method="POST"
+              action="{{ cf.url }}cadmin/{{ course.id }}/topic_save/{{ topic.id }}">
             <table class="table">
                 <thead>
                 <tr>
@@ -36,14 +39,22 @@
                 <tbody>
                 {% for q in questions if q.position >= 1 %}
                     <tr>
-                        <td><input name="select_{{ q.id }}" type="checkbox"></td>
-                        <td><input name="position_{{ q.id }}" type="text" class="input-mini" value='{{ q.position }}'>
+                        <td><input name="select_{{ q.id }}" type="checkbox">
                         </td>
-                        <td><input name="name_{{ q.id }}" type="text" class="input" value='{{ q.name }}'></td>
-                        <td><sub>{{ q.editor }}</sub> {% if q.embed_url %}<a href='{{ q.embed_url }}'>
-                            <span style='font-size: xx-small; color: darkred;'>embeddable</span></a>{% endif %}</td>
-                        <td><a href="{{ cf.url }}courseadmin/editquestion/{{ topic.id }}/{{ q.id }}"
-                               class='btn-mini btn'>Edit Question</a> <a target='_new' href="{{ cf.url }}practice/question/{{ topic.id }}/{{ q.id }}"
+                        <td><input name="position_{{ q.id }}" type="text"
+                                   class="input-mini" value='{{ q.position }}'>
+                        </td>
+                        <td><input name="name_{{ q.id }}" type="text"
+                                   class="input" value='{{ q.name }}'></td>
+                        <td><sub>{{ q.editor }}</sub> {% if q.embed_url %}
+                            <a href='{{ q.embed_url }}'>
+                            <span style='font-size: xx-small; color: darkred;'>embeddable</span>
+                            </a>{% endif %}</td>
+                        <td>
+                            <a href="{{ cf.url }}cadmin/{{ course.id }}/editquestion/{{ topic.id }}/{{ q.id }}"
+                               class='btn-mini btn'>Edit Question</a>
+                            <a target='_new'
+                               href="{{ cf.url }}practice/question/{{ topic.id }}/{{ q.id }}"
                                class='btn-mini btn'>View</a></td>
                     </tr>
                 {% endfor %}
@@ -52,7 +63,8 @@
 
             <h5>Hidden Questions</h5>
 
-            <p>To hide a topic, for now, set its position to be 0 or negative.</p>
+            <p>To hide a topic, for now, set its position to be 0 or
+                negative.</p>
             <table class="table">
                 <thead>
                 <tr>
@@ -66,16 +78,24 @@
                 <tbody>
                 {% for q in questions if q.position <1 %}
                     <tr>
-                        <td><input name="select_{{ q.id }}" type="checkbox"></td>
-                        <td><input name="position_{{ q.id }}" type="text" class="input-mini" value='{{ q.position }}'>
+                        <td><input name="select_{{ q.id }}" type="checkbox">
                         </td>
-                        <td><input name="name_{{ q.id }}" type="text" class="input" value='{{ q.name }}'></td>
-                        <td><sub>{{ q.editor }}</sub> {% if q.embed_url %}<a href='{{ q.embed_url }}'>
-                            <span style='font-size: xx-small; color: darkred;'>embeddable</span></a>{% endif %}</td>
-                        <td><a href="{{ cf.url }}courseadmin/editquestion/{{ topic.id }}/{{ q.id }}"
+                        <td><input name="position_{{ q.id }}" type="text"
+                                   class="input-mini" value='{{ q.position }}'>
+                        </td>
+                        <td><input name="name_{{ q.id }}" type="text"
+                                   class="input" value='{{ q.name }}'></td>
+                        <td><sub>{{ q.editor }}</sub> {% if q.embed_url %}
+                            <a href='{{ q.embed_url }}'>
+                            <span style='font-size: xx-small; color: darkred;'>embeddable</span>
+                            </a>{% endif %}</td>
+                        <td>
+                            <a href="{{ cf.url }}cadmin/{{ course.id }}/editquestion/{{ topic.id }}/{{ q.id }}"
                                class='btn-mini btn'>Edit
-                            Question</a> <a target='_new' href="{{ cf.url }}practice/question/{{ topic.id }}/{{ q.id }}"
-                               class='btn-mini btn'>View</a></td>
+                                Question</a> <a target='_new'
+                                                href="{{ cf.url }}practice/question/{{ topic.id }}/{{ q.id }}"
+                                                class='btn-mini btn'>View</a>
+                        </td>
                     </tr>
                 {% endfor %}
                 </tbody>
@@ -84,7 +104,8 @@
             <br/>
 
             <div>
-                <h5>With Selected questions:</h5> <select name="target_cmd" id="target_cmd">
+                <h5>With Selected questions:</h5> <select name="target_cmd"
+                                                          id="target_cmd">
                 <option value="--" SELECTED>--</option>
                 <option value="hide">Hide</option>
                 <option value="show">Show</option>
@@ -117,7 +138,8 @@
                     <tbody>
                     <tr>
                         <td>
-                            <input type="text" name="new_position" class='input input-mini'>
+                            <input type="text" name="new_position"
+                                   class='input input-mini'>
                         </td>
                         <td>
                             <input type="text" name="new_title" class='input'>
@@ -135,8 +157,10 @@
             </div>
 
             <div class='pull-right'>
-                <input type="submit" name="save_changes" value="Apply Changes" class='btn btn-primary'>
-                <input type="submit" name="cancel_edit" value="Cancel" class='btn btn-danger'>
+                <input type="submit" name="save_changes" value="Apply Changes"
+                       class='btn btn-primary'>
+                <input type="submit" name="cancel_edit" value="Cancel"
+                       class='btn btn-danger'>
             </div>
         </form>
     </div>

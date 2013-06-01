@@ -416,7 +416,7 @@ def admin_course_save(course_id):
 @require_perm('OASIS_SYSADMIN', ('setup_top',))
 def admin_add_course_save():
     """ accept saved settings for a new course"""
-
+    user_id = session['user_id']
     form = request.form
     if 'cancel_edit' in form:
         flash("Course creation cancelled")

@@ -7,7 +7,7 @@
             {% for name, course in courses %}
                 <li>
                     <div class='span2'><a name='course_{{ course.id }}'
-                                          href='{{ cf.url }}courseadmin/top/{{ course.id }}'>{{ course.name }} </a>
+                                          href='{{ cf.url }}cadmin/{{ course.id }}/top'>{{ course.name }} </a>
                     </div>
                     <div class='span6'>{{ course.title }}</div>
                 </li>

@@ -1,7 +1,7 @@
 {% extends "page_courseadmin.html" %}
 {% block body %}
     <br/>
-    Back to <a href="{{ cf.url }}courseadmin/top/{{ course.id }}">Course Page</a>
+    Back to <a href="{{ cf.url }}cadmin/{{ course.id }}/top">Course Page</a>
     <H2>Enrolment</H2>
     <h4>{{ course.name }} ({{ course.title }})</h4>
     <div class="container-fluid well">
@@ -27,7 +27,7 @@
                         <td>{{ group.nummembers }}</td>
                         <td>{{ group.startdate }}</td>
                         <td>{{ group.enddate }}</td>
-                        <td><a href="{{ cf.url }}courseadmin/editgroup/{{ group.id }}" class='btn-mini btn'>Edit
+                        <td><a href="{{ cf.url }}cadmin/{{ course_id }}/editgroup/{{ group.id }}" class='btn-mini btn'>Edit
                             Members</a></td>
                     </tr>
                 {% endif %}
@@ -35,7 +35,7 @@
 
             </tbody>
         </table>
-    <a class="btn" href="{{ cf.url }}courseadmin/addgroup/{{ course.id }}"><i class="icon icon-plus"> </i> Add Group</a>
+    <a class="btn" href="{{ cf.url }}cadmin/{{ course.id }}/addgroup"><i class="icon icon-plus"> </i> Add Group</a>
         <!--        <h5>Previous Groups</h5>
             <table class="table table-condensed">
                 <thead>

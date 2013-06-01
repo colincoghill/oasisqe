@@ -121,9 +121,9 @@ def main_news():
     )
 
 
-@app.route("/courseadmin/editquestion/<int:topic_id>/<int:qt_id>")
+@app.route("/cadmin/<int:course_id>/editquestion/<int:topic_id>/<int:qt_id>")
 @authenticated
-def qedit_redirect(topic_id, qt_id):
+def qedit_redirect(course_id,topic_id, qt_id):
     """ Work out the appropriate question editor and redirect to it """
     etype = DB.get_qt_editor(qt_id)
     if etype == "Raw":
@@ -133,6 +133,7 @@ def qedit_redirect(topic_id, qt_id):
 
     flash("Unknown Question Type, can't Edit")
     return redirect(url_for('cadmin_edit_topic',
+                            course_id=course_id,
                             topic_id=topic_id))
 
 

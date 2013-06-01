@@ -1,13 +1,13 @@
 {% extends "page_courseadmin.html" %}
 {% block body %}
     <br/>
-    Back to <a href="{{ cf.url }}courseadmin/top/{{ course.id }}">Course Page</a>
+    Back to <a href="{{ cf.url }}cadmin/{{ course_id }}/top">Course Page</a>
     <H2>All Topics</H2>
     <h4>{{ course.name }} ({{ course.title }})</h4>
     <div class="container-fluid well">
         <h5>Visible Practice Topics</h5>
 
-        <form method="POST" action="{{ cf.url }}courseadmin/topics_save/{{ course.id }}">
+        <form method="POST" action="{{ cf.url }}cadmin/{{ course.id }}/topics_save">
             <table class="table">
                 <thead>
                 <tr>
@@ -41,7 +41,7 @@
                                     <option value='1' SELECTED>{% else %}
                                     <option value='1'>{% endif %}Hidden (Staff Only)</option>
                             </select></td>
-                            <td><a href="{{ cf.url }}courseadmin/edittopic/{{ topic.id }}" class='btn-mini btn'>Edit
+                            <td><a href="{{ cf.url }}cadmin/{{ course.id }}/edittopic/{{ topic.id }}" class='btn-mini btn'>Edit
                                 Questions</a></td>
                         </tr>
                     {% endif %}
@@ -82,7 +82,7 @@
                                     <option value='1' SELECTED>{% else %}
                                     <option value='1'>{% endif %}Hidden (Staff Only)</option>
                             </select></td>
-                            <td><a href="{{ cf.url }}courseadmin/edittopic/{{ topic.id }}" class='btn-mini btn'>Edit
+                            <td><a href="{{ cf.url }}cadmin/{{ course.id }}/edittopic/{{ topic.id }}" class='btn-mini btn'>Edit
                                 Questions</a></td>
                         </tr>
                     {% endif %}

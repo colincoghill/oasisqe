@@ -14,7 +14,7 @@
 {% endblock js %}
 {% block body %}
     <br/>
-    Back to <a href="{{ cf.url }}courseadmin/top/{{ course.id }}">Course Page</a>
+    Back to <a href="{{ cf.url }}cadmin/{{ course.id }}/top">Course Page</a>
     <h4>{{ course.name }} ({{ course.title }})</h4>
     <h2>Permissions</h2>
     <p>From here you can set who can administer parts of this course.</p>
@@ -22,7 +22,7 @@
 
     <div class="container-fluid well">
 
-        <form method='post' action='{{ cf.url }}courseadmin/perms_save/{{ course.id }}'>
+        <form method='post' action='{{ cf.url }}cadmin/{{ course.id }}/perms_save'>
             <br/>
             <table id='permstable' class='checks'>
                 <colgroup>

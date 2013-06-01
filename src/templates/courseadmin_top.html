@@ -19,7 +19,7 @@
             {% for topic in topics %}
                 {% if topic.visibility >= 2 %}
                     <tr>
-                        <td><a href="{{ cf.url }}courseadmin/topic/{{ topic.id }}">{{ topic.title }}</a></td>
+                        <td><a href="{{ cf.url }}cadmin/{{ course.id }}/topic/{{ topic.id }}">{{ topic.title }}</a></td>
                         <td>{{ topic.numquestions }}</td>
                     </tr>
                 {% endif %}
@@ -27,7 +27,7 @@
             </tbody>
         </table>
         <br/>
-        <a href="{{ cf.url }}courseadmin/topics/{{ course.id }}">Edit Topics</a>
+        <a href="{{ cf.url }}cadmin/{{ course.id }}/topics">Edit Topics</a>
     </div>
     <br/>
     <!--
@@ -80,10 +80,10 @@
         <div class="container-fluid well">
         <h5>Course Settings</h5>
 
-      <p><a href="{{ cf.url }}courseadmin/enrolment/{{ course.id }}">People</a></p>
+      <p><a href="{{ cf.url }}cadmin/{{ course.id }}/enrolment">People</a></p>
         <!--    <p><a href="{{cf.url}}setup/studentsearch/{{course.id}}">Student Search</a></p>   -->
-    <p><a href="{{ cf.url }}courseadmin/perms/{{ course.id }}">Permissions</a></p>
-    <p><a href="{{ cf.url }}courseadmin/config/{{ course.id }}">Configuration</a></p>
+    <p><a href="{{ cf.url }}cadmin/{{ course.id }}/perms">Permissions</a></p>
+    <p><a href="{{ cf.url }}cadmin/{{ course.id }}/config">Configuration</a></p>
 
     <!--     <p><a href="{{cf.url}}api/course/{{course.name}}/{{course.id}}/members?format=csv">Class List</a> as a CSV file.</p>
 

@@ -145,6 +145,57 @@ def require_perm(perms, redir):
     return decorator
 
 
+def require_course_perm(perms, redir=None):
+    """ Decorator to check the user has at least one of a given list of course
+        perms.
+        Will flash() a message to them and redirect if they don't.
+
+        example:
+
+        @app.route(...)
+        @require_perm('sysadmin', url_for('index'))
+        def do_stuff():
+
+        or
+
+        @app.route(...)
+        @require_perm(['sysadmin', 'useradmin'], url_for['admin'])
+        def do_stuff():
+    """
+
+    def decorator(func):
+        @wraps(func)
+        def call_fn(*args, **kwargs):
+            """ check auth first, can't have perms if we're not.
+            """
+            if 'user_id' not in session:
+                session['redirect'] = request.path
+                return redirect(url_for('index'))
+
+            user_id = session['user_id']
+
+            if isinstance(perms, str):
+                permlist = (perms,)
+            else:
+                permlist = perms
+
+            course_id = kwargs['course_id']
+
+            if satisfyPerms(user_id, course_id, permlist):
+                return func(*args, **kwargs)
+            flash("You do not have course permission to do that.")
+            if redir:
+                return redirect(url_for(redir))
+            else:
+                return redirect(url_for("cadmin_top", course_id=course_id))
+
+        return call_fn
+
+    return decorator
+
+
+
+
 @app.route("/")
 def index():
     """ Main landing page. Welcome them and give them some login instructions.

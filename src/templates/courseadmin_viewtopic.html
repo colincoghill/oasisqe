@@ -24,7 +24,7 @@
                     xaxis: {
                         renderer: $.jqplot.DateAxisRenderer,
                         tickOptions: {formatString: '%#d&nbsp;%b',
-                        fontSize: '12px'
+                            fontSize: '12px'
                         }
                     },
                     yaxis: {
@@ -55,7 +55,7 @@
                     if (line.length > 1) {
                         drawgraph(dom_id, title, line, "blue")
                     } else {
-                        $("#"+dom_id).html("<span style='font-size: x-small;'>Not practiced in this time period</span>")
+                        $("#" + dom_id).html("<span style='font-size: x-small;'>Not practiced in this time period</span>")
                     }
                 }
             });
@@ -73,36 +73,37 @@
                     if (line.length > 1) {
                         drawgraph(dom_id, title, line, "darkgreen")
                     } else {
-                        $("#"+dom_id).html("")
+                        $("#" + dom_id).html("")
                     }
                 }
             });
         }
 
 
-
         $(document).ready(function () {
 
 
             {% for q in questions if q.position >= 1 %}
-                  countgraph( {{ q.id }}, "chart_{{ q.id }}", "Practice History");
-                  scoregraph( {{ q.id }}, "chart2_{{ q.id }}", "Average Score");
+                countgraph({{ q.id }}, "chart_{{ q.id }}", "Practice History");
+                scoregraph({{ q.id }}, "chart2_{{ q.id }}", "Average Score");
             {% endfor %}
 
-          //  bargraph( 67,"chart_67", "Practice History");
+            //  bargraph( 67,"chart_67", "Practice History");
 
         });
     </script>
 {% endblock js %}
 {% block body %}
     <br/>
-    Back to <a href="{{ cf.url }}courseadmin/top/{{ course.id }}">Course Page</a>
+    Back to <a href="{{ cf.url }}cadmin/{{ course.id }}/top">Course Page</a>
     <h4>{{ course.name }} ({{ course.title }})</h4>
     <H2>{{ topic.position }}. {{ topic.name }}</H2>
 
     <div class="container-fluid well">
         <h3>Practice History</h3>
-    <p>The number of times the given question was practiced, and the average score per day for the last 3 months.</p>
+
+        <p>The number of times the given question was practiced, and the average
+            score per day for the last 3 months.</p>
         <table class="table">
             <thead>
             <tr>
@@ -121,13 +122,19 @@
                     </td>
                     <td>{{ q.name }}<br/>
                         <br/>
-                        <a class='btn btn-mini' target="_new" href="{{ cf.url }}practice/question/{{ topic.id }}/{{ q.id }}">View Qn</a><br/>
-                        <a class='btn btn-mini' href="{{ cf.url }}courseadmin/topic/{{ topic.id }}/{{ q.id }}/history">History</a></td>
+                        <a class='btn btn-mini' target="_new"
+                           href="{{ cf.url }}practice/question/{{ topic.id }}/{{ q.id }}">View
+                            Qn</a><br/>
+                        <a class='btn btn-mini'
+                           href="{{ cf.url }}cadmin/{{ course.id }}/topic/{{ topic.id }}/{{ q.id }}/history">History</a>
+                    </td>
 
                     <td>
-                        <div style='height:120px; width:600px;' id='chart_{{ q.id }}'>
+                        <div style='height:120px; width:600px;'
+                             id='chart_{{ q.id }}'>
                         </div>
-                        <div style='height:120px; width:600px;' id='chart2_{{ q.id }}'>
+                        <div style='height:120px; width:600px;'
+                             id='chart2_{{ q.id }}'>
                         </div>
                     </td>
                 </tr>

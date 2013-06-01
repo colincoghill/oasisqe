@@ -1,10 +1,10 @@
 {% extends "page_courseadmin.html" %}
 {% block body %}
     <br/>
-    Back to <a href="{{ cf.url }}courseadmin/top/{{ course.id }}">Course Page</a>
+    Back to <a href="{{ cf.url }}cadmin/{{ course.id }}/top">Course Page</a>
     <h4>{{ course.name }} ({{ course.title }})</h4>
     <H2>Add a New Group</H2>
-    <form id='addperson_form' method='post' action='{{ cf.url }}courseadmin/addgroup_submit/{{ course.id }}'>
+    <form id='addperson_form' method='post' action='{{ cf.url }}cadmin/{{ course.id }}/addgroup_submit'>
     <div class="container-fluid well">
         <h5>Group information</h5>
 

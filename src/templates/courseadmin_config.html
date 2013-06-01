@@ -1,11 +1,11 @@
 {% extends "page_courseadmin.html" %}
 {% block body %}
     <br>
-    <p>Return to <a href="{{ cf.url }}courseadmin/top/{{ course.id }}">Course Admin</a></p>
+    <p>Return to <a href="{{ cf.url }}cadmin/{{ course.id }}/top">Course Admin</a></p>
 
     <h2>{{ course.name }} ({{ course.title }})</h2>
     <h3>Configuration</h3>
-    <form method="POST" action="{{ cf.url }}courseadmin/config_submit/{{ course.id }}">
+    <form method="POST" action="{{ cf.url }}cadmin/{{ course.id }}/config_submit">
         <div class="container-fluid well">
             <h5>Course Name</h5>
 
@@ -72,7 +72,7 @@
     <br>
 
     <br/>
-    <p>Return to <a href="{{ cf.url }}courseadmin/top/{{ course.id }}">Course Admin</a></p>
+    <p>Return to <a href="{{ cf.url }}cadmin/{{ course.id }}/top">Course Admin</a></p>
 
 
 {% endblock body %}
