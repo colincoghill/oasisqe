@@ -15,7 +15,6 @@ class Period(object):
         start and finish.
     """
 
-    # TODO:  SQLAlchemy this.
     def __init__(self, id=None, name=None,
                  title=None, start=None, finish=None,
                  code=None):

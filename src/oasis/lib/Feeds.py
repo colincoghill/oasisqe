@@ -14,7 +14,6 @@ class Feed(object):
         that do the main work of importing.
     """
 
-    # TODO:  SQLAlchemy this.
     def __init__(self, id=None, name=None,
                  title=None, script=None, envvar=None,
                  comments=None, freq=None, active=None):

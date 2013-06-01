@@ -19,13 +19,15 @@ def create(name, description, owner, grouptype, startdate=None, enddate=None):
                     VALUES (%s, %s, %s, %s, %s, %s);""",
                  (name, description, owner, grouptype, startdate, enddate))
     res = conn.run_sql("SELECT currval('groups_id_seq')")
-    log(INFO, "create('%s', '%s', %d, %d) Added Group" % (
-    name, description, owner, grouptype))
+    log(INFO,
+        "create('%s', '%s', %d, %d) Added Group" % (
+        name, description, owner, grouptype))
     dbpool.commit(conn)
     if res:
         return int(res[0][0])
-    log(INFO, "create('%s', '%s', %d, %d, %s, %s) FAILED" % (
-    name, description, owner, grouptype, startdate, enddate))
+    log(INFO,
+        "create('%s', '%s', %d, %d, %s, %s) FAILED" % (
+        name, description, owner, grouptype, startdate, enddate))
     return None
 
 
@@ -135,31 +137,74 @@ def getInfoAll():
     return info
 
 
+class Group(object):
+    """ Look after groups of users.
+    """
+
+    def __init__(self,
+                 id=None,
+                 name=None,
+                 title=None,
+                 gtype=None,
+                 active=None,
+                 source=None,
+                 feed=None):
+        """ If just id is provided, load existing database
+            record or raise KeyError.
+
+            If rest is provided, create a new one. Raise KeyError if there's
+            already an entry with the same name or code.
+        """
+
+        if not name:  # search
+            if id:
+                self._fetch_by_id(id)
+            else:
+                raise ValueError("Must provide group ID or other fields")
+        else:  # create new
+            self.id = 0
+            self.name = name
+            self.title = title
+            self.gtype = gtype
+            self.active = active
+            self.source = source
+            self.feed = feed
+
+    def _fetch_by_id(self, g_id):
+        """ Initialise from database, or KeyError
+        """
+
+        sql = """SELECT name, title, gtype, active, source, feed
+                 FROM ugroups
+                 WHERE id=%s;"""
+        params = (g_id,)
+        ret = run_sql(sql, params)
+        if not ret:
+            raise KeyError("Group with id '%s' not found" % g_id)
+
+        self.id = g_id
+        self.name = ret[0][0]
+        self.title = ret[0][1]
+        self.gtype = ret[0][2]
+        self.active = ret[0][3]
+        self.source = ret[0][4]
+        self.feed = ret[0][5]
+
+        return
+
+
 def get_by_feed(feed_id):
     """ Return a summary of all active or future groups with the given feed
     """
     ret = run_sql(
-        """SELECT id, title, description, startdate, enddate, owner,
-                  semester, "type", enrol_type, enrol_location
-           FROM groups
-           WHERE enddate > NOW()
-           AND "feed" = %s
-           ORDER BY title ;""", (feed_id,))
-    info = {}
+        """SELECT id
+           FROM ugroups
+           WHERE active = TRUE
+           AND "feed" = %s;""",
+        (feed_id,))
+    groups = []
     if ret:
-        count = 0
         for row in ret:
-            info[count] = {
-                'id': int(row[0]),
-                'title': row[1],
-                'description': row[2],
-                'startdate': row[3],
-                'enddate': row[4],
-                'owner': row[5],
-                'semester': row[6],
-                'type': row[7],
-                'enrol_type': row[8],
-                'enrol_location': row[9]
-            }
-            count += 1
-    return info
+            groups.append(Group(id=row[0]))
+
+    return groups
