@@ -1,40 +1,40 @@
 {% extends "page_practice.html" %}
 {% block body %}
 
-    <div class="row">
-        <div class="span2">
-            <br/>
-            <ul class="nav nav-list">
-                <li class='nav-header'>Course</li>
-                {% for name, course in courses %}
-                    <li>
-                        <a name='course_{{ courses.id }}'
-                           href='{{ cf.url }}practice/coursequestions/{{ course.id }}'>{{ course.name }} </a>
-                    </li>
+  <div class="row">
+    <div class="span2">
+      <br/>
+      <ul class="nav nav-list">
+        <li class='nav-header'>Course</li>
+        {% for name, course in courses %}
+          <li>
+            <a name='course_{{ courses.id }}'
+               href='{{ cf.url }}practice/coursequestions/{{ course.id }}'>{{ course.name }} </a>
+          </li>
 
-                {% endfor %}
-            </ul>
-        </div>
-        <div class="span8">
-            <br/>
-
-            <h2>{{ course.name }} ({{ course.title }})</h2>
-
-            <p>Select a Topic</p>
-
-            <div class='well'>
-                <ul class='nav nav-list'>
-                    {% for topic in topics %}
-                        {% if topic.visibility >= 2 %}
-                            <li class=>
-                                <a name='topic_{{ topic.id }}'
-                                   href='{{ cf.url }}practice/subcategory/{{ topic.id }}'>{{ topic.title }}</a>
-                                ({{ topic.numquestions }} questions)
-                            </li><br/>
-                        {% endif %}
-                    {% endfor %}
-                </ul>
-            </div>
-        </div>
+        {% endfor %}
+      </ul>
     </div>
+    <div class="span8">
+      <br/>
+
+      <h2>{{ course.name }} ({{ course.title }})</h2>
+
+      <p>Select a Topic</p>
+
+      <div class='well'>
+        <ul class='nav nav-list'>
+          {% for topic in topics %}
+            {% if topic.visibility >= 2 %}
+              <li class=>
+                <a name='topic_{{ topic.id }}'
+                   href='{{ cf.url }}practice/subcategory/{{ topic.id }}'>{{ topic.title }}</a>
+                ({{ topic.numquestions }} questions)
+              </li><br/>
+            {% endif %}
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
 {% endblock body %}

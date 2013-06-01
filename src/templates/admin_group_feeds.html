@@ -1,133 +1,133 @@
 {% extends "page_nav.html" %}
 {% block body %}
-    <div>
-        <br/>
-
-        <p>Return to <a href="{{ cf.url }}admin/enrol/top">Enrolment
-            Configuration</a></p>
-
-        <H2>Group Feeds</H2>
-
-
-        <p>Group feeds provide a way to import group membership information
-            from
-            external systems into OASIS.
-            <br>
-        </p>
-
-        <p>Generally you would need only one or two.
-            <br>
-        </p>
-
-        <p>These are implemented as scripts stored in the {{ cf.feeddir }}
-            folder on the server.
-            <br>
-        </p>
-
-        <div class='container-fluid well'>
-
-
-            <h4>Active Feeds</h4>
-            <table class='table table-condensed datatable'>
-                <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Title</th>
-                    <th>Script</th>
-                    <th>Updates</th>
-                    <th>Status</th>
-                    <th></th>
-
-                </tr>
-                </thead>
-                <tbody>
-                {% for feed in feeds if feed.active %}
-                    <tr>
-                        <td>{{ feed.name }}</td>
-                        <th>{{ feed.title }}</th>
-                        <td>{{ feed.script }}</td>
-                        <td>{{ feed.freq_name() }}</td>
-                        <td>{{ feed.status }}</td>
-
-                        <td><a class='btn btn-mini'
-                               href='{{ cf.url }}admin/edit_feed/{{ feed.id }}'>Edit</a>
-                        </td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-            <br/> <br/>
-            <a class='btn btn-small' href='{{ cf.url }}admin/add_feed'>Add
-                Feed</a>
-            <br/> <br/>
-            <br/><br/>
-            <a href='#' id='showoldfeed'><i
-                    class='icon icon-chevron-right oldfeed'> </i><i
-                    style='display:none;'
-                    class='icon icon-chevron-down oldfeed'> </i>
-                Inactive Feeds</a>
-
-            <div class='hidden oldfeed' id="oldfeed">
-                <table class='table table-condensed datatable'>
-                    <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Title</th>
-                        <th>Script</th>
-                        <th>Updates</th>
-                        <th>Status</th>
-                        <th></th>
-
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for feed in feeds if not feed.active %}
-                        <tr>
-                            <td>{{ feed.name }}</td>
-                            <th>{{ feed.title }}</th>
-                            <td>{{ feed.script }}</td>
-                            <td>{{ feed.freq_name() }}</td>
-                            <td>{{ feed.status }}</td>
-
-                            <td><a class='btn btn-mini'
-                                   href='{{ cf.url }}admin/edit_feed/{{ feed.id }}'>Edit</a>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-
-        </div>
-    </div>
+  <div>
+    <br/>
 
     <p>Return to <a href="{{ cf.url }}admin/enrol/top">Enrolment
-        Configuration</a></p>
+      Configuration</a></p>
 
-    <br/>
-    <br/>
-    <br/>
-    <br/>
+    <H2>Group Feeds</H2>
+
+
+    <p>Group feeds provide a way to import group membership information
+      from
+      external systems into OASIS.
+      <br>
+    </p>
+
+    <p>Generally you would need only one or two.
+      <br>
+    </p>
+
+    <p>These are implemented as scripts stored in the {{ cf.feeddir }}
+      folder on the server.
+      <br>
+    </p>
+
+    <div class='container-fluid well'>
+
+
+      <h4>Active Feeds</h4>
+      <table class='table table-condensed datatable'>
+        <thead>
+        <tr>
+          <th>Name</th>
+          <th>Title</th>
+          <th>Script</th>
+          <th>Updates</th>
+          <th>Status</th>
+          <th></th>
+
+        </tr>
+        </thead>
+        <tbody>
+        {% for feed in feeds if feed.active %}
+          <tr>
+            <td>{{ feed.name }}</td>
+            <th>{{ feed.title }}</th>
+            <td>{{ feed.script }}</td>
+            <td>{{ feed.freq_name() }}</td>
+            <td>{{ feed.status }}</td>
+
+            <td><a class='btn btn-mini'
+                   href='{{ cf.url }}admin/edit_feed/{{ feed.id }}'>Edit</a>
+            </td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      <br/> <br/>
+      <a class='btn btn-small' href='{{ cf.url }}admin/add_feed'>Add
+        Feed</a>
+      <br/> <br/>
+      <br/><br/>
+      <a href='#' id='showoldfeed'><i
+          class='icon icon-chevron-right oldfeed'> </i><i
+          style='display:none;'
+          class='icon icon-chevron-down oldfeed'> </i>
+        Inactive Feeds</a>
+
+      <div class='hidden oldfeed' id="oldfeed">
+        <table class='table table-condensed datatable'>
+          <thead>
+          <tr>
+            <th>Name</th>
+            <th>Title</th>
+            <th>Script</th>
+            <th>Updates</th>
+            <th>Status</th>
+            <th></th>
+
+          </tr>
+          </thead>
+          <tbody>
+          {% for feed in feeds if not feed.active %}
+            <tr>
+              <td>{{ feed.name }}</td>
+              <th>{{ feed.title }}</th>
+              <td>{{ feed.script }}</td>
+              <td>{{ feed.freq_name() }}</td>
+              <td>{{ feed.status }}</td>
+
+              <td><a class='btn btn-mini'
+                     href='{{ cf.url }}admin/edit_feed/{{ feed.id }}'>Edit</a>
+              </td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+
+  <p>Return to <a href="{{ cf.url }}admin/enrol/top">Enrolment
+    Configuration</a></p>
+
+  <br/>
+  <br/>
+  <br/>
+  <br/>
 
 {% endblock body %}
 {% block js %}
-    <script>
+  <script>
 
-        $(function () {
-            $(".datatable").dataTable({
-                        "bPaginate": false,
-                        "bLengthChange": false,
-                        "bFilter": false
-                    }
-            );
+    $(function () {
+      $(".datatable").dataTable({
+            "bPaginate": false,
+            "bLengthChange": false,
+            "bFilter": false
+          }
+      );
 
-            $('#showoldfeed').click(function () {
-                        $('.oldfeed').toggle();
-                    }
-            );
-        });
+      $('#showoldfeed').click(function () {
+            $('.oldfeed').toggle();
+          }
+      );
+    });
 
 
-    </script>
+  </script>
 {% endblock js %}
 {% block pagetitle %}Server Admin{% endblock %}

@@ -1,38 +1,38 @@
 {% extends "page_courseadmin.html" %}
 {% block body %}
-    <br>
-    <p>Return to <a href="{{ cf.url }}setup/courses">Course Choice</a></p>
+  <br>
+  <p>Return to <a href="{{ cf.url }}setup/courses">Course Choice</a></p>
 
-    <h2>{{ course.name }} ({{ course.title }})</h2>
+  <h2>{{ course.name }} ({{ course.title }})</h2>
 
-    <div class="container-fluid well">
-        <h5>Active Practice Topics</h5>
+  <div class="container-fluid well">
+    <h5>Active Practice Topics</h5>
 
-        <table class="table">
-            <thead>
-            <tr>
-                <th></th>
-                <th>Questions</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for topic in topics %}
-                {% if topic.visibility >= 2 %}
-                    <tr>
-                        <td>
-                            <a href="{{ cf.url }}cadmin/{{ course.id }}/topic/{{ topic.id }}">{{ topic.title }}</a>
-                        </td>
-                        <td>{{ topic.numquestions }}</td>
-                    </tr>
-                {% endif %}
-            {% endfor %}
-            </tbody>
-        </table>
-        <br/>
-        <a href="{{ cf.url }}cadmin/{{ course.id }}/topics">Edit Topics</a>
-    </div>
+    <table class="table">
+      <thead>
+      <tr>
+        <th></th>
+        <th>Questions</th>
+      </tr>
+      </thead>
+      <tbody>
+      {% for topic in topics %}
+        {% if topic.visibility >= 2 %}
+          <tr>
+            <td>
+              <a href="{{ cf.url }}cadmin/{{ course.id }}/topic/{{ topic.id }}">{{ topic.title }}</a>
+            </td>
+            <td>{{ topic.numquestions }}</td>
+          </tr>
+        {% endif %}
+      {% endfor %}
+      </tbody>
+    </table>
     <br/>
-    <!--
+    <a href="{{ cf.url }}cadmin/{{ course.id }}/topics">Edit Topics</a>
+  </div>
+  <br/>
+  <!--
     <div class="container-fluid well">
         <h5>Current Assessments</h5>
 
@@ -82,30 +82,30 @@
     </div>
     -->
 
-    <div class="container-fluid well">
-        <h5>Course Settings</h5>
+  <div class="container-fluid well">
+    <h5>Course Settings</h5>
 
-        <p><a href="{{ cf.url }}cadmin/{{ course.id }}/enrolment">People</a></p>
-        <!--    <p><a href="{{cf.url}}setup/studentsearch/{{course.id}}">Student Search</a></p>   -->
-        <p><a href="{{ cf.url }}cadmin/{{ course.id }}/perms">Permissions</a>
-        </p>
+    <p><a href="{{ cf.url }}cadmin/{{ course.id }}/enrolment">People</a></p>
+    <!--    <p><a href="{{cf.url}}setup/studentsearch/{{course.id}}">Student Search</a></p>   -->
+    <p><a href="{{ cf.url }}cadmin/{{ course.id }}/perms">Permissions</a>
+    </p>
 
-        <p><a href="{{ cf.url }}cadmin/{{ course.id }}/config">Configuration</a>
-        </p>
+    <p><a href="{{ cf.url }}cadmin/{{ course.id }}/config">Configuration</a>
+    </p>
 
-        <!--     <p><a href="{{cf.url}}api/course/{{course.name}}/{{course.id}}/members?format=csv">Class List</a> as a CSV file.</p>
+    <!--     <p><a href="{{cf.url}}api/course/{{course.name}}/{{course.id}}/members?format=csv">Class List</a> as a CSV file.</p>
 
             <div style='border: solid 1px black dashed;'>
             <a href="{{cf.url}}setup/uploadclass/{{course.id}}">Upload new</a> class list as a .csv file. (Not required for Faculty of Engineering)
             </div>
 -->
 
-    </div>
+  </div>
 
-    <br>
+  <br>
 
 
-    <br/>
-    <p>Return to <a href="{{ cf.url }}setup/courses">Course Choice</a></p>
+  <br/>
+  <p>Return to <a href="{{ cf.url }}setup/courses">Course Choice</a></p>
 
 {% endblock body %}

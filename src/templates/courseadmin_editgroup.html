@@ -1,57 +1,57 @@
 {% extends "page_courseadmin.html" %}
 {% block body %}
+  <br/>
+  Back to <a href="{{ cf.url }}cadmin/{{ course.id }}/top">Course Page</a>
+  <h4>{{ course.name }} ({{ course.title }})</h4>
+  <H2>Group {{ group.name }}. {{ group.title }}</H2>
+
+  <div class="container-fluid well">
+    <h5>Members</h5>
+
+    <table class="table">
+      <thead>
+      <tr>
+
+      </tr>
+      </thead>
+      <tbody>
+      {% for u in members %}
+        <tr>
+          <td>{{ u.uname }}</td>
+          <td>{{ u.email }}</td>
+          <td>{{ u.fullname }}</td>
+          <!-- <td><button name='remove_{{ u.id }}'><i class='icon icon-trash'> </i></button></td> -->
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    <form id='addperson_form' method='post'
+          action='{{ cf.url }}cadmin/{{ course.id }}/editgroup/{{ group.id }}/addperson'>
+      <label> Add a person to this group: <br/>
+
+        <div class='input-append'><input type='text' name='uname'
+                                         placeholder="username">
+          <button id='addperson_btn' class='btn' type='button'><i
+              class='icon icon-plus-sign'> </i> Add
+          </button>
+        </div>
+      </label>
+    </form>
     <br/>
-    Back to <a href="{{ cf.url }}cadmin/{{ course.id }}/top">Course Page</a>
-    <h4>{{ course.name }} ({{ course.title }})</h4>
-    <H2>Group {{ group.name }}. {{ group.title }}</H2>
-
-    <div class="container-fluid well">
-        <h5>Members</h5>
-
-        <table class="table">
-            <thead>
-            <tr>
-
-            </tr>
-            </thead>
-            <tbody>
-            {% for u in members %}
-                <tr>
-                    <td>{{ u.uname }}</td>
-                    <td>{{ u.email }}</td>
-                    <td>{{ u.fullname }}</td>
-                    <!-- <td><button name='remove_{{ u.id }}'><i class='icon icon-trash'> </i></button></td> -->
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-        <form id='addperson_form' method='post'
-              action='{{ cf.url }}cadmin/{{ course.id }}/editgroup/{{ group.id }}/addperson'>
-            <label> Add a person to this group: <br/>
-
-                <div class='input-append'><input type='text' name='uname'
-                                                 placeholder="username">
-                    <button id='addperson_btn' class='btn' type='button'><i
-                            class='icon icon-plus-sign'> </i> Add
-                    </button>
-                </div>
-            </label>
-        </form>
-        <br/>
-        <!--   <button class='btn'><i class='icon icon-upload'> </i> Upload Spreadsheet</button> -->
-    </div>
+    <!--   <button class='btn'><i class='icon icon-upload'> </i> Upload Spreadsheet</button> -->
+  </div>
 
 {% endblock body %}
 {% block js %}
-    <script>
-        $(function () {
+  <script>
+    $(function () {
 
-            $("#addperson_btn").click(function () {
-                $("#addperson_form").submit();
+      $("#addperson_btn").click(function () {
+        $("#addperson_form").submit();
 
-            });
+      });
 
 
-        });
-    </script>
+    });
+  </script>
 {% endblock %}

@@ -1,33 +1,33 @@
 {% extends "page_nav.html" %}
 {% block body %}
-    <br/>
-    <p>Return to <a href="{{ cf.url }}setup/usersearch">Setup</a></p>
+  <br/>
+  <p>Return to <a href="{{ cf.url }}setup/usersearch">Setup</a></p>
 
-    <div class="container-fluid">
-        <div class="well">
+  <div class="container-fluid">
+    <div class="well">
 
-            <FORM METHOD='post' ACTION='{{ cf.url }}setup/usersearch'>
-                <label>Search for: <INPUT TYPE='text' NAME='usersearch_name'
-                                          VALUE=''></label>
-            </FORM>
+      <FORM METHOD='post' ACTION='{{ cf.url }}setup/usersearch'>
+        <label>Search for: <INPUT TYPE='text' NAME='usersearch_name'
+                                  VALUE=''></label>
+      </FORM>
 
-            <h2>User Account Summary</h2>
+      <h2>User Account Summary</h2>
 
-            <p>For {{ user.uname }} ({{ user.fullname }})</p>
+      <p>For {{ user.uname }} ({{ user.fullname }})</p>
 
-            <p>Email: {{ user.email }}</p>
+      <p>Email: {{ user.email }}</p>
 
-            <p>Student ID: {{ user.student_id }}</p>
+      <p>Student ID: {{ user.student_id }}</p>
 
-            <p><A class='btn btn-small'
-                  HREF='{{ cf.url }}setup/useraudit/{{ user.id }}'>View
-                History</A>
-                <A class='btn btn-small btn-danger'
-                   HREF='{{ cf.url }}setup/otherpasswd/{{ user.id }}'>Change
-                    Password</A>
-            </p>
-            <br/>
-            <!--
+      <p><A class='btn btn-small'
+            HREF='{{ cf.url }}setup/useraudit/{{ user.id }}'>View
+        History</A>
+        <A class='btn btn-small btn-danger'
+           HREF='{{ cf.url }}setup/otherpasswd/{{ user.id }}'>Change
+          Password</A>
+      </p>
+      <br/>
+      <!--
             <h2>Courses</h2>
 
             <div>
@@ -39,7 +39,7 @@
         <br/>
          <p>Course membership can be managed from the course administration section.</p>
 -->
-            <!--
+      <!--
             <h2>Assessments</h2>
             <table class='table table-bordered' id='examresults'>
                 <tr>
@@ -62,11 +62,11 @@
                 {% endfor %}
             </table>
             -->
-        </div>
     </div>
+  </div>
 
-    <br/>
-    <p>Return to <a href="{{ cf.url }}setup/setup_usersearch">Setup</a></p>
+  <br/>
+  <p>Return to <a href="{{ cf.url }}setup/setup_usersearch">Setup</a></p>
 
 {% endblock body %}
 {% block pagetitle %}User Admin{% endblock %}

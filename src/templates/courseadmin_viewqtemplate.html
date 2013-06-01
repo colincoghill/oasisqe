@@ -1,130 +1,130 @@
 {% extends "page_courseadmin.html" %}
 
 {% block js %}
-    <script>
-        function drawgraph(dom_id, title, line, col) {
-            $.jqplot(dom_id, [line], {
-                legend: {
-                    show: false
-                },
-                title: title,
-                series: [
-                    {renderer: $.jqplot.BarRenderer,
-                        rendererOptions: {
-                            barMargin: 4,
-                            barPadding: 4,
-                            barWidth: 2,
-                            color: col
-                        }
+  <script>
+    function drawgraph(dom_id, title, line, col) {
+      $.jqplot(dom_id, [line], {
+        legend: {
+          show: false
+        },
+        title: title,
+        series: [
+          {renderer: $.jqplot.BarRenderer,
+            rendererOptions: {
+              barMargin: 4,
+              barPadding: 4,
+              barWidth: 2,
+              color: col
+            }
 
-                    }
-                ],
-                axes: {
-                    xaxis: {
-                        renderer: $.jqplot.DateAxisRenderer,
-                        tickOptions: {formatString: '%#d&nbsp;%b',
-                            fontSize: '12px'
-                        }
-                    },
-                    yaxis: {
-                        tickOptions: {
-                            fontSize: '12px'
-                        }
-                    }
-                },
-                grid: {
-                    drawBorder: false,
-                    shadow: false,
-                    background: '#f8ffff'
-                }
-            });
+          }
+        ],
+        axes: {
+          xaxis: {
+            renderer: $.jqplot.DateAxisRenderer,
+            tickOptions: {formatString: '%#d&nbsp;%b',
+              fontSize: '12px'
+            }
+          },
+          yaxis: {
+            tickOptions: {
+              fontSize: '12px'
+            }
+          }
+        },
+        grid: {
+          drawBorder: false,
+          shadow: false,
+          background: '#f8ffff'
         }
+      });
+    }
 
-        function bargraph(q_id, dom_id, title, year) {
-            $.ajax({
-                async: true,
-                url: "{{ cf.url }}api/stats/practice/qtemplate/" + q_id + "/" + year,
-                dataType: "json",
-                success: function (data) {
-                    var line = data.result;
-                    if (line.length > 1) {
-                        drawgraph(dom_id, title, line, "blue")
-                    } else {
-                        $("#" + dom_id).html("- No Practice -")
-                    }
-                }
-            });
+    function bargraph(q_id, dom_id, title, year) {
+      $.ajax({
+        async: true,
+        url: "{{ cf.url }}api/stats/practice/qtemplate/" + q_id + "/" + year,
+        dataType: "json",
+        success: function (data) {
+          var line = data.result;
+          if (line.length > 1) {
+            drawgraph(dom_id, title, line, "blue")
+          } else {
+            $("#" + dom_id).html("- No Practice -")
+          }
         }
+      });
+    }
 
-        function scoresgraph(q_id, dom_id, title, year) {
-            $.ajax({
-                async: true,
-                url: "{{ cf.url }}api/stats/practice/qtemplate/" + q_id + "/" + year + "/scores",
-                dataType: "json",
-                success: function (data) {
+    function scoresgraph(q_id, dom_id, title, year) {
+      $.ajax({
+        async: true,
+        url: "{{ cf.url }}api/stats/practice/qtemplate/" + q_id + "/" + year + "/scores",
+        dataType: "json",
+        success: function (data) {
 
-                    var line = data.result;
-                    if (line.length > 1) {
-                        drawgraph(dom_id, title, line, "darkgreen")
-                    } else {
-                        $("#" + dom_id).html("- No Practice -")
-                    }
-                }
-            });
+          var line = data.result;
+          if (line.length > 1) {
+            drawgraph(dom_id, title, line, "darkgreen")
+          } else {
+            $("#" + dom_id).html("- No Practice -")
+          }
         }
+      });
+    }
 
-        $(document).ready(function () {
+    $(document).ready(function () {
 
-            {% for year in years %}
-                bargraph({{ qtemplate.id }}, "chart_{{ year }}", "{{ year }} Practice", {{ year }});
-            {% endfor %}
-            {% for year in years %}
-                scoresgraph({{ qtemplate.id }}, "chart2_{{ year }}", "{{ year }} Average Score", {{ year }});
-            {% endfor %}
+      {% for year in years %}
+        bargraph({{ qtemplate.id }}, "chart_{{ year }}", "{{ year }} Practice", {{ year }});
+      {% endfor %}
+      {% for year in years %}
+        scoresgraph({{ qtemplate.id }}, "chart2_{{ year }}", "{{ year }} Average Score", {{ year }});
+      {% endfor %}
 
-        });
-    </script>
+    });
+  </script>
 {% endblock js %}
 {% block body %}
-    <br/>
-    Back to
-    <a href="{{ cf.url }}cadmin/{{ course_id }}/topic/{{ topic.id }}">Topic
-        Page</a>
-    <h4>{{ course.name }} ({{ course.title }})</h4>
-    <h2>{{ topic.position }}. {{ topic.name }}</h2>
-    <div class="container-fluid well">
-        <h4>Practice for "{{ qtemplate.title }}"</h4>
-        <table class="table">
-            <tbody>
-            {% for year in years %}
-                <tr>
-                    <td><h3>{{ year }}</h3>
-                    </td>
-                    <td>
-                        <div style='height:120px; width:600px;'
-                             id='chart_{{ year }}'>
-                        </div>
-                    </td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-        <h4>Average Scores</h4>
-        <table class='table'>
-            <tbody>
-            {% for year in years %}
-                <tr>
-                    <td><h3>{{ year }}</h3>
-                    </td>
-                    <td>
-                        <div style='height:120px; width:600px;'
-                             id='chart2_{{ year }}'>
-                        </div>
-                    </td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    </div>
+  <br/>
+  Back to
+  <a href="{{ cf.url }}cadmin/{{ course_id }}/topic/{{ topic.id }}">Topic
+    Page</a>
+  <h4>{{ course.name }} ({{ course.title }})</h4>
+  <h2>{{ topic.position }}. {{ topic.name }}</h2>
+  <div class="container-fluid well">
+    <h4>Practice for "{{ qtemplate.title }}"</h4>
+    <table class="table">
+      <tbody>
+      {% for year in years %}
+        <tr>
+          <td><h3>{{ year }}</h3>
+          </td>
+          <td>
+            <div style='height:120px; width:600px;'
+                 id='chart_{{ year }}'>
+            </div>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    <h4>Average Scores</h4>
+    <table class='table'>
+      <tbody>
+      {% for year in years %}
+        <tr>
+          <td><h3>{{ year }}</h3>
+          </td>
+          <td>
+            <div style='height:120px; width:600px;'
+                 id='chart2_{{ year }}'>
+            </div>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
 
 {% endblock body %}

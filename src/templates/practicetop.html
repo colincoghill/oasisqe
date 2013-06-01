@@ -1,18 +1,18 @@
 {% extends "page_practice.html" %}
 {% block body %}
-    <H3>Choose A Course</H3>
-    <div class="container-fluid well">
-        <div class='table'>
-            {% for name, course in courses %}
-                <div class="row">
-                    <div class="span2"><a name='course_{{ course.id }}'
-                                          href='{{ cf.url }}practice/coursequestions/{{ course.id }}'>{{ course.name }} </a>
-                    </div>
-                    <div class="span6">{{ course.title }}</div>
-                </div>
-            {% endfor %}
+  <H3>Choose A Course</H3>
+  <div class="container-fluid well">
+    <div class='table'>
+      {% for name, course in courses %}
+        <div class="row">
+          <div class="span2"><a name='course_{{ course.id }}'
+                                href='{{ cf.url }}practice/coursequestions/{{ course.id }}'>{{ course.name }} </a>
+          </div>
+          <div class="span6">{{ course.title }}</div>
         </div>
+      {% endfor %}
     </div>
+  </div>
 
 {% endblock body %}
 {% block lpane %}

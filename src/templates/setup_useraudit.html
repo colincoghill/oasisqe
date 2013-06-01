@@ -1,35 +1,35 @@
 {% extends "page_nav.html" %}
 {% block body %}
-    <br/>
-    <p>Return to <a href="{{ cf.url }}setup/usersearch">Setup</a></p>
+  <br/>
+  <p>Return to <a href="{{ cf.url }}setup/usersearch">Setup</a></p>
 
-    <div class="container-fluid">
-        <div class="well">
-            <h2>User Account History</h2>
+  <div class="container-fluid">
+    <div class="well">
+      <h2>User Account History</h2>
 
-            <p>For {{ user.uname }} (<a
-                    href='{{ cf.url }}setup/userview/{{ user.id }}'>{{ user.fullname }})</a>
-            </p>
-            <table class='table'>
-                <tr>
-                    <th>Time</th>
-                    <th>Module</th>
-                    <th>Message</th>
-                </tr>
-                {% for audit in audits %}
-                    <tr>
-                        <th>{{ audit.humantime }}</th>
-                        <td>{{ audit.module }}</td>
-                        <td>{{ audit.message }}</td>
-                    </tr>
-                {% endfor %}
-            </table>
+      <p>For {{ user.uname }} (<a
+          href='{{ cf.url }}setup/userview/{{ user.id }}'>{{ user.fullname }})</a>
+      </p>
+      <table class='table'>
+        <tr>
+          <th>Time</th>
+          <th>Module</th>
+          <th>Message</th>
+        </tr>
+        {% for audit in audits %}
+          <tr>
+            <th>{{ audit.humantime }}</th>
+            <td>{{ audit.module }}</td>
+            <td>{{ audit.message }}</td>
+          </tr>
+        {% endfor %}
+      </table>
 
-        </div>
     </div>
+  </div>
 
-    <br/>
-    <p>Return to <a href="{{ cf.url }}setup/setup_usersearch">Setup</a></p>
+  <br/>
+  <p>Return to <a href="{{ cf.url }}setup/setup_usersearch">Setup</a></p>
 
 {% endblock body %}
 {% block pagetitle %}User Admin{% endblock %}

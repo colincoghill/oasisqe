@@ -1,53 +1,53 @@
 {% extends "page_courseadmin.html" %}
 {% block body %}
 
-    <div class="container-fluid" xmlns="http://www.w3.org/1999/html">
-        <br>
+  <div class="container-fluid" xmlns="http://www.w3.org/1999/html">
+    <br>
 
-        <p>Return to <a href="{{ cf.url }}cadmin/{{ course.id }}/top">Course
-            Admin</a></p>
-
-        <h2>{{ course.name }} ({{ course.title }})</h2>
-    </div>
-
-    <div class="container-fluid well">
-        <h5>All Assessments</h5>
-        <table class="table">
-            <thead>
-            <tr>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th></th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for year in years %}
-                <tr>
-                    <th>{{ year }}</th>
-                </tr>
-                {% for exam in exams %}
-                    {% if exam.start.year == year %}
-                        <tr>
-                            <td>{{ exam.start_human }}</td>
-                            <td><b>{{ exam.title }}</b></td>
-                            <td>
-                                <a href="{{ cf.url }}assess/startexam/{{ course.id }}/{{ exam.id }}"><sub>preview</sub></a>
-                                | <a
-                                    href="{{ cf.url }}cadmin/{{ course.id }}/editexam/{{ exam.id }}"><sub>edit</sub></a>
-                                | <a
-                                    href="{{ cf.url }}cadmin/{{ course.id }}/examstatus/{{ exam.id }}"><sub>results</sub></a>
-                            </td>
-                        </tr>{% endif %}
-                {% endfor %}
-            {% endfor %}
-            </tbody>
-        </table>
-        <br/>
-
-    </div>
     <p>Return to <a href="{{ cf.url }}cadmin/{{ course.id }}/top">Course
-        Admin</a></p>
+      Admin</a></p>
+
+    <h2>{{ course.name }} ({{ course.title }})</h2>
+  </div>
+
+  <div class="container-fluid well">
+    <h5>All Assessments</h5>
+    <table class="table">
+      <thead>
+      <tr>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+      </tr>
+      </thead>
+      <tbody>
+      {% for year in years %}
+        <tr>
+          <th>{{ year }}</th>
+        </tr>
+        {% for exam in exams %}
+          {% if exam.start.year == year %}
+            <tr>
+              <td>{{ exam.start_human }}</td>
+              <td><b>{{ exam.title }}</b></td>
+              <td>
+                <a href="{{ cf.url }}assess/startexam/{{ course.id }}/{{ exam.id }}"><sub>preview</sub></a>
+                | <a
+                  href="{{ cf.url }}cadmin/{{ course.id }}/editexam/{{ exam.id }}"><sub>edit</sub></a>
+                | <a
+                  href="{{ cf.url }}cadmin/{{ course.id }}/examstatus/{{ exam.id }}"><sub>results</sub></a>
+              </td>
+            </tr>{% endif %}
+        {% endfor %}
+      {% endfor %}
+      </tbody>
+    </table>
+    <br/>
+
+  </div>
+  <p>Return to <a href="{{ cf.url }}cadmin/{{ course.id }}/top">Course
+    Admin</a></p>
 
 
 {% endblock body %}

@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title></title>
+  <title></title>
 </head>
 <body>
 <h2>{{ title }}</h2>
 
 <form method='post'
       action='{{ cf.url }}embed/question/{{ embed_id }}/mark.html'>
-    {{ q_body|safe }}
-    <input type='hidden' name='OaQID' value='{{ qid }}'/><input type='submit'
-                                                                value='Mark It!'/>
+  {{ q_body|safe }}
+  <input type='hidden' name='OaQID' value='{{ qid }}'/><input type='submit'
+                                                              value='Mark It!'/>
 
 </form>
 </body>

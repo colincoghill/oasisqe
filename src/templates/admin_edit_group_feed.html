@@ -1,159 +1,159 @@
 {% extends "page_nav.html" %}
 {% block body %}
-    <div>
-        <br/>
+  <div>
+    <br/>
 
-        <p>Return to <a href="{{ cf.url }}admin/feeds">Enrolment Feeds</a></p>
+    <p>Return to <a href="{{ cf.url }}admin/feeds">Enrolment Feeds</a></p>
 
-        <div class="row">
-            <div class="span2 help-block">
-                <h4>Group Feeds
-                    <br>
-                </h4>
+    <div class="row">
+      <div class="span2 help-block">
+        <h4>Group Feeds
+          <br>
+        </h4>
 
-                <p>Group feeds provide a way to import group membership
-                    information from
-                    external systems into OASIS.
-                    <br>
-                </p>
+        <p>Group feeds provide a way to import group membership
+          information from
+          external systems into OASIS.
+          <br>
+        </p>
 
-                <p>Generally you would need only one or two.
-                    <br>
-                </p>
+        <p>Generally you would need only one or two.
+          <br>
+        </p>
 
-                <p>These are implemented as scripts stored in
-                    the {{ cf.feeddir }} folder
-                    on the server. Working examples are included to cover
-                    several common cases,
-                    but you can add your own. If you name them local_SOMETHING,
-                    they will not
-                    be accidentally overwritten by future OASIS upgrades.
-                    <br>
-                </p>
+        <p>These are implemented as scripts stored in
+          the {{ cf.feeddir }} folder
+          on the server. Working examples are included to cover
+          several common cases,
+          but you can add your own. If you name them local_SOMETHING,
+          they will not
+          be accidentally overwritten by future OASIS upgrades.
+          <br>
+        </p>
 
-                <p>A "feed script" should accept parameters saying which group
-                    and time period
-                    to fetch, and should return the results as text output.
-                    <br>
-                </p>
+        <p>A "feed script" should accept parameters saying which group
+          and time period
+          to fetch, and should return the results as text output.
+          <br>
+        </p>
 
-                <p>If you need to pass confidential information to a script (eg.
-                    an LDAP&nbsp;
-                    password), you can put it in the "Env. Variable"&nbsp;
-                    field, and this
-                    will be supplied to the script in the environment variable
-                    "OASIS_FEED_ENV"
-                    <br>
-                </p>
-                <dl></dl>
+        <p>If you need to pass confidential information to a script (eg.
+          an LDAP&nbsp;
+          password), you can put it in the "Env. Variable"&nbsp;
+          field, and this
+          will be supplied to the script in the environment variable
+          "OASIS_FEED_ENV"
+          <br>
+        </p>
+        <dl></dl>
+      </div>
+      <div class="span9">
+        <h3>Edit Group Feed</h3>
+
+        <div class="well">
+          <form id='form' method='post'
+                action='{{ cf.url }}admin/edit_group_feed_submit/{{ feed.id }}'
+                data-validate="parsley">
+            <label>Short Name:</label>
+            <input placeholder="Short Name" name='name'
+                   class="required input-medium"
+                   type="text" value="{{ feed.name }}">
+            <label>Title:</label>
+            <input placeholder="Descriptive name" name='title'
+                   class="input-xxlarge"
+                   type="text" value="{{ feed.title }}">
+
+            <label>Script Filename: {{ cf.group_feeds_dir }}</label>
+            <select name='script' value='{{ feed.script }}'>
+              {% for script in scripts %}
+                <option value='{{ script }}'
+                        {% if script == feed.script %}selected{% endif %}>{{ script }}</option>
+              {% endfor %}
+            </select>
+            <label>Env. Variable: (optional)</label>
+            <input placeholder="1234" name='envvar'
+                   class="input-medium" value="{{ feed.envvar }}"
+                   type="text">
+            <label>Comments: (optional)</label>
+            <textarea name='comments'
+                      placeholder="This reads from a file which is populated nightly from our main database."
+                      rows="6"
+                      class="input-block-level">{{ feed.comments }}</textarea>
+            <label>Update Frequency:</label>
+
+            <p>OASIS will run this feed, once for each group, how
+              often?</p>
+            <label class="radio"
+                   for="hourly">
+              <input value="1" id="hourly" name="freq"
+                     type="radio"
+                     {% if feed.freq == 1 %}checked{% endif %}>
+              Hourly</label>
+            <label class="radio" for="daily">
+              <input value="2" id="daily" name="freq"
+                     type="radio"
+                     {% if feed.freq == 2 %}checked{% endif %}>
+              Daily</label>
+            <label class="radio" for="manual">
+              <input value="3" id="manual" name="freq"
+                     type="radio"
+                     {% if feed.freq == 3 %}checked{% endif %}>
+              Manually</label>
+            <br/>
+            <label>Activate Feed:
+              <input name='active' type='checkbox' value='active'
+                  {% if feed.active %} checked{% endif %}>
+            </label>
+
+            <div class="form-actions">
+              <input class='btn btn-primary' type="submit"
+                     name='save'
+                     value='Save'>
+              <input class="btn btn-danger" value="Cancel"
+                     type="submit"
+                     name="cancel" id='cancel'>
             </div>
-            <div class="span9">
-                <h3>Edit Group Feed</h3>
-
-                <div class="well">
-                    <form id='form' method='post'
-                          action='{{ cf.url }}admin/edit_group_feed_submit/{{ feed.id }}'
-                          data-validate="parsley">
-                        <label>Short Name:</label>
-                        <input placeholder="Short Name" name='name'
-                               class="required input-medium"
-                               type="text" value="{{ feed.name }}">
-                        <label>Title:</label>
-                        <input placeholder="Descriptive name" name='title'
-                               class="input-xxlarge"
-                               type="text" value="{{ feed.title }}">
-
-                        <label>Script Filename: {{ cf.group_feeds_dir }}</label>
-                        <select name='script' value='{{ feed.script }}'>
-                            {% for script in scripts %}
-                                <option value='{{ script }}'
-                                        {% if script == feed.script %}selected{% endif %}>{{ script }}</option>
-                            {% endfor %}
-                        </select>
-                        <label>Env. Variable: (optional)</label>
-                        <input placeholder="1234" name='envvar'
-                               class="input-medium" value="{{ feed.envvar }}"
-                               type="text">
-                        <label>Comments: (optional)</label>
-                        <textarea name='comments'
-                                  placeholder="This reads from a file which is populated nightly from our main database."
-                                  rows="6"
-                                  class="input-block-level">{{ feed.comments }}</textarea>
-                        <label>Update Frequency:</label>
-
-                        <p>OASIS will run this feed, once for each group, how
-                            often?</p>
-                        <label class="radio"
-                               for="hourly">
-                            <input value="1" id="hourly" name="freq"
-                                   type="radio"
-                                   {% if feed.freq == 1 %}checked{% endif %}>
-                            Hourly</label>
-                        <label class="radio" for="daily">
-                            <input value="2" id="daily" name="freq"
-                                   type="radio"
-                                   {% if feed.freq == 2 %}checked{% endif %}>
-                            Daily</label>
-                        <label class="radio" for="manual">
-                            <input value="3" id="manual" name="freq"
-                                   type="radio"
-                                   {% if feed.freq == 3 %}checked{% endif %}>
-                            Manually</label>
-                        <br/>
-                        <label>Activate Feed:
-                            <input name='active' type='checkbox' value='active'
-                                    {% if feed.active %} checked{% endif %}>
-                        </label>
-
-                        <div class="form-actions">
-                            <input class='btn btn-primary' type="submit"
-                                   name='save'
-                                   value='Save'>
-                            <input class="btn btn-danger" value="Cancel"
-                                   type="submit"
-                                   name="cancel" id='cancel'>
-                        </div>
-                    </form>
-                </div>
-                <ul></ul>
-                <ul></ul>
-                <p></p>
-            </div>
+          </form>
         </div>
-
-
-        <p>Return to <a href="{{ cf.url }}admin/feeds">Enrolment Feeds</a></p>
-
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-
+        <ul></ul>
+        <ul></ul>
+        <p></p>
+      </div>
     </div>
+
+
+    <p>Return to <a href="{{ cf.url }}admin/feeds">Enrolment Feeds</a></p>
+
+    <br/>
+    <br/>
+    <br/>
+    <br/>
+
+  </div>
 {% endblock body %}
 {% block js %}
-    <script>
+  <script>
 
-        $(function () {
-            $(".datatable").dataTable({
-                        "bPaginate": false,
-                        "bLengthChange": false,
-                        "bFilter": false
-                    }
-            );
+    $(function () {
+      $(".datatable").dataTable({
+            "bPaginate": false,
+            "bLengthChange": false,
+            "bFilter": false
+          }
+      );
 
-            $('#showhistorical').click(function () {
-                        $('.historical').toggle();
-                    }
-            );
+      $('#showhistorical').click(function () {
+            $('.historical').toggle();
+          }
+      );
 
-            $('#cancel').click(function () {
-                $('#form').parsley('destroy');
-                $('#form').submit();
-            });
-        });
+      $('#cancel').click(function () {
+        $('#form').parsley('destroy');
+        $('#form').submit();
+      });
+    });
 
 
-    </script>
+  </script>
 {% endblock js %}
 {% block pagetitle %}Server Admin{% endblock %}

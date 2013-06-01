@@ -1,58 +1,59 @@
 {% extends "page_practice.html" %}
 {% block body %}
 
-    <div class="row">
-        <div class="span2">
-            <br/>
-            <ul class="nav nav-list">
-                <li class='nav-header'>
-                    <a href="{{ cf.url }}practice/coursequestions/{{ course.id }}">{{ course.name }}</a>
-                </li>
-                {% for topic in topics %}
-                    {% if topic.visibility >= 2 %}
-                        <li>
-                            <a name='topic_{{ topic.id }}'
-                               href='{{ cf.url }}practice/subcategory/{{ topic.id }}'>{{ topic.title }}</a>
-                        </li>
-                    {% endif %}
-                {% endfor %}
+  <div class="row">
+    <div class="span2">
+      <br/>
+      <ul class="nav nav-list">
+        <li class='nav-header'>
+          <a href="{{ cf.url }}practice/coursequestions/{{ course.id }}">{{ course.name }}</a>
+        </li>
+        {% for topic in topics %}
+          {% if topic.visibility >= 2 %}
+            <li>
+              <a name='topic_{{ topic.id }}'
+                 href='{{ cf.url }}practice/subcategory/{{ topic.id }}'>{{ topic.title }}</a>
+            </li>
+          {% endif %}
+        {% endfor %}
 
 
-            </ul>
-        </div>
-        <div class="span8">
-            <br/>
-
-            <h2>{{ course.name }} ({{ course.title }})</h2>
-
-            <p>Choose a question from {{ topictitle }}:
-                <!--  <span class='pull-right'><a class='btn btn-small'
-                                            href='{{ cf.url }}practice/statsfortopic/{{ topic_id }}'>How am I doing?</a></span> -->
-            </p>
-
-            <div class='well'>
-
-                {% if questions %}
-                    <ul class='nav nav-list'>
-                    {% for question in questions %}
-                        <li>
-                            {% if question.position >= 1 %}
-                                <a name='question_{{ question.name }}'
-                                   href='{{ cf.url }}practice/question/{{ topic_id }}/{{ question.qtid }}'>{{ question.name }}</a>
-
-                            {% endif %}
-                        </li>
-                    {% endfor %}
-                {% else %}
-                    <p><i>This category appears to be empty.</i></p>
-                {% endif %}
-                </ul>
-            </div>
-            <br/>
-
-            <p><a href='{{ cf.url }}practice/coursequestions/{{ course.id }}'>Return</a>
-                to subcategory selection.</p>
-
-        </div>
+      </ul>
     </div>
+    <div class="span8">
+      <br/>
+
+      <h2>{{ course.name }} ({{ course.title }})</h2>
+
+      <p>Choose a question from {{ topictitle }}:
+        <!--  <span class='pull-right'><a class='btn btn-small'
+                                            href='{{ cf.url }}practice/statsfortopic/{{ topic_id }}'>How am I doing?</a></span> -->
+      </p>
+
+      <div class='well'>
+
+        {% if questions %}
+          <ul class='nav nav-list'>
+          {% for question in questions %}
+            <li>
+              {% if question.position >= 1 %}
+                <a name='question_{{ question.name }}'
+                   href='{{ cf.url }}practice/question/{{ topic_id }}/{{ question.qtid }}'>{{ question.name }}</a>
+
+              {% endif %}
+            </li>
+          {% endfor %}
+        {% else %}
+          <p><i>This category appears to be empty.</i></p>
+        {% endif %}
+        </ul>
+      </div>
+      <br/>
+
+      <p><a
+          href='{{ cf.url }}practice/coursequestions/{{ course.id }}'>Return</a>
+        to subcategory selection.</p>
+
+    </div>
+  </div>
 {% endblock body %}

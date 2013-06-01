@@ -1,44 +1,44 @@
 {% extends "page_practice.html" %}
 {% block body %}
 
-    <div class="row">
-        <div class="span2">
-            <br/>
-            <ul class="nav nav-list">
-                <li class='nav-header'>
-                    <a name='topic_{{ topic_id }}'
-                       href='{{ cf.url }}practice/subcategory/{{ topic_id }}'>{{ topictitle }} </a>
-                </li>
-                {% for question in questions %}
+  <div class="row">
+    <div class="span2">
+      <br/>
+      <ul class="nav nav-list">
+        <li class='nav-header'>
+          <a name='topic_{{ topic_id }}'
+             href='{{ cf.url }}practice/subcategory/{{ topic_id }}'>{{ topictitle }} </a>
+        </li>
+        {% for question in questions %}
 
-                    {% if question.position >= 1 %}
+          {% if question.position >= 1 %}
 
-                        <li>
-                            <a name='question_{{ question.name }}'
-                               href='{{ cf.url }}practice/question/{{ topic_id }}/{{ question.qtid }}'>{{ question.name }}</a>
-                        </li>
-                    {% endif %}
+            <li>
+              <a name='question_{{ question.name }}'
+                 href='{{ cf.url }}practice/question/{{ topic_id }}/{{ question.qtid }}'>{{ question.name }}</a>
+            </li>
+          {% endif %}
 
-                {% endfor %}
+        {% endfor %}
 
-            </ul>
-        </div>
-
-
-        <div class="span8">
-            <br/>
-
-            <h2>{{ course.title }} ({{ topictitle }})</h2>
-
-            <h4>{{ q_pos }} : {{ q_title }}</h4>
-
-            <div class='well'>
-                <form method="post"
-                      action="{{ cf.url }}practice/markquestion/{{ topic_id }}/{{ q_id }}">
-                    {{ q_body|safe }}
-                    <input name="marknow" value="Mark Now!" type="submit">
-                </form>
-            </div>
-        </div>
+      </ul>
     </div>
+
+
+    <div class="span8">
+      <br/>
+
+      <h2>{{ course.title }} ({{ topictitle }})</h2>
+
+      <h4>{{ q_pos }} : {{ q_title }}</h4>
+
+      <div class='well'>
+        <form method="post"
+              action="{{ cf.url }}practice/markquestion/{{ topic_id }}/{{ q_id }}">
+          {{ q_body|safe }}
+          <input name="marknow" value="Mark Now!" type="submit">
+        </form>
+      </div>
+    </div>
+  </div>
 {% endblock body %}

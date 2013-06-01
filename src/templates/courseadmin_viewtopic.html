@@ -1,146 +1,146 @@
 {% extends "page_courseadmin.html" %}
 
 {% block js %}
-    <script>
+  <script>
 
-        function drawgraph(dom_id, title, line, col) {
-            $.jqplot(dom_id, [line], {
-                legend: {
-                    show: false
-                },
-                title: title,
-                series: [
-                    {renderer: $.jqplot.BarRenderer,
-                        rendererOptions: {
-                            barMargin: 4,
-                            barPadding: 4,
-                            barWidth: 2,
-                            color: col
-                        }
+    function drawgraph(dom_id, title, line, col) {
+      $.jqplot(dom_id, [line], {
+        legend: {
+          show: false
+        },
+        title: title,
+        series: [
+          {renderer: $.jqplot.BarRenderer,
+            rendererOptions: {
+              barMargin: 4,
+              barPadding: 4,
+              barWidth: 2,
+              color: col
+            }
 
-                    }
-                ],
-                axes: {
-                    xaxis: {
-                        renderer: $.jqplot.DateAxisRenderer,
-                        tickOptions: {formatString: '%#d&nbsp;%b',
-                            fontSize: '12px'
-                        }
-                    },
-                    yaxis: {
-                        tickOptions: {
-                            fontSize: '12px'
-                        }
-                    }
-                },
-                grid: {
-                    drawBorder: false,
-                    shadow: false,
-                    background: '#f8ffff'
+          }
+        ],
+        axes: {
+          xaxis: {
+            renderer: $.jqplot.DateAxisRenderer,
+            tickOptions: {formatString: '%#d&nbsp;%b',
+              fontSize: '12px'
+            }
+          },
+          yaxis: {
+            tickOptions: {
+              fontSize: '12px'
+            }
+          }
+        },
+        grid: {
+          drawBorder: false,
+          shadow: false,
+          background: '#f8ffff'
 
-                }
-
-            });
         }
 
+      });
+    }
 
-        function countgraph(q_id, dom_id, title) {
-            $.ajax({
-                async: true,
-                url: "{{ cf.url }}api/stats/practice/qtemplate/" + q_id + "/3months",
-                dataType: "json",
-                success: function (data) {
 
-                    var line = data.result;
-                    if (line.length > 1) {
-                        drawgraph(dom_id, title, line, "blue")
-                    } else {
-                        $("#" + dom_id).html("<span style='font-size: x-small;'>Not practiced in this time period</span>")
-                    }
-                }
-            });
+    function countgraph(q_id, dom_id, title) {
+      $.ajax({
+        async: true,
+        url: "{{ cf.url }}api/stats/practice/qtemplate/" + q_id + "/3months",
+        dataType: "json",
+        success: function (data) {
+
+          var line = data.result;
+          if (line.length > 1) {
+            drawgraph(dom_id, title, line, "blue")
+          } else {
+            $("#" + dom_id).html("<span style='font-size: x-small;'>Not practiced in this time period</span>")
+          }
         }
+      });
+    }
 
 
-        function scoregraph(q_id, dom_id, title) {
-            $.ajax({
-                async: true,
-                url: "{{ cf.url }}api/stats/practice/qtemplate/" + q_id + "/3months/scores",
-                dataType: "json",
-                success: function (data) {
+    function scoregraph(q_id, dom_id, title) {
+      $.ajax({
+        async: true,
+        url: "{{ cf.url }}api/stats/practice/qtemplate/" + q_id + "/3months/scores",
+        dataType: "json",
+        success: function (data) {
 
-                    var line = data.result;
-                    if (line.length > 1) {
-                        drawgraph(dom_id, title, line, "darkgreen")
-                    } else {
-                        $("#" + dom_id).html("")
-                    }
-                }
-            });
+          var line = data.result;
+          if (line.length > 1) {
+            drawgraph(dom_id, title, line, "darkgreen")
+          } else {
+            $("#" + dom_id).html("")
+          }
         }
+      });
+    }
 
 
-        $(document).ready(function () {
+    $(document).ready(function () {
 
 
-            {% for q in questions if q.position >= 1 %}
-                countgraph({{ q.id }}, "chart_{{ q.id }}", "Practice History");
-                scoregraph({{ q.id }}, "chart2_{{ q.id }}", "Average Score");
-            {% endfor %}
+      {% for q in questions if q.position >= 1 %}
+        countgraph({{ q.id }}, "chart_{{ q.id }}", "Practice History");
+        scoregraph({{ q.id }}, "chart2_{{ q.id }}", "Average Score");
+      {% endfor %}
 
-            //  bargraph( 67,"chart_67", "Practice History");
+      //  bargraph( 67,"chart_67", "Practice History");
 
-        });
-    </script>
+    });
+  </script>
 {% endblock js %}
 {% block body %}
-    <br/>
-    Back to <a href="{{ cf.url }}cadmin/{{ course.id }}/top">Course Page</a>
-    <h4>{{ course.name }} ({{ course.title }})</h4>
-    <H2>{{ topic.position }}. {{ topic.name }}</H2>
+  <br/>
+  Back to <a href="{{ cf.url }}cadmin/{{ course.id }}/top">Course Page</a>
+  <h4>{{ course.name }} ({{ course.title }})</h4>
+  <H2>{{ topic.position }}. {{ topic.name }}</H2>
 
-    <div class="container-fluid well">
-        <h3>Practice History</h3>
+  <div class="container-fluid well">
+    <h3>Practice History</h3>
 
-        <p>The number of times the given question was practiced, and the average
-            score per day for the last 3 months.</p>
-        <table class="table">
-            <thead>
-            <tr>
+    <p>The number of times the given question was practiced, and the average
+      score per day for the last 3 months.</p>
+    <table class="table">
+      <thead>
+      <tr>
 
-                <th>Pos</th>
-                <th>Name</th>
+        <th>Pos</th>
+        <th>Name</th>
 
-                <th></th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for q in questions if q.position >= 1 %}
-                <tr>
+        <th></th>
+      </tr>
+      </thead>
+      <tbody>
+      {% for q in questions if q.position >= 1 %}
+        <tr>
 
-                    <td>{{ q.position }}
-                    </td>
-                    <td>{{ q.name }}<br/>
-                        <br/>
-                        <a class='btn btn-mini' target="_new"
-                           href="{{ cf.url }}practice/question/{{ topic.id }}/{{ q.id }}">View
-                            Qn</a><br/>
-                        <a class='btn btn-mini'
-                           href="{{ cf.url }}cadmin/{{ course.id }}/topic/{{ topic.id }}/{{ q.id }}/history">History</a>
-                    </td>
+          <td>{{ q.position }}
+          </td>
+          <td>{{ q.name }}<br/>
+            <br/>
+            <a class='btn btn-mini' target="_new"
+               href="{{ cf.url }}practice/question/{{ topic.id }}/{{ q.id }}">View
+              Qn</a><br/>
+            <a class='btn btn-mini'
+               href="{{ cf.url }}cadmin/{{ course.id }}/topic/{{ topic.id }}/{{ q.id }}/history">History</a>
+          </td>
 
-                    <td>
-                        <div style='height:120px; width:600px;'
-                             id='chart_{{ q.id }}'>
-                        </div>
-                        <div style='height:120px; width:600px;'
-                             id='chart2_{{ q.id }}'>
-                        </div>
-                    </td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    </div>
+          <td>
+            <div style='height:120px; width:600px;'
+                 id='chart_{{ q.id }}'>
+            </div>
+            <div style='height:120px; width:600px;'
+                 id='chart2_{{ q.id }}'>
+            </div>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
 
 {% endblock body %}

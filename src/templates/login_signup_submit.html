@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>OASIS Assessment System</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="{{ cf.static }}css/bootstrap.min.css" rel="stylesheet"
-          media="screen">
-    <script src="{{ cf.static }}js/jquery-1.8.3.min.js"></script>
-    <script src="{{ cf.static }}js/bootstrap.min.js"></script>
+  <title>OASIS Assessment System</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="{{ cf.static }}css/bootstrap.min.css" rel="stylesheet"
+        media="screen">
+  <script src="{{ cf.static }}js/jquery-1.8.3.min.js"></script>
+  <script src="{{ cf.static }}js/bootstrap.min.js"></script>
 
 </head>
 <body>
@@ -15,37 +15,37 @@
 
 <div class='container'>
 
-    <br/><br/><br/>
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
+  <br/><br/><br/>
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
 
-            {% for message in messages %}
-                <div class="alert-error alert">{{ message }}</div>
-            {% endfor %}
+      {% for message in messages %}
+        <div class="alert-error alert">{{ message }}</div>
+      {% endfor %}
 
-        {% endif %}
-    {% endwith %}
-    <div class="row">
-        <div class="span8 offset1 well">
+    {% endif %}
+  {% endwith %}
+  <div class="row">
+    <div class="span8 offset1 well">
 
-            <img src='{{ cf.static }}oalogo.gif' alt='OASIS'
-                 style='height:60px; margin-right: 24px;'>
+      <img src='{{ cf.static }}oalogo.gif' alt='OASIS'
+           style='height:60px; margin-right: 24px;'>
 
-            <h3>New Account Sign-Up</h3>
+      <h3>New Account Sign-Up</h3>
 
-            <p>Thank you, a confirmation email should be on its way to:</p>
-            <code>{{ email }}</code>
-            <br/><br/>
+      <p>Thank you, a confirmation email should be on its way to:</p>
+      <code>{{ email }}</code>
+      <br/><br/>
 
-            <p>It will contain instructions for activating your account.</p>
+      <p>It will contain instructions for activating your account.</p>
 
-            <p>If you haven't received it within a few minutes, please remember
-                to check in your spam folder,
-                or similar, in case it has arrived there by accident.</p>
+      <p>If you haven't received it within a few minutes, please remember
+        to check in your spam folder,
+        or similar, in case it has arrived there by accident.</p>
 
-        </div>
     </div>
-    <br/>
+  </div>
+  <br/>
 
 </div>
 

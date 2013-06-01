@@ -1,66 +1,66 @@
 {% extends "page_assess.html" %}
 {% block body %}
-    <br/>
-    <p>Or <a href='{{ cf.url }}assess/top'>return</a> to assessment selection.
+  <br/>
+  <p>Or <a href='{{ cf.url }}assess/top'>return</a> to assessment selection.
+  </p>
+  <div class='alert alert-danger'>
+    <p><b>Note:</b> This section of OASIS is for assessed work and could be
+      worth
+      real coursework marks. </p>
+  </div>
+  <div class="container-fluid well ">
+
+    <H3>{{ exam.title }}</H3>
+
+    <h2>{{ course.name }}({{ course.title }})</h2>
+    <h4>Please read carefully:</h4>
+
+    <p>You will be given {{ exam.duration }} minutes to complete this
+      assessment.</p>
+
+    <p>Please answer each question by selecting it from the navbar</p>
+
+    <p>Once you are happy with your answers to ALL questions, press the
+      "Submit Assessment" button. </p>
+
+    <p><i>Do not press the "Submit Assessment" button until you have
+      answered <b>ALL</b> parts to all questions.</i>
     </p>
-    <div class='alert alert-danger'>
-        <p><b>Note:</b> This section of OASIS is for assessed work and could be
-            worth
-            real coursework marks. </p>
-    </div>
-    <div class="container-fluid well ">
 
-        <H3>{{ exam.title }}</H3>
+    <div class='lead'>{{ exam.instructions }}</div>
 
-        <h2>{{ course.name }}({{ course.title }})</h2>
-        <h4>Please read carefully:</h4>
+    {% if exam.code and exam.locked %}
 
-        <p>You will be given {{ exam.duration }} minutes to complete this
-            assessment.</p>
+      <center>
+        <div class='alert'>
+          <p>This assessment is locked with a code, please enter the
+            code to unlock it:</p>
 
-        <p>Please answer each question by selecting it from the navbar</p>
+          <form class='startbutton' method='POST'
+                action='{{ cf.url }}assess/assessmentunlock/{{ course.id }}/{{ exam.id }}'>
+            <input type='text' name='code'>
+            <INPUT class='btn btn-danger' TYPE='submit'
+                   NAME='unlock' VALUE='UNLOCK'/>
+          </form>
+        </div>
+      </center>
 
-        <p>Once you are happy with your answers to ALL questions, press the
-            "Submit Assessment" button. </p>
+    {% else %}
+      <p>Please press the START button to begin.</p>
+      <br/>
+      <center>
+        <form class='startbutton' method='POST'
+              action='{{ cf.url }}assess/assessmentpage/{{ course.id }}/{{ exam.id }}/1'>
+          <INPUT class='btn btn-primary' TYPE='submit' NAME='START'
+                 VALUE='START'/>
+        </form>
+      </center>
+    {% endif %}
 
-        <p><i>Do not press the "Submit Assessment" button until you have
-            answered <b>ALL</b> parts to all questions.</i>
-        </p>
+  </div>
 
-        <div class='lead'>{{ exam.instructions }}</div>
-
-        {% if exam.code and exam.locked %}
-
-            <center>
-                <div class='alert'>
-                    <p>This assessment is locked with a code, please enter the
-                        code to unlock it:</p>
-
-                    <form class='startbutton' method='POST'
-                          action='{{ cf.url }}assess/assessmentunlock/{{ course.id }}/{{ exam.id }}'>
-                        <input type='text' name='code'>
-                        <INPUT class='btn btn-danger' TYPE='submit'
-                               NAME='unlock' VALUE='UNLOCK'/>
-                    </form>
-                </div>
-            </center>
-
-        {% else %}
-            <p>Please press the START button to begin.</p>
-            <br/>
-            <center>
-                <form class='startbutton' method='POST'
-                      action='{{ cf.url }}assess/assessmentpage/{{ course.id }}/{{ exam.id }}/1'>
-                    <INPUT class='btn btn-primary' TYPE='submit' NAME='START'
-                           VALUE='START'/>
-                </form>
-            </center>
-        {% endif %}
-
-    </div>
-
-    <p>Or <a href='{{ cf.url }}assess/top'>return</a> to assessment selection.
-    </p>
+  <p>Or <a href='{{ cf.url }}assess/top'>return</a> to assessment selection.
+  </p>
 
 {% endblock body %}
 {% block lpane %}

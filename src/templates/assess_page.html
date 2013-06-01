@@ -1,109 +1,109 @@
 {% extends "page_assess.html" %}
 {% block body %}
-    <div id='timer' class='timer pull-right'></div>
-    <br/>
-    <h2>{{ course.name }}({{ course.title }})</h2>
-    <H3>{{ exam.title }}</H3>
-    <div class="container-fluid well ">
-        <FORM METHOD='post'
-              ACTION='{{ cf.url }}assess/assessmentpage/{{ course_id }}/{{ exam.id }}/{{ page }}'>
+  <div id='timer' class='timer pull-right'></div>
+  <br/>
+  <h2>{{ course.name }}({{ course.title }})</h2>
+  <H3>{{ exam.title }}</H3>
+  <div class="container-fluid well ">
+    <FORM METHOD='post'
+          ACTION='{{ cf.url }}assess/assessmentpage/{{ course_id }}/{{ exam.id }}/{{ page }}'>
 
-            <div class='navbar'>
-                <div class='navbar-inner'>
-                    <span class='brand'> Go To:</span>
-                    <ul class='nav'>
-                        <li><INPUT CLASS='btn' TYPE='submit' NAME='goto'
-                                   VALUE='Start'></li>
-                        <li class='divider-vertical'></li>
-                        {% for i in pages %}
-                            {% if i == page %}
-                                <li><INPUT CLASS='btn active' TYPE='submit'
-                                           NAME='goto' VALUE='Page {{ i }}'>
-                                </li>
-                            {% else %}
-                                <li><INPUT CLASS='btn' TYPE='submit' NAME='goto'
-                                           VALUE='Page {{ i }}'></li>
-                            {% endif %}
-                        {% endfor %}
-                        <li class='divider-vertical'></li>
-                        <li><INPUT CLASS='btn btn-danger' TYPE='submit'
-                                   NAME='goto' VALUE='Finish'></li>
-                    </ul>
-                </div>
-            </div>
-            <center>
-                <table border='0' style='width:95%;'>
-                    <tr>
-                        <td>
-                            <h2>Page {{ page }}</h2>
-                            {{ html|safe }}
-                        </td>
-                    </tr>
-                </table>
-            </center>
-            <br/>
-        </FORM>
-    </div>
+      <div class='navbar'>
+        <div class='navbar-inner'>
+          <span class='brand'> Go To:</span>
+          <ul class='nav'>
+            <li><INPUT CLASS='btn' TYPE='submit' NAME='goto'
+                       VALUE='Start'></li>
+            <li class='divider-vertical'></li>
+            {% for i in pages %}
+              {% if i == page %}
+                <li><INPUT CLASS='btn active' TYPE='submit'
+                           NAME='goto' VALUE='Page {{ i }}'>
+                </li>
+              {% else %}
+                <li><INPUT CLASS='btn' TYPE='submit' NAME='goto'
+                           VALUE='Page {{ i }}'></li>
+              {% endif %}
+            {% endfor %}
+            <li class='divider-vertical'></li>
+            <li><INPUT CLASS='btn btn-danger' TYPE='submit'
+                       NAME='goto' VALUE='Finish'></li>
+          </ul>
+        </div>
+      </div>
+      <center>
+        <table border='0' style='width:95%;'>
+          <tr>
+            <td>
+              <h2>Page {{ page }}</h2>
+              {{ html|safe }}
+            </td>
+          </tr>
+        </table>
+      </center>
+      <br/>
+    </FORM>
+  </div>
 {% endblock body %}
 {% block js %}
-    <script>
-        $(".auto_save").change(function (ev) {
-            alert("Changed to " + ev.val());
-        });
+  <script>
+    $(".auto_save").change(function (ev) {
+      alert("Changed to " + ev.val());
+    });
 
-        var is_timed = {{ is_timed }};
-        var time_remain = {{ time_remain }};
-        var auto_submit = {{ auto_submit}};
-        var timer_running = false;
-        var timerID = false;
-        var secs = 0;
+    var is_timed = {{ is_timed }};
+    var time_remain = {{ time_remain }};
+    var auto_submit = {{ auto_submit}};
+    var timer_running = false;
+    var timerID = false;
+    var secs = 0;
 
-        function show_time(seconds) {
-            $("#timer").html("<b>" + seconds + "</b>");
+    function show_time(seconds) {
+      $("#timer").html("<b>" + seconds + "</b>");
+    }
+
+    function init_timer() {
+
+      // Set the length of the timer, in seconds
+      secs = time_remain;
+
+      show_time(secs);
+      stop_timeout();
+      start_timer();
+    }
+
+    function stop_timeout() {
+      if (timer_running && timerID) {
+        window.clearTimeout(timerID);
+        timer_running = false;
+      }
+    }
+
+    function start_timer() {
+      timer_running = true;
+      if (secs > 180) {
+        show_time("Time Left: <b>" + Math.floor(secs / 60) + "</b> min.");
+      } else if (secs > 30) {
+        show_time("Time Left: <b><font size='+1' color='darkorange'>" + Math.floor(secs / 60) + "</font></b> min: <b><font size='+1' color='darkred'>" + (secs % 60).toFixed(0) + "</b></font>secs.");
+      } else if (secs > 0) {
+        show_time("Time Left: <blink><b><font size='+2' color='darkorange'>" + Math.floor(secs / 60) + "</font></b> min: <b><font size='+1' color='darkorange'>" + (secs % 60).toFixed(0) + "</font></b>secs.</blink>");
+      }
+
+      secs = secs - 1;
+      timerID = window.setTimeout(start_timer, 1000);
+      if (secs <= 0) {
+        stop_timeout();
+        show_time("<font size='+1' color='red'>--OVERTIME--</font>");
+        if (auto_submit) {
+          $("#submit").click();
         }
+      }
 
-        function init_timer() {
+    }
 
-            // Set the length of the timer, in seconds
-            secs = time_remain;
+    if (is_timed) {
+      init_timer();
+    }
 
-            show_time(secs);
-            stop_timeout();
-            start_timer();
-        }
-
-        function stop_timeout() {
-            if (timer_running && timerID) {
-                window.clearTimeout(timerID);
-                timer_running = false;
-            }
-        }
-
-        function start_timer() {
-            timer_running = true;
-            if (secs > 180) {
-                show_time("Time Left: <b>" + Math.floor(secs / 60) + "</b> min.");
-            } else if (secs > 30) {
-                show_time("Time Left: <b><font size='+1' color='darkorange'>" + Math.floor(secs / 60) + "</font></b> min: <b><font size='+1' color='darkred'>" + (secs % 60).toFixed(0) + "</b></font>secs.");
-            } else if (secs > 0) {
-                show_time("Time Left: <blink><b><font size='+2' color='darkorange'>" + Math.floor(secs / 60) + "</font></b> min: <b><font size='+1' color='darkorange'>" + (secs % 60).toFixed(0) + "</font></b>secs.</blink>");
-            }
-
-            secs = secs - 1;
-            timerID = window.setTimeout(start_timer, 1000);
-            if (secs <= 0) {
-                stop_timeout();
-                show_time("<font size='+1' color='red'>--OVERTIME--</font>");
-                if (auto_submit) {
-                    $("#submit").click();
-                }
-            }
-
-        }
-
-        if (is_timed) {
-            init_timer();
-        }
-
-    </script>
+  </script>
 {% endblock js %}

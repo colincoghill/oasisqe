@@ -1,122 +1,122 @@
 {% extends "page_courseadmin.html" %}
 {% block js %}
-    <script>
-        $("#enrol_type").change(function () {
-            var etype = $(this).val();
-            if (etype == 'manual') {
-                $("#enrol_location_box").hide();
-            } else {
-                $("#enrol_location_box").show();
-            }
-        });
+  <script>
+    $("#enrol_type").change(function () {
+      var etype = $(this).val();
+      if (etype == 'manual') {
+        $("#enrol_location_box").hide();
+      } else {
+        $("#enrol_location_box").show();
+      }
+    });
 
-        // On load
-        $(function () {
-            var etype = $("#enrol_type").val();
-            if (etype == 'manual') {
-                $("#enrol_location_box").hide();
-            } else {
-                $("#enrol_location_box").show();
-            }
-        });
+    // On load
+    $(function () {
+      var etype = $("#enrol_type").val();
+      if (etype == 'manual') {
+        $("#enrol_location_box").hide();
+      } else {
+        $("#enrol_location_box").show();
+      }
+    });
 
-    </script>
+  </script>
 {% endblock %}
 {% block body %}
-    <br>
-    <p>Return to <a href="{{ cf.url }}admin/courses">Course Choice</a></p>
-    <h2>Server Administration</h2>
-    <h3>{{ course.name }} ({{ course.title }})</h3>
-    <form method='post' action='{{ cf.url }}admin/course/save/{{ course.id }}'>
-        <div class="container-fluid well">
-            <h4>Course</h4>
+  <br>
+  <p>Return to <a href="{{ cf.url }}admin/courses">Course Choice</a></p>
+  <h2>Server Administration</h2>
+  <h3>{{ course.name }} ({{ course.title }})</h3>
+  <form method='post' action='{{ cf.url }}admin/course/save/{{ course.id }}'>
+    <div class="container-fluid well">
+      <h4>Course</h4>
 
 
-            <div class='input'>
-                <label>Status: <select name='course_active' class='select'>
-                    <option value='1' {% if course.active %}SELECTED{% endif %}>
-                        Active
-                    </option>
-                    <option value='0'
-                            {% if not course.active %}SELECTED{% endif %}>
-                        Inactive
-                    </option>
-                </select>
-                    (Inactive courses will be hidden)</label>
-            </div>
-            <div class='input'>
-                <label>Name: <input type='text' name='course_name'
-                                    value='{{ course.name }}'></label>
-            </div>
-            <div class='input'>
-                <label>Title: <input type='text' name='course_title'
-                                     value='{{ course.title }}'></label>
-            </div>
-            <p><a class='btn' href="{{ cf.url }}cadmin/{{ course.id }}/perms">Assign
-                Coordinator</a></p>
-        </div>
-        <div class="container-fluid well">
-            <h4>Enrolment Groups</h4>
+      <div class='input'>
+        <label>Status: <select name='course_active' class='select'>
+          <option value='1' {% if course.active %}SELECTED{% endif %}>
+            Active
+          </option>
+          <option value='0'
+                  {% if not course.active %}SELECTED{% endif %}>
+            Inactive
+          </option>
+        </select>
+          (Inactive courses will be hidden)</label>
+      </div>
+      <div class='input'>
+        <label>Name: <input type='text' name='course_name'
+                            value='{{ course.name }}'></label>
+      </div>
+      <div class='input'>
+        <label>Title: <input type='text' name='course_title'
+                             value='{{ course.title }}'></label>
+      </div>
+      <p><a class='btn' href="{{ cf.url }}cadmin/{{ course.id }}/perms">Assign
+        Coordinator</a></p>
+    </div>
+    <div class="container-fluid well">
+      <h4>Enrolment Groups</h4>
 
-            <p>{{ course.name }} currently has {{ course.size }} members.
-                Composed of the following group(s):</p>
+      <p>{{ course.name }} currently has {{ course.size }} members.
+        Composed of the following group(s):</p>
 
-            <div>{% if groups %}
+      <div>{% if groups %}
 
-                <table class='table'>
-                    <Tr>
-                        <th>Name</th>
-                        <th>Type</th>
-                        <th>Size</th>
-                        <th>start</th>
-                        <th>end</th>
-                        <th></th>
-                    </Tr>
-                    {% for group in groups %}
-                        <Tr>
-                            <td>{{ group.name }}</td>
-                            <td>Manual</td>
-                            <td>{{ group.size }}</td>
-                            <td>{{ group.startdate }}</td>
-                            <td>{{ group.enddate }}</td>
-                            <td>
-                                <button class='btn btn-danger btn-mini'><i
-                                        class='icon icon-trash'> </i></button>
-                            </td>
+        <table class='table'>
+          <Tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Size</th>
+            <th>start</th>
+            <th>end</th>
+            <th></th>
+          </Tr>
+          {% for group in groups %}
+            <Tr>
+              <td>{{ group.name }}</td>
+              <td>Manual</td>
+              <td>{{ group.size }}</td>
+              <td>{{ group.startdate }}</td>
+              <td>{{ group.enddate }}</td>
+              <td>
+                <button class='btn btn-danger btn-mini'><i
+                    class='icon icon-trash'> </i></button>
+              </td>
 
-                        </Tr>
-                    {% endfor %}
-                </table>
-            {% else %}
-                None.
-            {% endif %}
-                <br/>
-
-                <h5>Add Group:</h5>
-                <select name='group'>
-                    {% for group in allgroups %}
-                        <option value='{{ group.id }}'>{{ group.title }}</option>
-                    {% endfor %}
-                </select>
-                <button class='btn'>Add</button>
-                <br/>or
-                <button class='btn'>Create New Group</button>
-            </div>
-
-            <br/></div>
+            </Tr>
+          {% endfor %}
+        </table>
+      {% else %}
+        None.
+      {% endif %}
         <br/>
 
-        <div class='pull-right'>
-            <input type="submit" name="save_changes" value="Apply Changes"
-                   class='btn btn-primary'>
-            <input type="submit" name="cancel_edit" value="Cancel"
-                   class='btn btn-danger'>
-        </div>
+        <h5>Add Group:</h5>
+        <select name='group'>
+          {% for group in allgroups %}
+            <option value='{{ group.id }}'>{{ group.title }}</option>
+          {% endfor %}
+        </select>
+        <button class='btn'>Add</button>
+        <br/>or
+        <button class='btn'>Create New Group</button>
+      </div>
 
-    </form>
-    <br>
+      <br/></div>
     <br/>
-    <p>Return to <a href="{{ cf.url }}admin/courses">Course Choice</a></p>
+
+    <div class='pull-right'>
+      <input type="submit" name="save_changes" value="Apply Changes"
+             class='btn btn-primary'>
+      <input type="submit" name="cancel_edit" value="Cancel"
+             class='btn btn-danger'>
+    </div>
+
+  </form>
+  <br>
+  <br/>
+  <p>Return to <a href="{{ cf.url }}admin/courses">Course Choice</a></p>
 
 {% endblock body %}
 {% block pagetitle %}Server Admin{% endblock %}
