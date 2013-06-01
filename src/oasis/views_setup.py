@@ -232,8 +232,8 @@ def setup_myprofile():
     return render_template(
         'setup_myprofile.html',
         user=user,
-#        exams=exams,
         courses=courses
+        # exams=exams
     )
 
 
@@ -250,7 +250,7 @@ def setup_change_pass():
     )
 
 
-@app.route("/setup/changepass_submit", methods=["POST",])
+@app.route("/setup/changepass_submit", methods=["POST", ])
 @authenticated
 def setup_change_pass_submit():
     """ Set a new password """

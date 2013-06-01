@@ -133,12 +133,11 @@ def admin_add_period():
     """ Present page to add a time period in the system """
     return render_template(
         "admin_editperiod.html",
-        period={'id':0}
+        period={'id': 0}
     )
 
 
-
-@app.route("/admin/edit_group_feed_submit/<int:feed_id>", methods=["POST",])
+@app.route("/admin/edit_group_feed_submit/<int:feed_id>", methods=["POST", ])
 @require_perm('OASIS_SYSADMIN', ('setup_top',))
 def admin_edit_group_feed_submit(feed_id):
     """ Submit edit feed form """
@@ -200,7 +199,7 @@ def admin_edit_group_feed_submit(feed_id):
     return redirect(url_for("admin_feeds"))
 
 
-@app.route("/admin/edit_period_submit/<int:p_id>", methods=["POST",])
+@app.route("/admin/edit_period_submit/<int:p_id>", methods=["POST", ])
 @require_perm('OASIS_SYSADMIN', ('setup_top',))
 def admin_edit_period_submit(p_id):
     """ Submit edit period form """
@@ -476,8 +475,8 @@ def admin_editmessages():
     mesg_login = DB.get_message("loginmotd")
     return render_template(
         "admin_editmessages.html",
-        mesg_news = mesg_news,
-        mesg_login = mesg_login
+        mesg_news=mesg_news,
+        mesg_login=mesg_login
     )
 
 

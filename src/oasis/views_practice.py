@@ -262,4 +262,3 @@ def practice_mark_question(topic_id, question_id):
         next_id=next_id,
         prev_id=prev_id
     )
-

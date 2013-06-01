@@ -19,7 +19,7 @@ MYPATH = os.path.dirname(__file__)
 
 from .lib.UserDB import satisfyPerms
 
-from oasis import app, authenticated, require_course_perm
+from oasis import app, require_course_perm
 
 
 @app.route("/cadmin/<int:course_id>/top")
@@ -114,7 +114,7 @@ def cadmin_config_submit(course_id):
 
 @app.route("/cadmin/<int:course_id>/previousassessments")
 @require_course_perm(("OASIS_QUESTIONEDITOR", "OASIS_VIEWMARKS",
-                         "OASIS_ALTERMARKS", "OASIS_CREATEASSESSMENT"))
+                      "OASIS_ALTERMARKS", "OASIS_CREATEASSESSMENT"))
 def cadmin_prev_assessments(course_id):
     """ Show a list of older assessments."""
     course = Courses2.get_course(course_id)
@@ -383,17 +383,12 @@ def cadmin_edittopics_save(course_id):
 
 
 @app.route("/cadmin/<int:course_id>/edittopic/<int:topic_id>")
-@require_course_perm( "OASIS_QUESTIONEDITOR")
+@require_course_perm("OASIS_QUESTIONEDITOR")
 def cadmin_edit_topic(course_id, topic_id):
     """ Present a page to view and edit a topic, including adding/editing
         questions and setting some parameters.
     """
     user_id = session['user_id']
-    course_id = None
-    try:
-        course_id = Topics.get_course_id(topic_id)
-    except KeyError:
-        abort(404)
 
     if not course_id:
         abort(404)
@@ -419,8 +414,8 @@ def cadmin_edit_topic(course_id, topic_id):
     all_courses = [cs
                    for cs in all_courses
                    if satisfyPerms(user_id, int(cs['id']),
-                        ("OASIS_QUESTIONEDITOR", "OASIS_COURSEADMIN",
-                         "OASIS_SUPERUSER"))]
+                                   ("OASIS_QUESTIONEDITOR", "OASIS_COURSEADMIN",
+                                    "OASIS_SUPERUSER"))]
     all_courses.sort(lambda f, s: cmp(f['name'], s['name']))
 
     all_course_topics = []
@@ -440,7 +435,7 @@ def cadmin_edit_topic(course_id, topic_id):
 
 
 @app.route("/cadmin/<int:course_id>/topic/<int:topic_id>/<int:qt_id>/history")
-@require_course_perm( "OASIS_COURSEADMIN")
+@require_course_perm("OASIS_COURSEADMIN")
 def cadmin_view_qtemplate_history(course_id, topic_id, qt_id):
     """ Show the practice history of the question template. """
     if not course_id:
@@ -466,7 +461,7 @@ def cadmin_view_qtemplate_history(course_id, topic_id, qt_id):
 
 
 @app.route("/cadmin/<int:course_id>/topic/<int:topic_id>")
-@require_course_perm( "OASIS_COURSEADMIN")
+@require_course_perm("OASIS_COURSEADMIN")
 def cadmin_view_topic(course_id, topic_id):
     """ Present a page to view a topic, including basic stats """
     user_id = session['user_id']
@@ -493,8 +488,9 @@ def cadmin_view_topic(course_id, topic_id):
     all_courses = Courses2.get_course_list()
     all_courses = [cs
                    for cs in all_courses
-                   if satisfyPerms(user_id, int(cs['id']), (
-        "OASIS_QUESTIONEDITOR", "OASIS_COURSEADMIN", "OASIS_SUPERUSER"))]
+                   if satisfyPerms(user_id, int(cs['id']),
+                                   ("OASIS_QUESTIONEDITOR", "OASIS_COURSEADMIN",
+                                    "OASIS_SUPERUSER"))]
     all_courses.sort(lambda f, s: cmp(f['name'], s['name']))
 
     all_course_topics = []
@@ -515,7 +511,7 @@ def cadmin_view_topic(course_id, topic_id):
 
 @app.route("/cadmin/<int:course_id>/topic_save/<int:topic_id>",
            methods=['POST'])
-@require_course_perm( "OASIS_QUESTIONEDITOR")
+@require_course_perm("OASIS_QUESTIONEDITOR")
 def cadmin_topic_save(course_id, topic_id):
     """ Receive the page from cadmin_edit_topic and process any changes. """
     user_id = session['user_id']
@@ -539,7 +535,7 @@ def cadmin_topic_save(course_id, topic_id):
 
 
 @app.route("/cadmin/<int:course_id>/perms")
-@require_course_perm( "OASIS_USERADMIN")
+@require_course_perm("OASIS_USERADMIN")
 def cadmin_permissions(course_id):
     """ Present a page for them to assign permissions to the course"""
     course = Courses2.get_course(course_id)
@@ -565,7 +561,7 @@ def cadmin_permissions(course_id):
 
 
 @app.route("/cadmin/<int:course_id>/perms_save", methods=["POST", ])
-@require_course_perm( "OASIS_USERADMIN" )
+@require_course_perm("OASIS_USERADMIN")
 def cadmin_permissions_save(course_id):
     """ Present a page for them to save new permissions to the course """
     user_id = session['user_id']
@@ -577,4 +573,3 @@ def cadmin_permissions_save(course_id):
     CourseAdmin.save_perms(request, course_id, user_id)
     flash("Changes saved")
     return redirect(url_for("cadmin_permissions", course_id=course_id))
-

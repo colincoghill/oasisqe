@@ -53,12 +53,12 @@ def attachment_qtemplate(qt_id, version, variation, fname):
         if 'user_id' not in session:
             session['redirect'] = request.path
             return redirect(url_for('index'))
-    (mimetype, filename) = Attach.get_q_att_details(qt_id, version, variation, fname)
+    (mtype, filename) = Attach.get_q_att_details(qt_id, version, variation, fname)
     if Attach.is_restricted(fname):
         abort(403)
-    if not mimetype:
+    if not mtype:
         abort(404)
-    return send_file(filename, mimetype)
+    return send_file(filename, mtype)
 
 
 @app.route("/logout")
@@ -123,7 +123,7 @@ def main_news():
 
 @app.route("/cadmin/<int:course_id>/editquestion/<int:topic_id>/<int:qt_id>")
 @authenticated
-def qedit_redirect(course_id,topic_id, qt_id):
+def qedit_redirect(course_id, topic_id, qt_id):
     """ Work out the appropriate question editor and redirect to it """
     etype = DB.get_qt_editor(qt_id)
     if etype == "Raw":
@@ -172,9 +172,9 @@ def qedit_raw_edit(topic_id, qt_id):
         {
             'name': name,
             'mimetype': DB.get_qt_att_mimetype(qt_id, name)
-        } for name in attachnames if
-            not name in ['qtemplate.html', 'image.gif',
-                         'datfile.txt', '__datfile.txt', '__qtemplate.html']
+        } for name in attachnames
+        if not name in ['qtemplate.html', 'image.gif', 'datfile.txt',
+                        '__datfile.txt', '__qtemplate.html']
     ]
     return render_template(
         "courseadmin_raw_edit.html",
@@ -190,7 +190,7 @@ def qedit_raw_edit(topic_id, qt_id):
 @authenticated
 def qedit_raw_save(topic_id, qt_id):
     """ Accept the question editor form and save the results. """
-    VALID_EMBED="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+    valid = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
     user_id = session['user_id']
     course_id = Topics.get_course_id(topic_id)
     if not (check_perm(user_id, course_id, "OASIS_COURSECOORD")
@@ -222,7 +222,7 @@ def qedit_raw_save(topic_id, qt_id):
     if 'embed_id' in form:
         embed_id = form['embed_id']
         embed_id = ''.join([ch for ch in embed_id
-                            if ch in VALID_EMBED])
+                            if ch in valid])
         if not DB.update_qt_embedid(qt_id, embed_id):
             flash("Error updating EmbedID, "
                   "possibly the value is already used elsewhere.")
@@ -299,13 +299,13 @@ def qedit_raw_attach(qt_id, fname):
     """ Serve the given question template attachment
         straight from DB so it's fresh
     """
-    mimetype = DB.get_qt_att_mimetype(qt_id, fname)
+    mtype = DB.get_qt_att_mimetype(qt_id, fname)
     data = DB.get_qt_att(qt_id, fname)
     if not data:
         abort(404)
-    if not mimetype:
-        mimetype = "text/plain"
-    if mimetype == "text/html":
-        mimetype = "text/plain"
+    if not mtype:
+        mtype = "text/plain"
+    if mtype == "text/html":
+        mtype = "text/plain"
     sIO = StringIO.StringIO(data)
-    return send_file(sIO, mimetype, as_attachment=True, attachment_filename=fname)
+    return send_file(sIO, mtype, as_attachment=True, attachment_filename=fname)
