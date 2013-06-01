@@ -17,7 +17,7 @@ import json
 
 from logging import log, INFO, WARN, ERROR, FATAL
 
-from psycopg2 import IntegrityError
+IntegrityError = psycopg2.IntegrityError
 
 # Global dbpool
 import OaConfig
@@ -405,7 +405,6 @@ def get_qt_atts(qt_id, version=1000000000):
     assert isinstance(version, int)
     if version == 1000000000:
         version = get_qt_version(qt_id)
-    attachments = []
     ret = run_sql("SELECT name FROM qtattach WHERE qtemplate = %s "
                   "AND version <= %s GROUP BY name ORDER BY name;",
                   (qt_id, version))

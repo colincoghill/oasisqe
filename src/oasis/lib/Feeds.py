@@ -5,8 +5,7 @@
     Used mainly by Groups
 """
 
-from ..lib.DB import run_sql, IntegrityError
-from logging import log, ERROR
+from ..lib.DB import run_sql
 import datetime
 
 

@@ -17,10 +17,9 @@ from flask import render_template, session, \
 from .lib import Courses, Courses2, Setup, Periods, Feeds
 
 MYPATH = os.path.dirname(__file__)
-from .lib.UserDB import check_perm
 from .lib import DB, Groups
-from oasis import app, authenticated, require_perm
-from logging import log, INFO, ERROR
+from oasis import app, require_perm
+from logging import log, INFO
 
 
 @app.route("/admin/top")
@@ -88,7 +87,7 @@ def admin_edit_period(p_id):
     try:
         period = Periods.Period(id=p_id)
     except KeyError:
-        abort(404)
+        return abort(404)
     else:
         period.start_date = period.start.strftime("%a %d %b %Y")
         period.finish_date = period.finish.strftime("%a %d %b %Y")
@@ -105,8 +104,7 @@ def admin_edit_feed(feed_id):
     try:
         feed = Feeds.Feed(id=feed_id)
     except KeyError:
-        feed = None
-        abort(404)
+        return abort(404)
     scripts = ['feed_url.py', 'feed_ldap.py', 'feed_spreadsheet.py']
     return render_template(
         "admin_edit_group_feed.html",
@@ -168,8 +166,7 @@ def admin_edit_group_feed_submit(feed_id):
         try:
             feed = Feeds.Feed(id=feed_id)
         except KeyError:
-            feed = None
-            abort(404)
+            return abort(404)
 
     feed.id = feed_id
     feed.name = name
@@ -242,7 +239,7 @@ def admin_edit_period_submit(p_id):
         try:
             period = Periods.Period(id=p_id)
         except KeyError:
-            abort(404)
+            return abort(404)
 
     period.id = p_id
     period.start = start
