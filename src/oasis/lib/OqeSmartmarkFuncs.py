@@ -7,8 +7,9 @@ from oasis.lib import OqeFuncUtils
 
 
 def comp_raw_bool_eqs(eq1str, eq2str):
-    """ Will compare two boolean equations to see if they are the same. The equations can be
-        written using the characters '&', '+' and '!' for 'and', 'or' and 'not' respectively.
+    """ Will compare two boolean equations to see if they are the same.
+        The equations can be written using the characters '&', '+' and '!'
+        for 'and', 'or' and 'not' respectively.
     """
     (eqn1, eqn1vars) = OqeFuncUtils.get_vars_bool_eqn(eq1str)
     (eqn2, eqn2vars) = OqeFuncUtils.get_vars_bool_eqn(eq2str)

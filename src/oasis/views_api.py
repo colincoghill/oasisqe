@@ -17,7 +17,7 @@ from .lib import Exams, API, Stats
 
 MYPATH = os.path.dirname(__file__)
 
-from .lib.UserDB import satisfyPerms
+from .lib.Permissions import satisfyPerms
 
 from oasis import app, authenticated
 

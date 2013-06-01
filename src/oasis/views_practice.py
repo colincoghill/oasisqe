@@ -12,7 +12,7 @@ from flask import render_template, session, request, abort
 from logging import log, ERROR
 from .lib import DB, Practice, Topics, General, Courses2, Setup
 MYPATH = os.path.dirname(__file__)
-from .lib.UserDB import check_perm
+from .lib.Permissions import check_perm
 
 from oasis import app, authenticated
 

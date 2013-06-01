@@ -10,7 +10,7 @@ import re
 from logging import log, WARN
 from oasis.lib import General
 
-from oasis.lib.UserDB import check_perm
+from oasis.lib.Permissions import check_perm
 from oasis.lib.OaExceptions import OaMarkerError
 from . import OaConfig, DB, Pool, Topics
 

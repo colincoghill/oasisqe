@@ -8,7 +8,7 @@
 from oasis.lib.DB import run_sql, MC
 
 PERMS = {'sysadmin': 1, 'useradmin': 2,
-         'courseadmin': 3, 'courseadmin': 4,
+         'courseadmin': 3, 'coursecoord': 4,
          'questionedit': 5, 'viewmarks': 8,
          'altermarks': 9, 'questionpreview': 10,
          'exampreview': 11, 'examcreate': 14,
@@ -28,22 +28,38 @@ def check_perm(user_id, group_id, perm):
     if obj:
         return True
         # If they're superuser, let em do anything
-    ret = run_sql("""SELECT "id" FROM permissions WHERE userid=%s AND permission=1;""", (user_id,))
+    ret = run_sql("""SELECT "id"
+                     FROM permissions
+                     WHERE userid=%s
+                       AND permission=1;""",
+                  (user_id,))
     if ret:
         MC.set(key, True)
         return True
         # If we're asking for course -1 it means any course will do.
     if group_id == -1:
-        ret = run_sql("""SELECT "id" FROM permissions WHERE userid=%s AND permission=%s;""", (user_id, permission))
+        ret = run_sql("""SELECT "id"
+                         FROM permissions
+                         WHERE userid=%s
+                           AND permission=%s;""",
+                      (user_id, permission))
         if ret:
             return True
         # Do they have the permission explicitly?
-    ret = run_sql("""SELECT "id" FROM permissions WHERE course=%s AND userid=%s AND permission=%s;""",
+    ret = run_sql("""SELECT "id"
+                     FROM permissions
+                     WHERE course=%s
+                       AND userid=%s
+                       AND permission=%s;""",
                   (group_id, user_id, permission))
     if ret:
         return True
         # Now check for global override
-    ret = run_sql("""SELECT "id" FROM permissions WHERE course=%s AND userid=%s AND permission='0';""",
+    ret = run_sql("""SELECT "id"
+                     FROM permissions
+                     WHERE course=%s
+                       AND userid=%s
+                       AND permission='0';""",
                   (group_id, user_id))
     if ret:
         return True
@@ -65,7 +81,9 @@ def deletePerm(uid, group_id, perm):
     key = "permission-%s-super" % (uid,)
     MC.delete(key)
     run_sql("""DELETE FROM permissions
-                WHERE userid=%s AND course=%s AND permission=%s""",
+               WHERE userid=%s
+                 AND course=%s
+                 AND permission=%s""",
             (uid, group_id, perm))
 
 
@@ -74,14 +92,17 @@ def addPerm(uid, group_id, perm):
     key = "permission-%s-super" % (uid,)
     MC.delete(key)
     run_sql("""INSERT INTO permissions (course, userid, permission)
-             VALUES (%s, %s, %s) """, (group_id, uid, perm))
+               VALUES (%s, %s, %s) """, (group_id, uid, perm))
 
 
 def getCoursePerms(course_id):
     """ Return a list of all users with permissions on the given course.
         Exclude those who get them via superuser.
     """
-    ret = run_sql("""SELECT "id", userid, permission FROM permissions WHERE course=%s;""", (course_id,))
+    ret = run_sql("""SELECT "id", userid, permission
+                     FROM permissions
+                     WHERE course=%s;""",
+                  (course_id,))
     if not ret:
         return []
     res = [(int(perm[1]), int(perm[2])) for perm in ret if

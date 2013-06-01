@@ -26,7 +26,7 @@ USERS_VERSION = -1
 USERS = {}
 
 
-def reloadUsersIfNeeded():
+def reload_users():
     """If interesting fields in the user table have changed, reload the info.
     """
     global USERS_VERSION
@@ -39,12 +39,12 @@ def reloadUsersIfNeeded():
     return
 
 
-def getUser(user_id):
+def get_user(user_id):
     """ Return a dict of various user fields.
         {'id', 'uname', 'givenname', 'familyname', 'fullname'}
     """
 
-    reloadUsersIfNeeded()
+    reload_users()
     if not user_id in USERS:
         USERS[user_id] = Users.get_user_record(user_id)
 
@@ -58,4 +58,4 @@ find = Users.find
 getCourses = Users.get_courses
 setPassword = Users.set_password
 
-reloadUsersIfNeeded()
+reload_users()

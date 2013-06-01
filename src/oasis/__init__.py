@@ -21,7 +21,7 @@ from email.mime.text import MIMEText
 
 from .lib import OaConfig, Users2, Users, DB
 from .lib.Audit import audit
-from .lib.UserDB import satisfyPerms
+from .lib.Permissions import satisfyPerms
 
 app = Flask(__name__,
             template_folder=OaConfig.homedir + "/templates",
@@ -239,7 +239,7 @@ def login_local_submit():
         flash("Incorrect name or password.")
         return redirect(url_for("login_local"))
 
-    user = Users2.getUser(user_id)
+    user = Users2.get_user(user_id)
     if not user['confirmed']:
         flash("""Your account is not yet confirmed. You should have received
                  an email with instructions in it to do so.""")
@@ -304,7 +304,7 @@ def login_forgot_pass_submit():
         flash("Unknown username ")
         return redirect(url_for("login_forgot_pass"))
 
-    user = Users2.getUser(user_id)
+    user = Users2.get_user(user_id)
     if not user['source'] == "local":
         flash("Your password is not managed by OASIS, "
               "please contact IT Support.")
@@ -362,7 +362,7 @@ def login_email_passreset(code):
         abort(404)
     Users.set_confirm(uid)
     Users.set_confirm_code(uid, "")
-    user = Users2.getUser(uid)
+    user = Users2.get_user(uid)
     session['username'] = user['uname']
     session['user_id'] = uid
     session['user_givenname'] = user['givenname']
@@ -458,7 +458,7 @@ def login_webauth_submit():
         flash("Incorrect name or password.")
         return redirect(url_for("index"))
 
-    user = Users2.getUser(user_id)
+    user = Users2.get_user(user_id)
     session['username'] = username
     session['user_id'] = user_id
     session['user_givenname'] = user['givenname']

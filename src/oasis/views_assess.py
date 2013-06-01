@@ -19,7 +19,7 @@ from .lib import DB, General, Exams, Courses2, Assess
 
 MYPATH = os.path.dirname(__file__)
 
-from .lib.UserDB import check_perm
+from .lib.Permissions import check_perm
 
 from oasis import app, authenticated
 
@@ -29,7 +29,7 @@ from oasis import app, authenticated
 def assess_top():
     """ Top level assessment page. Let them choose an assessment."""
     user_id = session['user_id']
-    exams = Assess.get_exam_list_sorted(user_id=user_id, previous_years=False)
+    exams = Assess.get_exam_list_sorted(user_id=user_id, prev_years=False)
     current_num = len([e for e in exams if e['active']])
     upcoming_num = len([e for e in exams if e['future']])
     return render_template(
@@ -46,7 +46,7 @@ def assess_previousexams():
     """ Show a list of older exams - from previous years """
     user_id = session['user_id']
 
-    exams = Assess.get_exam_list_sorted(user_id=user_id, previous_years=True)
+    exams = Assess.get_exam_list_sorted(user_id=user_id, prev_years=True)
     years = [e['start'].year for e in exams]
     years = list(set(years))
     years.sort(reverse=True)

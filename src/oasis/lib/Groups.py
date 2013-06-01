@@ -16,7 +16,7 @@ def create(name, description, owner, grouptype, startdate=None, enddate=None):
     """ Add a group to the database. """
     conn = dbpool.begin()
     conn.run_sql("""INSERT INTO groups (title, description, owner, "type", startdate, enddate)
-               VALUES (%s, %s, %s, %s, %s, %s);""",
+                    VALUES (%s, %s, %s, %s, %s, %s);""",
                  (name, description, owner, grouptype, startdate, enddate))
     res = conn.run_sql("SELECT currval('groups_id_seq')")
     log(INFO, "create('%s', '%s', %d, %d) Added Group" % (
@@ -52,7 +52,8 @@ def get_name(group_id):
 def add_user(uid, group_id):
     """ Adds given user to the list of people enrolled in the given group."""
     run_sql(
-        """INSERT INTO usergroups (userid, groupid, "type") VALUES (%s, %s, 2) """,
+        """INSERT INTO usergroups (userid, groupid, "type")
+           VALUES (%s, %s, 2) """,
         (uid, group_id))
 
 
@@ -61,7 +62,9 @@ def getInfo(group_id):
         { 'id':id, 'name':name, 'title':title }
     """
     ret = run_sql(
-        """SELECT id, title, description, startdate, enddate FROM groups WHERE id = %s;""",
+        """SELECT id, title, description, startdate, enddate
+           FROM groups
+           WHERE id = %s;""",
         (group_id,))
     info = {}
     if ret:

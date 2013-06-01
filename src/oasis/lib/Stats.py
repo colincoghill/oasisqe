@@ -96,7 +96,7 @@ def populateStatsPracQCourse(start=None, end=None):
             'avgscore': float(row[6])
         }
         exist_count = fetchPracQCourseRow(data['year'], data['month'], data['day'], data['hour'], data['qtemplate'])
-        if exist_count is False:
+        if exist_count is False:  # could be 0
             insertPracQCourse(data['year'], data['month'], data['day'], data['hour'], data['qtemplate'], data['count'], data['avgscore'])
         else:
             updatePracQCourse(data['year'], data['month'], data['day'], data['hour'], data['qtemplate'], data['count'], data['avgscore'])
@@ -106,13 +106,13 @@ def getQDailyPracticeCount(start_time, end_time, qt_id):
     """ Return a list of daily count of practices for the given qtemplate
         over the time period
     """
-    sql = """ SELECT "year", "month", "day", sum("number")
-              FROM "stats_prac_q_course"
-              WHERE "qtemplate"=%s
-                AND "when" >= %s
-                AND "when" <= %s
-              GROUP BY "year","month","day"
-              ORDER BY "year","month","day" ASC;"""
+    sql = """SELECT "year", "month", "day", sum("number")
+             FROM "stats_prac_q_course"
+             WHERE "qtemplate"=%s
+               AND "when" >= %s
+               AND "when" <= %s
+             GROUP BY "year","month","day"
+             ORDER BY "year","month","day" ASC;"""
     params = (qt_id, start_time, end_time)
     res = DB.run_sql(sql, params)
     if not res:
@@ -122,7 +122,9 @@ def getQDailyPracticeCount(start_time, end_time, qt_id):
     for row in res:
         if first:  # if the data doesn't start with a value,
                    # set a 0 entry so graphs scale correctly
-            if not (int(row[1]) == start_time.month and int(row[2]) == start_time.day and int(row[0] == start_time.year)):
+            if not (int(row[1]) == start_time.month
+                    and int(row[2]) == start_time.day
+                    and int(row[0] == start_time.year)):
                 data.append(("%04d-%02d-%02d" % (start_time.year, start_time.month, start_time.day), 0))
             first = False
 
@@ -171,11 +173,11 @@ def getQDailyPracticeScores(start_time, end_time, qt_id):
 
 def get_daily_practice_load(start_time, end_time):
     """ Return a list of daily counts of practices for the whole system """
-    sql = """ SELECT "year", "month", "day", sum("number") from "stats_prac_q_course"
-               WHERE "when" >= %s
+    sql = """SELECT "year", "month", "day", sum("number") from "stats_prac_q_course"
+             WHERE "when" >= %s
                AND "when" <= %s
-               GROUP BY "year","month","day"
-               ORDER BY "year","month","day" ASC;"""
+             GROUP BY "year","month","day"
+             ORDER BY "year","month","day" ASC;"""
     params = (start_time, end_time)
     res = DB.run_sql(sql, params)
     if not res:

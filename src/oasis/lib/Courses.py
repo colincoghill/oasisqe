@@ -375,11 +375,11 @@ def get_topics(cid):
     return []
 
 
-def get_exams(cid, previous_years=False):
+def get_exams(cid, prev_years=False):
     """ Return a list of all assessments in the course."""
     assert isinstance(cid, int)
-    assert isinstance(previous_years, bool)
-    if not previous_years:
+    assert isinstance(prev_years, bool)
+    if not prev_years:
         now = datetime.datetime.now()
         year = now.year
         sql = """SELECT exam

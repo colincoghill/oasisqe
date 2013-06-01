@@ -21,7 +21,7 @@ from .lib import Users2, DB, Topics, \
 MYPATH = os.path.dirname(__file__)
 
 from .lib.Audit import audit
-from .lib.UserDB import check_perm
+from .lib.Permissions import check_perm
 
 from oasis import app, authenticated
 
@@ -207,7 +207,7 @@ def qedit_raw_save(topic_id, qt_id):
         return redirect(url_for("cadmin_edit_topic", topic_id=topic_id))
 
     version = DB.incr_qt_version(qt_id)
-    owner = Users2.getUser(user_id)
+    owner = Users2.get_user(user_id)
     DB.update_qt_owner(qt_id, user_id)
     audit(3, user_id, qt_id, "qeditor",
           "version=%s,message=%s" %

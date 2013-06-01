@@ -12,12 +12,12 @@ from logging import log, ERROR
 from flask import render_template, session, request, redirect, \
     abort, url_for, flash
 
-from .lib import OaConfig, Users2, DB, Topics, UserDB, \
+from .lib import OaConfig, Users2, DB, Topics, Permissions, \
     Exams, Courses, Courses2, Setup, CourseAdmin, Groups
 
 MYPATH = os.path.dirname(__file__)
 
-from .lib.UserDB import satisfyPerms
+from .lib.Permissions import satisfyPerms
 
 from oasis import app, require_course_perm
 
@@ -34,7 +34,7 @@ def cadmin_top(course_id):
 
     topics = Courses2.get_topics_list(course_id)
     exams = [Exams.get_exam_struct(exam_id, course_id)
-             for exam_id in Courses.get_exams(course_id, previous_years=False)]
+             for exam_id in Courses.get_exams(course_id, prev_years=False)]
 
     exams.sort(key=lambda y: y['start_epoch'], reverse=True)
 
@@ -288,7 +288,7 @@ def cadmin_editgroup(course_id, group_id):
 
     course = Courses2.get_course(course_id)
     ulist = Groups.get_users(group_id)
-    members = [Users2.getUser(uid) for uid in ulist]
+    members = [Users2.get_user(uid) for uid in ulist]
     return render_template("courseadmin_editgroup.html",
                            course=course,
                            group=group,
@@ -540,11 +540,11 @@ def cadmin_permissions(course_id):
     """ Present a page for them to assign permissions to the course"""
     course = Courses2.get_course(course_id)
 
-    permlist = UserDB.getCoursePerms(course_id)
+    permlist = Permissions.getCoursePerms(course_id)
     perms = {}
     for uid, pid in permlist:  # (uid, permission)
         if not uid in perms:
-            user = Users2.getUser(uid)
+            user = Users2.get_user(uid)
             perms[uid] = {
                 'uname': user['uname'],
                 'fullname': user['fullname'],

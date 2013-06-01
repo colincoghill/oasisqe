@@ -17,7 +17,7 @@ from .lib import Users2, General, Exams, \
 MYPATH = os.path.dirname(__file__)
 
 from .lib.Audit import audit, get_records_by_user
-from .lib.UserDB import check_perm, satisfyPerms
+from .lib.Permissions import check_perm, satisfyPerms
 
 from oasis import app, authenticated
 
@@ -134,7 +134,7 @@ def setup_usersearch():
                 flash("Search term too short, please try something longer")
             else:
                 uids = Users2.find(needle)
-                users = [Users2.getUser(uid) for uid in uids]
+                users = [Users2.get_user(uid) for uid in uids]
                 if len(users) == 0:
                     nonefound = True
                 else:
@@ -157,7 +157,7 @@ def setup_useraudit(audit_id):
         flash("You do not have User Administration access.")
         return redirect(url_for('setup_top'))
 
-    user = Users2.getUser(audit_id)
+    user = Users2.get_user(audit_id)
     audits = get_records_by_user(audit_id)
     for aud in audits:
         aud['humantime'] = General.humanDate(aud['time'])
@@ -178,7 +178,7 @@ def setup_usersummary(view_id):
         flash("You do not have User Administration access.")
         return redirect(url_for('setup_top'))
 
-    user = Users2.getUser(view_id)
+    user = Users2.get_user(view_id)
     examids = Exams.get_exams_done(view_id)
     exams = []
     for examid in examids:
@@ -209,7 +209,7 @@ def setup_myprofile():
     """ Show an account summary for the current user account. """
     user_id = session['user_id']
 
-    user = Users2.getUser(user_id)
+    user = Users2.get_user(user_id)
 #    examids = Exams.getExamsDone(user_id)
 #    exams = []
 #   for examid in examids:
@@ -243,7 +243,7 @@ def setup_change_pass():
     """ Ask for a new password """
     user_id = session['user_id']
 
-    user = Users2.getUser(user_id)
+    user = Users2.get_user(user_id)
     return render_template(
         'setup_changepassword.html',
         user=user,
@@ -256,7 +256,7 @@ def setup_change_pass_submit():
     """ Set a new password """
     user_id = session['user_id']
 
-    user = Users2.getUser(user_id)
+    user = Users2.get_user(user_id)
 
     if not "newpass" in request.form or not "confirm" in request.form:
         flash("Please provide your new password")

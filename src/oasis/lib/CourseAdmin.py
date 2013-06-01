@@ -8,7 +8,7 @@
 
 import datetime
 
-from oasis.lib.UserDB import getCoursePerms, addPerm, deletePerm
+from oasis.lib.Permissions import getCoursePerms, addPerm, deletePerm
 from oasis.lib.Audit import audit
 from oasis.lib import Users2, DB, Topics, General, Exams, Courses
 
@@ -84,7 +84,7 @@ def save_perms(request, cid, user_id):
     perms = {}
     users = {}
     for perm in permlist:
-        u = Users2.getUser(perm[0])
+        u = Users2.get_user(perm[0])
         uname = u['uname']
         if not uname in users:
             users[uname] = {}

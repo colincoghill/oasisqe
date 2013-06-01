@@ -49,7 +49,8 @@ def mark_q(user_id, qtid, request):
             DB.set_q_marktime(qid)
         except OaMarkerError:
             log(INFO,
-                "getMarkQuestionPage(%d, %d, %s) Marker ERROR" % (user_id, qtid, request.form))
+                "getMarkQuestionPage(%d, %d, %s) Marker ERROR" %
+                (user_id, qtid, request.form))
             marks = {}
 
         out += General.renderMarkResults(qid, marks)
