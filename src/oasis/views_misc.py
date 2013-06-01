@@ -147,10 +147,10 @@ def qedit_raw_edit(topic_id, qt_id):
 
     course_id = Topics.get_course_id(topic_id)
 
-    if not (check_perm(user_id, course_id, "OASIS_COURSECOORD")
-            or check_perm(user_id, course_id, "OASIS_COURSEADMIN")
-            or check_perm(user_id, course_id, "OASIS_QUESTIONEDITOR")
-            or check_perm(user_id, course_id, "OASIS_QUESTIONSOURCEVIEW")):
+    if not (check_perm(user_id, course_id, "courseadmin")
+            or check_perm(user_id, course_id, "courseadmin")
+            or check_perm(user_id, course_id, "questionedit")
+            or check_perm(user_id, course_id, "questionsource")):
         flash("You do not have question editor privilege in this course")
         return redirect(url_for("cadmin_edit_topic",
                                 topic_id=topic_id))
@@ -193,10 +193,10 @@ def qedit_raw_save(topic_id, qt_id):
     valid = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
     user_id = session['user_id']
     course_id = Topics.get_course_id(topic_id)
-    if not (check_perm(user_id, course_id, "OASIS_COURSECOORD")
-            or check_perm(user_id, course_id, "OASIS_COURSEADMIN")
-            or check_perm(user_id, course_id, "OASIS_QUESTIONEDITOR")
-            or check_perm(user_id, course_id, "OASIS_QUESTIONSOURCEVIEW")):
+    if not (check_perm(user_id, course_id, "courseadmin")
+            or check_perm(user_id, course_id, "courseadmin")
+            or check_perm(user_id, course_id, "questionedit")
+            or check_perm(user_id, course_id, "questionsource")):
         flash("You do not have question editor privilege in this course")
         return redirect(url_for("cadmin_edit_topic", topic_id=topic_id))
 

@@ -23,7 +23,7 @@ from logging import log, INFO
 
 
 @app.route("/admin/top")
-@require_perm('OASIS_SYSADMIN', ('setup_top',))
+@require_perm('sysadmin')
 def admin_top():
     """ Present the top level admin page """
     db_version = DB.get_db_version()
@@ -35,7 +35,7 @@ def admin_top():
 
 
 @app.route("/admin/courses")
-@require_perm('OASIS_SYSADMIN', ('setup_top',))
+@require_perm('sysadmin')
 def admin_courses():
     """ Present page to administer courses in the system """
     courses = Setup.get_sorted_courselist(with_stats=True, only_active=False)
@@ -47,7 +47,7 @@ def admin_courses():
 
 
 @app.route("/admin/enrol/top")
-@require_perm('OASIS_SYSADMIN', ('setup_top',))
+@require_perm('sysadmin')
 def admin_enrol_top():
     """ Present menu page of enrolment related options """
     log(INFO, "Enrol top")
@@ -57,7 +57,7 @@ def admin_enrol_top():
 
 
 @app.route("/admin/feeds")
-@require_perm('OASIS_SYSADMIN', ('setup_top',))
+@require_perm('sysadmin')
 def admin_feeds():
     """ Present menu page of enrolment related options """
 
@@ -69,7 +69,7 @@ def admin_feeds():
 
 
 @app.route("/admin/periods")
-@require_perm('OASIS_SYSADMIN', ('setup_top',))
+@require_perm('sysadmin')
 def admin_periods():
     """ Present page to administer time periods in the system """
     periods = Periods.all_list()
@@ -81,7 +81,7 @@ def admin_periods():
 
 
 @app.route("/admin/edit_period/<int:p_id>")
-@require_perm('OASIS_SYSADMIN', ('setup_top',))
+@require_perm('sysadmin')
 def admin_edit_period(p_id):
     """ Present page to edit a time period in the system """
     try:
@@ -98,7 +98,7 @@ def admin_edit_period(p_id):
 
 
 @app.route("/admin/edit_feed/<int:feed_id>")
-@require_perm('OASIS_SYSADMIN', ('setup_top',))
+@require_perm('sysadmin')
 def admin_edit_feed(feed_id):
     """ Present page to edit a feed in the system """
     try:
@@ -114,7 +114,7 @@ def admin_edit_feed(feed_id):
 
 
 @app.route("/admin/add_feed")
-@require_perm('OASIS_SYSADMIN', ('setup_top',))
+@require_perm('sysadmin')
 def admin_add_feed():
     """ Present page to add a feed to the system """
     scripts = ['feed_url.py', 'feed_ldap.py', 'feed_spreadsheet.py']
@@ -126,7 +126,7 @@ def admin_add_feed():
 
 
 @app.route("/admin/add_period")
-@require_perm('OASIS_SYSADMIN', ('setup_top',))
+@require_perm('sysadmin')
 def admin_add_period():
     """ Present page to add a time period in the system """
     return render_template(
@@ -136,7 +136,7 @@ def admin_add_period():
 
 
 @app.route("/admin/edit_group_feed_submit/<int:feed_id>", methods=["POST", ])
-@require_perm('OASIS_SYSADMIN', ('setup_top',))
+@require_perm('sysadmin')
 def admin_edit_group_feed_submit(feed_id):
     """ Submit edit feed form """
     if "cancel" in request.form:
@@ -197,7 +197,7 @@ def admin_edit_group_feed_submit(feed_id):
 
 
 @app.route("/admin/edit_period_submit/<int:p_id>", methods=["POST", ])
-@require_perm('OASIS_SYSADMIN', ('setup_top',))
+@require_perm('sysadmin')
 def admin_edit_period_submit(p_id):
     """ Submit edit period form """
     if "cancel" in request.form:
@@ -288,7 +288,7 @@ def admin_edit_period_submit(p_id):
 
 
 @app.route("/admin/course/<int:course_id>")
-@require_perm('OASIS_SYSADMIN', ('setup_top',))
+@require_perm('sysadmin')
 def admin_course(course_id):
     """ Present page to administer settings for a given course"""
 
@@ -320,7 +320,7 @@ def admin_course(course_id):
 
 
 @app.route("/admin/add_course")
-@require_perm('OASIS_SYSADMIN', ('setup_top',))
+@require_perm('sysadmin')
 def admin_add_course():
     """ Present page to administer settings for a given course """
     course = {
@@ -335,7 +335,7 @@ def admin_add_course():
 
 
 @app.route("/admin/course/save/<int:course_id>", methods=['POST', ])
-@require_perm('OASIS_SYSADMIN', ('setup_top',))
+@require_perm('sysadmin')
 def admin_course_save(course_id):
     """ accept saved settings """
     form = request.form
@@ -409,7 +409,7 @@ def admin_course_save(course_id):
 
 
 @app.route("/admin/add_course/save", methods=['POST', ])
-@require_perm('OASIS_SYSADMIN', ('setup_top',))
+@require_perm('sysadmin')
 def admin_add_course_save():
     """ accept saved settings for a new course"""
     user_id = session['user_id']
@@ -464,7 +464,7 @@ def admin_add_course_save():
 
 
 @app.route("/admin/edit_messages")
-@require_perm('OASIS_SYSADMIN', ('setup_top',))
+@require_perm('sysadmin')
 def admin_editmessages():
     """ Present page to administer messages in the system """
 
@@ -479,7 +479,7 @@ def admin_editmessages():
 
 @app.route("/admin/save_messages",
            methods=["POST", ])
-@require_perm('OASIS_SYSADMIN', ('setup_top',))
+@require_perm('sysadmin')
 def admin_savemessages():
     """ Save messages in the system """
 

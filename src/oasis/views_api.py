@@ -28,7 +28,7 @@ def api_exam_qtemplates(course_id, exam_id):
     """ Return a JSON list of all the qtemplates used for the given exam.
     """
     user_id = session['user_id']
-    if not satisfyPerms(user_id, course_id, ("OASIS_CREATEASSESSMENT",)):
+    if not satisfyPerms(user_id, course_id, ("examcreate",)):
         abort(401)
 
     if exam_id == 0:   # New assessment may be being created
@@ -146,7 +146,7 @@ def api_exam_available_qtemplates(course_id, exam_id):
     if 'user_id' not in session:
         abort(401)
     user_id = session['user_id']
-    if not satisfyPerms(user_id, course_id, ("OASIS_CREATEASSESSMENT",)):
+    if not satisfyPerms(user_id, course_id, ("examcreate",)):
         abort(401)
 
     return jsonify(result=API.getCreateExamQuestionList(course_id))

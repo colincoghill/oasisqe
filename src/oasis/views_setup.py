@@ -47,7 +47,7 @@ def setup_usercreate():
     """
     user_id = session['user_id']
 
-    if not check_perm(user_id, -1, "OASIS_USERADMIN"):
+    if not check_perm(user_id, -1, "useradmin"):
         flash("You do not have User Administration access.")
         return redirect(url_for('setup_top'))
 
@@ -120,7 +120,7 @@ def setup_usersearch():
     """ Show a page allowing the admin search for users, or create new ones"""
     user_id = session['user_id']
 
-    if not check_perm(user_id, -1, "OASIS_USERADMIN"):
+    if not check_perm(user_id, -1, "useradmin"):
         flash("You do not have User Administration access.")
         return redirect(url_for('setup_top'))
 
@@ -153,7 +153,7 @@ def setup_useraudit(audit_id):
     """ Show all the audit entries for the given user account. """
     user_id = session['user_id']
 
-    if not check_perm(user_id, -1, "OASIS_USERADMIN"):
+    if not check_perm(user_id, -1, "useradmin"):
         flash("You do not have User Administration access.")
         return redirect(url_for('setup_top'))
 
@@ -174,7 +174,7 @@ def setup_usersummary(view_id):
     """ Show an account summary for the given user account. """
     user_id = session['user_id']
 
-    if not check_perm(user_id, -1, "OASIS_USERADMIN"):
+    if not check_perm(user_id, -1, "useradmin"):
         flash("You do not have User Administration access.")
         return redirect(url_for('setup_top'))
 
@@ -186,7 +186,7 @@ def setup_usersummary(view_id):
         started = General.humanDate(exam['start'])
         exam['started'] = started
 
-        exam['viewable'] = satisfyPerms(user_id, exam['cid'], ("OASIS_VIEWMARKS", ))
+        exam['viewable'] = satisfyPerms(user_id, exam['cid'], ("viewmarks", ))
 
         exams.append(exam)
     exams.sort(key=lambda x: x['start_epoch'], reverse=True)
@@ -217,7 +217,7 @@ def setup_myprofile():
 #        started = OaGeneral.humanDate(exam['start'])
 #        exam['started'] = started
 
-#        if satisfyPerms(user_id, exam['cid'], ("OASIS_VIEWMARKS", )):
+#        if satisfyPerms(user_id, exam['cid'], ("viewmarks", )):
 #           exam['viewable'] = True
 #        else:
 #            exam['viewable'] = False

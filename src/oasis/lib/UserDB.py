@@ -7,14 +7,14 @@
 
 from oasis.lib.DB import run_sql, MC
 
-PERMS = {'OASIS_SUPERUSER': 1, 'OASIS_USERADMIN': 2,
-         'OASIS_COURSEADMIN': 3, 'OASIS_COURSECOORD': 4,
-         'OASIS_QUESTIONEDITOR': 5, 'OASIS_VIEWMARKS': 8,
-         'OASIS_ALTERMARKS': 9, 'OASIS_PREVIEWQUESTIONS': 10,
-         'OASIS_PREVIEWASSESSMENT': 11, 'OASIS_CREATEASSESSMENT': 14,
-         'OASIS_COURSEMEMBERVIEW': 15, 'OASIS_PREVIEWSURVEY': 16,
-         'OASIS_CREATESURVEY': 17, 'OASIS_SYSMESG': 18,
-         'OASIS_SYSCOURSES': 19, 'OASIS_SURVEYRESULTS': 20}
+PERMS = {'sysadmin': 1, 'useradmin': 2,
+         'courseadmin': 3, 'courseadmin': 4,
+         'questionedit': 5, 'viewmarks': 8,
+         'altermarks': 9, 'questionpreview': 10,
+         'exampreview': 11, 'examcreate': 14,
+         'memberview': 15, 'surveypreview': 16,
+         'surveycreate': 17, 'sysmesg': 18,
+         'syscourses': 19, 'surveyresults': 20}
 
 
 def check_perm(user_id, group_id, perm):

@@ -45,7 +45,7 @@ def practice_choose_topic(course_id):
     return render_template(
         "practicecourse.html",
         courses=Setup.get_sorted_courselist(),
-        canpreview=check_perm(user_id, course_id, "OASIS_PREVIEWQUESTIONS"),
+        canpreview=check_perm(user_id, course_id, "questionpreview"),
         topics=topics,
         course=course
     )
@@ -76,7 +76,7 @@ def practice_choose_question(topic_id):
 
     return render_template(
         "practicetopic.html",
-        canpreview=check_perm(user_id, course_id, "OASIS_PREVIEWQUESTIONS"),
+        canpreview=check_perm(user_id, course_id, "questionpreview"),
         topics=topics,
         topic_id=topic_id,
         course=course,
@@ -104,7 +104,7 @@ def practice_choose_question_stats(topic_id):
 
     return render_template(
         "practicetopicstats.html",
-        canpreview=check_perm(user_id, course_id, "OASIS_PREVIEWQUESTIONS"),
+        canpreview=check_perm(user_id, course_id, "questionpreview"),
         topics=topics,
         topic_id=topic_id,
         course=course,

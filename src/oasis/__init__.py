@@ -101,7 +101,7 @@ def authenticated(func):
     return call_fn
 
 
-def require_perm(perms, redir):
+def require_perm(perms, redir="setup_top"):
     """ Decorator to check the user has at least one of a given list of global
         perms.
         Will flash() a message to them and redirect if they don't.
@@ -138,7 +138,7 @@ def require_perm(perms, redir):
             if satisfyPerms(user_id, 0, permlist):
                 return func(*args, **kwargs)
             flash("You do not have permission to do that.")
-            return redirect(url_for(*redir))
+            return redirect(url_for(redir))
 
         return call_fn
 

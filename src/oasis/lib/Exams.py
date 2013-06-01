@@ -501,6 +501,6 @@ def get_exam_struct(exam_id, user_id=None, include_qtemplates=False,
         exam['notcoursedone'] = get_num_done(exam_id), exam['coursedone']
     if user_id:
         exam['is_done'] = is_done_by(user_id, exam_id)
-        exam['can_preview'] = check_perm(user_id, exam['cid'], "OASIS_PREVIEWASSESSMENT")
+        exam['can_preview'] = check_perm(user_id, exam['cid'], "exampreview")
 
     return exam

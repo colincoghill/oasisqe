@@ -66,7 +66,7 @@ def assess_unlock(course_id, exam_id):
 
     exam = Exams.get_exam_struct(exam_id, user_id)
 
-    if not check_perm(user_id, course_id, "OASIS_PREVIEWASSESSMENT"):
+    if not check_perm(user_id, course_id, "exampreview"):
         if exam['future']:
             flash("That assessment is not yet available.")
             return redirect(url_for("assess_top"))
@@ -96,7 +96,7 @@ def assess_startexam(course_id, exam_id):
     user_id = session['user_id']
     exam = Exams.get_exam_struct(exam_id, user_id)
 
-    if not check_perm(user_id, course_id, "OASIS_PREVIEWASSESSMENT"):
+    if not check_perm(user_id, course_id, "exampreview"):
         if exam['future']:
             flash("That assessment is not yet available.")
             return redirect(url_for("assess_top"))

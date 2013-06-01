@@ -23,8 +23,8 @@ from oasis import app, require_course_perm
 
 
 @app.route("/cadmin/<int:course_id>/top")
-@require_course_perm(("OASIS_QUESTIONEDITOR", "OASIS_VIEWMARKS",
-                      "OASIS_ALTERMARKS", "OASIS_CREATEASSESSMENT"),
+@require_course_perm(("questionedit", "viewmarks",
+                      "altermarks", "examcreate"),
                      redir="setup_top")
 def cadmin_top(course_id):
     """ Present top level course admin page """
@@ -113,8 +113,8 @@ def cadmin_config_submit(course_id):
 
 
 @app.route("/cadmin/<int:course_id>/previousassessments")
-@require_course_perm(("OASIS_QUESTIONEDITOR", "OASIS_VIEWMARKS",
-                      "OASIS_ALTERMARKS", "OASIS_CREATEASSESSMENT"))
+@require_course_perm(("questionedit", "viewmarks",
+                      "altermarks", "examcreate"))
 def cadmin_prev_assessments(course_id):
     """ Show a list of older assessments."""
     course = Courses2.get_course(course_id)
@@ -137,7 +137,7 @@ def cadmin_prev_assessments(course_id):
 
 
 @app.route("/cadmin/<int:course_id>/createexam")
-@require_course_perm("OASIS_CREATEASSESSMENT")
+@require_course_perm("examcreate")
 def cadmin_create_exam(course_id):
     """ Provide a form to create/edit a new assessment """
     course = Courses2.get_course(course_id)
@@ -174,7 +174,7 @@ def cadmin_create_exam(course_id):
 
 
 @app.route("/cadmin/<int:course_id>/editexam/<int:exam_id>")
-@require_course_perm("OASIS_CREATEASSESSMENT")
+@require_course_perm("examcreate")
 def cadmin_edit_exam(course_id, exam_id):
     """ Provide a form to edit an assessment """
     course = Courses2.get_course(course_id)
@@ -199,7 +199,7 @@ def cadmin_edit_exam(course_id, exam_id):
 
 @app.route("/cadmin/<int:course_id>/exam_edit_submit/<int:exam_id>",
            methods=["POST", ])
-@require_course_perm("OASIS_CREATEASSESSMENT")
+@require_course_perm("examcreate")
 def cadmin_edit_exam_submit(course_id, exam_id):
     """ Provide a form to edit an assessment """
     user_id = session['user_id']
@@ -223,7 +223,7 @@ def cadmin_edit_exam_submit(course_id, exam_id):
 
 
 @app.route("/cadmin/<int:course_id>/enrolment")
-@require_course_perm("OASIS_USERADMIN")
+@require_course_perm("useradmin")
 def cadmin_enrolments(course_id):
     """ Present a page to view and edit all topics, including hidden. """
     user_id = session['user_id']
@@ -273,7 +273,7 @@ def cadmin_enrolments(course_id):
 
 
 @app.route("/cadmin/<int:course_id>/editgroup/<int:group_id>")
-@require_course_perm("OASIS_USERADMIN")
+@require_course_perm("useradmin")
 def cadmin_editgroup(course_id, group_id):
     """ Present a page for editing a group, membership, etc.
     """
@@ -296,7 +296,7 @@ def cadmin_editgroup(course_id, group_id):
 
 
 @app.route("/cadmin/addgroup/<int:course_id>")
-@require_course_perm("OASIS_USERADMIN")
+@require_course_perm("useradmin")
 def cadmin_addgroup(course_id):
     """ Present a page for creating a group
     """
@@ -306,7 +306,7 @@ def cadmin_addgroup(course_id):
 
 @app.route("/cadmin/<int:course_id>/editgroup/<int:group_id>/addperson",
            methods=["POST", ])
-@require_course_perm("OASIS_USERADMIN")
+@require_course_perm("useradmin")
 def cadmin_editgroup_addperson(course_id, group_id):
     """ Add a person to the group.
     """
@@ -340,7 +340,7 @@ def cadmin_editgroup_addperson(course_id, group_id):
 
 
 @app.route("/cadmin/<int:course_id>/topics", methods=['GET', 'POST'])
-@require_course_perm("OASIS_QUESTIONEDITOR")
+@require_course_perm("questionedit")
 def cadmin_edittopics(course_id):
     """ Present a page to view and edit all topics, including hidden. """
     course = None
@@ -359,7 +359,7 @@ def cadmin_edittopics(course_id):
 
 
 @app.route("/cadmin/<int:course_id>/topics_save", methods=['POST'])
-@require_course_perm("OASIS_QUESTIONEDITOR")
+@require_course_perm("questionedit")
 def cadmin_edittopics_save(course_id):
     """ Accept a submitted topics page and save it."""
     course = None
@@ -383,7 +383,7 @@ def cadmin_edittopics_save(course_id):
 
 
 @app.route("/cadmin/<int:course_id>/edittopic/<int:topic_id>")
-@require_course_perm("OASIS_QUESTIONEDITOR")
+@require_course_perm("questionedit")
 def cadmin_edit_topic(course_id, topic_id):
     """ Present a page to view and edit a topic, including adding/editing
         questions and setting some parameters.
@@ -414,8 +414,8 @@ def cadmin_edit_topic(course_id, topic_id):
     all_courses = [cs
                    for cs in all_courses
                    if satisfyPerms(user_id, int(cs['id']),
-                                   ("OASIS_QUESTIONEDITOR", "OASIS_COURSEADMIN",
-                                    "OASIS_SUPERUSER"))]
+                                   ("questionedit", "courseadmin",
+                                    "sysadmin"))]
     all_courses.sort(lambda f, s: cmp(f['name'], s['name']))
 
     all_course_topics = []
@@ -435,7 +435,7 @@ def cadmin_edit_topic(course_id, topic_id):
 
 
 @app.route("/cadmin/<int:course_id>/topic/<int:topic_id>/<int:qt_id>/history")
-@require_course_perm("OASIS_COURSEADMIN")
+@require_course_perm("courseadmin")
 def cadmin_view_qtemplate_history(course_id, topic_id, qt_id):
     """ Show the practice history of the question template. """
     if not course_id:
@@ -461,7 +461,7 @@ def cadmin_view_qtemplate_history(course_id, topic_id, qt_id):
 
 
 @app.route("/cadmin/<int:course_id>/topic/<int:topic_id>")
-@require_course_perm("OASIS_COURSEADMIN")
+@require_course_perm("courseadmin")
 def cadmin_view_topic(course_id, topic_id):
     """ Present a page to view a topic, including basic stats """
     user_id = session['user_id']
@@ -489,8 +489,8 @@ def cadmin_view_topic(course_id, topic_id):
     all_courses = [cs
                    for cs in all_courses
                    if satisfyPerms(user_id, int(cs['id']),
-                                   ("OASIS_QUESTIONEDITOR", "OASIS_COURSEADMIN",
-                                    "OASIS_SUPERUSER"))]
+                                   ("questionedit", "courseadmin",
+                                    "sysadmin"))]
     all_courses.sort(lambda f, s: cmp(f['name'], s['name']))
 
     all_course_topics = []
@@ -511,7 +511,7 @@ def cadmin_view_topic(course_id, topic_id):
 
 @app.route("/cadmin/<int:course_id>/topic_save/<int:topic_id>",
            methods=['POST'])
-@require_course_perm("OASIS_QUESTIONEDITOR")
+@require_course_perm("questionedit")
 def cadmin_topic_save(course_id, topic_id):
     """ Receive the page from cadmin_edit_topic and process any changes. """
     user_id = session['user_id']
@@ -535,7 +535,7 @@ def cadmin_topic_save(course_id, topic_id):
 
 
 @app.route("/cadmin/<int:course_id>/perms")
-@require_course_perm("OASIS_USERADMIN")
+@require_course_perm("useradmin")
 def cadmin_permissions(course_id):
     """ Present a page for them to assign permissions to the course"""
     course = Courses2.get_course(course_id)
@@ -561,7 +561,7 @@ def cadmin_permissions(course_id):
 
 
 @app.route("/cadmin/<int:course_id>/perms_save", methods=["POST", ])
-@require_course_perm("OASIS_USERADMIN")
+@require_course_perm("useradmin")
 def cadmin_permissions_save(course_id):
     """ Present a page for them to save new permissions to the course """
     user_id = session['user_id']
