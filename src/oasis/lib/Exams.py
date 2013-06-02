@@ -483,13 +483,13 @@ def get_exam_struct(exam_id, user_id=None, include_qtemplates=False,
         MC.set(key, _serialize_examstruct(exam),
                60)  # 60 second cache. to take the edge off exam start peak load
     course = Courses2.get_course(exam['cid'])
-    exam['future'] = General.isFuture2(exam['start'])
-    exam['past'] = General.isPast2(exam['end'])
-    exam['soon'] = General.isSoon(exam['start'])
-    exam['recent'] = General.isRecent(exam['end'])
-    exam['active'] = General.isNow(exam['start'], exam['end'])
+    exam['future'] = General.is_future(exam['start'])
+    exam['past'] = General.is_past(exam['end'])
+    exam['soon'] = General.is_soon(exam['start'])
+    exam['recent'] = General.is_recent(exam['end'])
+    exam['active'] = General.is_now(exam['start'], exam['end'])
     exam['start_epoch'] = int(exam['start'].strftime("%s")) # useful for sorting
-    exam['period'] = General.humanDatePeriod(exam['start'], exam['end'])
+    exam['period'] = General.human_dates(exam['start'], exam['end'])
     exam['course'] = course
     exam['start_human'] = exam['start'].strftime("%a %d %b")
 

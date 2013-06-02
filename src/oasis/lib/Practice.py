@@ -40,6 +40,9 @@ def get_practice_q(qt_id, user_id):
 
 
 def get_sorted_questions(course_id, topic_id, user_id=None):
+    """ Return a list of questions, sorted by position
+    """
+
     def cmp_question_position(a, b):
         """Order questions by the absolute value of their positions
            since we use -'ve to indicate hidden.
@@ -70,6 +73,9 @@ def get_sorted_questions(course_id, topic_id, user_id=None):
 
 
 def get_sorted_qlist_wstats(course_id, topic_id, user_id=None):
+    """ Return a list of questions, sorted by position. With
+        some statistics (may be expensive to calculate).
+    """
     def cmp_question_position(a, b):
         """Order questions by the absolute value of their positions
            since we use -'ve to indicate hidden.
@@ -199,7 +205,7 @@ def mark_q(user_id, topic_id, q_id, request):
                     "received guess for wrong question? (%d,%d,%d,%s)" %
                     (user_id, topic_id, q_id, request.form))
     try:
-        marks = General.markQuestion(q_id, answers)
+        marks = General.mark_q(q_id, answers)
         DB.set_q_status(q_id, 3)    # 3 = marked
         DB.set_q_marktime(q_id)
     except OaMarkerError:
@@ -207,7 +213,7 @@ def mark_q(user_id, topic_id, q_id, request):
             "Marker Error - (%d, %d, %d, %s)" %
             (user_id, topic_id, q_id, request.form))
         marks = {}
-    q_body = General.renderMarkResults(q_id, marks)
+    q_body = General.render_mark_results(q_id, marks)
     parts = [int(var[1:])
              for var in marks.keys()
              if re.search(r"^A([0-9]+)$", var) > 0]

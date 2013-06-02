@@ -59,7 +59,7 @@ def add_user(uid, group_id):
         (uid, group_id))
 
 
-def getInfo(group_id):
+def get_dict(group_id):
     """ Return a summary of the group.
         { 'id':id, 'name':name, 'title':title }
     """
@@ -87,7 +87,7 @@ def getInfo(group_id):
     return info
 
 
-def flushUsersInGroup(group_id):
+def flush_users_in_group(group_id):
     """ DANGEROUS:  Clears list of enrolled users in group.
         Use only just before importing new list.
     """
@@ -105,7 +105,7 @@ def get_course(group_id):
     raise KeyError
 
 
-def getInfoAll():
+def get_all_dict():
     """ Return a summary of all active groups, sorted by name
         [position] = { 'id':id, 'title':title }
 

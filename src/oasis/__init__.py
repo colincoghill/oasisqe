@@ -21,7 +21,7 @@ from email.mime.text import MIMEText
 
 from .lib import OaConfig, Users2, Users, DB
 from .lib.Audit import audit
-from .lib.Permissions import satisfyPerms
+from .lib.Permissions import satisfy_perms
 
 app = Flask(__name__,
             template_folder=OaConfig.homedir + "/templates",
@@ -135,7 +135,7 @@ def require_perm(perms, redir="setup_top"):
             else:
                 permlist = perms
 
-            if satisfyPerms(user_id, 0, permlist):
+            if satisfy_perms(user_id, 0, permlist):
                 return func(*args, **kwargs)
             flash("You do not have permission to do that.")
             return redirect(url_for(redir))
@@ -181,7 +181,7 @@ def require_course_perm(perms, redir=None):
 
             course_id = kwargs['course_id']
 
-            if satisfyPerms(user_id, course_id, permlist):
+            if satisfy_perms(user_id, course_id, permlist):
                 return func(*args, **kwargs)
             flash("You do not have course permission to do that.")
             if redir:
@@ -233,7 +233,7 @@ def login_local_submit():
     username = request.form['username']
     password = request.form['password']
 
-    user_id = Users2.verifyPass(username, password)
+    user_id = Users2.verify_pass(username, password)
     if not user_id:
         log(INFO, "Failed Login for %s" % username)
         flash("Incorrect name or password.")
@@ -299,7 +299,7 @@ def login_forgot_pass_submit():
                  please see the Installation instructions.""")
         return redirect(url_for("login_forgot_pass"))
 
-    user_id = Users2.getUidByUname(username)
+    user_id = Users2.get_uid_by_uname(username)
     if not user_id:
         flash("Unknown username ")
         return redirect(url_for("login_forgot_pass"))
@@ -410,7 +410,7 @@ def login_signup_submit():
         flash("Email address doesn't appear to be valid")
         return redirect(url_for("login_signup"))
 
-    existing = Users2.getUidByUname(username)
+    existing = Users2.get_uid_by_uname(username)
     if existing:
         flash("An account with that name already exists, "
               "please try another username.")
@@ -427,7 +427,7 @@ def login_signup_submit():
                           source="local",
                           confirm_code=code,
                           confirm=False)
-    Users2.setPassword(newuid, password)
+    Users2.set_password(newuid, password)
 
     text_body = render_template("email/confirmation.txt", code=code)
     html_body = render_template("email/confirmation.html", code=code)
@@ -453,7 +453,7 @@ def login_webauth_submit():
 
     if '@' in username:
         username = username.split('@')[0]
-    user_id = Users2.getUidByUname(username)
+    user_id = Users2.get_uid_by_uname(username)
     if not user_id:
         flash("Incorrect name or password.")
         return redirect(url_for("index"))

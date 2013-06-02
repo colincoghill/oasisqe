@@ -17,7 +17,7 @@ from .lib import OaConfig, Users2, DB, Topics, Permissions, \
 
 MYPATH = os.path.dirname(__file__)
 
-from .lib.Permissions import satisfyPerms
+from .lib.Permissions import satisfy_perms
 
 from oasis import app, require_course_perm
 
@@ -103,7 +103,7 @@ def cadmin_config_submit(course_id):
                                    course['practice_visibility'])
     if not (practice_visibility == course['practice_visibility']):
         saved = True
-        Courses.set_practice_visibility(course_id, practice_visibility)
+        Courses.set_prac_vis(course_id, practice_visibility)
 
     if saved:
         flash("Changes Saved")
@@ -237,7 +237,7 @@ def cadmin_enrolments(course_id):
     if not course:
         abort(404)
 
-    groups = [Groups.getInfo(group_id)
+    groups = [Groups.get_dict(group_id)
               for group_id in Courses.get_groups(course_id)]
 
     # it's possible one was never created, legacy database, etc.
@@ -251,7 +251,7 @@ def cadmin_enrolments(course_id):
                                  startdate=now,
                                  enddate=forever)
         Courses.add_group(group_id, course_id)
-        groups = [Groups.getInfo(group_id)
+        groups = [Groups.get_dict(group_id)
                   for group_id in Courses.get_groups(course_id)]
         assert len(groups)
 
@@ -279,7 +279,7 @@ def cadmin_editgroup(course_id, group_id):
     """
     group = None
     try:
-        group = Groups.getInfo(group_id)
+        group = Groups.get_dict(group_id)
     except KeyError:
         abort(404)
 
@@ -312,7 +312,7 @@ def cadmin_editgroup_addperson(course_id, group_id):
     """
     group = None
     try:
-        group = Groups.getInfo(group_id)
+        group = Groups.get_dict(group_id)
     except KeyError:
         abort(404)
 
@@ -324,7 +324,7 @@ def cadmin_editgroup_addperson(course_id, group_id):
 
     new_uname = request.form['uname']
     try:
-        new_uid = Users2.getUidByUname(new_uname)
+        new_uid = Users2.get_uid_by_uname(new_uname)
     except KeyError:
         flash("User '%s' Not Found" % new_uname)
     else:
@@ -413,7 +413,7 @@ def cadmin_edit_topic(course_id, topic_id):
     all_courses = Courses2.get_course_list()
     all_courses = [cs
                    for cs in all_courses
-                   if satisfyPerms(user_id, int(cs['id']),
+                   if satisfy_perms(user_id, int(cs['id']),
                                    ("questionedit", "courseadmin",
                                     "sysadmin"))]
     all_courses.sort(lambda f, s: cmp(f['name'], s['name']))
@@ -488,7 +488,7 @@ def cadmin_view_topic(course_id, topic_id):
     all_courses = Courses2.get_course_list()
     all_courses = [cs
                    for cs in all_courses
-                   if satisfyPerms(user_id, int(cs['id']),
+                   if satisfy_perms(user_id, int(cs['id']),
                                    ("questionedit", "courseadmin",
                                     "sysadmin"))]
     all_courses.sort(lambda f, s: cmp(f['name'], s['name']))
@@ -540,7 +540,7 @@ def cadmin_permissions(course_id):
     """ Present a page for them to assign permissions to the course"""
     course = Courses2.get_course(course_id)
 
-    permlist = Permissions.getCoursePerms(course_id)
+    permlist = Permissions.get_course_perms(course_id)
     perms = {}
     for uid, pid in permlist:  # (uid, permission)
         if not uid in perms:

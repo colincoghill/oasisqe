@@ -30,7 +30,7 @@ def load_courses():
     """Read the list of courses into memory """
     global COURSES
     log(INFO, "Courses fetched from database.")
-    COURSES = Courses.getFullCourseDict()
+    COURSES = Courses.get_courses_dict()
 
 
 def reload_if_needed():

@@ -8,7 +8,7 @@
 
 import datetime
 
-from oasis.lib.Permissions import getCoursePerms, addPerm, deletePerm
+from oasis.lib.Permissions import get_course_perms, add_perm, delete_perm
 from oasis.lib.Audit import audit
 from oasis.lib import Users2, DB, Topics, General, Exams, Courses
 
@@ -80,7 +80,7 @@ def save_perms(request, cid, user_id):
     """ Save permission changes
     """
 
-    permlist = getCoursePerms(cid)
+    permlist = get_course_perms(cid)
     perms = {}
     users = {}
     for perm in permlist:
@@ -108,11 +108,11 @@ def save_perms(request, cid, user_id):
             newperms[uname].append(perm)
 
         for uname in users:
-            uid = Users2.getUidByUname(uname)
+            uid = Users2.get_uid_by_uname(uname)
             for perm in [2, 5, 10, 14, 11, 8, 9, 15]:
                 if uname in newperms and perm in newperms[uname]:
                     if not perm in perms[uname]:
-                        addPerm(uid, cid, perm)
+                        add_perm(uid, cid, perm)
                         audit(1,
                               user_id,
                               uid,
@@ -121,7 +121,7 @@ def save_perms(request, cid, user_id):
                         )
                 else:
                     if uname in perms and perm in perms[uname]:
-                        deletePerm(uid, cid, perm)
+                        delete_perm(uid, cid, perm)
                         audit(1,
                               user_id,
                               uid,
@@ -130,12 +130,12 @@ def save_perms(request, cid, user_id):
                         )
 
         for uname in newperms:
-            uid = Users2.getUidByUname(uname)
+            uid = Users2.get_uid_by_uname(uname)
             if not uname in perms:
                 # We've added a user
                 for perm in [2, 5, 10, 14, 11, 8, 9, 15]:
                     if perm in newperms[uname]:
-                        addPerm(uid, cid, perm)
+                        add_perm(uid, cid, perm)
                         audit(1,
                               user_id,
                               uid,
@@ -144,9 +144,9 @@ def save_perms(request, cid, user_id):
                         )
         if "adduser" in form:
             newuname = form['adduser']
-            newuid = Users2.getUidByUname(newuname)
+            newuid = Users2.get_uid_by_uname(newuname)
             if newuid:
-                addPerm(newuid, cid, 10)
+                add_perm(newuid, cid, 10)
             audit(1,
                   user_id,
                   newuid,

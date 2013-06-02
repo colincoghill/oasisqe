@@ -156,7 +156,7 @@ def qedit_raw_edit(topic_id, qt_id):
                                 topic_id=topic_id))
 
     course = Courses2.get_course(course_id)
-    topic = Topics.getTopic(topic_id)
+    topic = Topics.get_topic(topic_id)
     qtemplate = DB.get_qtemplate(qt_id)
     try:
         html = DB.get_qt_att(qt_id, "qtemplate.html")

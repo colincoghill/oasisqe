@@ -17,7 +17,7 @@ from .lib import Users2, General, Exams, \
 MYPATH = os.path.dirname(__file__)
 
 from .lib.Audit import audit, get_records_by_user
-from .lib.Permissions import check_perm, satisfyPerms
+from .lib.Permissions import check_perm, satisfy_perms
 
 from oasis import app, authenticated
 
@@ -77,7 +77,7 @@ def setup_usercreate():
             if not all((new_uname, new_email, new_pass, new_confirm)):
                 error = "Please fill in all fields."
 
-            elif Users2.getUidByUname(new_uname):
+            elif Users2.get_uid_by_uname(new_uname):
                 error = "ERROR: An account already exists with that name"
 
             elif new_confirm == "" or not new_confirm == new_pass:
@@ -92,7 +92,7 @@ def setup_usercreate():
                               2,
                               '',
                               new_email)
-                Users2.setPassword(Users2.getUidByUname(new_uname), new_pass)
+                Users2.set_password(Users2.get_uid_by_uname(new_uname), new_pass)
                 flash("New User Account Created for %s" % new_uname)
                 new_uname = ""
                 new_fname = ""
@@ -160,7 +160,7 @@ def setup_useraudit(audit_id):
     user = Users2.get_user(audit_id)
     audits = get_records_by_user(audit_id)
     for aud in audits:
-        aud['humantime'] = General.humanDate(aud['time'])
+        aud['humantime'] = General.human_date(aud['time'])
     return render_template(
         'setup_useraudit.html',
         user=user,
@@ -183,15 +183,15 @@ def setup_usersummary(view_id):
     exams = []
     for examid in examids:
         exam = Exams.get_exam_struct(examid)
-        started = General.humanDate(exam['start'])
+        started = General.human_date(exam['start'])
         exam['started'] = started
 
-        exam['viewable'] = satisfyPerms(user_id, exam['cid'], ("viewmarks", ))
+        exam['viewable'] = satisfy_perms(user_id, exam['cid'], ("viewmarks", ))
 
         exams.append(exam)
     exams.sort(key=lambda x: x['start_epoch'], reverse=True)
 
-    course_ids = Users2.getCourses(view_id)
+    course_ids = Users2.get_courses(view_id)
     courses = []
     for course_id in course_ids:
         courses.append(Courses2.get_course(course_id))
@@ -225,7 +225,7 @@ def setup_myprofile():
 #        exams.append(exam)
 #    exams.sort(key=lambda x: x['start_epoch'], reverse=True)
 
-    course_ids = Users2.getCourses(user_id)
+    course_ids = Users2.get_courses(user_id)
     courses = []
     for course_id in course_ids:
         courses.append(Courses2.get_course(course_id))
@@ -273,7 +273,7 @@ def setup_change_pass_submit():
         flash("Passwords do not match")
         return redirect(url_for("setup_change_pass"))
 
-    Users2.setPassword(user_id=user_id, clearpass=newpass)
+    Users2.set_password(user_id=user_id, clearpass=newpass)
     audit(1, user_id,
           user_id,
           "Setup", "%s reset password for %s." % (user['uname'], user['uname']))

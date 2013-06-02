@@ -51,11 +51,11 @@ def get_user(user_id):
     return USERS[user_id]
 
 
-getUidByUname = Users.get_uid_by_uname
-verifyPass = Users.verify_password
+get_uid_by_uname = Users.get_uid_by_uname
+verify_pass = Users.verify_password
 create = Users.create
 find = Users.find
-getCourses = Users.get_courses
-setPassword = Users.set_password
+get_courses = Users.get_courses
+set_password = Users.set_password
 
 reload_users()

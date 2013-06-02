@@ -178,7 +178,7 @@ def assess_assessmentpage(course_id, exam_id, page):
 
         page = int(goto.split(' ', 2)[1])
 
-    q_id = General.getExamQuestion(exam_id, page, user_id)
+    q_id = General.get_exam_q(exam_id, page, user_id)
     timeleft = Exams.get_end_time(exam_id, user_id) - time.time()
     exam = Exams.get_exam_struct(exam_id, course_id)
 
@@ -329,8 +329,8 @@ def assess_viewmarked(course_id, exam_id):
         )
 
     results, examtotal = Assess.render_own_marked_exam(user_id, exam_id)
-    datemarked = General.humanDate(Exams.get_mark_time(exam_id, user_id))
-    datesubmit = General.humanDate(Exams.get_submit_time(exam_id, user_id))
+    datemarked = General.human_date(Exams.get_mark_time(exam_id, user_id))
+    datesubmit = General.human_date(Exams.get_submit_time(exam_id, user_id))
 
     if "user_fullname" in session:
         fullname = session['user_fullname']

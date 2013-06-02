@@ -295,7 +295,7 @@ def admin_course(course_id):
     course = Courses2.get_course(course_id)
     course['size'] = len(Courses.get_users(course_id))
 
-    groups = [Groups.getInfo(group_id)
+    groups = [Groups.get_dict(group_id)
               for group_id in Courses.get_groups(course_id)]
 
     for group in groups:
@@ -310,7 +310,7 @@ def admin_course(course_id):
             group['startdate'] = "-"
         group['size'] = len(Groups.get_users(group['id']))
 
-    allgroups = Groups.getInfoAll()
+    allgroups = Groups.get_all_dict()
     return render_template(
         "admin_course.html",
         course=course,

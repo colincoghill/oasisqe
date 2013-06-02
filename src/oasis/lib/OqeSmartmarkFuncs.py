@@ -3,6 +3,9 @@
 # This code is under the GNU Affero General Public License
 # http://www.gnu.org/licenses/agpl-3.0.html
 
+""" Functions used by the OQE Smark Marker functions
+"""
+
 from oasis.lib import OqeFuncUtils
 
 

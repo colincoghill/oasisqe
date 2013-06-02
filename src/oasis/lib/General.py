@@ -584,7 +584,7 @@ def parseExpo(S):
     return newS, f
 
 
-def markQuestionStandard(qvars, answers):
+def mark_q_standard(qvars, answers):
     """ Mark the question using the standard method
         if numerical answer is within tolerance% of the answer, it gets 1 mark.
     """
@@ -661,7 +661,7 @@ def markQuestionStandard(qvars, answers):
     return marks
 
 
-def markQuestionScript(qvars, script, answer):
+def mark_q_script(qvars, script, answer):
     """ Use the given script to mark the question.
     """
     marks = {}
@@ -791,7 +791,7 @@ def render_mark_results_standard(qid, marks):
     return out
 
 
-def renderMarkResultsScript(qtid, qid, marks, script):
+def render_mark_results_script(qtid, qid, marks, script):
     """Run the provided script to show the marking for the
        question.
     """
@@ -871,7 +871,7 @@ def renderMarkResultsScript(qtid, qid, marks, script):
     return render_mark_results_standard(qid, marks)
 
 
-def renderMarkResults(qid, marks):
+def render_mark_results(qid, marks):
     """Take the marking results and display something for the student
        that tells them what they got right and wrong.
        If the question has an attachment "_rendermarks.py", it will be called,
@@ -884,11 +884,11 @@ def renderMarkResults(qid, marks):
     if not renderscript:
         resultsHTML = render_mark_results_standard(qid, marks)
     else:
-        resultsHTML = renderMarkResultsScript(qtid, qid, marks, renderscript)
+        resultsHTML = render_mark_results_script(qtid, qid, marks, renderscript)
     return resultsHTML
 
 
-def markQuestion(qid, answers):
+def mark_q(qid, answers):
     """ Mark the question according to the answers given in a dictionary and
         return the result in a dictionary:
         input:    {"A1":"0.345", "A2":"fred", "A3":"-26" }
@@ -906,7 +906,7 @@ def markQuestion(qid, answers):
     qvars['OaQID'] = int(qid)
     marktype = DB.get_qt_marker(qtid)
     if marktype == 1:    # standard
-        marks = markQuestionStandard(qvars, answers)
+        marks = mark_q_standard(qvars, answers)
     else:
         # We want the latest version of the marker, so no version given
         markerscript = DB.get_qt_att(qtid, "__marker.py")
@@ -917,18 +917,18 @@ def markQuestion(qid, answers):
         if not markerscript:
             log(INFO,
                 "Unable to retrieve marker script for smart marker question (qtid=%s)!" % qtid)
-            marks = markQuestionStandard(qvars, answers)
+            marks = mark_q_standard(qvars, answers)
         else:
-            marks = markQuestionScript(qvars, markerscript, answers)
+            marks = mark_q_script(qvars, markerscript, answers)
     return marks
 
 
-def isNow(start, end):
+def is_now(start, end):
     """ Return True if now is in the given period"""
-    return isBetween(datetime.datetime.now(), start, end)
+    return is_between(datetime.datetime.now(), start, end)
 
 
-def isBetween(date, start, end):
+def is_between(date, start, end):
     """ Return True if the given date is between the start and end date.
         All arguments should be datetime objects.
     """
@@ -938,26 +938,26 @@ def isBetween(date, start, end):
     return start > date > end
 
 
-def isRecent(date):
+def is_recent(date):
     """ Return True if the given date (datetime object) is in the near past.
         Currently this means within 24 hours, but that may change.
     """
     end = datetime.datetime.now()
     start = end - datetime.timedelta(1)    # ( timedelta param is in days )
-    return isBetween(date, start, end)
+    return is_between(date, start, end)
 
 
-def isSoon(date):
+def is_soon(date):
     """ Return True if the given date (datetime object) is in the near future.
         Currently this means within 24 hours, but that may change.
     """
     end = datetime.datetime.now() + datetime.timedelta(1)
     start = datetime.datetime.now()
 
-    return isBetween(date, start, end)
+    return is_between(date, start, end)
 
 
-def isFuture2(date):
+def is_future(date):
     """ isFuture isn't right, but a lot of code now depends on its behaviour.
         isFuture2 does things correctly and should be phased in over time.
 
@@ -969,7 +969,7 @@ def isFuture2(date):
     return False
 
 
-def isPast2(date):
+def is_past(date):
     """ isFuture isn't right, but a lot of code now depends on its behaviour.
         isFuture2 does things correctly and should be phased in over time.
 
@@ -981,7 +981,7 @@ def isPast2(date):
     return False
 
 
-def getExamQuestion(exam, page, user_id):
+def get_exam_q(exam, page, user_id):
     """ Find the appropriate exam question for the user.
         Generate it if there isn't one already.
     """
@@ -1000,20 +1000,20 @@ def getExamQuestion(exam, page, user_id):
     return qid
 
 
-def getExamQuestions(student, exam):
+def get_exam_qs(student, exam):
     """ Get the list of exam questions the user has been assigned.
         generate blank ones if needed. """
     numQTemplates = Exams.get_num_questions(exam)
     questions = []
     for position in range(1, numQTemplates + 1):
-        question = getExamQuestion(exam, position, student)
+        question = get_exam_q(exam, position, student)
         if not question:
             question = int(gen_exam_q(exam, position, student))
         questions.append(question)
     return questions
 
 
-def remarkExam(exam, student):
+def remark_exam(exam, student):
     """Re-mark the exam using the latest marking. """
     qtemplates = Exams.get_qts(exam)
     examtotal = 0.0
@@ -1022,7 +1022,7 @@ def remarkExam(exam, student):
         question = DB.get_exam_q_by_qt_student(exam, qtemplate, student)
         answers = DB.get_q_guesses_before_time(question, end)
         try:
-            marks = markQuestion(question, answers)
+            marks = mark_q(question, answers)
         except OaMarkerError:
             log(WARN,
                 "Marker Error, question %d while re-marking exam %s for student %s!" % (question, exam, student))
@@ -1045,13 +1045,13 @@ def remarkExam(exam, student):
     return examtotal
 
 
-def remarkPractice(question):
+def remark_prac(question):
     """ Re-mark the practice question and store the score back
         in the questions table.
     """
     answers = DB.get_q_guesses(question)
     try:
-        marks = markQuestion(question, answers)
+        marks = mark_q(question, answers)
     except OaMarkerError:
         return None
     parts = [int(var[1:])
@@ -1070,21 +1070,7 @@ def remarkPractice(question):
     return total
 
 
-def getExamTimeTaken(exam, student):
-    """ Returns the (integer) number of seconds a student took to do the
-        exam. This is the time from their first view of the first question
-        to the time they pressed the submit button.
-    """
-    start = Exams.get_student_start_time(exam, student)
-    end = Exams.get_submit_time(exam, student)
-    if start is None:
-        return -1
-    if end is None:
-        return -1
-    return int((end - start).seconds)
-
-
-def humanDatePeriod(start, end, html=True):
+def human_dates(start, end, html=True):
     """ Return a string containing a nice human readable description of
         the time period.
         eg. if the start and end are on the same day, it only gives the date
@@ -1104,7 +1090,7 @@ def humanDatePeriod(start, end, html=True):
         return "%s to %s" % (start.strftime("%a %b %d %Y, %I:%M%P"), end.strftime("%a %b %d %Y, %I:%M%P"))
 
 
-def humanDate(date):
+def human_date(date):
     """ Return a string containing a nice human readable date/time.
         Miss out the year if it's this year
      """

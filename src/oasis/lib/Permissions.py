@@ -66,7 +66,7 @@ def check_perm(user_id, group_id, perm):
     return False
 
 
-def satisfyPerms(uid, group_id, permlist):
+def satisfy_perms(uid, group_id, permlist):
     """ Does the user have one or more of the permissions in permlist,
         on the given group?
     """
@@ -76,7 +76,7 @@ def satisfyPerms(uid, group_id, permlist):
     return False
 
 
-def deletePerm(uid, group_id, perm):
+def delete_perm(uid, group_id, perm):
     """Remove a permission. """
     key = "permission-%s-super" % (uid,)
     MC.delete(key)
@@ -87,7 +87,7 @@ def deletePerm(uid, group_id, perm):
             (uid, group_id, perm))
 
 
-def addPerm(uid, group_id, perm):
+def add_perm(uid, group_id, perm):
     """ Assign a permission."""
     key = "permission-%s-super" % (uid,)
     MC.delete(key)
@@ -95,7 +95,7 @@ def addPerm(uid, group_id, perm):
                VALUES (%s, %s, %s) """, (group_id, uid, perm))
 
 
-def getCoursePerms(course_id):
+def get_course_perms(course_id):
     """ Return a list of all users with permissions on the given course.
         Exclude those who get them via superuser.
     """

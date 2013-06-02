@@ -31,7 +31,7 @@ def create(course_id, name, vis, pos=1):
     return 0
 
 
-def getTopic(topic_id):
+def get_topic(topic_id):
     """ Fetch a dictionary of topic values"""
     key = "topic-%s-record" % topic_id
     obj = MC.get(key)
@@ -61,7 +61,7 @@ def getTopic(topic_id):
 
 def get_name(topic_id):
     """Fetch the name of a topic."""
-    return getTopic(topic_id)['title']
+    return get_topic(topic_id)['title']
 
 
 def set_name(topic_id, name):
@@ -76,7 +76,7 @@ def set_name(topic_id, name):
 def get_pos(topic_id):
     """Fetch the position of a topic."""
     assert isinstance(topic_id, int)
-    return getTopic(topic_id)['position']
+    return get_topic(topic_id)['position']
 
 
 def set_pos(topic_id, pos):
@@ -95,12 +95,12 @@ def set_pos(topic_id, pos):
 
 def get_course_id(topic_id):
     """Fetch the course ID of the course a topic belongs to"""
-    return getTopic(topic_id)['course']
+    return get_topic(topic_id)['course']
 
 
 def get_vis(topic_id):
     """Fetch the visibility of a topic."""
-    return getTopic(topic_id)['visibility']
+    return get_topic(topic_id)['visibility']
 
 
 def set_vis(topic_id, vis):

@@ -117,7 +117,7 @@ def set_registration(course_id, registration):
     incr_version()
 
 
-def set_practice_visibility(cid, visibility):
+def set_prac_vis(cid, visibility):
     """ Who can do practice questions."""
     assert isinstance(cid, int)
     assert isinstance(visibility, str) or isinstance(visibility, unicode)
@@ -127,7 +127,7 @@ def set_practice_visibility(cid, visibility):
     incr_version()
 
 
-def set_assess_visibility(cid, visibility):
+def set_assess_vis(cid, visibility):
     """ Who can do assessments."""
     assert isinstance(cid, int)
     assert isinstance(visibility, str) or isinstance(visibility, unicode)
@@ -166,47 +166,7 @@ def get_users(course):
     return allusers
 
 
-def getInfoAll():
-    """ Return a summary of all active courses, sorted by name
-        [position] = { 'id':id, 'name':name, 'title':title }
-    """
-    ret = run_sql(
-        """SELECT course, title, description, owner, active, type,
-                  enrol_type, enrol_location, enrol_freq, registration,
-                  practice_visibility, assess_visibility
-             FROM courses
-             WHERE active='1'
-             ORDER BY title ;""")
-    info = {}
-    if ret:
-        count = 0
-        for row in ret:
-            info[count] = {
-                'id': int(row[0]),
-                'name': row[1],
-                'title': row[2],
-                'owner': row[3],
-                'active': row[4],
-                'type': row[5],
-                'enrol_type': row[6],
-                'enrol_location': row[7],
-                'enrol_freq': row[8],
-                'registration': row[9],
-                'practice_visibility': row[10],
-                'assess_visibility': row[11]
-            }
-            # Defaults added since database was created
-            if not row['enrol_location']:
-                row['enrol_location'] = ""
-            if not row['practice_visibility']:
-                row['practice_visibility'] = "all"
-            if not row['assess_visibility']:
-                row['assess_visibility'] = "all"
-            count += 1
-    return info
-
-
-def getAll(only_active=True):
+def get_all(only_active=True):
     """ Return a list of all courses in the system."""
     if only_active:
         sql = """SELECT course FROM courses WHERE active=1 ORDER BY title;"""
@@ -225,7 +185,7 @@ def getAll(only_active=True):
     return []
 
 
-def getFullCourseDict():
+def get_courses_dict():
     """ Return a summary of all courses, keyed by course id
         [id] = { 'id':id, 'name':name, 'title':title }
     """
