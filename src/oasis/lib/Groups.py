@@ -148,6 +148,7 @@ class Group(object):
                  gtype=None,
                  active=None,
                  source=None,
+                 period=None,
                  feed=None):
         """ If just id is provided, load existing database
             record or raise KeyError.
@@ -168,14 +169,16 @@ class Group(object):
             self.gtype = gtype
             self.active = active
             self.source = source
+            self.period = period
             self.feed = feed
 
     def _fetch_by_id(self, g_id):
         """ Initialise from database, or KeyError
         """
 
-        sql = """SELECT name, title, gtype, active, source, feed
-                 FROM ugroups
+        sql = """SELECT "name", "title", "gtype", "active",
+                        "source", "period", "feed"
+                 FROM "ugroups"
                  WHERE id=%s;"""
         params = (g_id,)
         ret = run_sql(sql, params)
@@ -188,7 +191,8 @@ class Group(object):
         self.gtype = ret[0][2]
         self.active = ret[0][3]
         self.source = ret[0][4]
-        self.feed = ret[0][5]
+        self.period = ret[0][5]
+        self.feed = ret[0][6]
 
         return
 
@@ -197,11 +201,28 @@ def get_by_feed(feed_id):
     """ Return a summary of all active or future groups with the given feed
     """
     ret = run_sql(
-        """SELECT id
-           FROM ugroups
-           WHERE active = TRUE
+        """SELECT "id"
+           FROM "ugroups"
+           WHERE "active" = TRUE
            AND "feed" = %s;""",
         (feed_id,))
+    groups = []
+    if ret:
+        for row in ret:
+            groups.append(Group(id=row[0]))
+
+    return groups
+
+
+def get_by_period(period_id):
+    """ Return a summary of all active or future groups with the given feed
+    """
+    ret = run_sql(
+        """SELECT "id"
+           FROM "ugroups"
+           WHERE "active" = TRUE
+           AND "period" = %s;""",
+        (period_id,))
     groups = []
     if ret:
         for row in ret:

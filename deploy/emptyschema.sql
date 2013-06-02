@@ -108,7 +108,7 @@ CREATE INDEX ON "periods" USING BTREE("code");
 
 CREATE SEQUENCE feeds_id_seq START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;
 CREATE TABLE feeds (
-    "id" integer DEFAULT nextval('group_feeds_id_seq'::regclass) PRIMARY KEY,
+    "id" integer DEFAULT nextval('feeds_id_seq'::regclass) PRIMARY KEY,
     "name" character varying UNIQUE,
     "title" character varying,
     "script" character varying,
@@ -128,6 +128,7 @@ CREATE TABLE ugroups (
     "gtype" integer references grouptypes("type"),
     "source" character varying DEFAULT 'adhoc'::character varying,  -- "adhoc", "open", "feed"
     "feed" integer references feeds("id") NULL,
+    "period" integer references periods("id"),
     "active" boolean default TRUE
 );
 
@@ -301,7 +302,7 @@ CREATE SEQUENCE userexams_id_seq START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXV
 CREATE TABLE userexams (
     "id" integer DEFAULT nextval('userexams_id_seq'::regclass) NOT NULL,
     "exam" integer REFERENCES exams("exam") NOT NULL,
-    "student" integer REFERENCES user("id"),
+    "student" integer REFERENCES "user"("id"),
     "status" integer,
     "timeremain" integer,
     "submittime" timestamp,
