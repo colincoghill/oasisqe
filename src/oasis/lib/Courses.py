@@ -97,26 +97,6 @@ def set_active(course_id, active):
     MC.delete(key)
 
 
-def set_enrol_type(course_id, enrol_type):
-    """ Set the enrolment type of a course."""
-    assert isinstance(course_id, int)
-    assert isinstance(enrol_type, str) or isinstance(enrol_type, unicode)
-
-    run_sql("UPDATE courses SET enrol_type=%s WHERE course=%s;",
-            (enrol_type, course_id))
-    incr_version()
-
-
-def set_registration(course_id, registration):
-    """ Set the registration type of a course."""
-    assert isinstance(course_id, int)
-    assert isinstance(registration, str) or isinstance(registration, unicode)
-
-    run_sql("UPDATE courses SET registration=%s WHERE course=%s;",
-            (registration, course_id))
-    incr_version()
-
-
 def set_prac_vis(cid, visibility):
     """ Who can do practice questions."""
     assert isinstance(cid, int)
@@ -134,26 +114,6 @@ def set_assess_vis(cid, visibility):
 
     run_sql("UPDATE courses SET assess_visibility=%s WHERE course=%s;",
             (visibility, cid))
-    incr_version()
-
-
-def set_enrol_location(cid, enrol_location):
-    """ Set the enrolment location of a course."""
-    assert isinstance(cid, int)
-    assert isinstance(enrol_location, str) or isinstance(enrol_location, unicode)
-
-    run_sql("UPDATE courses SET enrol_location=%s WHERE course=%s;",
-            (enrol_location, cid))
-    incr_version()
-
-
-def set_enrol_freq(cid, enrol_freq):
-    """ Set the enrolment sync frequency of a course in minutes."""
-    assert isinstance(cid, int)
-    assert isinstance(enrol_freq, int)
-
-    run_sql("UPDATE courses SET enrol_freq=%s WHERE course=%s;",
-            (enrol_freq, cid))
     incr_version()
 
 
@@ -191,7 +151,6 @@ def get_courses_dict():
     """
     ret = run_sql(
         """SELECT course, title, description, owner, active, type,
-                  enrol_type, enrol_location, enrol_freq, registration,
                   practice_visibility, assess_visibility
              FROM courses;""")
     cdict = {}
@@ -204,15 +163,10 @@ def get_courses_dict():
                 'owner': row[3],
                 'active': row[4],
                 'type': row[5],
-                'enrol_type': row[6],
-                'enrol_location': row[7],
-                'enrol_freq': row[8],
-                'registration': row[9],
-                'practice_visibility': row[10],
-                'assess_visibility': row[11]
+                'practice_visibility': row[6],
+                'assess_visibility': row[7]
             }
-            if course['enrol_location'] is None:
-                course['enrol_location'] = ''
+
             if not course['practice_visibility']:
                 course['practice_visibility'] = "all"
             if not course['assess_visibility']:

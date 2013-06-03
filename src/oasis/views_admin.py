@@ -80,6 +80,18 @@ def admin_periods():
     )
 
 
+@app.route("/admin/groups")
+@require_perm('sysadmin')
+def admin_groups():
+    """ Present page to administer time periods in the system """
+    groups = Groups.all()
+
+    return render_template(
+        "admin_periods.html",
+        groups=groups
+    )
+
+
 @app.route("/admin/edit_period/<int:p_id>")
 @require_perm('sysadmin')
 def admin_edit_period(p_id):
@@ -295,27 +307,9 @@ def admin_course(course_id):
     course = Courses2.get_course(course_id)
     course['size'] = len(Courses.get_users(course_id))
 
-    groups = [Groups.get_dict(group_id)
-              for group_id in Courses.get_groups(course_id)]
-
-    for group in groups:
-        if not group['enddate']:
-            group['enddate'] = "-"
-        elif group['enddate'] > datetime(year=9990, month=1, day=1):
-            group['enddate'] = "-"
-
-        if group['startdate']:
-            group['startdate'] = group['startdate'].strftime("%d %b %Y")
-        else:
-            group['startdate'] = "-"
-        group['size'] = len(Groups.get_users(group['id']))
-
-    allgroups = Groups.get_all_dict()
     return render_template(
         "admin_course.html",
         course=course,
-        groups=groups,
-        allgroups=allgroups
     )
 
 

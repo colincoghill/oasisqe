@@ -5,20 +5,9 @@
 SET statement_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
-SET check_function_bodies = false;
-SET client_min_messages = warning;
 
-CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
-COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
-
-SET search_path = public, pg_catalog;
-SET default_tablespace = '';
-SET default_with_oids = false;
-
-
-CREATE SEQUENCE audit_id_seq START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;
 CREATE TABLE audit (
-    "id" integer DEFAULT nextval('audit_id_seq'::regclass) NOT NULL,
+    "id" SERIAL PRIMARY KEY,
     "time" timestamp without time zone,
     "class" integer DEFAULT 1,
     "instigator" integer DEFAULT 0,
@@ -28,9 +17,49 @@ CREATE TABLE audit (
     "longmesg" text
 );
 
-CREATE SEQUENCE courses_course_seq START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;
+CREATE TABLE users (
+    "id" SERIAL PRIMARY KEY,
+    "uname" character varying(12),
+    "passwd" character varying(250),
+    "givenname" character varying(80),
+    "familyname" character varying(80),
+    "student_id" character varying(20),
+    "acctstatus" integer,
+    "email" character varying,
+    "source" character varying,
+    "expiry" timestamp ,
+    "confirmation_code" character varying,
+    "confirmed" character varying
+);
+
+CREATE TABLE qtemplates (
+    "qtemplate" SERIAL PRIMARY KEY,
+    "owner" integer REFERENCES users("id") NOT NULL,
+    "title" character varying(128) NOT NULL,
+    "description" text,
+    "marker" integer,
+    "scoremax" real,
+    "version" integer,
+    "status" integer,
+    "embed_id" character varying(16)
+);
+
+CREATE TABLE questions (
+    "question" SERIAL PRIMARY KEY,
+    "qtemplate" integer REFERENCES qtemplates("qtemplate"),
+    "status" integer,
+    "name" character varying(200),
+    "student" integer REFERENCES users("id"),
+    "score" real DEFAULT 0,
+    "firstview" timestamp,
+    "marktime" timestamp,
+    "variation" integer,
+    "version" integer,
+    "exam" integer
+);
+
 CREATE TABLE courses (
-    "course" integer DEFAULT nextval('courses_course_seq'::regclass) NOT NULL,
+    "course" SERIAL PRIMARY KEY,
     "title" character varying(128) NOT NULL,
     "description" text,
     "owner" integer,
@@ -40,28 +69,32 @@ CREATE TABLE courses (
     "assess_visibility" character varying DEFAULT 'enrol'::character varying
 );
 
-CREATE SEQUENCE courses_version_seq START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;
+CREATE TABLE topics (
+    "topic" SERIAL PRIMARY KEY,
+    "course" integer REFERENCES courses("course") NOT NULL,
+    "title" character varying(128) NOT NULL,
+    "visibility" integer,
+    "position" integer DEFAULT 1,
+    "archived" boolean DEFAULT false
+);
 
-CREATE SEQUENCE examqtemplates_id_seq START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;
 CREATE TABLE examqtemplates (
-    "id" integer DEFAULT nextval('examqtemplates_id_seq'::regclass) NOT NULL,
+    "id" SERIAL NOT NULL,
     "exam" integer NOT NULL,
     "qtemplate" integer NOT NULL,
     "position" integer
 );
 
-CREATE SEQUENCE examquestions_id_seq START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;
 CREATE TABLE examquestions (
-    "id" integer DEFAULT nextval('examquestions_id_seq'::regclass) NOT NULL,
+    "id" SERIAL PRIMARY KEY,
     "exam" integer NOT NULL,
     "student" integer,
     "position" integer,
     "question" integer NOT NULL
 );
 
-CREATE SEQUENCE exams_exam_seq START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;
 CREATE TABLE exams (
-    "exam" integer DEFAULT nextval('exams_exam_seq'::regclass) NOT NULL,
+    "exam" SERIAL PRIMARY KEY,
     "title" character varying(128) NOT NULL,
     "owner" integer,
     "type" integer,
@@ -77,24 +110,15 @@ CREATE TABLE exams (
     "instant" integer
 );
 
-CREATE SEQUENCE examtimers_id_seq START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;
 CREATE TABLE examtimers (
-    "id" integer DEFAULT nextval('examtimers_id_seq'::regclass) NOT NULL,
+    "id" SERIAL PRIMARY KEY,
     "exam" integer NOT NULL,
     "userid" integer NOT NULL,
     "endtime" character varying(64)
 );
 
-CREATE SEQUENCE groupcourses_id_seq START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;
-CREATE TABLE groupcourses (
-    "id" integer DEFAULT nextval('groupcourses_id_seq'::regclass) NOT NULL,
-    "group" integer REFERENCES ugroups("id") NOT NULL,
-    "course" integer REFERENCES courses("course")NOT NULL
-);
-
-CREATE SEQUENCE periods_id_seq START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;
 CREATE TABLE periods (
-    "id" integer DEFAULT nextval('periods_id_seq'::regclass) PRIMARY KEY,
+    "id" SERIAL PRIMARY KEY,
     "name" character varying(50) UNIQUE NOT NULL,
     "title" character varying(250),
     "start" date,
@@ -102,13 +126,14 @@ CREATE TABLE periods (
     "code" character varying(50) unique
 );
 
-INSERT INTO periods ("name", "title", "start", "finish", "code") VALUES ('Indefinite', 'Indefinite', '2000-01-01', '9999-12-31','');
+INSERT INTO periods ("name", "title", "start", "finish", "code")
+             VALUES ('Indefinite', 'Indefinite', '2000-01-01', '9999-12-31','');
 CREATE INDEX ON "periods" USING BTREE("name");
 CREATE INDEX ON "periods" USING BTREE("code");
 
-CREATE SEQUENCE feeds_id_seq START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;
+
 CREATE TABLE feeds (
-    "id" integer DEFAULT nextval('feeds_id_seq'::regclass) PRIMARY KEY,
+    "id" SERIAL PRIMARY KEY,
     "name" character varying UNIQUE,
     "title" character varying,
     "script" character varying,
@@ -120,21 +145,8 @@ CREATE TABLE feeds (
     "active" boolean default False
 );
 
-CREATE SEQUENCE ugroups_id_seq START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;
-CREATE TABLE ugroups (
-    "id" integer DEFAULT nextval('ugroups_id_seq'::regclass) NOT NULL,
-    "name" character varying UNIQUE,
-    "title" character varying,
-    "gtype" integer references grouptypes("type"),
-    "source" character varying DEFAULT 'adhoc'::character varying,  -- "adhoc", "open", "feed"
-    "feed" integer references feeds("id") NULL,
-    "period" integer references periods("id"),
-    "active" boolean default TRUE
-);
-
-CREATE SEQUENCE grouptypes_type_seq START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;
 CREATE TABLE grouptypes (
-    "type" integer DEFAULT nextval('grouptypes_type_seq'::regclass) NOT NULL,
+    "type" SERIAL PRIMARY KEY,
     "title" character varying(128) NOT NULL,
     "description" text
 );
@@ -147,18 +159,19 @@ INSERT INTO grouptypes ("type", "title", "description")
   VALUES ('3', 'statistical', 'Statistical');
 SELECT SETVAL('grouptypes_type_seq', 3);
 
-CREATE SEQUENCE guesses_id_seq START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;
-CREATE TABLE guesses (
-    "id" integer DEFAULT nextval('guesses_id_seq'::regclass) NOT NULL,
-    "question" integer REFERENCES questions("question"),
-    "created" timestamp,
-    "part" integer,
-    "guess" text
+CREATE TABLE ugroups (
+    "id" SERIAL PRIMARY KEY,
+    "name" character varying UNIQUE,
+    "title" character varying,
+    "gtype" integer references grouptypes("type"),
+    "source" character varying DEFAULT 'adhoc'::character varying,
+    "feed" integer references feeds("id") NULL,
+    "period" integer references periods("id"),
+    "active" boolean default TRUE
 );
 
-CREATE SEQUENCE marklog_id_seq START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;
 CREATE TABLE marklog (
-    "id" integer DEFAULT nextval('marklog_id_seq'::regclass) NOT NULL,
+    "id" SERIAL PRIMARY KEY,
     "eventtime" timestamp without time zone,
     "exam" integer REFERENCES exams("exam"),
     "student" integer REFERENCES users("id"),
@@ -167,9 +180,14 @@ CREATE TABLE marklog (
     "value" character varying(64)
 );
 
-CREATE SEQUENCE marks_id_seq START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;
+CREATE TABLE groupcourses (
+    "id" SERIAL PRIMARY KEY,
+    "group" integer REFERENCES ugroups("id") NOT NULL,
+    "course" integer REFERENCES courses("course")NOT NULL
+);
+
 CREATE TABLE marks (
-    "id" integer DEFAULT nextval('marks_id_seq'::regclass) NOT NULL,
+    "id" SERIAL PRIMARY KEY,
     "eventtime" timestamp,
     "marking" integer DEFAULT 0,
     "exam" integer REFERENCES exams("exam"),
@@ -187,7 +205,7 @@ CREATE TABLE marks (
 );
 
 CREATE TABLE messages (
-    "name" character varying(200),
+    "name" character varying(200) UNIQUE PRIMARY KEY,
     "object" integer DEFAULT 0,
     "type" integer DEFAULT 0,
     "updated" timestamp without time zone,
@@ -195,25 +213,22 @@ CREATE TABLE messages (
     "message" text
 );
 
-CREATE SEQUENCE permissiondesc_permission_seq START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;
 CREATE TABLE permissiondesc (
-    "permission" integer DEFAULT nextval('permissiondesc_permission_seq'::regclass) NOT NULL,
+    "permission" SERIAL PRIMARY KEY,
     "name" character varying(80) NOT NULL,
     "description" character varying(255),
     "sharable" boolean DEFAULT true NOT NULL
 );
 
-CREATE SEQUENCE permissions_id_seq START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;
 CREATE TABLE permissions (
-    "id" integer DEFAULT nextval('permissions_id_seq'::regclass) NOT NULL,
+    "id" SERIAL PRIMARY KEY,
     "course" integer NOT NULL,
     "userid" integer references users("id"),
     "permission" integer REFERENCES permissiondesc("permission")
 );
 
-CREATE SEQUENCE qattach_qattach_seq START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;
 CREATE TABLE qattach (
-    "qattach" integer DEFAULT nextval('qattach_qattach_seq'::regclass) NOT NULL,
+    "qattach" SERIAL PRIMARY KEY,
     "qtemplate" integer REFERENCES qtemplates("qtemplate"),
     "variation" integer,
     "version" integer,
@@ -222,9 +237,8 @@ CREATE TABLE qattach (
     "data" bytea
 );
 
-CREATE SEQUENCE qtattach_qtattach_seq START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;
 CREATE TABLE qtattach (
-    "qtattach" integer DEFAULT nextval('qtattach_qtattach_seq'::regclass) NOT NULL,
+    "qtattach" SERIAL PRIMARY KEY,
     "qtemplate" integer REFERENCES qtemplates("qtemplate"),
     "mimetype" character varying(250),
     "data" bytea,
@@ -232,46 +246,24 @@ CREATE TABLE qtattach (
     "name" character varying(64)
 );
 
-CREATE SEQUENCE qtemplates_qtemplate_seq START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;
-CREATE TABLE qtemplates (
-    "qtemplate" integer DEFAULT nextval('qtemplates_qtemplate_seq'::regclass) NOT NULL,
-    "owner" integer REFERENCES users("id") NOT NULL,
-    "title" character varying(128) NOT NULL,
-    "description" text,
-    "marker" integer,
-    "scoremax" real,
-    "version" integer,
-    "status" integer,
-    "embed_id" character varying(16)
-);
-
-CREATE SEQUENCE qtvariations_id_seq START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;
 CREATE TABLE qtvariations (
-    "id" integer DEFAULT nextval('qtvariations_id_seq'::regclass) NOT NULL,
+    "id" SERIAL PRIMARY KEY,
     "qtemplate" integer NOT NULL,
     "variation" integer NOT NULL,
     "version" integer,
     "data" bytea
 );
 
-CREATE SEQUENCE questions_question_seq START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;
-CREATE TABLE questions (
-    "question" integer DEFAULT nextval('questions_question_seq'::regclass) NOT NULL,
-    "qtemplate" integer REFERENCES qtemplates("qtemplate"),
-    "status" integer,
-    "name" character varying(200),
-    "student" integer REFERENCES users("id"),
-    "score" real DEFAULT 0,
-    "firstview" timestamp,
-    "marktime" timestamp,
-    "variation" integer,
-    "version" integer,
-    "exam" integer
+CREATE TABLE guesses (
+    "id" SERIAL PRIMARY KEY,
+    "question" integer REFERENCES questions("question"),
+    "created" timestamp,
+    "part" integer,
+    "guess" text
 );
 
-CREATE SEQUENCE questiontopics_id_seq START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;
 CREATE TABLE questiontopics (
-    "id" integer DEFAULT nextval('questiontopics_id_seq'::regclass) NOT NULL,
+    "id" SERIAL PRIMARY KEY,
     "qtemplate" integer REFERENCES qtemplates("qtemplate") NOT NULL,
     "topic" integer REFERENCES topics("topic") NOT NULL,
     "position" integer
@@ -288,21 +280,10 @@ CREATE TABLE stats_prac_q_course (
     "avgscore" float NULL
 );
 
-CREATE SEQUENCE topics_topic_seq START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;
-CREATE TABLE topics (
-    "topic" integer DEFAULT nextval('topics_topic_seq'::regclass) NOT NULL,
-    "course" integer REFERENCES courses("course") NOT NULL,
-    "title" character varying(128) NOT NULL,
-    "visibility" integer,
-    "position" integer DEFAULT 1,
-    "archived" boolean DEFAULT false
-);
-
-CREATE SEQUENCE userexams_id_seq START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;
 CREATE TABLE userexams (
-    "id" integer DEFAULT nextval('userexams_id_seq'::regclass) NOT NULL,
+    "id" SERIAL PRIMARY KEY,
     "exam" integer REFERENCES exams("exam") NOT NULL,
-    "student" integer REFERENCES "user"("id"),
+    "student" integer REFERENCES "users"("id"),
     "status" integer,
     "timeremain" integer,
     "submittime" timestamp,
@@ -310,73 +291,30 @@ CREATE TABLE userexams (
     "lastchange" timestamp
 );
 
-CREATE SEQUENCE usergroups_id_seq START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;
 CREATE TABLE usergroups (
-    "id" integer DEFAULT nextval('usergroups_id_seq'::regclass) NOT NULL,
+    "id" SERIAL PRIMARY KEY,
     "userid" integer REFERENCES users("id") NOT NULL,
     "groupid" integer REFERENCES ugroups("id") NOT NULL
 );
 
-CREATE SEQUENCE users_id_seq START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;
-CREATE TABLE users (
-    "id" integer DEFAULT nextval('users_id_seq'::regclass) NOT NULL,
-    "uname" character varying(12),
-    "passwd" character varying(250),
-    "givenname" character varying(80),
-    "familyname" character varying(80),
-    "student_id" character varying(20),
-    "acctstatus" integer,
-    "email" character varying,
-    "source" character varying,
-    "expiry" timestamp ,
-    "confirmation_code" character varying,
-    "confirmed" character varying
-);
 
 CREATE TABLE config (
-    "name" character varying(50) unique,
+    "name" character varying(50) unique primary key,
     "value" text
 );
 INSERT INTO config ("name", "value") VALUES ('dbversion', '3.9.2');
 
-
 CREATE SEQUENCE users_version_seq START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;
-
-ALTER TABLE ONLY courses ADD CONSTRAINT courses_pkey PRIMARY KEY (course);
-ALTER TABLE ONLY examqtemplates ADD CONSTRAINT examqtemplates_pkey PRIMARY KEY (id);
-ALTER TABLE ONLY examquestions ADD CONSTRAINT examquestions_pkey PRIMARY KEY (id);
-ALTER TABLE ONLY exams ADD CONSTRAINT exams_pkey PRIMARY KEY (exam);
-ALTER TABLE ONLY examtimers ADD CONSTRAINT examtimers_pkey PRIMARY KEY (id);
-ALTER TABLE ONLY groupcourses ADD CONSTRAINT groupcourses_pkey PRIMARY KEY (id);
-ALTER TABLE ONLY ugroups ADD CONSTRAINT groups_pkey PRIMARY KEY (id);
-ALTER TABLE ONLY grouptypes ADD CONSTRAINT grouptypes_pkey PRIMARY KEY ("type");
-ALTER TABLE ONLY guesses ADD CONSTRAINT guesses_pkey PRIMARY KEY (id);
-ALTER TABLE ONLY marklog ADD CONSTRAINT marklog_pkey PRIMARY KEY (id);
-ALTER TABLE ONLY marks ADD CONSTRAINT marks_pkey PRIMARY KEY (id);
-ALTER TABLE ONLY permissions ADD CONSTRAINT permissions_pkey PRIMARY KEY (id);
-ALTER TABLE ONLY qattach ADD CONSTRAINT qattach_pkey PRIMARY KEY (qattach);
-ALTER TABLE ONLY qtattach ADD CONSTRAINT qtattach_pkey PRIMARY KEY (qtattach);
-ALTER TABLE ONLY qtemplates ADD CONSTRAINT qtemplates_embed_id_key UNIQUE (embed_id);
-ALTER TABLE ONLY qtemplates ADD CONSTRAINT qtemplates_pkey PRIMARY KEY (qtemplate);
-ALTER TABLE ONLY qtvariations ADD CONSTRAINT qtvariations_pkey PRIMARY KEY (id);
-ALTER TABLE ONLY questions ADD CONSTRAINT questions_pkey PRIMARY KEY (question);
-ALTER TABLE ONLY questiontopics ADD CONSTRAINT questiontopics_pkey PRIMARY KEY (id);
-ALTER TABLE ONLY topics ADD CONSTRAINT topics_pkey PRIMARY KEY (topic);
-ALTER TABLE ONLY userexams ADD CONSTRAINT userexams_pkey PRIMARY KEY (id);
-ALTER TABLE ONLY usergroups ADD CONSTRAINT usergroups_pkey PRIMARY KEY (id);
-ALTER TABLE ONLY users ADD CONSTRAINT users_pkey PRIMARY KEY (id);
-
+CREATE SEQUENCE courses_version_seq START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;
 
 CREATE INDEX guesses_questioncreated ON guesses USING btree (question, created);
 CREATE INDEX qattach_qtemplate_variation_version ON qattach USING btree (qtemplate, variation, version);
 CREATE INDEX qtattach_qtemplate_version ON qtattach USING btree (qtemplate, version);
 CREATE UNIQUE INDEX qtemplate_embed_idx ON qtemplates USING btree (embed_id);
-CREATE INDEX qtemplates_qtemplate ON qtemplates USING btree (qtemplate);
 CREATE INDEX qtvariations_qtemplate_variation ON qtvariations USING btree (qtemplate, variation);
 CREATE INDEX qtvariations_qtemplate_version ON qtvariations USING btree (qtemplate, version);
 CREATE INDEX question_qtemplate ON questions USING btree (qtemplate);
 CREATE INDEX question_student ON questions USING btree (student);
-CREATE INDEX questions_question ON questions USING btree (question);
 CREATE INDEX stats_prac_q_course_qtemplate_idx ON stats_prac_q_course USING btree (qtemplate);
 CREATE INDEX stats_prac_q_course_when_idx ON stats_prac_q_course USING btree ("when");
 CREATE INDEX topics_course ON topics USING btree (course);

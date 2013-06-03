@@ -1,0 +1,125 @@
+{% extends "page_nav.html" %}
+{% block body %}
+  <div>
+    <br/>
+
+    <p>Return to <a href="{{ cf.url }}admin/enrol/top">Enrolment
+      Configuration</a></p>
+
+    <H2>Groups</H2>
+
+
+    <p>Groups are a collection of people. For example students in a course, or
+      staff, or can be used to group people for statistical analysis. They have
+      a defined time period.
+      <br>
+    </p>
+    <div class='container-fluid well'>
+
+
+      <h4>Active Groups</h4>
+      <table class='table table-condensed datatable'>
+        <thead>
+        <tr>
+          <th>Name</th>
+          <th>Title</th>
+          <th>Type</th>
+          <th>Period</th>
+          <th>Source</th>
+          <th>Size</th>
+          <th></th>
+
+        </tr>
+        </thead>
+        <tbody>
+        {% for feed in feeds if feed.active %}
+          <tr>
+            <td>{{ group.name }}</td>
+            <th>{{ group.title }}</th>
+            <td>{{ group.gtype }}</td>
+            <td>{{ group.period }}</td>
+            <td>{{ group.source }}</td>
+            <td>{{ group.size }}</td>
+
+            <td><a class='btn btn-mini'
+                   href='{{ cf.url }}admin/edit_group/{{ group.id }}'>Edit</a>
+            </td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      <br/> <br/>
+      <a class='btn btn-small' href='{{ cf.url }}admin/add_group'>Add
+        Group</a>
+      <br/> <br/>
+      <br/><br/>
+      <a href='#' id='showoldfeed'><i
+          class='icon icon-chevron-right oldfeed'> </i><i
+          style='display:none;'
+          class='icon icon-chevron-down oldfeed'> </i>
+        Inactive Feeds</a>
+
+      <div class='hidden oldfeed' id="oldfeed">
+        <table class='table table-condensed datatable'>
+          <thead>
+          <tr>
+            <th>Name</th>
+            <th>Title</th>
+            <th>Script</th>
+            <th>Updates</th>
+            <th>Status</th>
+            <th></th>
+
+          </tr>
+          </thead>
+          <tbody>
+          {% for feed in feeds if not feed.active %}
+            <tr>
+              <td>{{ feed.name }}</td>
+              <th>{{ feed.title }}</th>
+              <td>{{ feed.script }}</td>
+              <td>{{ feed.freq_name() }}</td>
+              <td>{{ feed.status }}</td>
+
+              <td><a class='btn btn-mini'
+                     href='{{ cf.url }}admin/edit_feed/{{ feed.id }}'>Edit</a>
+              </td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+
+  <p>Return to <a href="{{ cf.url }}admin/enrol/top">Enrolment
+    Configuration</a></p>
+
+  <br/>
+  <br/>
+  <br/>
+  <br/>
+
+{% endblock body %}
+{% block js %}
+  <script>
+
+    $(function () {
+      $(".datatable").dataTable({
+            "bPaginate": false,
+            "bLengthChange": false,
+            "bFilter": false
+          }
+      );
+
+      $('#showoldfeed').click(function () {
+            $('.oldfeed').toggle();
+          }
+      );
+    });
+
+
+  </script>
+{% endblock js %}
+{% block pagetitle %}Server Admin{% endblock %}

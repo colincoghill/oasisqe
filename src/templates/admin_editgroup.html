@@ -1,0 +1,131 @@
+{% extends "page_nav.html" %}
+{% block body %}
+  <br/>
+  <p>Return to <a href="{{ cf.url }}admin/groups">Groups</a></p>
+ <div class="row">
+    <div class="span3">
+      <h4>Group Type
+        <br>
+      </h4>
+      <p>The type of a group sets the kind of activity the group is created for:
+        <br>
+      </p>
+      <dl>
+        <dt>Staff
+          <br>
+        </dt>
+        <dd>A collection of staff or assistants who can be assigned activities like
+          course co-ordination or question creation.
+          <br>
+        </dd>
+        <dt>Enrolment
+          <br>
+        </dt>
+        <dd>A collection of students - can be assigned access to course assessments
+          and practice.
+          <br>
+        </dd>
+        <dt>Statistical
+          <br>
+        </dt>
+        <dd>Grouping is used for statistical analysis and reporting. Members cannot
+          see if they are in these groups.
+          <br>
+        </dd>
+      </dl>
+      <h4>Source</h4>
+      <p>Where does the information on group membership come from?
+        <br>
+      </p>
+      <dl>
+        <dt>Ad-Hoc
+          <br>
+        </dt>
+        <dd>Maintained manually - members can be added or removed by staff.
+          <br>
+        </dd>
+        <dt>External Feed
+          <br>
+        </dt>
+        <dd>Membership information comes from an external source, eg. an LDAP server.
+          <br>
+        </dd>
+        <dt>Open Registration
+          <br>
+        </dt>
+        <dd>Users can enrol themselves into the group.
+          <br>
+        </dd>
+      </dl>
+    </div>
+    <div class="span9">
+      <h1>Edit Group
+        <br>
+      </h1>
+      <div class="well">
+        <form>
+          <label>Group Name:</label>
+          <input placeholder="Group name" class="input-medium"
+          type="text">
+          <label>Title:</label>
+          <input class="input-xxlarge" type="text">
+          <hr>
+          <label>Group Type:</label>
+          <select>
+            <option>Staff</option>
+            <option>Enrolment</option>
+            <option>Statistical</option>
+          </select>
+          <hr>
+          <label>Group is Active:</label>
+          <select>
+            <option>Semester 1, 2013</option>
+            <option>Semester 2, 2013</option>
+            <option>Semester 3, 2013</option>
+            <option>Indefinite</option>
+          </select>
+          <label>Source:</label>
+          <p></p>
+          <select>
+            <option>External Feed</option>
+            <option>Ad-Hoc</option>
+            <option>Open Registration</option>
+          </select>
+          <select>
+            <option>File on Server</option>
+            <option>URL</option>
+            <option>LDAP Group</option>
+          </select>
+          <input placeholder="name" class="input-xlarge" type="text">
+          <a class="btn">Test</a>
+        </form>
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">Submit</button>
+          <input class="btn" value="Reset" type="reset">
+        </div>
+      </div>
+      <ul></ul>
+      <ul></ul>
+      <p></p>
+    </div>
+  </div>
+
+  <p>Return to <a href="{{ cf.url }}admin/groups">Groups</a></p>
+
+  <br/>
+  <br/>
+  <br/>
+
+{% endblock body %}
+{% block js %}
+  <script>
+    $(function () {
+      $('#cancel').click(function () {
+        $('#form').parsley('destroy');
+        $('#form').submit();
+      });
+    });
+
+  </script>
+{% endblock js %}
+{% block pagetitle %}Server Admin{% endblock %}
