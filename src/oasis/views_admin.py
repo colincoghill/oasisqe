@@ -17,7 +17,7 @@ from flask import render_template, session, \
 from .lib import Courses, Courses2, Setup, Periods, Feeds
 
 MYPATH = os.path.dirname(__file__)
-from .lib import DB, Groups
+from .lib import DB, Groups, Periods
 from oasis import app, require_perm
 from logging import log, INFO
 
@@ -97,12 +97,12 @@ def admin_groups():
 def admin_add_group():
     """ Present page to add a group to the system """
     feeds = Feeds.all_list()
+    periods = Periods.all_list()
     return render_template(
         "admin_editgroup.html",
-        feeds=feeds
+        feeds=feeds,
+        periods=periods
     )
-
-
 
 
 @app.route("/admin/edit_period/<int:p_id>")

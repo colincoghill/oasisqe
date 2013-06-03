@@ -78,11 +78,10 @@
           </select>
           <hr>
           <label>Group is Active:</label>
-          <select>
-            <option>Semester 1, 2013</option>
-            <option>Semester 2, 2013</option>
-            <option>Semester 3, 2013</option>
-            <option>Indefinite</option>
+          <select name='period'>
+            {% for period in periods %}
+            <option value='{{ period.id }}'>{{ period.name }}</option>
+            {% endfor %}
           </select>
           <label>Source:</label>
           <p></p>
@@ -91,10 +90,10 @@
             <option>Ad-Hoc</option>
             <option>Open Registration</option>
           </select>
-          <select>
-            <option>File on Server</option>
-            <option>URL</option>
-            <option>LDAP Group</option>
+          <select name='feed'>
+            {% for feed in feeds %}
+            <option value='{{ feed.id }}'>{{ feed.name }}</option>
+            {% endfor %}
           </select>
           <input placeholder="name" class="input-xlarge" type="text">
           <a class="btn">Test</a>
