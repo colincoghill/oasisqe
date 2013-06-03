@@ -87,9 +87,22 @@ def admin_groups():
     groups = Groups.all_groups()
 
     return render_template(
-        "admin_periods.html",
+        "admin_groups.html",
         groups=groups
     )
+
+
+@app.route("/admin/add_group")
+@require_perm('sysadmin')
+def admin_add_group():
+    """ Present page to add a group to the system """
+    feeds = Feeds.all_list()
+    return render_template(
+        "admin_editgroup.html",
+        feeds=feeds
+    )
+
+
 
 
 @app.route("/admin/edit_period/<int:p_id>")
