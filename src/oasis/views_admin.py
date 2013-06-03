@@ -84,7 +84,7 @@ def admin_periods():
 @require_perm('sysadmin')
 def admin_groups():
     """ Present page to administer time periods in the system """
-    groups = Groups.all()
+    groups = Groups.all_groups()
 
     return render_template(
         "admin_periods.html",
@@ -363,32 +363,6 @@ def admin_course_save(course_id):
         if not (active == course['active']):
             changed = True
             Courses.set_active(course_id, active)
-
-    if 'enrol_type' in form:
-        enrol_type = form['enrol_type']
-        if not (enrol_type == course['enrol_type']):
-            changed = True
-            Courses.set_enrol_type(course_id, enrol_type)
-
-    if 'registration' in form:
-        registration = form['registration']
-        if not (registration == course['registration']):
-            changed = True
-            Courses.set_registration(course_id, registration)
-
-    if 'enrol_location' in form:
-        enrol_location = form['enrol_location']
-        if not (enrol_location == course['enrol_location']):
-            changed = True
-            Courses.set_enrol_location(course_id, enrol_location)
-
-    if 'enrol_freq' in form:
-        enrol_freq = form['enrol_freq']
-        if not (enrol_freq == course['enrol_freq']):
-            changed = True
-            # form says hours, we want minutes.
-            enrol_freq = int(float(enrol_freq) * 60)
-            Courses.set_enrol_freq(course_id, enrol_freq)
 
     if changed:
         Courses2.reload_if_needed()

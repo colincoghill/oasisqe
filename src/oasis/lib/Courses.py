@@ -117,12 +117,11 @@ def set_assess_vis(cid, visibility):
     incr_version()
 
 
-def get_users(course):
+def get_users(course_id):
     """ Return a list of users in the course"""
-    groups = get_groups(course)
     allusers = []
-    for group in groups:
-        allusers += Groups.get_users(group)
+    for group in Groups.get_active_by_course(course_id):
+        allusers.append(group.members())
     return allusers
 
 

@@ -12,9 +12,9 @@
 # things that front the database are objects, will then investigate an ORM
 # like SQL Alchemy. Too big a jump to do it all in one go.
 
-import datetime
-from oasis.lib.DB import run_sql, dbpool
-from logging import log, WARN, INFO
+
+from oasis.lib.DB import run_sql
+# from logging import log, WARN, INFO
 
 
 class Group(object):
@@ -133,7 +133,27 @@ def get_by_period(period_id):
     return groups
 
 
-def all():
+def get_active_by_course(course_id):
+    """ Return a summary of all active or future groups with the given feed
+    """
+    ret = run_sql(
+        """SELECT "ugroups"."id"
+           FROM "ugroups", "groupcourses"
+           WHERE "ugroups"."active" = TRUE
+           AND "groupcourses"."group" = "ugroups"."id"
+           AND "groupcourses"."course" = %s;""",
+        (course_id,))
+    groups = []
+    if ret:
+        for row in ret:
+            groups.append(Group(id=row[0]))
+
+    return groups
+
+
+
+
+def all_groups():
     """ Return a summary of all groups
     """
     ret = run_sql(
