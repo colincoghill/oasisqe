@@ -7,7 +7,7 @@ sys.path.append("/opt/oasisqe/3.9/src")
 from oasis.lib import Stats, Feeds
 
 print "Running daily stats update."
-Stats.dailyStatsUpdate()
+Stats.do_daily_stats_update()
 
 print "Running daily feeds"
 feeds = Feeds.active_daily()

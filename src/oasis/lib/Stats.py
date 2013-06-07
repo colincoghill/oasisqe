@@ -13,7 +13,7 @@ from datetime import datetime, timedelta
 import DB
 
 
-def fetchPracQCourseRow(year, month, day, hour, qtemplate):
+def prac_q_count(year, month, day, hour, qtemplate):
     """ Fetch the practice count for the given time/qtemplate or return
         False if not found. Can be used when deciding if to INSERT or UPDATE.
         Note: may return 0 if count is zero, is not same as not exist (False)
@@ -32,7 +32,7 @@ def fetchPracQCourseRow(year, month, day, hour, qtemplate):
     return int(res[0][0])
 
 
-def insertPracQCourse(year, month, day, hour, qtemplate, count, avgscore):
+def add_prac_q_count(year, month, day, hour, qtemplate, count, avgscore):
     """ Insert a practice count for the given time/qtemplate """
     sql = """INSERT INTO stats_prac_q_course ("qtemplate", "hour", "day",
                                               "month", "year", "number",
@@ -44,7 +44,7 @@ def insertPracQCourse(year, month, day, hour, qtemplate, count, avgscore):
     DB.run_sql(sql, params)
 
 
-def updatePracQCourse(year, month, day, hour, qtemplate, count, avgscore):
+def upe_prac_q_count(year, month, day, hour, qtemplate, count, avgscore):
     """ Insert a practice count for the given time/qtemplate """
     sql = """UPDATE stats_prac_q_course SET "count"=%s, "avgscore"=%s
                  WHERE hour=%s
@@ -56,7 +56,7 @@ def updatePracQCourse(year, month, day, hour, qtemplate, count, avgscore):
     DB.run_sql(sql, params)
 
 
-def populateStatsPracQCourse(start=None, end=None):
+def populate_prac_q_count(start=None, end=None):
     """  Go through the questions from start to end date and count the number of
          questions practiced. Store the results in stats_prac_q_course
          If start not given, go back to the start of the database. If end not
@@ -99,14 +99,14 @@ def populateStatsPracQCourse(start=None, end=None):
             'qtemplate': int(row[5]),
             'avgscore': float(row[6])
         }
-        exist_count = fetchPracQCourseRow(data['year'], data['month'], data['day'], data['hour'], data['qtemplate'])
+        exist_count = prac_q_count(data['year'], data['month'], data['day'], data['hour'], data['qtemplate'])
         if exist_count is False:  # could be 0
-            insertPracQCourse(data['year'], data['month'], data['day'], data['hour'], data['qtemplate'], data['count'], data['avgscore'])
+            add_prac_q_count(data['year'], data['month'], data['day'], data['hour'], data['qtemplate'], data['count'], data['avgscore'])
         else:
-            updatePracQCourse(data['year'], data['month'], data['day'], data['hour'], data['qtemplate'], data['count'], data['avgscore'])
+            upe_prac_q_count(data['year'], data['month'], data['day'], data['hour'], data['qtemplate'], data['count'], data['avgscore'])
 
 
-def getQDailyPracticeCount(start_time, end_time, qt_id):
+def daily_prac_q_count(start_time, end_time, qt_id):
     """ Return a list of daily count of practices for the given qtemplate
         over the time period
     """
@@ -140,7 +140,7 @@ def getQDailyPracticeCount(start_time, end_time, qt_id):
     return data
 
 
-def getQDailyPracticeScores(start_time, end_time, qt_id):
+def daily_prac_q_scores(start_time, end_time, qt_id):
     """ Return a list of daily count of practices for the given qtemplate over
        the time period
     """
@@ -175,7 +175,7 @@ def getQDailyPracticeScores(start_time, end_time, qt_id):
     return data
 
 
-def get_daily_practice_load(start_time, end_time):
+def daily_prac_load(start_time, end_time):
     """ Return a list of daily counts of practices for the whole system """
     sql = """SELECT "year", "month", "day", sum("number") from "stats_prac_q_course"
              WHERE "when" >= %s
@@ -205,7 +205,7 @@ def get_daily_practice_load(start_time, end_time):
     return data
 
 
-def dailyStatsUpdate():
+def do_daily_stats_update():
     """ To be run daily. Will update stats for the last few days to now.
         Do the last two weeks, should cover most temporary outages
     """
@@ -213,6 +213,6 @@ def dailyStatsUpdate():
     now = datetime.now()
     twoweek = timedelta(days=14)
     st = now-twoweek
-    populateStatsPracQCourse(start=st)
+    populate_prac_q_count(start=st)
 
 

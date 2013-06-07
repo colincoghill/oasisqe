@@ -196,7 +196,7 @@ def create(name, description, owner, coursetype):
 
 def get_groups(course):
     """ Return a list of groups currently attached to this course."""
-    # TODO: need to figure out how to incorporate semester codes/timing.
+    #TODO: Update for new group system
     sql = "SELECT groupid FROM groupcourses WHERE active='1' AND course = %s;"
     params = (course, )
     ret = run_sql(sql, params)
@@ -214,8 +214,6 @@ def add_group(group_id, course_id):
     run_sql(sql, params)
 
 
-# TODO most of this should be in Topics. Especially the SQL parts, so it's
-#  easier to cache without getting confused.
 def get_topics_all(course, archived=2, numq=True):
     """ Return a summary of all topics in the course.
         if archived=0, only return non archived courses
