@@ -24,7 +24,7 @@ def embed_question(embed_id):
 
     valid = " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!.,?$@&"
     if 'user_id' not in session:
-        user_id = Users2.get_uid_by_uname("guest")
+        user_id = Users2.uid_by_uname("guest")
     else:
         user_id = session['user_id']
 
@@ -62,7 +62,7 @@ def embed_mark_question(embed_id):
         This should be suitable for including in an IFRAME or similar
     """
     if 'user_id' not in session:
-        user_id = Users2.get_uid_by_uname("guest")
+        user_id = Users2.uid_by_uname("guest")
     else:
         user_id = session['user_id']
 

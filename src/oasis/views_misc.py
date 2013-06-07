@@ -30,14 +30,14 @@ from oasis import app, authenticated
 @app.route("/att/qatt/<int:qt_id>/<int:version>/<int:variation>/<fname>")
 def attachment_question(qt_id, version, variation, fname):
     """ Serve the given question attachment """
-    qt = DB.get_qtemplate(qt_id)
-    if len(qt['embed_id']) < 1:  # if it's not embedded, check auth
+    qtemplate = DB.get_qtemplate(qt_id)
+    if len(qtemplate['embed_id']) < 1:  # if it's not embedded, check auth
         if 'user_id' not in session:
             session['redirect'] = request.path
             return redirect(url_for('index'))
     if Attach.is_restricted(fname):
         abort(403)
-    (mtype, fname) = Attach.get_q_att_details(qt_id, version, variation, fname)
+    (mtype, fname) = Attach.q_att_details(qt_id, version, variation, fname)
     if not mtype:
         abort(404)
 
@@ -48,12 +48,12 @@ def attachment_question(qt_id, version, variation, fname):
 # Does its own auth because it may be used in embedded questions
 def attachment_qtemplate(qt_id, version, variation, fname):
     """ Serve the given question attachment """
-    qt = DB.get_qtemplate(qt_id)
-    if len(qt['embed_id']) < 1:  # if it's not embedded, check auth
+    qtemplate = DB.get_qtemplate(qt_id)
+    if len(qtemplate['embed_id']) < 1:  # if it's not embedded, check auth
         if 'user_id' not in session:
             session['redirect'] = request.path
             return redirect(url_for('index'))
-    (mtype, filename) = Attach.get_q_att_details(qt_id, version, variation, fname)
+    (mtype, filename) = Attach.q_att_details(qt_id, version, variation, fname)
     if Attach.is_restricted(fname):
         abort(403)
     if not mtype:
@@ -233,22 +233,33 @@ def qedit_raw_save(topic_id, qt_id):
             and form['newattachmentname'] == "qtemplate.html"):
         if 'newhtml' in form:
             html = form['newhtml'].encode("utf8")
-            DB.create_qt_att(qt_id, "qtemplate.html", "text/plain", html, version)
+            DB.create_qt_att(qt_id,
+                             "qtemplate.html",
+                             "text/plain",
+                             html,
+                             version)
 
     # They uploaded a new qtemplate.html
     if 'newindex' in request.files:
         data = request.files['newindex'].stream.getvalue()
         if len(data) > 1:
             html = data
-            DB.create_qt_att(qt_id, "qtemplate.html", "text/plain", html, version)
+            DB.create_qt_att(qt_id,
+                             "qtemplate.html",
+                             "text/plain",
+                             html,
+                             version)
 
     # They uploaded a new datfile
     if 'newdatfile' in request.files:
         data = request.files['newdatfile'].stream.getvalue()
         if len(data) > 1:
-            df = data
-            DB.create_qt_att(qt_id, "datfile.txt", "text/plain", df, version)
-            qvars = QEditor.parseDatfile(df)
+            DB.create_qt_att(qt_id,
+                             "datfile.txt",
+                             "text/plain",
+                             data,
+                             version)
+            qvars = QEditor.parseDatfile(data)
             for row in range(0, len(qvars)):
                 DB.add_qt_variation(qt_id, row + 1, qvars[row], version)
 
@@ -279,13 +290,13 @@ def qedit_raw_save(topic_id, qt_id):
         if len(form['newattachmentname']) > 1:
             newname = form['newattachmentname']
     if 'newattachment' in request.files:
-        f = request.files['newattachment']
+        fptr = request.files['newattachment']
         if not newname:  # If they haven't supplied a filename we use
                          # the name of the file they uploaded.
             # TODO: Security check? We don't create disk files with this name
-            newname = f.filename
-        data = f.read()
-        mtype = f.content_type
+            newname = fptr.filename
+        data = fptr.read()
+        mtype = fptr.content_type
         DB.create_qt_att(qt_id, newname, mtype, data, version)
         log(INFO, "File '%s' uploaded by %s" % (newname, session['username']))
 

@@ -32,26 +32,28 @@ app.config['MAX_CONTENT_LENGTH'] = 8 * 1024 * 1024  # 8MB max file size upload
 
 # Email error messages to admins ?
 if OaConfig.email_admins:
-    mail_handler = SMTPHandler(OaConfig.smtp_server,
-                               OaConfig.email,
-                               OaConfig.email_admins,
-                               'OASIS Internal Server Error')
-    mail_handler.setLevel(logging.ERROR)
-    app.logger.addHandler(mail_handler)
+    MH = SMTPHandler(OaConfig.smtp_server,
+                     OaConfig.email,
+                     OaConfig.email_admins,
+                     'OASIS Internal Server Error')
+    MH.setLevel(logging.ERROR)
+    app.logger.addHandler(MH)
 
 app.debug = False
 
 if not app.debug:  # Log info or higher
     try:
-        fh = RotatingFileHandler(filename=OaConfig.logfile)
-        fh.setLevel(logging.INFO)
-        fh.setFormatter(logging.Formatter(
+        FH = RotatingFileHandler(filename=OaConfig.logfile)
+        FH.setLevel(logging.INFO)
+        FH.setFormatter(logging.Formatter(
             "%(asctime)s %(levelname)s: %(message)s | %(pathname)s:%(lineno)d"
         ))
-        app.logger.addHandler(fh)
-        logging.log(logging.INFO, "File logger starting up" )
+        app.logger.addHandler(FH)
+        logging.log(logging.INFO,
+                    "File logger starting up")
     except IOError, err:  # Probably a permission denied or folder not exist
-        logging.log(logging.ERROR, "Unable to open log file: %s" % err)
+        logging.log(logging.ERROR,
+                    "Unable to open log file: %s" % err)
 
 
 @app.context_processor
@@ -120,6 +122,8 @@ def require_perm(perms, redir="setup_top"):
     """
 
     def decorator(func):
+        """ Handle decorator
+        """
         @wraps(func)
         def call_fn(*args, **kwargs):
             """ check auth first, can't have perms if we're not.
@@ -164,6 +168,8 @@ def require_course_perm(perms, redir=None):
     """
 
     def decorator(func):
+        """ Handle decorator
+        """
         @wraps(func)
         def call_fn(*args, **kwargs):
             """ check auth first, can't have perms if we're not.
@@ -192,8 +198,6 @@ def require_course_perm(perms, redir=None):
         return call_fn
 
     return decorator
-
-
 
 
 @app.route("/")
@@ -279,7 +283,7 @@ def login_forgot_pass():
     return render_template("login_forgot_pass.html")
 
 
-@app.route("/login/forgot_pass/submit", methods=["POST",])
+@app.route("/login/forgot_pass/submit", methods=["POST", ])
 def login_forgot_pass_submit():
     """ Forgot their password. Grab their username and send them a reset email.
     """
@@ -288,18 +292,18 @@ def login_forgot_pass_submit():
         flash("Password reset cancelled.")
         return redirect(url_for("login_local"))
 
-    if not 'username' in request.form:
-        flash("Unknown username ")
-        return redirect(url_for("login_forgot_pass"))
-
-    username = request.form['username']
+    username = request.form.get('username', None)
 
     if username == "admin":
         flash("""The admin account cannot do an email password reset,
                  please see the Installation instructions.""")
         return redirect(url_for("login_forgot_pass"))
 
-    user_id = Users2.get_uid_by_uname(username)
+    if username:
+        user_id = Users2.uid_by_uname(username)
+    else:
+        user_id = None
+
     if not user_id:
         flash("Unknown username ")
         return redirect(url_for("login_forgot_pass"))
@@ -410,7 +414,7 @@ def login_signup_submit():
         flash("Email address doesn't appear to be valid")
         return redirect(url_for("login_signup"))
 
-    existing = Users2.get_uid_by_uname(username)
+    existing = Users2.uid_by_uname(username)
     if existing:
         flash("An account with that name already exists, "
               "please try another username.")
@@ -453,7 +457,7 @@ def login_webauth_submit():
 
     if '@' in username:
         username = username.split('@')[0]
-    user_id = Users2.get_uid_by_uname(username)
+    user_id = Users2.uid_by_uname(username)
     if not user_id:
         flash("Incorrect name or password.")
         return redirect(url_for("index"))

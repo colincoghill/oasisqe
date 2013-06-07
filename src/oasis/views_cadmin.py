@@ -13,7 +13,7 @@ from flask import render_template, session, request, redirect, \
     abort, url_for, flash
 
 from .lib import OaConfig, Users2, DB, Topics, Permissions, \
-    Exams, Courses, Courses2, Setup, CourseAdmin, Groups
+    Exams, Courses, Courses2, Setup, CourseAdmin
 
 MYPATH = os.path.dirname(__file__)
 
@@ -93,11 +93,6 @@ def cadmin_config_submit(course_id):
         else:
             Courses.set_title(course['id'], new_title)
             saved = True
-
-    registration = form.get('registration', course['registration'])
-    if registration != course['registration']:
-        saved = True
-        Courses.set_registration(course_id, registration)
 
     practice_visibility = form.get('practice_visibility',
                                    course['practice_visibility'])
@@ -226,7 +221,7 @@ def cadmin_edit_exam_submit(course_id, exam_id):
 @require_course_perm("useradmin")
 def cadmin_enrolments(course_id):
     """ Present a page to view and edit all topics, including hidden. """
-    user_id = session['user_id']
+#    user_id = session['user_id']
 
     course = None
     try:
@@ -236,107 +231,108 @@ def cadmin_enrolments(course_id):
 
     if not course:
         abort(404)
-
-    groups = [Groups.get_dict(group_id)
-              for group_id in Courses.get_groups(course_id)]
-
-    # it's possible one was never created, legacy database, etc.
-    if not len(groups):
-        now = datetime.now()
-        forever = datetime(year=9999, month=12, day=31)
-        group_id = Groups.create(u"Staff",
-                                 "Current Staff",
-                                 user_id,
-                                 2,
-                                 startdate=now,
-                                 enddate=forever)
-        Courses.add_group(group_id, course_id)
-        groups = [Groups.get_dict(group_id)
-                  for group_id in Courses.get_groups(course_id)]
-        assert len(groups)
-
-    for group in groups:
-        if not group['enddate']:
-            group['enddate'] = "-"
-        elif group['enddate'] > datetime(year=9990, month=1, day=1):
-            group['enddate'] = "-"
-
-        if group['startdate']:
-            group['startdate'] = group['startdate'].strftime("%d %b %Y")
-        else:
-            group['startdate'] = "-"
-        group['nummembers'] = len(Groups.get_users(group['id']))
+    #
+    # groups = [Groups.get_dict(group_id)
+    #           for group_id in Courses.get_groups(course_id)]
+    #
+    # # it's possible one was never created, legacy database, etc.
+    # if not len(groups):
+    #     now = datetime.now()
+    #     forever = datetime(year=9999, month=12, day=31)
+    #     group_id = Groups.create(u"Staff",
+    #                              "Current Staff",
+    #                              user_id,
+    #                              2,
+    #                              startdate=now,
+    #                              enddate=forever)
+    #     Courses.add_group(group_id, course_id)
+    #     groups = [Groups.get_dict(group_id)
+    #               for group_id in Courses.get_groups(course_id)]
+    #     assert len(groups)
+    #
+    # for group in groups:
+    #     if not group['enddate']:
+    #         group['enddate'] = "-"
+    #     elif group['enddate'] > datetime(year=9990, month=1, day=1):
+    #         group['enddate'] = "-"
+    #
+    #     if group['startdate']:
+    #         group['startdate'] = group['startdate'].strftime("%d %b %Y")
+    #     else:
+    #         group['startdate'] = "-"
+    #     group['nummembers'] = len(Groups.get_users(group['id']))
 
     return render_template("courseadmin_enrolment.html",
-                           course=course,
-                           groups=groups)
+                           course=course)
+    #   ,                   groups=groups)
 
-
-@app.route("/cadmin/<int:course_id>/editgroup/<int:group_id>")
-@require_course_perm("useradmin")
-def cadmin_editgroup(course_id, group_id):
-    """ Present a page for editing a group, membership, etc.
-    """
-    group = None
-    try:
-        group = Groups.get_dict(group_id)
-    except KeyError:
-        abort(404)
-
-    if not group:
-        abort(404)
-
-    course = Courses2.get_course(course_id)
-    ulist = Groups.get_users(group_id)
-    members = [Users2.get_user(uid) for uid in ulist]
-    return render_template("courseadmin_editgroup.html",
-                           course=course,
-                           group=group,
-                           members=members)
-
-
-@app.route("/cadmin/addgroup/<int:course_id>")
-@require_course_perm("useradmin")
-def cadmin_addgroup(course_id):
-    """ Present a page for creating a group
-    """
-    course = Courses2.get_course(course_id)
-    return render_template("courseadmin_addgroup.html", course=course)
-
-
-@app.route("/cadmin/<int:course_id>/editgroup/<int:group_id>/addperson",
-           methods=["POST", ])
-@require_course_perm("useradmin")
-def cadmin_editgroup_addperson(course_id, group_id):
-    """ Add a person to the group.
-    """
-    group = None
-    try:
-        group = Groups.get_dict(group_id)
-    except KeyError:
-        abort(404)
-
-    if not group:
-        abort(404)
-
-    if not "uname" in request.form:
-        abort(400)
-
-    new_uname = request.form['uname']
-    try:
-        new_uid = Users2.get_uid_by_uname(new_uname)
-    except KeyError:
-        flash("User '%s' Not Found" % new_uname)
-    else:
-        if not new_uid:
-            flash("User '%s' Not Found" % new_uname)
-        else:
-            Groups.add_user(new_uid, group_id)
-            flash("Added '%s to group." % (new_uname,))
-
-    return redirect(url_for('cadmin_editgroup',
-                            course_id=course_id,
-                            group_id=group_id))
+#
+# @app.route("/cadmin/<int:course_id>/editgroup/<int:group_id>")
+# @require_course_perm("useradmin")
+# def cadmin_editgroup(course_id, group_id):
+#     """ Present a page for editing a group, membership, etc.
+#     """
+#     group = None
+#     try:
+#         group = Groups.get_dict(group_id)
+#     except KeyError:
+#         abort(404)
+#
+#     if not group:
+#         abort(404)
+#
+#     course = Courses2.get_course(course_id)
+#     ulist = Groups.get_users(group_id)
+#     members = [Users2.get_user(uid) for uid in ulist]
+#     return render_template("courseadmin_editgroup.html",
+#                            course=course,
+#                            group=group,
+#                            members=members)
+#
+#
+# @app.route("/cadmin/addgroup/<int:course_id>")
+# @require_course_perm("useradmin")
+# def cadmin_addgroup(course_id):
+#     """ Present a page for creating a group
+#     """
+#     course = Courses2.get_course(course_id)
+#     return render_template("courseadmin_addgroup.html", course=course)
+#
+#
+# @app.route("/cadmin/<int:course_id>/editgroup/<int:group_id>/addperson",
+#            methods=["POST", ])
+# @require_course_perm("useradmin")
+# def cadmin_editgroup_addperson(course_id, group_id):
+#     """ Add a person to the group.
+#     """
+#     group = None
+#     try:
+#         group = Groups.get_dict(group_id)
+#     except KeyError:
+#         abort(404)
+#
+#     if not group:
+#         abort(404)
+#
+#     if not "uname" in request.form:
+#         abort(400)
+#
+#     new_uname = request.form['uname']
+#     try:
+#         new_uid = Users2.uid_by_uname(new_uname)
+#     except KeyError:
+#         flash("User '%s' Not Found" % new_uname)
+#     else:
+#         if not new_uid:
+#             flash("User '%s' Not Found" % new_uname)
+#         else:
+#             Groups.add_user(new_uid, group_id)
+#             flash("Added '%s to group." % (new_uname,))
+#
+#     return redirect(url_for('cadmin_editgroup',
+#                             course_id=course_id,
+#                             group_id=group_id))
+#
 
 
 @app.route("/cadmin/<int:course_id>/topics", methods=['GET', 'POST'])
@@ -411,18 +407,18 @@ def cadmin_edit_topic(course_id, topic_id):
         question['editor'] = DB.get_qt_editor(question['id'])
 
     all_courses = Courses2.get_course_list()
-    all_courses = [cs
-                   for cs in all_courses
-                   if satisfy_perms(user_id, int(cs['id']),
+    all_courses = [crse
+                   for crse in all_courses
+                   if satisfy_perms(user_id, int(crse['id']),
                                    ("questionedit", "courseadmin",
                                     "sysadmin"))]
     all_courses.sort(lambda f, s: cmp(f['name'], s['name']))
 
     all_course_topics = []
-    for cs in all_courses:
-        topics = Courses.get_topics_all(cs['id'], numq=False)
+    for crse in all_courses:
+        topics = Courses.get_topics_all(crse['id'], numq=False)
         if topics:
-            all_course_topics.append({'course': cs['name'], 'topics': topics})
+            all_course_topics.append({'course': crse['name'], 'topics': topics})
 
     questions.sort(key=lambda k: k['position'])
     return render_template(
@@ -486,18 +482,18 @@ def cadmin_view_topic(course_id, topic_id):
         question['editor'] = DB.get_qt_editor(question['id'])
 
     all_courses = Courses2.get_course_list()
-    all_courses = [cs
-                   for cs in all_courses
-                   if satisfy_perms(user_id, int(cs['id']),
+    all_courses = [crse
+                   for crse in all_courses
+                   if satisfy_perms(user_id, int(crse['id']),
                                    ("questionedit", "courseadmin",
                                     "sysadmin"))]
     all_courses.sort(lambda f, s: cmp(f['name'], s['name']))
 
     all_course_topics = []
-    for cs in all_courses:
-        topics = Courses.get_topics_all(cs['id'], numq=False)
+    for crse in all_courses:
+        topics = Courses.get_topics_all(crse['id'], numq=False)
         if topics:
-            all_course_topics.append({'course': cs['name'], 'topics': topics})
+            all_course_topics.append({'course': crse['name'], 'topics': topics})
 
     questions.sort(key=lambda k: k['position'])
     return render_template(

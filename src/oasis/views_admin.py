@@ -17,7 +17,7 @@ from flask import render_template, session, \
 from .lib import Courses, Courses2, Setup, Periods, Feeds
 
 MYPATH = os.path.dirname(__file__)
-from .lib import DB, Groups, Periods
+from .lib import DB, Groups
 from oasis import app, require_perm
 from logging import log, INFO
 
@@ -30,7 +30,7 @@ def admin_top():
     return render_template(
         "admintop.html",
         courses=Setup.get_sorted_courselist(),
-        db_version = db_version
+        db_version=db_version
     )
 
 
@@ -231,25 +231,21 @@ def admin_edit_period_submit(p_id):
 
     try:
         start = datetime.strptime(request.form['start'], "%a %d %b %Y")
+        start_date = start.strftime("%a %d %b %Y")
     except ValueError:
         start = None
+        start_date = ""
 
     try:
         finish = datetime.strptime(request.form['finish'], "%a %d %b %Y")
+        finish_date = finish.strftime("%a %d %b %Y")
     except ValueError:
         finish = None
-
-    name = request.form['name']
-    title = request.form['title']
-    code = request.form['code']
-    if start:
-        start_date = start.strftime("%a %d %b %Y")
-    else:
-        start_date = ""
-    if finish:
-        finish_date = finish.strftime("%a %d %b %Y")
-    else:
         finish_date = ""
+
+    name = request.form.get('name', None)
+    title = request.form.get('title', None)
+    code = request.form.get('code', None)
 
     if p_id == 0:  # It's a new one being created
         period = Periods.Period(
@@ -275,39 +271,31 @@ def admin_edit_period_submit(p_id):
     period.start_date = start_date
     period.finish_date = finish_date
 
+    error = False
     if not start:
-        flash("Can't Save: can't understand start date.")
-        return render_template(
-            "admin_editperiod.html",
-            period=period
-        )
+        error = "Can't Save: can't understand start date."
 
     if not finish:
-        flash("Can't Save: can't understand finish date.")
-        return render_template(
-            "admin_editperiod.html",
-            period=period
-        )
+        error = "Can't Save: can't understand finish date."
 
     if name == "":
-        flash("Can't Save: Name must be supplied")
-        return render_template(
-            "admin_editperiod.html",
-            period=period
-        )
+        error =  "Can't Save: Name must be supplied"
 
     if not period.editable():
-        flash("That time period is not editable!")
-        return redirect(url_for("admin_periods"))
+        error = "That time period is not editable!"
 
     try:
         period.save()
     except ValueError, err:  # Probably a duplicate or something
-        flash("Can't Save: %s" % err)
+        error = "Can't Save: %s" % err
+
+    if error:
+        flash(error)
         return render_template(
             "admin_editperiod.html",
             period=period
         )
+
     flash("Changes saved", category='success')
     return redirect(url_for("admin_periods"))
 

@@ -77,7 +77,7 @@ def setup_usercreate():
             if not all((new_uname, new_email, new_pass, new_confirm)):
                 error = "Please fill in all fields."
 
-            elif Users2.get_uid_by_uname(new_uname):
+            elif Users2.uid_by_uname(new_uname):
                 error = "ERROR: An account already exists with that name"
 
             elif new_confirm == "" or not new_confirm == new_pass:
@@ -92,7 +92,7 @@ def setup_usercreate():
                               2,
                               '',
                               new_email)
-                Users2.set_password(Users2.get_uid_by_uname(new_uname), new_pass)
+                Users2.set_password(Users2.uid_by_uname(new_uname), new_pass)
                 flash("New User Account Created for %s" % new_uname)
                 new_uname = ""
                 new_fname = ""

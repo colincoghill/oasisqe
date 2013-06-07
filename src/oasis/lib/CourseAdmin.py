@@ -108,7 +108,7 @@ def save_perms(request, cid, user_id):
             newperms[uname].append(perm)
 
         for uname in users:
-            uid = Users2.get_uid_by_uname(uname)
+            uid = Users2.uid_by_uname(uname)
             for perm in [2, 5, 10, 14, 11, 8, 9, 15]:
                 if uname in newperms and perm in newperms[uname]:
                     if not perm in perms[uname]:
@@ -130,7 +130,7 @@ def save_perms(request, cid, user_id):
                         )
 
         for uname in newperms:
-            uid = Users2.get_uid_by_uname(uname)
+            uid = Users2.uid_by_uname(uname)
             if not uname in perms:
                 # We've added a user
                 for perm in [2, 5, 10, 14, 11, 8, 9, 15]:
@@ -144,7 +144,7 @@ def save_perms(request, cid, user_id):
                         )
         if "adduser" in form:
             newuname = form['adduser']
-            newuid = Users2.get_uid_by_uname(newuname)
+            newuid = Users2.uid_by_uname(newuname)
             if newuid:
                 add_perm(newuid, cid, 10)
             audit(1,

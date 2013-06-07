@@ -153,12 +153,12 @@ def create(uname, passwd, givenname, familyname, acctstatus, studentid,
              acctstatus, studentid, email, expiry,
              source, confirm_code, confirm ))
     incr_version()
-    uid = get_uid_by_uname(uname)
+    uid = uid_by_uname(uname)
     log(INFO, "User created with uid %d." % uid)
     return uid
 
 
-def get_uid_by_uname(uname):
+def uid_by_uname(uname):
     """ Lookup the users internal ID number given their login name. """
     key = "user-%s-unametouid" % (uname,)
     obj = MC.get(key)

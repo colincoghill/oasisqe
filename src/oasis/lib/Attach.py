@@ -23,7 +23,7 @@ def is_restricted(fname):
     return False
 
 
-def get_q_att_details(qtid, version, variation, name):
+def q_att_details(qtid, version, variation, name):
     """ Find a question attachment and return its details. """
     # for the two biggies we hit the question first,
     # otherwise check the question template first
