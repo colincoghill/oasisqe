@@ -55,7 +55,6 @@ class Group(object):
     def _fetch_by_id(self, g_id):
         """ Initialise from database, or KeyError
         """
-
         sql = """SELECT "name", "title", "gtype", "active",
                         "source", "period", "feed"
                  FROM "ugroups"
@@ -149,8 +148,6 @@ def get_active_by_course(course_id):
             groups.append(Group(id=row[0]))
 
     return groups
-
-
 
 
 def all_groups():
