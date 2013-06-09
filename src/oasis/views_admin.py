@@ -134,13 +134,18 @@ def admin_edit_group_submit(g_id):
         return redirect(url_for("admin_groups"))
 
     name = request.form.get('name', None)
-    title = request.form.get('title', None)
-    gtype = request.form.get('gtype', None)
+    title = request.form.get('title', "")
+    gtype = request.form.get('gtype', 1)
+    source = request.form.get('source', None)
+    feed = request.form.get('feed', "adhoc")
+    feed_args = request.form.get('feed_args', "")
+    period = request.form.get('period', 1)
 
     error = False
 
     if g_id == 0:  # It's a new one being created
         if Groups.get_ids_by_name(name):
+            group = None
             error = "A Group with that name already exists!"
         else:
             group = Groups.Group(id=0)
@@ -160,6 +165,10 @@ def admin_edit_group_submit(g_id):
             group.name = name
             group.title = title
             group.gtype = gtype
+            group.source = source
+            group.period = period
+            group.feed = feed
+            group.feedargs = feed_args
 
             group.save()
         except KeyError, err:  # Probably a duplicate or something

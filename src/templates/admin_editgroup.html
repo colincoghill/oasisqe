@@ -71,39 +71,39 @@
         <label>Title:</label>
         <input class="input-xxlarge" type="text" name='title' value='{{ group.title }}'>
         <label>Group Type:</label>
-        <select name='gtype' value='{{ group.gtype }}'>
+        <select name='gtype'>
           {% for gtype in gtypes %}
-            <option value='{{ gtype.type }}'>{{ gtype.title }}</option>
+            <option value='{{ gtype.type }}' {% if group.gtype==gtype.type %}SELECTED{%endif %}>{{ gtype.title }}</option>
           {% endfor %}
         </select>
         <label>Group is Active:</label>
-        <select name='period' value='{{ group.period.id }}'>
+        <select name='period'>
           {% for period in periods %}
-            <option value='{{ period.id }}'>{{ period.name }}</option>
+            <option value='{{ period.id }}' {% if group.period==period.id %}SELECTED{%endif %}>{{ period.name }}</option>
           {% endfor %}
         </select>
         <label>Source:</label>
 
         <p></p>
-        <select id='source_select'>
-          <option value='feed'>External Feed</option>
-          <option value='adhoc'>Ad-Hoc</option>
-          <option value='open'>Open Registration</option>
+        <select name='source' id='source_select'>
+          <option value='feed' {% if group.source=='feed' %}SELECTED{%endif %}>External Feed</option>
+          <option value='adhoc' {% if group.source=='adhoc' %}SELECTED{%endif %}>Ad-Hoc</option>
+          <option value='open' {% if group.source=='open' %}SELECTED{%endif %}>Open Registration</option>
         </select>
 
         <div id='feed_select'>
           <label>Feed: <select name='feed'>
             {% for feed in feeds %}
-              <option value='{{ feed.id }}'>{{ feed.name }}</option>
+              <option value='{{ feed.id }}' {% if group.feed==feed.id %}SELECTED{%endif %}>{{ feed.name }}</option>
             {% endfor %}
           </select></label>
           <br/><label>Arguments to feed:
-          <input placeholder="name" class="input-xlarge" id='feed_args'
-                 name='feed_args' type="text">
+          <input placeholder="name" class="input-xlarge" id='feedargs'
+                 name='feed_args' value='{{ group.feedargs }}' type="text">
 
         </label>
           <p>To update this feed, OASIS will run:          </p>
-          <pre><span id='feed_cmd'></span><a class="btn">Test</a></pre>
+          <pre><span id='feed_cmd'></span></pre>
         </div>
         <div class="form-actions">
 

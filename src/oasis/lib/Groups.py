@@ -29,7 +29,8 @@ class Group(object):
                  active=None,
                  source=None,
                  period=None,
-                 feed=None):
+                 feed=None,
+                 feedargs=None):
         """ If id is provided, load existing database
             record or raise KeyError.
 
@@ -46,6 +47,7 @@ class Group(object):
             self.source = source
             self.period = period
             self.feed = feed
+            self.feedargs = feedargs
 
         if id:
             self._fetch_by_id(id)
@@ -54,7 +56,7 @@ class Group(object):
         """ Initialise from database, or KeyError
         """
         sql = """SELECT "name", "title", "gtype", "active",
-                        "source", "period", "feed"
+                        "source", "period", "feed", "feedargs"
                  FROM "ugroups"
                  WHERE id=%s;"""
         params = (g_id,)
@@ -70,6 +72,7 @@ class Group(object):
         self.source = ret[0][4]
         self.period = ret[0][5]
         self.feed = ret[0][6]
+        self.feedargs = ret[0][7]
 
         return
 
@@ -99,9 +102,11 @@ class Group(object):
         """ Store us back to database.
         """
         if not self.id:  # it's a new one
-            sql = """INSERT INTO ugroups ("name", "title", "gtype")
-                       VALUES (%s, %s, %s);"""
-            params = (self.name, self.title, self.gtype)
+            sql = """INSERT INTO ugroups ("name", "title", "gtype", "source",
+                                        "active", "period", "feed", "feedargs")
+                       VALUES (%s, %s, %s, %s, %s, %s, %s, %s);"""
+            params = (self.name, self.title, self.gtype, self.source,
+                      self.active, self.period, self.feed, self.feedargs)
             try:
                 run_sql(sql, params)
             except IntegrityError:
@@ -116,9 +121,11 @@ class Group(object):
             return
 
         sql = """UPDATE ugroups
-                 SET name=%s, title=%s, gtype=%s
+                 SET name=%s, title=%s, gtype=%s, source=%s,
+                     active=%s, period=%s, feed=%s, feedargs=%s
                  WHERE id=%s;"""
-        params = (self.name, self.title, self.gtype,
+        params = (self.name, self.title, self.gtype, self.source,
+                  self.active, self.period, self.feed, self.feedargs,
                   self.id)
         try:
             run_sql(sql, params)
