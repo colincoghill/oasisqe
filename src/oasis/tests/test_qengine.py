@@ -12,6 +12,7 @@ from oasis.lib import General, DB
 DB.upgrade_db()
 
 
+
 def test_instance_generate_simple_answer():
     """ Convert some html templates + variables into resulting instance HTML
         and make sure it's doing it right. Focus on simple "ANSWER"
