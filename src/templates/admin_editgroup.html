@@ -59,17 +59,17 @@
         <br>
       </h1>
 
-      <form method='post' action='{{ cf.url }}admin/edit_group_submit' data-validate='parsley'>
+      <form method='post' action='{{ cf.url }}admin/edit_group_submit/{{ group.id }}' data-validate='parsley'>
 
       <div class="well">
 
 
         <label>Group Name:</label>
         <input placeholder="Group name" name='name'
-               class="required input-medium"
+               class="required input-medium" value='{{ group.name }}'
                type="text">
         <label>Title:</label>
-        <input class="input-xxlarge" type="text">
+        <input class="input-xxlarge" type="text" name='title' value='{{ group.title }}'>
         <label>Group Type:</label>
         <select>
           <option>Staff</option>
@@ -100,21 +100,17 @@
           <br/><label>Arguments to feed:
           <input placeholder="name" class="input-xlarge" id='feed_args'
                  name='feed_args' type="text">
-          <a class="btn">Test</a>
+
         </label>
-
           <p>To update this feed, OASIS will run:          </p>
-          <pre><span id='feed_cmd'></span></pre>
-
+          <pre><span id='feed_cmd'></span><a class="btn">Test</a></pre>
         </div>
-
         <div class="form-actions">
 
           <input type="submit" name="save_changes" value="Save"
                  class='btn btn-primary'>
           <input type="submit" name="cancel_edit" id="cancel" value="Cancel"
                  class='btn btn-danger'>
-
         </div>
       </div>
       </form>

@@ -101,8 +101,75 @@ def admin_add_group():
     return render_template(
         "admin_editgroup.html",
         feeds=feeds,
-        periods=periods
+        periods=periods,
+        group={'id':0}
     )
+
+
+@app.route("/admin/edit_group/<int:g_id>")
+@require_perm('sysadmin')
+def admin_edit_group(g_id):
+    """ Present page to add a group to the system """
+    feeds = Feeds.all_list()
+    periods = Periods.all_list()
+    group = Groups.Group(id=g_id)
+    return render_template(
+        "admin_editgroup.html",
+        feeds=feeds,
+        periods=periods,
+        group=group
+    )
+
+
+@app.route("/admin/edit_group_submit/<int:g_id>", methods=["POST", ])
+@require_perm('sysadmin')
+def admin_edit_group_submit(g_id):
+    """ Submit edit group form """
+    if "cancel" in request.form:
+        flash("Edit cancelled!")
+        return redirect(url_for("admin_groups"))
+
+    name = request.form.get('name', None)
+    title = request.form.get('title', None)
+
+    if g_id == 0:  # It's a new one being created
+        group = Groups.Group(
+            id=0,
+            name=name,
+            title=title
+        )
+    else:
+        try:
+            group = Groups.Group(id=g_id)
+        except KeyError:
+            return abort(404)
+
+    group.id = g_id
+    group.name = name
+    group.title = title
+
+    error = False
+
+    if not name:
+        error =  "Can't Save: Name must be supplied"
+
+    try:
+        group.save()
+    except ValueError, err:  # Probably a duplicate or something
+        error = "Can't Save: %s" % err
+
+    if error:
+        flash(error)
+        return render_template(
+            "admin_editgroup.html",
+            group=group
+        )
+
+    flash("Changes saved", category='success')
+    return redirect(url_for("admin_groups"))
+
+
+
 
 
 @app.route("/admin/edit_period/<int:p_id>")

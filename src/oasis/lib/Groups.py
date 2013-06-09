@@ -13,7 +13,7 @@
 # like SQL Alchemy. Too big a jump to do it all in one go.
 
 
-from oasis.lib.DB import run_sql
+from oasis.lib.DB import run_sql, IntegrityError
 # from logging import log, WARN, INFO
 
 
@@ -96,6 +96,43 @@ class Group(object):
             Use only just before importing new list.
         """
         run_sql("""DELETE FROM usergroups WHERE groupid = %s;""", (self.id,))
+
+    def save(self):
+        """ Store us back to database. If id is 0, create new, else update.
+        """
+
+        if not self.id:
+            sql = """INSERT INTO ugroups ("name", "title")
+                       VALUES (%s, %s);"""
+            params = (self.name, self.title)
+            try:
+                run_sql(sql, params)
+            except IntegrityError:
+                try:
+                    exists = Group(name=self.name)
+                except KeyError:
+                    pass
+                else:
+                    if exists.id != self.id:
+                        raise ValueError("Group with that name already exists")
+
+            return
+
+        sql = """UPDATE ugroups
+                 SET name=%s, title=%s
+                 WHERE id=%s;"""
+        params = (self.name, self.title,
+                  self.id)
+        try:
+            run_sql(sql, params)
+        except IntegrityError:
+            try:
+                exists = Group(name=self.name)
+            except KeyError:
+                pass
+            else:
+                if exists.id != self.id:
+                    raise ValueError("Group with that name already exists")
 
 
 def get_by_feed(feed_id):
