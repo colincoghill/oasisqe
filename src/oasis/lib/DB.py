@@ -1349,7 +1349,6 @@ def get_db_version():
     except psycopg2.DatabaseError:
         pass
 
-
     # We don't have a setting, need to figure it out
     try: # stats_prac_q_course was added for 3.9.1
         ret = run_sql("SELECT 1 FROM stats_prac_q_course;")
@@ -1395,11 +1394,64 @@ def upgrade_db():
     # TODO: Do this! What changes do we need, some logic
     if dbver == "3.9.1":
         log(WARN, "Upgrading database from %s to 3.9.2" % dbver)
+
         run_sql("""
             BEGIN;
 
+CREATE TABLE periods (
+    "id" SERIAL PRIMARY KEY,
+    "name" character varying(50) UNIQUE NOT NULL,
+    "title" character varying(250),
+    "start" date,
+    "finish" date,
+    "code" character varying(50) unique
+);
+
+INSERT INTO periods ("name", "title", "start", "finish", "code")
+             VALUES ('Indefinite', 'Indefinite', '2000-01-01', '9999-12-31','');
+CREATE INDEX ON "periods" USING BTREE("name");
+CREATE INDEX ON "periods" USING BTREE("code");
 
 
+CREATE TABLE feeds (
+    "id" SERIAL PRIMARY KEY,
+    "name" character varying UNIQUE,
+    "title" character varying,
+    "script" character varying,
+    "envvar" character varying,
+    "freq" integer default 2,   -- 1 = hourly, 2 = daily, 3 = manually
+    "comments" text,
+    "status" character varying,
+    "error" character varying,
+    "active" boolean default False
+);
+
+CREATE TABLE grouptypes (
+    "type" SERIAL PRIMARY KEY,
+    "title" character varying(128) NOT NULL,
+    "description" text
+);
+
+INSERT INTO grouptypes ("type", "title", "description")
+  VALUES ('1', 'staff', 'Staff');
+INSERT INTO grouptypes ("type", "title", "description")
+  VALUES ('2', 'enrolment', 'Enrolment');
+INSERT INTO grouptypes ("type", "title", "description")
+  VALUES ('3', 'statistical', 'Statistical');
+SELECT SETVAL('grouptypes_type_seq', 3);
+
+CREATE TABLE ugroups (
+    "id" SERIAL PRIMARY KEY,
+    "name" character varying UNIQUE,
+    "title" character varying,
+    "gtype" integer references grouptypes("type"),
+    "source" character varying DEFAULT 'adhoc'::character varying,
+    "feed" integer references feeds("id") NULL,
+    "period" integer references periods("id"),
+    "active" boolean default TRUE
+);
+
+update config set value='3.9.2' where name = 'dbversion';
             COMMIT;
         """)
         #   dbver = "3.9.2"

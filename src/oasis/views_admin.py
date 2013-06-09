@@ -140,34 +140,30 @@ def admin_edit_group_submit(g_id):
     error = False
 
     if g_id == 0:  # It's a new one being created
-        try:
-            group = Groups.Group(
-                id=0,
-                name=name,
-                title=title
-            )
-        except KeyError:
-            pass
-        else:
+        if Groups.get_ids_by_name(name):
             error = "A Group with that name already exists!"
+        else:
+            group = Groups.Group(id=0)
     else:
         try:
             group = Groups.Group(id=g_id)
         except KeyError:
+            group = None
             return abort(404)
 
-    group.id = g_id
-    group.name = name
-    group.title = title
-    group.gtype = gtype
-
     if not name:
-        error =  "Can't Save: Name must be supplied"
+        error = "Can't Save: Name must be supplied"
 
-    try:
-        group.save()
-    except KeyError, err:  # Probably a duplicate or something
-        error = "Can't Save: %s" % err
+    if not error:
+        try:
+            group.id = g_id
+            group.name = name
+            group.title = title
+            group.gtype = gtype
+
+            group.save()
+        except KeyError, err:  # Probably a duplicate or something
+            error = "Can't Save: %s" % err
 
     if error:
         flash(error)

@@ -30,14 +30,14 @@ class Group(object):
                  source=None,
                  period=None,
                  feed=None):
-        """ If just id is provided, load existing database
+        """ If id is provided, load existing database
             record or raise KeyError.
 
-            If gtype is provided, create a new one. Raise KeyError if there's
+            If gtype is provided, create a new one and raise KeyError if there's
             already an entry with the same name or code.
         """
 
-        if not id and not name:  # new
+        if not id:  # new
             self.id = 0
             self.name = name
             self.title = title
@@ -49,9 +49,6 @@ class Group(object):
 
         if id:
             self._fetch_by_id(id)
-        elif name:
-            self._fetch_by_name(name)
-
 
     def _fetch_by_id(self, g_id):
         """ Initialise from database, or KeyError
@@ -75,31 +72,6 @@ class Group(object):
         self.feed = ret[0][6]
 
         return
-
-
-    def _fetch_by_name(self, name):
-        """ Initialise from database, or KeyError
-        """
-        sql = """SELECT "id", "title", "gtype", "active",
-                        "source", "period", "feed"
-                 FROM "ugroups"
-                 WHERE name=%s;"""
-        params = (name,)
-        ret = run_sql(sql, params)
-        if not ret:
-            raise KeyError("Group with name '%s' not found" % name)
-
-        self.id = int(ret[0][0])
-        self.name = name
-        self.title = ret[0][1]
-        self.gtype = ret[0][2]
-        self.active = ret[0][3]
-        self.source = ret[0][4]
-        self.period = ret[0][5]
-        self.feed = ret[0][6]
-
-        return
-
 
     def members(self):
         """ Return a list of userids in the group. """
@@ -128,7 +100,7 @@ class Group(object):
         """
         if not self.id:  # it's a new one
             sql = """INSERT INTO ugroups ("name", "title", "gtype")
-                       VALUES (%s, %s);"""
+                       VALUES (%s, %s, %s);"""
             params = (self.name, self.title, self.gtype)
             try:
                 run_sql(sql, params)
@@ -192,6 +164,24 @@ def get_by_period(period_id):
             groups.append(Group(id=row[0]))
 
     return groups
+
+
+def get_ids_by_name(name):
+        """ Return any groups (list of ids) with the given name
+        """
+        sql = """SELECT "id"
+                 FROM "ugroups"
+                 WHERE name=%s;"""
+        params = (name,)
+        ret = run_sql(sql, params)
+        if not ret:
+            return []
+        groups = []
+
+        for row in ret:
+            groups.append([int(row[0])])
+
+        return groups
 
 
 def get_active_by_course(course_id):
