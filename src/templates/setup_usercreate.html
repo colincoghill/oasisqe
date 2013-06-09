@@ -1,51 +1,69 @@
 {% extends "page_nav.html" %}
 {% block body %}
-    <br/>
-    <p>Return to <a href="{{ cf.url }}setup/top">Setup</a></p>
+  <br/>
+  <p>Return to <a href="{{ cf.url }}setup/top">Setup</a></p>
 
-    <div class="container">
-        <div class="well">
-            <h2>Create New User Account</h2>
+  <div class="container">
+    <div class="well">
+      <h2>Create New User Account</h2>
 
-            <FORM METHOD='post' ACTION='{{ cf.url }}setup/usercreate'>
-                <TABLE>
-                    <TR>
-                        <TH style='text-align: right;'><label for='new_uname'>Username:</label></TH>
-                        <TD><INPUT id='new_uname' TYPE='text' NAME='new_uname' VALUE='{{ new_uname }}'></TD>
-                    </TR>
-                    <TR>
-                        <TH style='text-align: right;'><label for='new_fname'>First Name:</label></TH>
-                        <TD><INPUT id='new_fname' TYPE='text' NAME='new_fname' VALUE='{{ new_fname }}'></TD>
-                    </TR>
-                    <TR>
-                        <TH style='text-align: right;'><label for='new_sname'>Surname:</label></TH>
-                        <TD><INPUT id='new_sname' TYPE='text' NAME='new_sname' VALUE='{{ new_sname }}'></TD>
-                    </TR>
-                    <TR>
-                        <TH style='text-align: right;'><label for='new_email'>eMail:</label></TH>
-                        <TD><INPUT id='new_email' TYPE='text' NAME='new_email' VALUE='{{ new_email }}'></TD>
-                    </TR>
-                    <TR>
-                        <TH style='text-align: right;'><label for='new_pass'>Password:</label></TH>
-                        <TD><INPUT id='new_pass' TYPE='password' NAME='new_pass' VALUE='{{ new_pass }}'></TD>
-                    </TR>
-                    <TR>
-                        <TH style='text-align: right;'><label for='new_confirm'>Password Confirm:</label></TH>
-                        <TD><INPUT id='new_confirm' TYPE='password' NAME='new_confirm' VALUE='{{ new_confirm }}'></TD>
-                    </TR>
-                    <TR>
-                        <TH style='text-align: right;'></TH>
-                        <TD><INPUT class='btn btn-primary' TYPE='submit' NAME='usercreate_save' VALUE='Save'><input
-                                class='btn btn-danger' type='submit' name='usercreate_cancel' VALUE='Cancel'></TD>
-                    </TR>
-                </TABLE>
-            </FORM>
+      <FORM METHOD='post' ACTION='{{ cf.url }}setup/usercreate'>
+        <TABLE>
+          <TR>
+            <TH style='text-align: right;'><label
+                for='new_uname'>Username:</label>
+            </TH>
+            <TD><INPUT id='new_uname' TYPE='text' NAME='new_uname'
+                       VALUE='{{ new_uname }}'></TD>
+          </TR>
+          <TR>
+            <TH style='text-align: right;'><label for='new_fname'>First
+              Name:</label></TH>
+            <TD><INPUT id='new_fname' TYPE='text' NAME='new_fname'
+                       VALUE='{{ new_fname }}'></TD>
+          </TR>
+          <TR>
+            <TH style='text-align: right;'><label
+                for='new_sname'>Surname:</label>
+            </TH>
+            <TD><INPUT id='new_sname' TYPE='text' NAME='new_sname'
+                       VALUE='{{ new_sname }}'></TD>
+          </TR>
+          <TR>
+            <TH style='text-align: right;'><label for='new_email'>eMail:</label>
+            </TH>
+            <TD><INPUT id='new_email' TYPE='text' NAME='new_email'
+                       VALUE='{{ new_email }}'></TD>
+          </TR>
+          <TR>
+            <TH style='text-align: right;'><label
+                for='new_pass'>Password:</label>
+            </TH>
+            <TD><INPUT id='new_pass' TYPE='password' NAME='new_pass'
+                       VALUE='{{ new_pass }}'></TD>
+          </TR>
+          <TR>
+            <TH style='text-align: right;'><label for='new_confirm'>Password
+              Confirm:</label></TH>
+            <TD><INPUT id='new_confirm' TYPE='password'
+                       NAME='new_confirm' VALUE='{{ new_confirm }}'>
+            </TD>
+          </TR>
+          <TR>
+            <TH style='text-align: right;'></TH>
+            <TD><INPUT class='btn btn-primary' TYPE='submit'
+                       NAME='usercreate_save' VALUE='Save'><input
+                class='btn btn-danger' type='submit'
+                name='usercreate_cancel' VALUE='Cancel'></TD>
+          </TR>
+        </TABLE>
+      </FORM>
 
-        </div>
     </div>
+  </div>
 
-    <br/>
-    <p>Return to <a href="{{ cf.url }}setup/top">Setup</a></p>
+  <br/>
+  <p>Return to <a href="{{ cf.url }}setup/top">Setup</a></p>
 
 {% endblock body %}
 {% block pagetitle %}User Admin{% endblock %}

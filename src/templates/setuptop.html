@@ -1,44 +1,48 @@
 {% extends "page_nav.html" %}
 {% block body %}
-    <br/>
-    <H2>OASIS Setup</H2>
-    <P><B>Here you can configure OASIS to suit your needs.</B></P>
-    <div class='container-fluid well'>
-        <div class='row'>
-            {% if cf.auth_type == "local" %}
-                <div class='span5'>
-                    <B><A HREF='{{ cf.url }}setup/myprofile'>Account Details</A></B>
+  <br/>
+  <H2>OASIS Setup</H2>
+  <P><B>Here you can configure OASIS to suit your needs.</B></P>
+  <div class='container-fluid well'>
+    <div class='row'>
+      {% if cf.auth_type == "local" %}
+        <div class='span5'>
+          <B><A HREF='{{ cf.url }}setup/myprofile'>Account Details</A></B>
 
-                    <P>You can also change your password here.</P><br>
-                </div>
-            {% endif %}
-            <div class='span5'>
-
-                <B><A HREF='{{ cf.url }}setup/courses'>Course Administration</A></B>
-
-                <P>Allows you to set various course related things. Add questions, create assessments, view marks.</P>
-                <br>
-            </div>
-
-            <BR/>
+          <P>You can also change your password here.</P><br>
         </div>
-        <div class='row'>
-            <div class='span5'>
-                <B><A HREF='{{ cf.url }}admin/top'>Server Administration</A></B>
+      {% endif %}
+      <div class='span5'>
 
-                <P>Allows you to configure the OASIS server, add courses, and similar system tasks.</P><br/>
-            </div>
+        <B><A HREF='{{ cf.url }}setup/courses'>Course Administration</A></B>
 
-            <div class='span5'>
-                <B><a HREF='{{ cf.url }}setup/usersearch'>User Administration</a></B>
+        <P>Allows you to set various course related things. Add
+          questions, create assessments, view marks.</P>
+        <br>
+      </div>
 
-                <P>Add and Edit user accounts. </P><br>
-            </div>
-        </div>
+      <BR/>
     </div>
-    <br>
-    <P>You may also <B><A HREF='{{ cf.url }}logout/top'>Logout</A></B> to leave OASIS.</P>
-    <BR/>
+    <div class='row'>
+      <div class='span5'>
+        <B><A HREF='{{ cf.url }}admin/top'>Server Administration</A></B>
+
+        <P>Allows you to configure the OASIS server, add courses, and
+          similar system tasks.</P><br/>
+      </div>
+
+      <div class='span5'>
+        <B><a HREF='{{ cf.url }}setup/usersearch'>User
+          Administration</a></B>
+
+        <P>Add and Edit user accounts. </P><br>
+      </div>
+    </div>
+  </div>
+  <br>
+  <P>You may also <B><A HREF='{{ cf.url }}logout/top'>Logout</A></B> to leave
+    OASIS.</P>
+  <BR/>
 
 
 {% endblock body %}

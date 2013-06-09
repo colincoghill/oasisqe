@@ -15,7 +15,7 @@ from logging import log, INFO, ERROR
 from .DB import run_sql, dbpool, MC
 from .OaTypes import todatetime
 import Courses2
-from .UserDB import check_perm
+from .Permissions import check_perm
 import DB, General
 
 
@@ -483,13 +483,13 @@ def get_exam_struct(exam_id, user_id=None, include_qtemplates=False,
         MC.set(key, _serialize_examstruct(exam),
                60)  # 60 second cache. to take the edge off exam start peak load
     course = Courses2.get_course(exam['cid'])
-    exam['future'] = General.isFuture2(exam['start'])
-    exam['past'] = General.isPast2(exam['end'])
-    exam['soon'] = General.isSoon(exam['start'])
-    exam['recent'] = General.isRecent(exam['end'])
-    exam['active'] = General.isNow(exam['start'], exam['end'])
+    exam['future'] = General.is_future(exam['start'])
+    exam['past'] = General.is_past(exam['end'])
+    exam['soon'] = General.is_soon(exam['start'])
+    exam['recent'] = General.is_recent(exam['end'])
+    exam['active'] = General.is_now(exam['start'], exam['end'])
     exam['start_epoch'] = int(exam['start'].strftime("%s")) # useful for sorting
-    exam['period'] = General.humanDatePeriod(exam['start'], exam['end'])
+    exam['period'] = General.human_dates(exam['start'], exam['end'])
     exam['course'] = course
     exam['start_human'] = exam['start'].strftime("%a %d %b")
 
@@ -501,6 +501,6 @@ def get_exam_struct(exam_id, user_id=None, include_qtemplates=False,
         exam['notcoursedone'] = get_num_done(exam_id), exam['coursedone']
     if user_id:
         exam['is_done'] = is_done_by(user_id, exam_id)
-        exam['can_preview'] = check_perm(user_id, exam['cid'], "OASIS_PREVIEWASSESSMENT")
+        exam['can_preview'] = check_perm(user_id, exam['cid'], "exampreview")
 
     return exam

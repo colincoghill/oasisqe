@@ -1,122 +1,129 @@
 {% extends "page_nav.html" %}
 {% block body %}
-    <br/>
-       <p>Return to <a href="{{ cf.url }}admin/enrol/top">Enrolment Configuration</a></p>
-    <H2>Manage Time Periods</H2>
+  <br/>
+  <p>Return to <a href="{{ cf.url }}admin/enrol/top">Enrolment
+    Configuration</a></p>
+  <H2>Manage Time Periods</H2>
 
 
 
-        <p>Time periods are used to match courses to real-world terms or
-            semesters.</p>
+  <p>Time periods are used to match courses to real-world terms or
+    semesters.</p>
 
-        <p>
-            Enrolment groups can then be associated with them to allow
-            access to
-            courses to start and end at the appropriate times.</p>
+  <p>
+    Enrolment groups can then be associated with them to allow
+    access to
+    courses to start and end at the appropriate times.</p>
 
-        <p>If you do not wish to use these, just use the included
-            'Indefinite' period.
+  <p>If you do not wish to use these, just use the included
+    'Indefinite' period.
 
-        </p>
-        <div class='container-fluid well'>
-        <br>
+  </p>
+  <div class='container-fluid well'>
+    <br>
 
-        <h4>Time Periods</h4>
-        <table class='table table-condensed datatable'>
-            <thead>
-            <tr>
-                <th>Name</th>
-                <th>Title</th>
-                <th>Start</th>
-                <th>End</th>
-                <th>Code</th>
-                <th></th>
+    <h4>Time Periods</h4>
+    <table class='table table-condensed datatable'>
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Title</th>
+        <th>Start</th>
+        <th>End</th>
+        <th>Code</th>
+        <th></th>
 
-            </tr>
-            </thead>
-            <tbody>
-            {% for period in periods if not period.historical() %}
-                <tr>
-                    <td>{{ period.name }}</td>
-                    <th>{{ period.title }}</th>
-                    <td>{{ period.start }}</td>
-                    <td>{{ period.finish }}</td>
-                    <td>{{ period.code }}</td>
+      </tr>
+      </thead>
+      <tbody>
+      {% for period in periods if not period.historical() %}
+        <tr>
+          <td>{{ period.name }}</td>
+          <th>{{ period.title }}</th>
+          <td>{{ period.start }}</td>
+          <td>{{ period.finish }}</td>
+          <td>{{ period.code }}</td>
 
-                    <td>{% if period.editable() %}<a class='btn btn-mini'
-                           href='{{ cf.url }}admin/edit_period/{{ period.id }}'>Edit</a>{% endif %}
-                    </td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-        <br/> <br/>
-        <a class='btn btn-small' href='{{ cf.url }}admin/add_period'>Add Time Period</a>
-        <br/> <br/>
-<br/><br/>
-        <a href='#' id='showhistorical'><i class='icon icon-chevron-right historical'> </i><i style='display:none;' class='icon icon-chevron-down historical'> </i>
-            Historical Periods</a>
+          <td>{% if period.editable() %}<a class='btn btn-mini'
+                                           href='{{ cf.url }}admin/edit_period/{{ period.id }}'>
+            Edit</a>{% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    <br/> <br/>
+    <a class='btn btn-small' href='{{ cf.url }}admin/add_period'>Add Time
+      Period</a>
+    <br/> <br/>
+    <br/><br/>
+    <a href='#' id='showhistorical'><i
+        class='icon icon-chevron-right historical'> </i><i
+        style='display:none;'
+        class='icon icon-chevron-down historical'> </i>
+      Historical Periods</a>
 
-        <div class='hidden historical' id="historical">
-            <table class='table table-condensed datatable'>
-                <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Title</th>
-                    <th>Start</th>
-                    <th>End</th>
-                    <th>Code</th>
-                    <td></td>
+    <div class='hidden historical' id="historical">
+      <table class='table table-condensed datatable'>
+        <thead>
+        <tr>
+          <th>Name</th>
+          <th>Title</th>
+          <th>Start</th>
+          <th>End</th>
+          <th>Code</th>
+          <td></td>
 
-                </tr>
-                </thead>
-                <tbody>
-                {% for period in periods if period.historical() %}
-                    <tr>
-                    <td>{{ period.name }}</td>
-                    <th>{{ period.title }}</th>
-                    <td>{{ period.start }}</td>
-                    <td>{{ period.finish }}</td>
-                    <td>{{ period.code }}</td>
+        </tr>
+        </thead>
+        <tbody>
+        {% for period in periods if period.historical() %}
+          <tr>
+            <td>{{ period.name }}</td>
+            <th>{{ period.title }}</th>
+            <td>{{ period.start }}</td>
+            <td>{{ period.finish }}</td>
+            <td>{{ period.code }}</td>
 
-                    <td>{% if period.editable() %}<a class='btn btn-mini'
-                           href='{{ cf.url }}admin/edit_period/{{ period.id }}'>Edit</a>{% endif %}
-                    </td>
-                 </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-        </div>
-   </div>
-
-
-    <p>Return to <a href="{{ cf.url }}admin/enrol/top">Enrolment Configuration</a></p>
-
-    <br/>
-    <br/>
-    <br/>
-    <br/>
-
+            <td>{% if period.editable() %}<a class='btn btn-mini'
+                                             href='{{ cf.url }}admin/edit_period/{{ period.id }}'>
+              Edit</a>{% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
     </div>
+  </div>
+
+
+  <p>Return to <a href="{{ cf.url }}admin/enrol/top">Enrolment
+    Configuration</a></p>
+
+  <br/>
+  <br/>
+  <br/>
+  <br/>
+
 {% endblock body %}
 {% block js %}
-    <script>
+  <script>
 
-        $(function () {
-            $(".datatable").dataTable({
-                        "bPaginate": false,
-                        "bLengthChange": false,
-                        "bFilter": false
-                    }
-            );
+    $(function () {
+      $(".datatable").dataTable({
+            "bPaginate": false,
+            "bLengthChange": false,
+            "bFilter": false
+          }
+      );
 
-            $('#showhistorical').click(function () {
-                        $('.historical').toggle();
-                    }
-            );
-        });
+      $('#showhistorical').click(function () {
+            $('.historical').toggle();
+          }
+      );
+    });
 
 
-    </script>
+  </script>
 {% endblock js %}
 {% block pagetitle %}Server Admin{% endblock %}

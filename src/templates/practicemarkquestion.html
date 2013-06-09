@@ -1,59 +1,60 @@
 {% extends "page_practice.html" %}
 {% block body %}
 
-    <div class="row">
-        <div class="span2">
-            <br/>
-            <ul class="nav nav-list">
-                <li class='nav-header'>
-                    <a name='topic_{{ topic_id }}'
-                       href='{{ cf.url }}practice/subcategory/{{ topic_id }}'>{{ topictitle }} </a>
-                </li>
-                {% for question in questions %}
+  <div class="row">
+    <div class="span2">
+      <br/>
+      <ul class="nav nav-list">
+        <li class='nav-header'>
+          <a name='topic_{{ topic_id }}'
+             href='{{ cf.url }}practice/subcategory/{{ topic_id }}'>{{ topictitle }} </a>
+        </li>
+        {% for question in questions %}
 
-                    {% if question.position >= 1 %}
+          {% if question.position >= 1 %}
 
-                        <li>
-                            <a name='question_{{ question.name }}'
-                               href='{{ cf.url }}practice/question/{{ topic_id }}/{{ question.qtid }}'>{{ question.name }}</a>
-                        </li>
-                    {% endif %}
+            <li>
+              <a name='question_{{ question.name }}'
+                 href='{{ cf.url }}practice/question/{{ topic_id }}/{{ question.qtid }}'>{{ question.name }}</a>
+            </li>
+          {% endif %}
 
-                {% endfor %}
+        {% endfor %}
 
-            </ul>
-        </div>
-
-
-        <div class="span8">
-            <br/>
-
-            <h2>{{ course.title }} ({{ topictitle }})</h2>
-            <h4>{{ q_pos }} : {{ q_title }}</h4>
-            <ul class='nav nav-pills pull-right'>
-                {% if prev_id %}
-                    <li>
-                        <a href='{{ cf.url }}practice/question/{{ topic_id }}/{{ prev_id }}'>Previous</a>
-                    </li>
-                {% endif %}
-                <li class='active'>
-                    <a href='{{ cf.url }}practice/question/{{ topic_id }}/{{ qt_id }}'>Try Again</a>
-                </li>
-                {% if next_id %}
-                    <li>
-                        <a href='{{ cf.url }}practice/question/{{ topic_id }}/{{ next_id }}'>Next</a>
-                    </li>
-                {% endif %}
-
-            </ul>
-
-            <div class='well'>
-                {{ marking|safe }}
-          <!--      <span class='pull-right'><a href='{{ cf.url }}practice/statsfortopic/{{ topic_id }}'>How am I doing?</a></span>  -->
-                <br/>
-            </div>
-
-        </div>
+      </ul>
     </div>
+
+
+    <div class="span8">
+      <br/>
+
+      <h2>{{ course.title }} ({{ topictitle }})</h2>
+      <h4>{{ q_pos }} : {{ q_title }}</h4>
+      <ul class='nav nav-pills pull-right'>
+        {% if prev_id %}
+          <li>
+            <a href='{{ cf.url }}practice/question/{{ topic_id }}/{{ prev_id }}'>Previous</a>
+          </li>
+        {% endif %}
+        <li class='active'>
+          <a href='{{ cf.url }}practice/question/{{ topic_id }}/{{ qt_id }}'>Try
+            Again</a>
+        </li>
+        {% if next_id %}
+          <li>
+            <a href='{{ cf.url }}practice/question/{{ topic_id }}/{{ next_id }}'>Next</a>
+          </li>
+        {% endif %}
+
+      </ul>
+
+      <div class='well'>
+        {{ marking|safe }}
+        <!--      <span class='pull-right'><a href='{{ cf.url }}practice/statsfortopic/{{ topic_id }}'>How am I doing?</a></span>  -->
+        <br/>
+      </div>
+
+    </div>
+  </div>
 
 {% endblock body %}

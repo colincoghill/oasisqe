@@ -17,7 +17,7 @@ from .lib import Users2, General, Exams, \
 MYPATH = os.path.dirname(__file__)
 
 from .lib.Audit import audit, get_records_by_user
-from .lib.UserDB import check_perm, satisfyPerms
+from .lib.Permissions import check_perm, satisfy_perms
 
 from oasis import app, authenticated
 
@@ -47,7 +47,7 @@ def setup_usercreate():
     """
     user_id = session['user_id']
 
-    if not check_perm(user_id, -1, "OASIS_USERADMIN"):
+    if not check_perm(user_id, -1, "useradmin"):
         flash("You do not have User Administration access.")
         return redirect(url_for('setup_top'))
 
@@ -67,23 +67,17 @@ def setup_usercreate():
             return redirect(url_for('setup_usersearch'))
 
         if "usercreate_save" in form:
-            if 'new_uname' in form:
-                new_uname = form['new_uname']
-            if 'new_fname' in form:
-                new_fname = form['new_fname']
-            if 'new_sname' in form:
-                new_sname = form['new_sname']
-            if 'new_email' in form:
-                new_email = form['new_email']
-            if 'new_pass' in form:
-                new_pass = form['new_pass']
-            if 'new_confirm' in form:
-                new_confirm = form['new_confirm']
+            new_uname = form.get('new_uname', "")
+            new_fname = form.get('new_fname', "")
+            new_sname = form.get('new_sname', "")
+            new_email = form.get('new_email', "")
+            new_pass = form.get('new_pass', "")
+            new_confirm = form.get('new_confirm', "")
 
             if not all((new_uname, new_email, new_pass, new_confirm)):
                 error = "Please fill in all fields."
 
-            elif Users2.getUidByUname(new_uname):
+            elif Users2.uid_by_uname(new_uname):
                 error = "ERROR: An account already exists with that name"
 
             elif new_confirm == "" or not new_confirm == new_pass:
@@ -98,7 +92,7 @@ def setup_usercreate():
                               2,
                               '',
                               new_email)
-                Users2.setPassword(Users2.getUidByUname(new_uname), new_pass)
+                Users2.set_password(Users2.uid_by_uname(new_uname), new_pass)
                 flash("New User Account Created for %s" % new_uname)
                 new_uname = ""
                 new_fname = ""
@@ -126,7 +120,7 @@ def setup_usersearch():
     """ Show a page allowing the admin search for users, or create new ones"""
     user_id = session['user_id']
 
-    if not check_perm(user_id, -1, "OASIS_USERADMIN"):
+    if not check_perm(user_id, -1, "useradmin"):
         flash("You do not have User Administration access.")
         return redirect(url_for('setup_top'))
 
@@ -140,7 +134,7 @@ def setup_usersearch():
                 flash("Search term too short, please try something longer")
             else:
                 uids = Users2.find(needle)
-                users = [Users2.getUser(uid) for uid in uids]
+                users = [Users2.get_user(uid) for uid in uids]
                 if len(users) == 0:
                     nonefound = True
                 else:
@@ -159,14 +153,14 @@ def setup_useraudit(audit_id):
     """ Show all the audit entries for the given user account. """
     user_id = session['user_id']
 
-    if not check_perm(user_id, -1, "OASIS_USERADMIN"):
+    if not check_perm(user_id, -1, "useradmin"):
         flash("You do not have User Administration access.")
         return redirect(url_for('setup_top'))
 
-    user = Users2.getUser(audit_id)
+    user = Users2.get_user(audit_id)
     audits = get_records_by_user(audit_id)
     for aud in audits:
-        aud['humantime'] = General.humanDate(aud['time'])
+        aud['humantime'] = General.human_date(aud['time'])
     return render_template(
         'setup_useraudit.html',
         user=user,
@@ -180,27 +174,24 @@ def setup_usersummary(view_id):
     """ Show an account summary for the given user account. """
     user_id = session['user_id']
 
-    if not check_perm(user_id, -1, "OASIS_USERADMIN"):
+    if not check_perm(user_id, -1, "useradmin"):
         flash("You do not have User Administration access.")
         return redirect(url_for('setup_top'))
 
-    user = Users2.getUser(view_id)
+    user = Users2.get_user(view_id)
     examids = Exams.get_exams_done(view_id)
     exams = []
     for examid in examids:
         exam = Exams.get_exam_struct(examid)
-        started = General.humanDate(exam['start'])
+        started = General.human_date(exam['start'])
         exam['started'] = started
 
-        if satisfyPerms(user_id, exam['cid'], ("OASIS_VIEWMARKS", )):
-            exam['viewable'] = True
-        else:
-            exam['viewable'] = False
+        exam['viewable'] = satisfy_perms(user_id, exam['cid'], ("viewmarks", ))
 
         exams.append(exam)
     exams.sort(key=lambda x: x['start_epoch'], reverse=True)
 
-    course_ids = Users2.getCourses(view_id)
+    course_ids = Users2.get_courses(view_id)
     courses = []
     for course_id in course_ids:
         courses.append(Courses2.get_course(course_id))
@@ -218,7 +209,7 @@ def setup_myprofile():
     """ Show an account summary for the current user account. """
     user_id = session['user_id']
 
-    user = Users2.getUser(user_id)
+    user = Users2.get_user(user_id)
 #    examids = Exams.getExamsDone(user_id)
 #    exams = []
 #   for examid in examids:
@@ -226,7 +217,7 @@ def setup_myprofile():
 #        started = OaGeneral.humanDate(exam['start'])
 #        exam['started'] = started
 
-#        if satisfyPerms(user_id, exam['cid'], ("OASIS_VIEWMARKS", )):
+#        if satisfyPerms(user_id, exam['cid'], ("viewmarks", )):
 #           exam['viewable'] = True
 #        else:
 #            exam['viewable'] = False
@@ -234,15 +225,15 @@ def setup_myprofile():
 #        exams.append(exam)
 #    exams.sort(key=lambda x: x['start_epoch'], reverse=True)
 
-    course_ids = Users2.getCourses(user_id)
+    course_ids = Users2.get_courses(user_id)
     courses = []
     for course_id in course_ids:
         courses.append(Courses2.get_course(course_id))
     return render_template(
         'setup_myprofile.html',
         user=user,
-#        exams=exams,
         courses=courses
+        # exams=exams
     )
 
 
@@ -252,20 +243,20 @@ def setup_change_pass():
     """ Ask for a new password """
     user_id = session['user_id']
 
-    user = Users2.getUser(user_id)
+    user = Users2.get_user(user_id)
     return render_template(
         'setup_changepassword.html',
         user=user,
     )
 
 
-@app.route("/setup/changepass_submit", methods=["POST",])
+@app.route("/setup/changepass_submit", methods=["POST", ])
 @authenticated
 def setup_change_pass_submit():
     """ Set a new password """
     user_id = session['user_id']
 
-    user = Users2.getUser(user_id)
+    user = Users2.get_user(user_id)
 
     if not "newpass" in request.form or not "confirm" in request.form:
         flash("Please provide your new password")
@@ -282,7 +273,7 @@ def setup_change_pass_submit():
         flash("Passwords do not match")
         return redirect(url_for("setup_change_pass"))
 
-    Users2.setPassword(user_id=user_id, clearpass=newpass)
+    Users2.set_password(user_id=user_id, clearpass=newpass)
     audit(1, user_id,
           user_id,
           "Setup", "%s reset password for %s." % (user['uname'], user['uname']))

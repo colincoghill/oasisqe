@@ -1,29 +1,30 @@
 {% extends "page_nav.html" %}
 {% block body %}
-    <h2>Welcome to OASIS</h2>
-    <p>OASIS contains several sections:</p>
+  <h2>Welcome to OASIS</h2>
+  <p>OASIS contains several sections:</p>
 
 
-    <div class='container-fluid well'>
+  <div class='container-fluid well'>
 
-        <div class='row'>
-            <div class='span5'>
+    <div class='row'>
+      <div class='span5'>
 
-                <b><a NAME='menu_news' HREF='{{ cf.url }}main/news'>News</A></B>
+        <b><a NAME='menu_news' HREF='{{ cf.url }}main/news'>News</A></B>
 
-                <P>The latest news and information about OASIS.</p>
-            </div>
-            <div class='span5'>
+        <P>The latest news and information about OASIS.</p>
+      </div>
+      <div class='span5'>
 
-                <b><a NAME='menu_practice' HREF='{{ cf.url }}practice/top'>Practice</a></b>
+        <b><a NAME='menu_practice' HREF='{{ cf.url }}practice/top'>Practice</a></b>
 
-                <p>Allows you to practice solving a near endless supply of exercises. OASIS will mark these for you so
-                    you know how you are doing.</p>
-                <br/>
-            </div>
-        </div>
-        <div class='row'>
-         <!--   <div class='span5'>
+        <p>Allows you to practice solving a near endless supply of
+          exercises. OASIS will mark these for you so
+          you know how you are doing.</p>
+        <br/>
+      </div>
+    </div>
+    <div class='row'>
+      <!--   <div class='span5'>
                 <br/>
 
                 <b><a NAME='menu_assess' HREF='{{ cf.url }}assess/top'>Assess</a></b>
@@ -31,20 +32,24 @@
                 <p>This is where you should go for terms-tests and assignments. Work under this area may contribute to
                     your real coursework marks, so be sure to <b>practice</b> first.</p>
             </div>   -->
-            <div class='span5'>
-                <b><a NAME='menu_setup' HREF='{{ cf.url }}setup/top'>Setup</a></b>
+      <div class='span5'>
+        <b><a NAME='menu_setup'
+              HREF='{{ cf.url }}setup/top'>Setup</a></b>
 
-                <p>Here you can change your password. Teaching staff can also set up new questions, administer
-                    assignments, and perform related tasks.</p>
-                <br/>
-            </div>
-        </div>
-
-
+        <p>Here you can change your password. Teaching staff can also
+          set up new questions, administer
+          assignments, and perform related tasks.</p>
+        <br/>
+      </div>
     </div>
-    <br/>
-    <p>You may also <b><a NAME='menu_logout' HREF='{{ cf.url }}logout'>Logout</a></b> to leave OASIS.</p>
-    <br/>
+
+
+  </div>
+  <br/>
+  <p>You may also <b><a NAME='menu_logout'
+                        HREF='{{ cf.url }}logout'>Logout</a></b> to leave
+    OASIS.</p>
+  <br/>
 
 
 {% endblock body %}

@@ -46,7 +46,8 @@ dbname = cp.get("db", "dbname")
 dbpass = cp.get("db", "pass")
 dbport = cp.get("db", "port")
 
-oasisdbconnectstring = "host=%s port=%s dbname=%s user=%s password='%s'" % (dbhost, dbport, dbname, dbuname, dbpass)
+oasisdbconnectstring = "host=%s port=%s dbname=%s user=%s password='%s'" % \
+                       (dbhost, dbport, dbname, dbuname, dbpass)
 
 email = cp.get("web", "email")
 enableMemcache = cp.getboolean("cache", "memcache_enable")

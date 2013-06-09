@@ -12,7 +12,10 @@
 from oasis.lib import General, Courses
 
 
-def getSortedQuestionList(topic):
+def get_q_list(topic):
+    """
+    Return a list of questions, sorted by position.
+    """
     # TODO: Duplicated in General.get_q_list ?
 
     def cmp_question_position(a, b):
@@ -37,12 +40,12 @@ def getSortedQuestionList(topic):
     return questionlist
 
 
-def getCreateExamQuestionList(course):
+def exam_available_q_list(course):
     """ Return a list of questions that can be used to create an assessment
     """
-    topics = Courses.getTopicsInfoAll(course, archived=0, numq=False)
+    topics = Courses.get_topics_all(course, archived=0, numq=False)
     for num, topic in topics.iteritems():
         topic_id = topics[num]['id']
-        topics[num]['questions'] = getSortedQuestionList(topic_id)
+        topics[num]['questions'] = get_q_list(topic_id)
     return topics
 

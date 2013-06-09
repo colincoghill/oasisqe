@@ -2,48 +2,52 @@
 {% block js %}
 {% endblock js %}
 {% block body %}
-       <br>
-    <P>Return to <A HREF='{{ cf.url }}admin/top'>Admin</A> top.</P>
+  <br>
+  <P>Return to <A HREF='{{ cf.url }}admin/top'>Admin</A> top.</P>
 
-    <H2>Enrolment Configuration</H2>
-    <P>Configure groups of students, semesters, and link OASIS to external
+  <H2>Enrolment Configuration</H2>
+  <P>Configure groups of students, semesters, and link OASIS to external
     enrolment data sources.</P>
 
-    <div class='container-fluid well'>
-        <div class='row'>
-            <div class='span5'>
+  <div class='container-fluid well'>
+    <div class='row'>
+      <div class='span5'>
 
-                <B><A HREF='{{ cf.url }}admin/periods'>Time Periods</A></B>
+        <B><A HREF='{{ cf.url }}admin/periods'>Time Periods</A></B>
 
-                <P>Configure enrolment time periods to match your terms/semesters.</P>
-            </div>
+        <P>Configure enrolment time periods to match your
+          terms/semesters.</P>
+      </div>
 
-            <div class='span5'>
+      <div class='span5'>
 
-                <B><A HREF='{{ cf.url }}admin/feeds'>Enrolment Feeds</A></B>
+        <B><A HREF='{{ cf.url }}admin/feeds'>Enrolment Feeds</A></B>
 
-                <P>Enrolment feed settings, how to match students to courses.</P><br>
-            </div>
+        <P>Enrolment feed settings, how to match students to
+          courses.</P><br>
+      </div>
 
-            </div>
-        <br/>
-        <div class='row'>
-
-            <div class='span5'>
-
-                <B><A HREF='{{ cf.url }}admin/groups'>Groups</A></B>
-
-                <P>Set up groups of users, optionally linking them to enrolment feeds.</P><br>
-            </div>
-
-            <BR/>
-        </div>
     </div>
+    <br/>
+
+    <div class='row'>
+
+      <div class='span5'>
+
+        <B><A HREF='{{ cf.url }}admin/groups'>Groups</A></B>
+
+        <P>Set up groups of users, optionally linking them to enrolment
+          feeds.</P><br>
+      </div>
+
+      <BR/>
+    </div>
+  </div>
 
 
-    <br>
-    <P>Return to <A HREF='{{ cf.url }}admin/top'>Admin</A> top.</P>
-    <BR/>
+  <br>
+  <P>Return to <A HREF='{{ cf.url }}admin/top'>Admin</A> top.</P>
+  <BR/>
 
 {% endblock body %}
 {% block pagetitle %}Setup{% endblock %}

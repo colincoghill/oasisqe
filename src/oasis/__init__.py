@@ -12,7 +12,7 @@ from flask import Flask, session, redirect, url_for, request, \
     render_template, flash, abort
 import datetime
 import logging
-from logging import log, INFO
+from logging import log, INFO, ERROR
 from logging.handlers import SMTPHandler, RotatingFileHandler
 from functools import wraps
 import smtplib
@@ -21,7 +21,7 @@ from email.mime.text import MIMEText
 
 from .lib import OaConfig, Users2, Users, DB
 from .lib.Audit import audit
-
+from .lib.Permissions import satisfy_perms
 
 app = Flask(__name__,
             template_folder=OaConfig.homedir + "/templates",
@@ -32,26 +32,28 @@ app.config['MAX_CONTENT_LENGTH'] = 8 * 1024 * 1024  # 8MB max file size upload
 
 # Email error messages to admins ?
 if OaConfig.email_admins:
-    mail_handler = SMTPHandler(OaConfig.smtp_server,
-                               OaConfig.email,
-                               OaConfig.email_admins,
-                               'OASIS Internal Server Error')
-    mail_handler.setLevel(logging.ERROR)
-    app.logger.addHandler(mail_handler)
+    MH = SMTPHandler(OaConfig.smtp_server,
+                     OaConfig.email,
+                     OaConfig.email_admins,
+                     'OASIS Internal Server Error')
+    MH.setLevel(logging.ERROR)
+    app.logger.addHandler(MH)
 
 app.debug = False
 
-if not app.debug:  # Log warnings or higher
+if not app.debug:  # Log info or higher
     try:
-        fh = RotatingFileHandler(filename=OaConfig.logfile)
-        fh.setLevel(logging.WARNING)
-        fh.setFormatter(logging.Formatter(
+        FH = RotatingFileHandler(filename=OaConfig.logfile)
+        FH.setLevel(logging.INFO)
+        FH.setFormatter(logging.Formatter(
             "%(asctime)s %(levelname)s: %(message)s | %(pathname)s:%(lineno)d"
         ))
-        app.logger.addHandler(fh)
-        logging.log(logging.INFO, "File logger starting up" )
+        app.logger.addHandler(FH)
+        logging.log(logging.INFO,
+                    "File logger starting up")
     except IOError, err:  # Probably a permission denied or folder not exist
-        logging.log(logging.ERROR, "Unable to open log file: %s" % err)
+        logging.log(logging.ERROR,
+                    "Unable to open log file: %s" % err)
 
 
 @app.context_processor
@@ -85,10 +87,10 @@ def template_context():
     }}
 
 
-def authenticated(fn):
+def authenticated(func):
     """ Decorator to check the user is currently authenticated and
         deal with the session/redirect """
-    @wraps(fn)
+    @wraps(func)
     def call_fn(*args, **kwargs):
         """ If they're not in session, redirect them and remember where
             they were going.
@@ -96,9 +98,106 @@ def authenticated(fn):
         if 'user_id' not in session:
             session['redirect'] = request.path
             return redirect(url_for('index'))
-        return fn(*args, **kwargs)
+        return func(*args, **kwargs)
 
     return call_fn
+
+
+def require_perm(perms, redir="setup_top"):
+    """ Decorator to check the user has at least one of a given list of global
+        perms.
+        Will flash() a message to them and redirect if they don't.
+
+        example:
+
+        @app.route(...)
+        @require_perm('sysadmin', url_for('index'))
+        def do_stuff():
+
+        or
+
+        @app.route(...)
+        @require_perm(['sysadmin', 'useradmin'], url_for['admin'])
+        def do_stuff():
+    """
+
+    def decorator(func):
+        """ Handle decorator
+        """
+        @wraps(func)
+        def call_fn(*args, **kwargs):
+            """ check auth first, can't have perms if we're not.
+            """
+            if 'user_id' not in session:
+                session['redirect'] = request.path
+                return redirect(url_for('index'))
+
+            user_id = session['user_id']
+
+            if isinstance(perms, str):
+                permlist = (perms,)
+            else:
+                permlist = perms
+
+            if satisfy_perms(user_id, 0, permlist):
+                return func(*args, **kwargs)
+            flash("You do not have permission to do that.")
+            return redirect(url_for(redir))
+
+        return call_fn
+
+    return decorator
+
+
+def require_course_perm(perms, redir=None):
+    """ Decorator to check the user has at least one of a given list of course
+        perms.
+        Will flash() a message to them and redirect if they don't.
+
+        example:
+
+        @app.route(...)
+        @require_perm('sysadmin', url_for('index'))
+        def do_stuff():
+
+        or
+
+        @app.route(...)
+        @require_perm(['sysadmin', 'useradmin'], url_for['admin'])
+        def do_stuff():
+    """
+
+    def decorator(func):
+        """ Handle decorator
+        """
+        @wraps(func)
+        def call_fn(*args, **kwargs):
+            """ check auth first, can't have perms if we're not.
+            """
+            if 'user_id' not in session:
+                session['redirect'] = request.path
+                return redirect(url_for('index'))
+
+            user_id = session['user_id']
+
+            if isinstance(perms, str):
+                permlist = (perms,)
+            else:
+                permlist = perms
+
+            course_id = kwargs['course_id']
+
+            if satisfy_perms(user_id, course_id, permlist):
+                return func(*args, **kwargs)
+            flash("You do not have course permission to do that.")
+            if redir:
+                return redirect(url_for(redir))
+            else:
+                return redirect(url_for("cadmin_top", course_id=course_id))
+
+        return call_fn
+
+    return decorator
 
 
 @app.route("/")
@@ -138,13 +237,13 @@ def login_local_submit():
     username = request.form['username']
     password = request.form['password']
 
-    user_id = Users2.verifyPass(username, password)
+    user_id = Users2.verify_pass(username, password)
     if not user_id:
         log(INFO, "Failed Login for %s" % username)
         flash("Incorrect name or password.")
         return redirect(url_for("login_local"))
 
-    user = Users2.getUser(user_id)
+    user = Users2.get_user(user_id)
     if not user['confirmed']:
         flash("""Your account is not yet confirmed. You should have received
                  an email with instructions in it to do so.""")
@@ -184,7 +283,7 @@ def login_forgot_pass():
     return render_template("login_forgot_pass.html")
 
 
-@app.route("/login/forgot_pass/submit", methods=["POST",])
+@app.route("/login/forgot_pass/submit", methods=["POST", ])
 def login_forgot_pass_submit():
     """ Forgot their password. Grab their username and send them a reset email.
     """
@@ -193,23 +292,23 @@ def login_forgot_pass_submit():
         flash("Password reset cancelled.")
         return redirect(url_for("login_local"))
 
-    if not 'username' in request.form:
-        flash("Unknown username ")
-        return redirect(url_for("login_forgot_pass"))
-
-    username = request.form['username']
+    username = request.form.get('username', None)
 
     if username == "admin":
         flash("""The admin account cannot do an email password reset,
                  please see the Installation instructions.""")
         return redirect(url_for("login_forgot_pass"))
 
-    user_id = Users2.getUidByUname(username)
+    if username:
+        user_id = Users2.uid_by_uname(username)
+    else:
+        user_id = None
+
     if not user_id:
         flash("Unknown username ")
         return redirect(url_for("login_forgot_pass"))
 
-    user = Users2.getUser(user_id)
+    user = Users2.get_user(user_id)
     if not user['source'] == "local":
         flash("Your password is not managed by OASIS, "
               "please contact IT Support.")
@@ -267,7 +366,7 @@ def login_email_passreset(code):
         abort(404)
     Users.set_confirm(uid)
     Users.set_confirm_code(uid, "")
-    user = Users2.getUser(uid)
+    user = Users2.get_user(uid)
     session['username'] = user['uname']
     session['user_id'] = uid
     session['user_givenname'] = user['givenname']
@@ -315,7 +414,7 @@ def login_signup_submit():
         flash("Email address doesn't appear to be valid")
         return redirect(url_for("login_signup"))
 
-    existing = Users2.getUidByUname(username)
+    existing = Users2.uid_by_uname(username)
     if existing:
         flash("An account with that name already exists, "
               "please try another username.")
@@ -332,7 +431,7 @@ def login_signup_submit():
                           source="local",
                           confirm_code=code,
                           confirm=False)
-    Users2.setPassword(newuid, password)
+    Users2.set_password(newuid, password)
 
     text_body = render_template("email/confirmation.txt", code=code)
     html_body = render_template("email/confirmation.html", code=code)
@@ -358,12 +457,12 @@ def login_webauth_submit():
 
     if '@' in username:
         username = username.split('@')[0]
-    user_id = Users2.getUidByUname(username)
+    user_id = Users2.uid_by_uname(username)
     if not user_id:
         flash("Incorrect name or password.")
         return redirect(url_for("index"))
 
-    user = Users2.getUser(user_id)
+    user = Users2.get_user(user_id)
     session['username'] = username
     session['user_id'] = user_id
     session['user_givenname'] = user['givenname']

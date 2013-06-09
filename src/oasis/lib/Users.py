@@ -153,12 +153,12 @@ def create(uname, passwd, givenname, familyname, acctstatus, studentid,
              acctstatus, studentid, email, expiry,
              source, confirm_code, confirm ))
     incr_version()
-    uid = get_uid_by_uname(uname)
+    uid = uid_by_uname(uname)
     log(INFO, "User created with uid %d." % uid)
     return uid
 
 
-def get_uid_by_uname(uname):
+def uid_by_uname(uname):
     """ Lookup the users internal ID number given their login name. """
     key = "user-%s-unametouid" % (uname,)
     obj = MC.get(key)
@@ -206,7 +206,11 @@ def get_courses(user_id):
     groups = get_groups(user_id)
     courses = []
     for group in groups:
-        res = run_sql("""SELECT course FROM groupcourses WHERE active=1 AND groupid=%s LIMIT 1;""", (group,))
+        res = run_sql("""SELECT course
+                         FROM groupcourses
+                         WHERE active=1
+                           AND groupid=%s LIMIT 1;""",
+                      (group,))
         if res:
             course_id = int(res[0][0])
             courses.append(course_id)
@@ -253,8 +257,8 @@ def generate_uuid_readable(length=9):
 
         :param length: The number of characters we want in the UUID
     """
-    UUID_ALPHABET = "23456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
+    valid = "23456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
     # 57^n possibilities - about 6 million billion options for n=9.
     # Hopefully pretty good.
-    return "".join([random.choice(UUID_ALPHABET) for _ in xrange(length)])
+    return "".join([random.choice(valid) for _ in xrange(length)])
 

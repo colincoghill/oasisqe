@@ -1,24 +1,25 @@
 {% extends "page_nav.html" %}
 {% block body %}
-    <br/>
-    <p>Return to <a href="{{ cf.url }}setup/top">Setup</a></p>
+  <br/>
+  <p>Return to <a href="{{ cf.url }}setup/top">Setup</a></p>
 
-    <div class="container-fluid">
-        <div class="well">
+  <div class="container-fluid">
+    <div class="well">
 
-            <h2>Account Details</h2>
+      <h2>Account Details</h2>
 
-            <p>For {{ user.uname }} ({{ user.fullname }})</p>
+      <p>For {{ user.uname }} ({{ user.fullname }})</p>
 
-            <p>Email: {{ user.email }}</p>
+      <p>Email: {{ user.email }}</p>
 
-            <p>Student ID: {{ user.student_id }}</p>
+      <p>Student ID: {{ user.student_id }}</p>
 
-            <p>
-                <A class='btn btn-small btn-danger' HREF='{{ cf.url }}setup/changepass'>Change Password</A>
-            </p>
-        <br/>
-<!--
+      <p>
+        <A class='btn btn-small btn-danger'
+           HREF='{{ cf.url }}setup/changepass'>Change Password</A>
+      </p>
+      <br/>
+      <!--
             <h2>Courses</h2>
 
             <div>
@@ -29,7 +30,7 @@
             </div>
         <br/>
 -->
-        <!--
+      <!--
             <h2>Assessments</h2>
             <table class='table table-bordered' id='examresults'>
                 <tr>
@@ -44,18 +45,19 @@
                         <th>{{ exam.title }}</th>
                         <td>
                             {% if exam.viewable %}
-                                <a href='{{ cf.url }}setup/viewexam/{{ exam.cid }}/{{ user.id }}/{{ exam.id }}'>View</a>
+                                <a href='{{ cf.url }}setup/viewexam/
+                {{ exam.cid }}/{{ user.id }}/{{ exam.id }}'>View</a>
                             {% endif %}
                         </td>
                     </tr>
                 {% endfor %}
             </table>
             -->
-        </div>
     </div>
+  </div>
 
-    <br/>
-    <p>Return to <a href="{{ cf.url }}setup/top">Setup</a></p>
+  <br/>
+  <p>Return to <a href="{{ cf.url }}setup/top">Setup</a></p>
 
 {% endblock body %}
 {% block pagetitle %}Account Details{% endblock %}

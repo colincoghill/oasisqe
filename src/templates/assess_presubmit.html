@@ -1,55 +1,62 @@
 {% extends "page_assess.html" %}
 {% block body %}
-    <br/>
-    <h2>{{ course.name }}({{ course.title }})</h2>
-    <H3>{{ exam.title }}</H3>
-    <div class="container-fluid well ">
-        <FORM METHOD='post' ACTION='{{ cf.url }}assess/assessmentpage/{{ course_id }}/{{ exam.id }}/{{ page }}'>
-            <div class='navbar'>
-                <div class='navbar-inner'>
-                    <span class='brand'> Go To:</span>
-                    <ul class='nav'>
-                        <li><INPUT CLASS='btn' TYPE='submit' NAME='goto' VALUE='Start'></li>
-                        <li class='divider-vertical'></li>
-                        {% for i in pages %}
-                            {% if i == page %}
-                                <li><INPUT CLASS='btn' TYPE='submit' NAME='goto' VALUE='Page {{ i }}'></li>
-                            {% else %}
-                                <li><INPUT CLASS='btn' TYPE='submit' NAME='goto' VALUE='Page {{ i }}'></li>
-                            {% endif %}
-                        {% endfor %}
-                        <li class='divider-vertical'></li>
-                        <li><INPUT CLASS='btn active btn-danger' TYPE='submit' NAME='goto' VALUE='Finish'></li>
-                    </ul>
-                </div>
-            </div>
-            <div class='container-fluid alert-info well'>
-                <center>
-                    <P>This will submit your assessment and mark it.</p>
-                    {% if unfinished %}
-                        <p>You do not appear to have answered all questions. Are you sure you wish to submit your
-                            assessment?</p><BR/>
-                    {% endif %}
-                    <input type='submit' name='submit' value='Yes, Submit It' class='btn btn-primary'>
-                </center>
-            </div>
-
-            <h2>Your Answers</h2>
-            {% for q in questions %}
-                <h5>Page {{ q.pos }}</h5>
-                {% for p in q.guesses %}
-                    <p>{{ p.part }}
-                        {% if p.guess %}
-                            {{ p.guess }}
-                        {% else %}
-                            <span style='color: brown;'>-none-</span>
-                        {% endif %}</p>
-                {% else %}
-                    <p><span style='color: brown;'>-none-</span></p>
-                {% endfor %}
+  <br/>
+  <h2>{{ course.name }}({{ course.title }})</h2>
+  <H3>{{ exam.title }}</H3>
+  <div class="container-fluid well ">
+    <FORM METHOD='post'
+          ACTION='{{ cf.url }}assess/assessmentpage/{{ course_id }}/{{ exam.id }}/{{ page }}'>
+      <div class='navbar'>
+        <div class='navbar-inner'>
+          <span class='brand'> Go To:</span>
+          <ul class='nav'>
+            <li><INPUT CLASS='btn' TYPE='submit' NAME='goto'
+                       VALUE='Start'></li>
+            <li class='divider-vertical'></li>
+            {% for i in pages %}
+              {% if i == page %}
+                <li><INPUT CLASS='btn' TYPE='submit' NAME='goto'
+                           VALUE='Page {{ i }}'></li>
+              {% else %}
+                <li><INPUT CLASS='btn' TYPE='submit' NAME='goto'
+                           VALUE='Page {{ i }}'></li>
+              {% endif %}
             {% endfor %}
-            <br/>
-            <br/>
-        </FORM>
-    </div>
+            <li class='divider-vertical'></li>
+            <li><INPUT CLASS='btn active btn-danger' TYPE='submit'
+                       NAME='goto' VALUE='Finish'></li>
+          </ul>
+        </div>
+      </div>
+      <div class='container-fluid alert-info well'>
+        <center>
+          <P>This will submit your assessment and mark it.</p>
+          {% if unfinished %}
+            <p>You do not appear to have answered all questions. Are
+              you sure you wish to submit your
+              assessment?</p><BR/>
+          {% endif %}
+          <input type='submit' name='submit' value='Yes, Submit It'
+                 class='btn btn-primary'>
+        </center>
+      </div>
+
+      <h2>Your Answers</h2>
+      {% for q in questions %}
+        <h5>Page {{ q.pos }}</h5>
+        {% for p in q.guesses %}
+          <p>{{ p.part }}
+            {% if p.guess %}
+              {{ p.guess }}
+            {% else %}
+              <span style='color: brown;'>-none-</span>
+            {% endif %}</p>
+        {% else %}
+          <p><span style='color: brown;'>-none-</span></p>
+        {% endfor %}
+      {% endfor %}
+      <br/>
+      <br/>
+    </FORM>
+  </div>
 {% endblock body %}

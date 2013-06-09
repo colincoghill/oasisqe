@@ -1,119 +1,129 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>OASIS Assessment System</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="{{ cf.static }}css/bootstrap.min.css" rel="stylesheet" media="screen">
-    <link href="{{ cf.static }}css/bootstrap-responsive.min.css" rel="stylesheet" media="screen">
-    <link href="{{ cf.static }}css/datepicker.css" rel="stylesheet" media="screen">
+  <title>OASIS Assessment System</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="{{ cf.static }}css/bootstrap.min.css" rel="stylesheet"
+        media="screen">
+  <link href="{{ cf.static }}css/bootstrap-responsive.min.css"
+        rel="stylesheet" media="screen">
+  <link href="{{ cf.static }}css/datepicker.css" rel="stylesheet"
+        media="screen">
 
-    <script src="{{ cf.static }}js/jquery-1.8.3.min.js"></script>
-    <script src="{{ cf.static }}js/bootstrap.min.js"></script>
-    <script src="{{ cf.static }}js/bootstrap-datepicker.js"></script>
-    <style>
-        .head {
-            margin-bottom: 10px;
-            max-height: 210px;
-            min-height: 210px;
-            background: #1e5799; /* Old browsers */
-            background: -moz-linear-gradient(top, #1e5799 0%, #2989d8 50%, #207cca 51%, #7db9e8 100%); /* FF3.6+ */
-            background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #1e5799), color-stop(50%, #2989d8), color-stop(51%, #207cca), color-stop(100%, #7db9e8)); /* Chrome,Safari4+ */
-            background: -webkit-linear-gradient(top, #1e5799 0%, #2989d8 50%, #207cca 51%, #7db9e8 100%); /* Chrome10+,Safari5.1+ */
-            background: -o-linear-gradient(top, #1e5799 0%, #2989d8 50%, #207cca 51%, #7db9e8 100%); /* Opera 11.10+ */
-            background: -ms-linear-gradient(top, #1e5799 0%, #2989d8 50%, #207cca 51%, #7db9e8 100%); /* IE10+ */
-            background: linear-gradient(to bottom, #1e5799 0%, #2989d8 50%, #207cca 51%, #7db9e8 100%); /* W3C */
-            /*     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#1e5799', endColorstr='#7db9e8', GradientType=0); /* IE6-9 */
-        }
+  <script src="{{ cf.static }}js/jquery-1.8.3.min.js"></script>
+  <script src="{{ cf.static }}js/bootstrap.min.js"></script>
+  <script src="{{ cf.static }}js/bootstrap-datepicker.js"></script>
+  <style>
+    .head {
+      margin-bottom: 10px;
+      max-height: 210px;
+      min-height: 210px;
+      background: #1e5799; /* Old browsers */
+      background: -moz-linear-gradient(top, #1e5799 0%, #2989d8 50%, #207cca 51%, #7db9e8 100%); /* FF3.6+ */
+      background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #1e5799), color-stop(50%, #2989d8), color-stop(51%, #207cca), color-stop(100%, #7db9e8)); /* Chrome,Safari4+ */
+      background: -webkit-linear-gradient(top, #1e5799 0%, #2989d8 50%, #207cca 51%, #7db9e8 100%); /* Chrome10+,Safari5.1+ */
+      background: -o-linear-gradient(top, #1e5799 0%, #2989d8 50%, #207cca 51%, #7db9e8 100%); /* Opera 11.10+ */
+      background: -ms-linear-gradient(top, #1e5799 0%, #2989d8 50%, #207cca 51%, #7db9e8 100%); /* IE10+ */
+      background: linear-gradient(to bottom, #1e5799 0%, #2989d8 50%, #207cca 51%, #7db9e8 100%); /* W3C */
+      /*     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#1e5799', endColorstr='#7db9e8', GradientType=0); /* IE6-9 */
+    }
 
-        .head-caption {
-            background-color: transparent;
+    .head-caption {
+      background-color: transparent;
 
-            max-width: 800px;
+      max-width: 800px;
 
-            margin-top: 0;
-            margin-left: 80px;
-        }
+      margin-top: 0;
+      margin-left: 80px;
+    }
 
-        .head-caption h1,
-        .head-caption .lead {
-            margin: 0;
-            line-height: 1.4;
-            color: #fff;
-            text-shadow: 0 1px 1px rgba(0, 0, 0, .4);
-        }
+    .head-caption h1,
+    .head-caption .lead {
+      margin: 0;
+      line-height: 1.4;
+      color: #fff;
+      text-shadow: 0 1px 1px rgba(0, 0, 0, .4);
+    }
 
-        .main {
-            background-color: rgba(255, 255, 255, 1);
-            padding: 20px;
-            max-width: 1000px;
+    .main {
+      background-color: rgba(255, 255, 255, 1);
+      padding: 20px;
+      max-width: 1000px;
 
-        }
+    }
 
-        .footlogo {
+    .footlogo {
 
-            height: 80px;
-        }
-    </style>
+      height: 80px;
+    }
+  </style>
 </head>
 <body>
 {% with messages = get_flashed_messages() %}
-    {% if messages %}
+  {% if messages %}
 
-        {% for message in messages %}
-            <div class="alert-error alert">{{ message }}</div>
-        {% endfor %}
+    {% for message in messages %}
+      <div class="alert-error alert">{{ message }}</div>
+    {% endfor %}
 
-    {% endif %}
+  {% endif %}
 {% endwith %}
 <div class="head">
-    <div class="container head-caption">
-        <br/><br/>
+  <div class="container head-caption">
+    <br/><br/>
 
-        <h1>Welcome!</h1>
+    <h1>Welcome!</h1>
 
-        <p class="lead">OASIS is a web based system designed for large classes. It provides a powerful system for
-            both the practice and assessment of skill based questions.</p>
+    <p class="lead">OASIS is a web based system designed for large classes.
+      It provides a powerful system for
+      both the practice and assessment of skill based questions.</p>
 
-    </div>
+  </div>
 </div>
 <br><br>
 <br><br>
+
 <div class="container main">
 
-    <div class="row">
-<center>
-            <p><a href="{{ cf.url }}login/local" class="btn btn-primary">Log In</a>
+  <div class="row">
+    <center>
+      <p><a href="{{ cf.url }}login/local" class="btn btn-primary">Log
+        In</a>
     </center>
 
+  </div>
+  <br/><br/>
+  <br/><br/>
+  <br/><br/>
+
+
+  <div class="row">
+    <div class="span10">
+      <p>The primary goal of OASIS is to help you with your study, any
+        suggestions you have for features that
+        would help with this are welcome. Several of the capabilities of
+        OASIS have originated from student
+        suggestions.
+        Fault reports are also important.</p>
     </div>
-    <br/><br/>
-        <br/><br/>
-        <br/><br/>
+  </div>
 
+  <br/>
 
-    <div class="row">
-        <div class="span10">
-            <p>The primary goal of OASIS is to help you with your study, any suggestions you have for features that
-                would help with this are welcome. Several of the capabilities of OASIS have originated from student
-                suggestions.
-                Fault reports are also important.</p>
-        </div>
+  <div class="row">
+
+    <div class="span6 pull-left"><br/>
+      OASIS is an Open Source project, originally created at <a
+          href='http://www.auckland.ac.nz'>The University of
+        Auckland</a>.
+      Please contact <a href='mailto:{{ cf.email }}'>{{ cf.email }}</a> if
+      you have any questions.
     </div>
+    <div class="span4 pull-right">
+      <img src='{{ cf.static }}oalogo.gif' class='footlogo'>
 
-    <br/>
-
-    <div class="row">
-
-        <div class="span6 pull-left"><br/>
-            OASIS is an Open Source project, originally created at <a href='http://www.auckland.ac.nz'>The University of
-                Auckland</a>.
-            Please contact <a href='mailto:{{ cf.email }}'>{{ cf.email }}</a> if you have any questions.
-        </div>
-        <div class="span4 pull-right">
-            <img src='{{ cf.static }}oalogo.gif' class='footlogo'>
-
-        </div>
     </div>
+  </div>
 </div>
 
 </body>

@@ -5,6 +5,9 @@
 
 # OqeFuncUtils.py
 
+"""Functions used by the OQE question editor
+"""
+
 
 def chrange(start, end):
     """Generates a range of characters from start to end

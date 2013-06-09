@@ -1,412 +1,456 @@
 {% extends "page_courseadmin.html" %}
 {% block js %}
-    <script>
+  <script>
 
-    var start_hour = parseInt("{{ exam.start.hour }}", 10);
-    var end_hour = parseInt("{{ exam.end.hour }}", 10);
-    var start_minute = parseInt("{{ exam.start.minute }}", 10);
-    var end_minute = parseInt("{{ exam.end.minute }}", 10);
+  var start_hour = parseInt("{{ exam.start.hour }}", 10);
+  var end_hour = parseInt("{{ exam.end.hour }}", 10);
+  var start_minute = parseInt("{{ exam.start.minute }}", 10);
+  var end_minute = parseInt("{{ exam.end.minute }}", 10);
 
-    var start_date = new Date({{ exam.start.year }}, {{ exam.start.month }}, {{ exam.start.day }});
-    var end_date = new Date({{ exam.end.year }}, {{ exam.end.month }}, {{ exam.end.day }});
+  var start_date = new Date({{ exam.start.year }}, {{ exam.start.month }}, {{ exam.start.day }});
+  var end_date = new Date({{ exam.end.year }}, {{ exam.end.month }}, {{ exam.end.day }});
 
-    $("#start_hour").change(function () {
-        start_hour = parseInt($("#start_hour").val(), 10);
+  $("#start_hour").change(function () {
+    start_hour = parseInt($("#start_hour").val(), 10);
+    validate_form();
+  });
+
+  $("#start_minute").change(function () {
+    start_minute = parseInt($("#start_minute").val(), 10);
+    validate_form();
+  });
+
+  $("#end_hour").change(function () {
+    end_hour = parseInt($("#end_hour").val(), 10);
+    validate_form();
+  });
+
+  $("#end_minute").change(function () {
+    end_minute = parseInt($("#end_minute").val(), 10);
+    validate_form();
+  });
+
+  $("#duration").change(function () {
+    validate_form();
+  });
+
+  $("#title").change(function () {
+    validate_form();
+  });
+
+  $('#startdate').datepicker({
+    format: 'D dd M yyyy',
+    startDate: '-2d',
+    endDate: '+6m',
+    todayBtn: true,
+    todayHighlight: true,
+    autoclose: true
+  }).on("changeDate",function (ev) {
+        start_date = ev.date.valueOf();
         validate_form();
-    });
+      }).datepicker('update', "{{ exam.start }}");
 
-    $("#start_minute").change(function () {
-        start_minute = parseInt($("#start_minute").val(), 10);
+  $('#enddate').datepicker({
+    format: 'D dd M yyyy',
+    startDate: '-2d',
+    endDate: '+6m',
+    todayBtn: true,
+    todayHighlight: true,
+    autoclose: true
+  }).on("changeDate",function (ev) {
+        end_date = ev.date.valueOf();
         validate_form();
-    });
+      }).datepicker('update', "{{ exam.end }}");
 
-    $("#end_hour").change(function () {
-        end_hour = parseInt($("#end_hour").val(), 10);
-        validate_form();
-    });
+  function enable_save() {
+    $(".save_button").removeAttr("disabled").addClass("btn-primary");
+  }
 
-    $("#end_minute").change(function () {
-        end_minute = parseInt($("#end_minute").val(), 10);
-        validate_form();
-    });
+  function disable_save() {
+    $(".save_button").attr("disabled", "disabled").removeClass("btn-primary");
 
-    $("#duration").change(function () {
-        validate_form();
-    });
+  }
 
-    $("#title").change(function () {
-        validate_form();
-    });
+  function validate_form() {
+    // Check everything is ok and enable/disable the save button accordingly
+    // Disable save until they've at least tried to enter some data
+    disable_save();
 
-    $('#startdate').datepicker({
-        format: 'D dd M yyyy',
-        startDate: '-2d',
-        endDate: '+6m',
-        todayBtn: true,
-        todayHighlight: true,
-        autoclose: true
-    }).on("changeDate",function (ev) {
-                start_date = ev.date.valueOf();
-                validate_form();
-            }).datepicker('update', "{{ exam.start }}");
+    var errcount = 0;
+    var date_msg = $("#dateerrors");
 
-    $('#enddate').datepicker({
-        format: 'D dd M yyyy',
-        startDate: '-2d',
-        endDate: '+6m',
-        todayBtn: true,
-        todayHighlight: true,
-        autoclose: true
-    }).on("changeDate",function (ev) {
-                end_date = ev.date.valueOf();
-                validate_form();
-            }).datepicker('update', "{{ exam.end }}");
-
-    function enable_save() {
-        $(".save_button").removeAttr("disabled").addClass("btn-primary");
+    date_msg.empty();
+    if (end_date < start_date) {
+      date_msg.append("<span class='alert-error'>Start date must be before end date</span>");
+      errcount += 1;
+    } else if (end_date == start_date) {
+      if (end_hour < start_hour) {
+        date_msg.append("<span class='alert-error'>Start must be before end</span>");
+        errcount += 1;
+      } else if (end_hour == start_hour) {
+        if (end_minute <= start_minute) {
+          date_msg.append("<span class='alert-error'>Start time must be before end</span>");
+          errcount += 1;
+        }
+      }
     }
 
-    function disable_save() {
-        $(".save_button").attr("disabled", "disabled").removeClass("btn-primary");
-
+    var dr = parseInt($("#duration").val(), 10);
+    var dur_msg = $("#durationerrors");
+    dur_msg.empty();
+    if (!(dr >= 5 && dr < 50000) || !dr) {
+      dur_msg.append("<span class='alert-error'>Duration must be at least 5 minutes and no more than about a month (45000 minutes)</span>");
+      errcount += 1;
     }
 
-    function validate_form() {
-        // Check everything is ok and enable/disable the save button accordingly
-        // Disable save until they've at least tried to enter some data
-        disable_save();
+    var tt = $("#title").val();
+    var title_msg = $("#titleerrors");
+    title_msg.empty();
+    if (tt.length < 3) {
+      title_msg.append("<span class='alert-error'>You must provide a title.</span>");
+      errcount += 1;
+    }
 
-        var errcount = 0;
-        var date_msg = $("#dateerrors");
+    var qt_msg = $("#qtemplateerrors");
+    qt_msg.empty();
+    if (qtemplates.size() <= 0) {
+      qt_msg.append("<span class='alert-error'>You must have at least one question.</span>");
+      errcount += 1;
+    }
+    if (errcount == 0) {
+      enable_save();
+      alert("form is valid!");
+    } else {
+      alert("form is NOT VALID (" + errcount + " errors)");
+    }
+  }
 
-        date_msg.empty();
-        if (end_date < start_date) {
-            date_msg.append("<span class='alert-error'>Start date must be before end date</span>");
-            errcount += 1;
-        } else if (end_date == start_date) {
-            if (end_hour < start_hour) {
-                date_msg.append("<span class='alert-error'>Start must be before end</span>");
-                errcount += 1;
-            } else if (end_hour == start_hour) {
-                if (end_minute <= start_minute) {
-                    date_msg.append("<span class='alert-error'>Start time must be before end</span>");
-                    errcount += 1;
-                }
-            }
-        }
+  function refresh_qtemplates() {
+    // Wait until we have both sets of data
+    if (qtemplates == null) return;
+    if (available == null) return;
 
-        var dr = parseInt($("#duration").val(), 10);
-        var dur_msg = $("#durationerrors");
-        dur_msg.empty();
-        if (!(dr >= 5 && dr < 50000) || !dr) {
-            dur_msg.append("<span class='alert-error'>Duration must be at least 5 minutes and no more than about a month (45000 minutes)</span>");
-            errcount += 1;
-        }
+    // We've loaded the lists of available qtemplates and the list of which ones are
+    // currently used. Now synchronize the form.
+    var qf = $("#qtemplates");
+    qf.empty();
 
-        var tt = $("#title").val();
-        var title_msg = $("#titleerrors");
-        title_msg.empty();
-        if (tt.length < 3) {
-            title_msg.append("<span class='alert-error'>You must provide a title.</span>");
-            errcount += 1;
-        }
+    $.each(qtemplates, function (qnum, qtemplate) {
+      var sel = get_question_choose_row(qnum + 1, qtemplate);
+      qf.append(sel);
+    });
 
-        var qt_msg = $("#qtemplateerrors");
-        qt_msg.empty();
-        if (qtemplates.size() <= 0) {
-            qt_msg.append("<span class='alert-error'>You must have at least one question.</span>");
-            errcount += 1;
-        }
-        if (errcount == 0) {
-            enable_save();
-            alert("form is valid!");
+  }
+
+  function get_alt_add_btn(qnum) {
+    var newbtn = $("<button href='#' value='" + qnum + "' class='add_alt_button btn btn-mini'><i class='icon-arrow-right'> </i> add Alternative</button>");
+
+    newbtn.click(function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      var qnum = $(this).val();
+      qtemplates[qnum - 1].push(get_question_choose_sel(qnum, 0, 1));
+
+      refresh_qtemplates();
+
+    });
+    return newbtn;
+  }
+
+  function add_question_pos() {
+
+    qtemplates.push([
+      {qtid: 0}
+    ]);
+    refresh_qtemplates();
+    var num = qtemplates.length;
+    if (num >= 20) {
+
+      $("#add_question_pos").remove();
+    }
+  }
+
+  function get_question_choose_row(qnum, row) {
+    var newrow = $("<div class='qrow' style='margin-bottom: 1px;'><h5>Question " + qnum + ".</h5></div>");
+    var count = 0;
+    $.each(row, function (col, qtemplate) {
+      count++;
+      var sel = get_question_choose_sel(qnum, qtemplate, count);
+      newrow.append(sel);
+    });
+    if (count < 6) {
+      var addbtn = get_alt_add_btn(qnum);
+      newrow.append(addbtn);
+    }
+    return newrow;
+  }
+
+  function selectqtemplate(elt) {
+    var val = elt.attr('value');
+    var qnum = elt.data("qnum");
+    var col = elt.data("col");
+
+    qtemplates[qnum - 1][col - 1] = {id: val};
+  }
+
+  function get_question_choose_sel(qnum, selected, count) {
+    var out = "";
+    if (count == 1) {
+      out += " or ";
+    }
+    out += "<select name='question_" + qnum + "_" + count + "'>\n";
+
+    var sel = "";
+    out += "<option value='---'>---</option>\n";
+    $.each(available, function (tpos, topic) {
+      out += "<optgroup label='" + topic.title + "'>\n";
+      $.each(topic.questions, function (qpos, question) {
+        if (question.qtid == selected.id) {
+          sel = "selected";
+
         } else {
-            alert("form is NOT VALID ("+ errcount+" errors)");
+          sel = "";
         }
-    }
+        out += "<option value='" + question.qtid + "' " + sel + ">" + question.position + ". " + question.name + "</option>\n";
+      });
+    });
+    out += "</optgroup>";
+    out += "</select> ";
+    var node = $(out);
+    node.click(function () {
+      selectqtemplate($(this));
+    });
+    node.data('qnum', qnum);
+    node.data('col', count);
+    return node;
+  }
 
-    function refresh_qtemplates() {
-        // Wait until we have both sets of data
-        if (qtemplates == null) return;
-        if (available == null) return;
+  $("#add_question_pos").click(function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    add_question_pos();
+  });
+  var qtemplates = null;
+  var available = null;
 
-        // We've loaded the lists of available qtemplates and the list of which ones are
-        // currently used. Now synchronize the form.
-        var qf = $("#qtemplates");
-        qf.empty();
-
-        $.each(qtemplates, function (qnum, qtemplate) {
-            var sel = get_question_choose_row(qnum + 1, qtemplate);
-            qf.append(sel);
-        });
-
-    }
-
-    function get_alt_add_btn(qnum) {
-        var newbtn = $("<button href='#' value='" + qnum + "' class='add_alt_button btn btn-mini'><i class='icon-arrow-right'> </i> add Alternative</button>");
-
-        newbtn.click(function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-            var qnum = $(this).val();
-            qtemplates[qnum - 1].push(get_question_choose_sel(qnum, 0, 1));
-
-            refresh_qtemplates();
-
-        });
-        return newbtn;
-    }
-
-    function add_question_pos() {
-
-        qtemplates.push([
-            {qtid: 0}
-        ]);
+  $.getJSON("{{cf.url}}api/exam/{{course.id}}/{{exam.id}}/available_qtemplates",
+      function (data) {
+        available = data.result;
         refresh_qtemplates();
-        var num = qtemplates.length;
-        if (num >= 20) {
+      }
+  );
 
-            $("#add_question_pos").remove();
-        }
-    }
+  $.getJSON("{{cf.url}}api/exam/{{course.id}}/{{exam.id}}/qtemplates",
+      function (data) {
+        qtemplates = data.result;
+        refresh_qtemplates();
 
-    function get_question_choose_row(qnum, row) {
-        var newrow = $("<div class='qrow' style='margin-bottom: 1px;'><h5>Question " + qnum + ".</h5></div>");
-        var count = 0;
-        $.each(row, function (col, qtemplate) {
-            count++;
-            var sel = get_question_choose_sel(qnum, qtemplate, count);
-            newrow.append(sel);
-        });
-        if (count < 6) {
-            var addbtn = get_alt_add_btn(qnum);
-            newrow.append(addbtn);
-        }
-        return newrow;
-    }
+      });
 
-    function selectqtemplate(elt) {
-        var val = elt.attr('value');
-        var qnum = elt.data("qnum");
-        var col = elt.data("col");
+  $(function () {
+    validate_form();
+  });
 
-        qtemplates[qnum - 1][col - 1] = {id: val};
-    }
-
-    function get_question_choose_sel(qnum, selected, count) {
-        var out = "";
-        if (count == 1) {
-            out += " or ";
-        }
-        out += "<select name='question_" + qnum + "_" + count + "'>\n";
-
-        var sel = "";
-        out += "<option value='---'>---</option>\n";
-        $.each(available, function (tpos, topic) {
-            out += "<optgroup label='" + topic.title + "'>\n";
-            $.each(topic.questions, function (qpos, question) {
-                if (question.qtid == selected.id) {
-                    sel = "selected";
-
-                } else {
-                    sel = "";
-                }
-                out += "<option value='" + question.qtid + "' " + sel + ">" + question.position + ". " + question.name + "</option>\n";
-            });
-        });
-        out += "</optgroup>";
-        out += "</select> ";
-        var node = $(out);
-        node.click(function () {
-            selectqtemplate($(this));
-        });
-        node.data('qnum', qnum);
-        node.data('col', count);
-        return node;
-    }
-
-    $("#add_question_pos").click(function (e) {
-        e.preventDefault();
-        e.stopPropagation();
-        add_question_pos();
-    });
-    var qtemplates = null;
-    var available = null;
-
-    $.getJSON("{{cf.url}}api/exam/{{course.id}}/{{exam.id}}/available_qtemplates",
-            function (data) {
-                available = data.result;
-                refresh_qtemplates();
-            }
-    );
-
-    $.getJSON("{{cf.url}}api/exam/{{course.id}}/{{exam.id}}/qtemplates",
-            function (data) {
-                qtemplates = data.result;
-                refresh_qtemplates();
-
-            });
-
-    $(function() {
-        validate_form();
-    });
-
-    </script>
+  </script>
 {% endblock %}
 {% block body %}
+  <br/>
+  <H2>Assessment {% if exam %}Edit{% else %}Create{% endif %}</H2>
+  <h4>{{ course.name }} ({{ course.title }})</h4>
+
+  <form method="post"
+        action="{{ cf.url }}courseadmin/exam_edit_submit/{{ course.id }}/{{ exam.id }}"
+        name="create_assessment">
+    <br>
+    {% if exam %}
+      <input type="hidden" name="exam_id" value="{{ exam.id }}">
+    {% endif %}
+    <input class='btn btn-primary save_button' name="exam_create"
+           value="{% if exam %}Save{% else %}Create{% endif %} Assessment"
+           type="submit">
+    <input class='btn btn-danger' name="exam_cancel" value="Cancel"
+           type="submit">
+
     <br/>
-    <H2>Assessment {% if exam %}Edit{% else %}Create{% endif %}</H2>
-    <h4>{{ course.name }} ({{ course.title }})</h4>
 
-    <form method="post" action="{{ cf.url }}courseadmin/exam_edit_submit/{{ course.id }}/{{ exam.id }}"
-          name="create_assessment">
-        <br>
-        {% if exam %}
-            <input type="hidden" name="exam_id" value="{{ exam.id }}">
-        {% endif %}
-        <input class='btn btn-primary save_button' name="exam_create"
-               value="{% if exam %}Save{% else %}Create{% endif %} Assessment"
-               type="submit">
-        <input class='btn btn-danger' name="exam_cancel" value="Cancel" type="submit">
+    <div class="container-fluid well">
+      <p>NOTE: You can change any of these fields until one student has
+        started the assessment. After that you
+        should not
+        change the questions, although you can change the other fields.
+        If you find a mistake in the questions
+        after the assessment
+        has started, you should create a new assessment.</p>
+      <br>
+      <h5>Assessment Title</h5>
 
-        <br/>
+      <label>Title: <input name="assess_title" id="title"
+                           value="{{ exam.title }}"> (for example
+        "Assignment One")</label>
 
-        <div class="container-fluid well">
-            <p>NOTE: You can change any of these fields until one student has started the assessment. After that you
-                should not
-                change the questions, although you can change the other fields. If you find a mistake in the questions
-                after the assessment
-                has started, you should create a new assessment.</p>
-            <br>
-            <h5>Assessment Title</h5>
+      <div id="titleerrors"></div>
+      <br>
+      <h5>Assessment Type</h5>
 
-            <label>Title: <input name="assess_title" id="title" value="{{ exam.title }}"> (for example "Assignment One")</label>
+      <p>Exams are assumed to be run in a supervised environment such as a
+        computer lab.
+      </p>
 
-            <div id="titleerrors"></div>
-            <br>
-            <h5>Assessment Type</h5>
+      <p>Assignments are less controlled
+        and could be taken from home.</p>
 
-            <p>Exams are assumed to be run in a supervised environment such as a computer lab.
-            </p>
+      <label>Type:
+        <select name="assess_type">
+          <option value='2'
+                  {% if exam.type == 2 or exam.type == 4 %}selected="selected"{% endif %}>
+            Assignment
+          </option>
+          <option value='3'
+                  {% if exam.type == 3 or exam.type == 5 %}selected="selected"{% endif %}>
+            Exam
+          </option>
+          {% if exam.type == 6 %}
+            <option value='6' selected>Survey (no longer
+              available)
+            </option>{% endif %}
+        </select>
+      </label>
+      <br>
+      <h5>Assessment Code</h5>
 
-            <p>Assignments are less controlled
-                and could be taken from home.</p>
+      <p>If you provide an assessment code, the student will have to type
+        it in to unlock the assessment. Use this
+        to prevent people
+        from taking tests from unsupervised locations.</p>
+      <label>Code:
+        <input name="assess_code" id="code"
+               value="{% if exam.code %}{{ exam.code }}{% endif %}">
+        (leave blank
+        to disable)
+      </label>
+      <br>
+      <h5>Make Available:</h5>
 
-            <label>Type:
-                <select name="assess_type">
-                    <option value='2' {% if exam.type == 2 or exam.type == 4 %}selected="selected"{% endif %}>
-                        Assignment
-                    </option>
-                    <option value='3' {% if exam.type == 3 or exam.type == 5 %}selected="selected"{% endif %}>Exam
-                    </option>
-                    {% if exam.type == 6 %}
-                        <option value='6' selected>Survey (no longer available)</option>{% endif %}
-                </select>
-            </label>
-            <br>
-            <h5>Assessment Code</h5>
+      <div>
+        From: <input type='text' id="startdate" name="startdate"
+                     value="{{ exam.start }}"
+                     class="input-medium datepicker date" readonly=1>
+        at <select class="select-mini" id="start_hour"
+                   name="examstart_hour">
+        <option>--</option>
+        {% for num in range(0,24) %}
+          <option value='{{ num }}'
+                  {% if num == exam.start.hour %}SELECTED{% endif %}>{{ "%02d"|format(num) }}</option>
+        {% endfor %}
+      </select>:
+        <select class="select-mini" id="start_minute"
+                name="examstart_minute">
+          <option>--</option>
+          {% for num in range(0,60) %}
+            <option value='{{ num }}'
+                    {% if num == exam.start.minute %}SELECTED{% endif %}>{{ "%02d"|format(num) }}</option>
+          {% endfor %}
+        </select> (24 hour time)
+      </div>
 
-            <p>If you provide an assessment code, the student will have to type it in to unlock the assessment. Use this
-                to prevent people
-                from taking tests from unsupervised locations.</p>
-            <label>Code:
-                <input name="assess_code" id="code" value="{% if exam.code %}{{ exam.code }}{% endif %}"> (leave blank
-                to disable)
-            </label>
-            <br>
-            <h5>Make Available:</h5>
+      <div id="dateerrors"><br/>.</div>
+      <div>Until: <input type='text' name="enddate" id="enddate"
+                         value="{{ exam.end_date }}"
+                         class="input-medium datepicker date" readonly=1>
+        at <select class="select-mini" id="end_hour"
+                   name="examend_hour">
+          <option>--</option>
+          {% for num in range(0,24) %}
+            <option value='{{ num }}'
+                    {% if num == exam.end.hour %}SELECTED{% endif %}>{{ "%02d"|format(num) }}</option>
+          {% endfor %}
+        </select>:
+        <select class="select-mini" id="end_minute"
+                name="examend_minute">
+          <option>--</option>
+          {% for num in range(0,60) %}
+            <option value='{{ num }}'
+                    {% if num == exam.end.minute %}SELECTED{% endif %}>{{ "%02d"|format(num) }}</option>
+          {% endfor %}
+        </select> (24 hour time)
+      </div>
 
-            <div>
-                From: <input type='text' id="startdate" name="startdate" value="{{ exam.start }}"
-                             class="input-medium datepicker date" readonly=1>
-                at <select class="select-mini" id="start_hour" name="examstart_hour">
-                <option>--</option>
-                {% for num in range(0,24) %}
-                    <option value='{{ num }}' {% if num == exam.start.hour %}SELECTED{% endif %}>{{ "%02d"|format(num) }}</option>
-                {% endfor %}
-            </select>:
-                <select class="select-mini" id="start_minute" name="examstart_minute">
-                    <option>--</option>
-                    {% for num in range(0,60) %}
-                        <option value='{{ num }}' {% if num == exam.start.minute %}SELECTED{% endif %}>{{ "%02d"|format(num) }}</option>
-                    {% endfor %}
-                </select> (24 hour time)
-            </div>
+      <br/>
+      <h5>Duration</h5>
 
-            <div id="dateerrors"><br/>.</div>
-            <div>Until: <input type='text' name="enddate" id="enddate" value="{{ exam.end_date }}"
-                               class="input-medium datepicker date" readonly=1>
-                at <select class="select-mini" id="end_hour" name="examend_hour">
-                    <option>--</option>
-                    {% for num in range(0,24) %}
-                        <option value='{{ num }}' {% if num == exam.end.hour %}SELECTED{% endif %}>{{ "%02d"|format(num) }}</option>
-                    {% endfor %}
-                </select>:
-                <select class="select-mini" id="end_minute" name="examend_minute">
-                    <option>--</option>
-                    {% for num in range(0,60) %}
-                        <option value='{{ num }}' {% if num == exam.end.minute %}SELECTED{% endif %}>{{ "%02d"|format(num) }}</option>
-                    {% endfor %}
-                </select> (24 hour time)
-            </div>
+      <p>Once started, the student will have <input name="duration"
+                                                    id="duration"
+                                                    class='input-mini'
+                                                    value="
 
-            <br/>
-            <h5>Duration</h5>
+                                                        {% if exam %}{{ exam.duration }}{% else %}60{% endif %}">minutes
+        to complete.<br>
 
-            <p>Once started, the student will have <input name="duration" id="duration" class='input-mini'
-                     value="{% if exam %}{{ exam.duration }}{% else %}60{% endif %}">minutes to complete.<br>
+      <div id="durationerrors"></div>
+      <br/>
 
-            <div id="durationerrors"></div>
-            <br/>
+      <h5>Instant Results</h5>
 
-            <h5>Instant Results</h5>
+      <p>Show the student the results immediately upon submitting the
+        assessment?
+      </p>
 
-            <p>Show the student the results immediately upon submitting the assessment?
-            </p>
-
-            <label>Instant Results:
-                <select name="assess_instant">
-                    <option value='1' {% if exam.instant == 1 %}selected="selected"{% endif %}>Yes</option>
-                    <option value='2' {% if exam.instant == 2 %}selected="selected"{% endif %}>Wait until assessment
-                        period is over
-                    </option>
-                </select>
-            </label>
-            <br>
+      <label>Instant Results:
+        <select name="assess_instant">
+          <option value='1'
+                  {% if exam.instant == 1 %}selected="selected"{% endif %}>
+            Yes
+          </option>
+          <option value='2'
+                  {% if exam.instant == 2 %}selected="selected"{% endif %}>
+            Wait until assessment
+            period is over
+          </option>
+        </select>
+      </label>
+      <br>
 
 
-            <h5>Extra Instructions</h5>
+      <h5>Extra Instructions</h5>
 
-            <p>Will be displayed to the student before they start. This is a good opportunity to remind them if they
-                need a calculator, working paper, etc.</p>
-            <textarea class="input-xlarge" rows="8" name="instructions">{{ exam.instructions }}</textarea><br>
-        </div>
-        <div class="container-fluid well">
-            <br>
-            <h4>Questions</h4>
+      <p>Will be displayed to the student before they start. This is a
+        good opportunity to remind them if they
+        need a calculator, working paper, etc.</p>
+      <textarea class="input-xlarge" rows="8"
+                name="instructions">{{ exam.instructions }}</textarea><br>
+    </div>
+    <div class="container-fluid well">
+      <br>
+      <h4>Questions</h4>
 
-            <p>If more than one alternative is chosen for a question, students will be presented with one of the
-                alternatives at random.
-                It's important to ensure that each alternative is worth the same number of marks.</p>
-            <div id='qtemplateerrors'></div>
-            <div id="qtemplates"></div>
-            <a class="btn btn-small" id="add_question_pos" href="#"><i class='icon-plus'> </i> Add Question</a>
-            <br/>(to remove a question/alternative, simply leave it as blank '---'. It will be ignored when you
-            save)<br/>
-            <br/><br/>
-            <input class='btn btn-primary save_button' name="exam_create"
-                   value="{% if exam %}Save{% else %}Create{% endif %} Assessment"
-                   type="submit">
-            <input class='btn btn-danger' name="exam_cancel" value="Cancel" type="submit">
+      <p>If more than one alternative is chosen for a question, students
+        will be presented with one of the
+        alternatives at random.
+        It's important to ensure that each alternative is worth the same
+        number of marks.</p>
 
-            <div class="errormessages"></div>
-            <br/>
+      <div id='qtemplateerrors'></div>
+      <div id="qtemplates"></div>
+      <a class="btn btn-small" id="add_question_pos" href="#"><i
+          class='icon-plus'> </i> Add Question</a>
+      <br/>(to remove a question/alternative, simply leave it as blank
+      '---'. It will be ignored when you
+      save)<br/>
+      <br/><br/>
+      <input class='btn btn-primary save_button' name="exam_create"
+             value="{% if exam %}Save{% else %}Create{% endif %} Assessment"
+             type="submit">
+      <input class='btn btn-danger' name="exam_cancel" value="Cancel"
+             type="submit">
 
-            <br>
+      <div class="errormessages"></div>
+      <br/>
 
-        </div>
+      <br>
 
-    </form>
-    <br/><br/><br/><br/><br/><br/>
-{{ test }}
+    </div>
+
+  </form>
+  <br/><br/><br/><br/><br/><br/>
+  {{ test }}
 {% endblock body %}

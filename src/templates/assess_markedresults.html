@@ -1,65 +1,68 @@
 {% extends "page_assess.html" %}
 {% block body %}
-    <br/>
-    <p>Back to <a href='{{ cf.url }}assess/top'>Assessment List</a></p>
-    <h2>{{ course.name }}({{ course.title }})</h2>
-    <H3>{{ exam.title }}</H3>
-    <p>{% if fullname %}<b>{{ fullname }}</b>{% endif %} {% if uname %}<b>{{ uname }}</b>{% endif %}</p>
-    <p>{% if datesubmit %}<b>Submitted:</b> {{ datesubmit }}{% endif %}</p>
-    <p>{% if datemarked %}<b>Marked:</b> {{ datemarked }}{% endif %}</p>
-    <div>
-        <div class="container-fluid well">
-            <h3>Results</h3>
-            <table class="table">
-                <thead>
-                <tr>
-                    <th></th>
-                    <th>Your Answer</th>
-                    <th>Correct Answer</th>
-                    <Th></Th>
-                    <th>Mark</th>
-                </tr>
-                </thead>
-                {% for r in results %}
-                    <tr>
-                        <th colspan='5'>Question {{ r.pos }}</th>
-                    </tr>
-                    {% for m in r.marking %}
-                        <tr>
-                        <th>{{ m.part }}</th>
-                        <td>   {% if m.guess %}
-                            {{ m.guess }}
-                        {% else %}
-                            <span style='color: brown;'>-none-</span>
-                        {% endif %}
-                        </td>
-                        <td> {{ m.correct }}</td>
-                        <td>
-                            {% if m.mark > 0 %}
-                                <i style='color: darkgreen;' class='icon-thumbs-up'></i>
-                            {% else %}
-                                <span style='color: brown;'>X</span>
-                            {% endif %}
-                        </td>
-                        <td> {{ m.mark }}</td>
-                    {% else %}
-                        <td><span style='color: brown;'>-none-</span></td>
-                    {% endfor %}
-                {% endfor %}
-            </table>
-            <br/><br/>
-
-            <div class='pull-right' style='padding-right: 80px;'>Total: <span
-                    style='font-size: x-large; border: solid grey 1px; padding: 8px;'>{{ examtotal }}</span></div>
-            <br/><br/>
-        </div>
-        <br/>
-    </div>
-    <br/>
-    <div class='container-fluid well'>
+  <br/>
+  <p>Back to <a href='{{ cf.url }}assess/top'>Assessment List</a></p>
+  <h2>{{ course.name }}({{ course.title }})</h2>
+  <H3>{{ exam.title }}</H3>
+  <p>{% if fullname %}<b>{{ fullname }}</b>{% endif %} {% if uname %}<b>
+    {{ uname }}</b>{% endif %}</p>
+  <p>{% if datesubmit %}<b>Submitted:</b> {{ datesubmit }}{% endif %}</p>
+  <p>{% if datemarked %}<b>Marked:</b> {{ datemarked }}{% endif %}</p>
+  <div>
+    <div class="container-fluid well">
+      <h3>Results</h3>
+      <table class="table">
+        <thead>
+        <tr>
+          <th></th>
+          <th>Your Answer</th>
+          <th>Correct Answer</th>
+          <Th></Th>
+          <th>Mark</th>
+        </tr>
+        </thead>
         {% for r in results %}
-            <h2>Question {{ r.pos }}</h2>
-            {{ r.html | safe }}
+          <tr>
+            <th colspan='5'>Question {{ r.pos }}</th>
+          </tr>
+          {% for m in r.marking %}
+            <tr>
+            <th>{{ m.part }}</th>
+            <td>   {% if m.guess %}
+              {{ m.guess }}
+            {% else %}
+              <span style='color: brown;'>-none-</span>
+            {% endif %}
+            </td>
+            <td> {{ m.correct }}</td>
+            <td>
+              {% if m.mark > 0 %}
+                <i style='color: darkgreen;'
+                   class='icon-thumbs-up'></i>
+              {% else %}
+                <span style='color: brown;'>X</span>
+              {% endif %}
+            </td>
+            <td> {{ m.mark }}</td>
+          {% else %}
+            <td><span style='color: brown;'>-none-</span></td>
+          {% endfor %}
         {% endfor %}
+      </table>
+      <br/><br/>
+
+      <div class='pull-right' style='padding-right: 80px;'>Total: <span
+          style='font-size: x-large; border: solid grey 1px; padding: 8px;'>{{ examtotal }}</span>
+      </div>
+      <br/><br/>
     </div>
+    <br/>
+  </div>
+  <br/>
+  <div class='container-fluid well'>
+    {% for r in results %}
+      <h2>Question {{ r.pos }}</h2>
+      {{ r.html | safe }}
+    {% endfor %}
+  </div>
 {% endblock body %}

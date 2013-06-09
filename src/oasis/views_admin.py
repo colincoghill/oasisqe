@@ -8,9 +8,8 @@
 """
 
 
-
 import os
-import datetime
+from datetime import datetime
 
 from flask import render_template, session, \
     request, redirect, abort, url_for, flash
@@ -18,31 +17,27 @@ from flask import render_template, session, \
 from .lib import Courses, Courses2, Setup, Periods, Feeds
 
 MYPATH = os.path.dirname(__file__)
-from .lib.UserDB import check_perm
 from .lib import DB, Groups
-from oasis import app, authenticated
+from oasis import app, require_perm
+from logging import log, INFO
 
 
 @app.route("/admin/top")
-@authenticated
+@require_perm('sysadmin')
 def admin_top():
     """ Present the top level admin page """
     db_version = DB.get_db_version()
     return render_template(
         "admintop.html",
         courses=Setup.get_sorted_courselist(),
-        db_version = db_version
+        db_version=db_version
     )
 
 
 @app.route("/admin/courses")
-@authenticated
+@require_perm('sysadmin')
 def admin_courses():
     """ Present page to administer courses in the system """
-    user_id = session['user_id']
-    if not check_perm(user_id, 0, "OASIS_SYSADMIN"):
-        flash("You do not have system administrator permission")
-        return redirect(url_for('setup_top'))
     courses = Setup.get_sorted_courselist(with_stats=True, only_active=False)
 
     return render_template(
@@ -52,28 +47,19 @@ def admin_courses():
 
 
 @app.route("/admin/enrol/top")
-@authenticated
+@require_perm('sysadmin')
 def admin_enrol_top():
     """ Present menu page of enrolment related options """
-    user_id = session['user_id']
-    if not check_perm(user_id, 0, "OASIS_SYSADMIN"):
-        flash("You do not have system administrator permission")
-        return redirect(url_for('setup_top'))
-
+    log(INFO, "Enrol top")
     return render_template(
         "admin_enrol_top.html"
     )
 
 
 @app.route("/admin/feeds")
-@authenticated
+@require_perm('sysadmin')
 def admin_feeds():
     """ Present menu page of enrolment related options """
-    user_id = session['user_id']
-    if not check_perm(user_id, 0, "OASIS_SYSADMIN"):
-        flash("You do not have system administrator permission")
-        return redirect(url_for('setup_top'))
-
 
     feeds = Feeds.all_list()
     return render_template(
@@ -83,13 +69,9 @@ def admin_feeds():
 
 
 @app.route("/admin/periods")
-@authenticated
+@require_perm('sysadmin')
 def admin_periods():
     """ Present page to administer time periods in the system """
-    user_id = session['user_id']
-    if not check_perm(user_id, 0, "OASIS_SYSADMIN"):
-        flash("You do not have system administrator permission")
-        return redirect(url_for('setup_top'))
     periods = Periods.all_list()
 
     return render_template(
@@ -98,18 +80,112 @@ def admin_periods():
     )
 
 
+@app.route("/admin/groups")
+@require_perm('sysadmin')
+def admin_groups():
+    """ Present page to administer time periods in the system """
+    groups = Groups.all_groups()
+
+    return render_template(
+        "admin_groups.html",
+        groups=groups
+    )
+
+
+@app.route("/admin/add_group")
+@require_perm('sysadmin')
+def admin_add_group():
+    """ Present page to add a group to the system """
+    feeds = Feeds.all_list()
+    periods = Periods.all_list()
+    gtypes = Groups.all_gtypes()
+    return render_template(
+        "admin_editgroup.html",
+        feeds=feeds,
+        periods=periods,
+        group=Groups.Group(gtype=1),
+        gtypes=gtypes
+    )
+
+
+@app.route("/admin/edit_group/<int:g_id>")
+@require_perm('sysadmin')
+def admin_edit_group(g_id):
+    """ Present page to add a group to the system """
+    feeds = Feeds.all_list()
+    periods = Periods.all_list()
+    group = Groups.Group(id=g_id)
+    gtypes = Groups.all_gtypes()
+    return render_template(
+        "admin_editgroup.html",
+        feeds=feeds,
+        periods=periods,
+        group=group,
+        gtypes=gtypes
+    )
+
+
+@app.route("/admin/edit_group_submit/<int:g_id>", methods=["POST", ])
+@require_perm('sysadmin')
+def admin_edit_group_submit(g_id):
+    """ Submit edit group form """
+    if "cancel" in request.form:
+        flash("Edit cancelled!")
+        return redirect(url_for("admin_groups"))
+
+    name = request.form.get('name', None)
+    title = request.form.get('title', None)
+    gtype = request.form.get('gtype', None)
+
+    error = False
+
+    if g_id == 0:  # It's a new one being created
+        try:
+            group = Groups.Group(
+                id=0,
+                name=name,
+                title=title
+            )
+        except KeyError:
+            pass
+        else:
+            error = "A Group with that name already exists!"
+    else:
+        try:
+            group = Groups.Group(id=g_id)
+        except KeyError:
+            return abort(404)
+
+    group.id = g_id
+    group.name = name
+    group.title = title
+    group.gtype = gtype
+
+    if not name:
+        error =  "Can't Save: Name must be supplied"
+
+    try:
+        group.save()
+    except KeyError, err:  # Probably a duplicate or something
+        error = "Can't Save: %s" % err
+
+    if error:
+        flash(error)
+        return redirect(url_for("admin_edit_group", g_id=group.id))
+
+    flash("Changes saved", category='success')
+    return redirect(url_for("admin_groups"))
+
+
+
 @app.route("/admin/edit_period/<int:p_id>")
-@authenticated
+@require_perm('sysadmin')
 def admin_edit_period(p_id):
     """ Present page to edit a time period in the system """
-    user_id = session['user_id']
-    if not check_perm(user_id, 0, "OASIS_SYSADMIN"):
-        flash("You do not have system administrator permission")
-        return redirect(url_for('setup_top'))
     try:
         period = Periods.Period(id=p_id)
     except KeyError:
-        abort(404)
+        return abort(404)
     else:
         period.start_date = period.start.strftime("%a %d %b %Y")
         period.finish_date = period.finish.strftime("%a %d %b %Y")
@@ -120,18 +196,13 @@ def admin_edit_period(p_id):
 
 
 @app.route("/admin/edit_feed/<int:feed_id>")
-@authenticated
+@require_perm('sysadmin')
 def admin_edit_feed(feed_id):
     """ Present page to edit a feed in the system """
-    user_id = session['user_id']
-    if not check_perm(user_id, 0, "OASIS_SYSADMIN"):
-        flash("You do not have system administrator permission")
-        return redirect(url_for('setup_top'))
     try:
         feed = Feeds.Feed(id=feed_id)
     except KeyError:
-        feed = None
-        abort(404)
+        return abort(404)
     scripts = ['feed_url.py', 'feed_ldap.py', 'feed_spreadsheet.py']
     return render_template(
         "admin_edit_group_feed.html",
@@ -141,13 +212,9 @@ def admin_edit_feed(feed_id):
 
 
 @app.route("/admin/add_feed")
-@authenticated
+@require_perm('sysadmin')
 def admin_add_feed():
     """ Present page to add a feed to the system """
-    user_id = session['user_id']
-    if not check_perm(user_id, 0, "OASIS_SYSADMIN"):
-        flash("You do not have system administrator permission")
-        return redirect(url_for('setup_top'))
     scripts = ['feed_url.py', 'feed_ldap.py', 'feed_spreadsheet.py']
     return render_template(
         "admin_edit_group_feed.html",
@@ -157,30 +224,19 @@ def admin_add_feed():
 
 
 @app.route("/admin/add_period")
-@authenticated
+@require_perm('sysadmin')
 def admin_add_period():
     """ Present page to add a time period in the system """
-    user_id = session['user_id']
-    if not check_perm(user_id, 0, "OASIS_SYSADMIN"):
-        flash("You do not have system administrator permission")
-        return redirect(url_for('setup_top'))
-
     return render_template(
         "admin_editperiod.html",
-        period={'id':0}
+        period={'id': 0}
     )
 
 
-
-@app.route("/admin/edit_group_feed_submit/<int:feed_id>", methods=["POST",])
-@authenticated
+@app.route("/admin/edit_group_feed_submit/<int:feed_id>", methods=["POST", ])
+@require_perm('sysadmin')
 def admin_edit_group_feed_submit(feed_id):
     """ Submit edit feed form """
-    user_id = session['user_id']
-    if not check_perm(user_id, 0, "OASIS_SYSADMIN"):
-        flash("You do not have system administrator permission")
-        return redirect(url_for('setup_top'))
-
     if "cancel" in request.form:
         flash("Edit cancelled!")
         return redirect(url_for("admin_feeds"))
@@ -208,8 +264,7 @@ def admin_edit_group_feed_submit(feed_id):
         try:
             feed = Feeds.Feed(id=feed_id)
         except KeyError:
-            feed = None
-            abort(404)
+            return abort(404)
 
     feed.id = feed_id
     feed.name = name
@@ -239,40 +294,31 @@ def admin_edit_group_feed_submit(feed_id):
     return redirect(url_for("admin_feeds"))
 
 
-@app.route("/admin/edit_period_submit/<int:p_id>", methods=["POST",])
-@authenticated
+@app.route("/admin/edit_period_submit/<int:p_id>", methods=["POST", ])
+@require_perm('sysadmin')
 def admin_edit_period_submit(p_id):
     """ Submit edit period form """
-    user_id = session['user_id']
-    if not check_perm(user_id, 0, "OASIS_SYSADMIN"):
-        flash("You do not have system administrator permission")
-        return redirect(url_for('setup_top'))
-
     if "cancel" in request.form:
         flash("Edit cancelled!")
         return redirect(url_for("admin_periods"))
 
     try:
-        start = datetime.datetime.strptime(request.form['start'], "%a %d %b %Y")
+        start = datetime.strptime(request.form['start'], "%a %d %b %Y")
+        start_date = start.strftime("%a %d %b %Y")
     except ValueError:
         start = None
+        start_date = ""
 
     try:
-        finish = datetime.datetime.strptime(request.form['finish'], "%a %d %b %Y")
+        finish = datetime.strptime(request.form['finish'], "%a %d %b %Y")
+        finish_date = finish.strftime("%a %d %b %Y")
     except ValueError:
         finish = None
-
-    name = request.form['name']
-    title = request.form['title']
-    code = request.form['code']
-    if start:
-        start_date = start.strftime("%a %d %b %Y")
-    else:
-        start_date = ""
-    if finish:
-        finish_date = finish.strftime("%a %d %b %Y")
-    else:
         finish_date = ""
+
+    name = request.form.get('name', None)
+    title = request.form.get('title', None)
+    code = request.form.get('code', None)
 
     if p_id == 0:  # It's a new one being created
         period = Periods.Period(
@@ -287,7 +333,7 @@ def admin_edit_period_submit(p_id):
         try:
             period = Periods.Period(id=p_id)
         except KeyError:
-            abort(404)
+            return abort(404)
 
     period.id = p_id
     period.start = start
@@ -298,87 +344,53 @@ def admin_edit_period_submit(p_id):
     period.start_date = start_date
     period.finish_date = finish_date
 
+    error = False
     if not start:
-        flash("Can't Save: can't understand start date.")
-        return render_template(
-            "admin_editperiod.html",
-            period=period
-        )
+        error = "Can't Save: can't understand start date."
 
     if not finish:
-        flash("Can't Save: can't understand finish date.")
-        return render_template(
-            "admin_editperiod.html",
-            period=period
-        )
+        error = "Can't Save: can't understand finish date."
 
     if name == "":
-        flash("Can't Save: Name must be supplied")
-        return render_template(
-            "admin_editperiod.html",
-            period=period
-        )
+        error =  "Can't Save: Name must be supplied"
 
     if not period.editable():
-        flash("That time period is not editable!")
-        return redirect(url_for("admin_periods"))
+        error = "That time period is not editable!"
 
     try:
         period.save()
     except ValueError, err:  # Probably a duplicate or something
-        flash("Can't Save: %s" % err)
+        error = "Can't Save: %s" % err
+
+    if error:
+        flash(error)
         return render_template(
             "admin_editperiod.html",
             period=period
         )
+
     flash("Changes saved", category='success')
     return redirect(url_for("admin_periods"))
 
 
 @app.route("/admin/course/<int:course_id>")
-@authenticated
+@require_perm('sysadmin')
 def admin_course(course_id):
     """ Present page to administer settings for a given course"""
-    user_id = session['user_id']
-    if not check_perm(user_id, 0, "OASIS_SYSADMIN"):
-        flash("You do not have system administrator permission")
-        return redirect(url_for('setup_top'))
 
     course = Courses2.get_course(course_id)
     course['size'] = len(Courses.get_users(course_id))
 
-    groups = [Groups.getInfo(group_id)
-              for group_id in Courses.get_groups(course_id)]
-
-    for group in groups:
-        if not group['enddate']:
-            group['enddate'] = "-"
-        elif group['enddate'] > datetime.datetime(year=9990, month=1, day=1):
-            group['enddate'] = "-"
-
-        if group['startdate']:
-            group['startdate'] = group['startdate'].strftime("%d %b %Y")
-        else:
-            group['startdate'] = "-"
-        group['size'] = len(Groups.get_users(group['id']))
-
-    allgroups = Groups.getInfoAll()
     return render_template(
         "admin_course.html",
         course=course,
-        groups=groups,
-        allgroups=allgroups
     )
 
 
 @app.route("/admin/add_course")
-@authenticated
+@require_perm('sysadmin')
 def admin_add_course():
     """ Present page to administer settings for a given course """
-    user_id = session['user_id']
-    if not check_perm(user_id, 0, "OASIS_SYSADMIN"):
-        flash("You do not have system administrator permission")
-        return redirect(url_for('setup_top'))
     course = {
         'course_name': '',
         'course_title': '',
@@ -391,14 +403,9 @@ def admin_add_course():
 
 
 @app.route("/admin/course/save/<int:course_id>", methods=['POST', ])
-@authenticated
+@require_perm('sysadmin')
 def admin_course_save(course_id):
     """ accept saved settings """
-    user_id = session['user_id']
-    if not check_perm(user_id, 0, "OASIS_SYSADMIN"):
-        flash("You do not have system administrator permission")
-        return redirect(url_for('setup_top'))
-
     form = request.form
     if 'cancel_edit' in form:
         flash("Course edits cancelled")
@@ -431,32 +438,6 @@ def admin_course_save(course_id):
             changed = True
             Courses.set_active(course_id, active)
 
-    if 'enrol_type' in form:
-        enrol_type = form['enrol_type']
-        if not (enrol_type == course['enrol_type']):
-            changed = True
-            Courses.set_enrol_type(course_id, enrol_type)
-
-    if 'registration' in form:
-        registration = form['registration']
-        if not (registration == course['registration']):
-            changed = True
-            Courses.set_registration(course_id, registration)
-
-    if 'enrol_location' in form:
-        enrol_location = form['enrol_location']
-        if not (enrol_location == course['enrol_location']):
-            changed = True
-            Courses.set_enrol_location(course_id, enrol_location)
-
-    if 'enrol_freq' in form:
-        enrol_freq = form['enrol_freq']
-        if not (enrol_freq == course['enrol_freq']):
-            changed = True
-            # form says hours, we want minutes.
-            enrol_freq = int(float(enrol_freq) * 60)
-            Courses.set_enrol_freq(course_id, enrol_freq)
-
     if changed:
         Courses2.reload_if_needed()
         flash("Course changes saved!")
@@ -470,15 +451,10 @@ def admin_course_save(course_id):
 
 
 @app.route("/admin/add_course/save", methods=['POST', ])
-@authenticated
+@require_perm('sysadmin')
 def admin_add_course_save():
     """ accept saved settings for a new course"""
-
     user_id = session['user_id']
-    if not check_perm(user_id, 0, "OASIS_SYSADMIN"):
-        flash("You do not have system administrator permission")
-        return redirect(url_for('setup_top'))
-
     form = request.form
     if 'cancel_edit' in form:
         flash("Course creation cancelled")
@@ -530,33 +506,24 @@ def admin_add_course_save():
 
 
 @app.route("/admin/edit_messages")
-@authenticated
+@require_perm('sysadmin')
 def admin_editmessages():
     """ Present page to administer messages in the system """
 
-    user_id = session['user_id']
-    if not check_perm(user_id, 0, "OASIS_SYSADMIN"):
-        flash("You do not have system administrator permission")
-        return redirect(url_for('setup_top'))
     mesg_news = DB.get_message("news")
     mesg_login = DB.get_message("loginmotd")
     return render_template(
         "admin_editmessages.html",
-        mesg_news = mesg_news,
-        mesg_login = mesg_login
+        mesg_news=mesg_news,
+        mesg_login=mesg_login
     )
 
 
 @app.route("/admin/save_messages",
            methods=["POST", ])
-@authenticated
+@require_perm('sysadmin')
 def admin_savemessages():
     """ Save messages in the system """
-
-    user_id = session['user_id']
-    if not check_perm(user_id, 0, "OASIS_SYSADMIN"):
-        flash("You do not have system administrator permission")
-        return redirect(url_for('setup_top'))
 
     form = request.form
     if 'cancel' in form:

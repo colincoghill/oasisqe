@@ -3,9 +3,9 @@
 # This code is under the GNU Affero General Public License
 # http://www.gnu.org/licenses/agpl-3.0.html
 
-""" Connection pooling for both memcached and for the database connection, since
-    they don't appear to be very threadsafe. It also helps keep the number of database
-    connections down, which helps with an overloading problem we're having.
+""" Connection pooling for both memcached and for the database connection,
+    since they don't appear to be very threadsafe. It also helps keep
+    the number of database connections down.
 """
 
 import Queue

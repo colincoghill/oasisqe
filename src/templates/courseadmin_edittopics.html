@@ -1,122 +1,141 @@
 {% extends "page_courseadmin.html" %}
 {% block body %}
-    <br/>
-    Back to <a href="{{ cf.url }}courseadmin/top/{{ course.id }}">Course Page</a>
-    <H2>All Topics</H2>
-    <h4>{{ course.name }} ({{ course.title }})</h4>
-    <div class="container-fluid well">
-        <h5>Visible Practice Topics</h5>
+  <br/>
+  Back to <a href="{{ cf.url }}cadmin/{{ course.id }}/top">Course Page</a>
+  <H2>All Topics</H2>
+  <h4>{{ course.name }} ({{ course.title }})</h4>
+  <div class="container-fluid well">
+    <h5>Visible Practice Topics</h5>
 
-        <form method="POST" action="{{ cf.url }}courseadmin/topics_save/{{ course.id }}">
-            <table class="table">
-                <thead>
-                <tr>
-                    <th></th>
-                    <th></th>
-                    <th>Questions</th>
-                    <th>Visibility</th>
-                    <th></th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for topic in topics %}
-                    {% if topic.visibility >= 2 %}
-                        <tr>
-                            <td><input name="{{ topic.id }}_position" type="text" class="input-mini"
-                                       value='{{ topic.position }}'></td>
-                            <td><input name="{{ topic.id }}_name" type="text" class="input" value='{{ topic.title }}'>
-                            </td>
-                            <td>{{ topic.numquestions }}</td>
-                            <td><select name="{{ topic.id }}_visibility">
-                                {% if topic.visibility>=4 %}
-                                    <option value='4' SELECTED>{% else %}
-                                    <option value='4'>{% endif %}Anyone</option>
-                                {% if topic.visibility==3 %}
-                                    <option value='3' SELECTED>{% else %}
-                                    <option value='3'>{% endif %}Organization Only</option>
-                                {% if topic.visibility==2 %}
-                                    <option value='2' SELECTED>{% else %}
-                                    <option value='2'>{% endif %}Students in Class</option>
-                                {% if topic.visibility<=1 %}
-                                    <option value='1' SELECTED>{% else %}
-                                    <option value='1'>{% endif %}Hidden (Staff Only)</option>
-                            </select></td>
-                            <td><a href="{{ cf.url }}courseadmin/edittopic/{{ topic.id }}" class='btn-mini btn'>Edit
-                                Questions</a></td>
-                        </tr>
-                    {% endif %}
-                {% endfor %}
-                </tbody>
-            </table>
-            <h5>Hidden Practice Topics</h5>
-            <table class="table">
-                <thead>
-                <tr>
-                    <th></th>
-                    <th></th>
-                    <th>Questions</th>
-                    <th>Visibility</th>
-                    <th></th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for topic in topics %}
-                    {% if topic.visibility < 2 %}
-                        <tr>
-                            <td><input name="{{ topic.id }}_position" type="text" class="input-mini"
-                                       value='{{ topic.position }}'></td>
-                            <td><input name="{{ topic.id }}_name" type="text" class="input" value='{{ topic.title }}'>
-                            </td>
-                            <td>{{ topic.numquestions }}</td>
-                            <td><select name="{{ topic.id }}_visibility">
-                                {% if topic.visibility>=4 %}
-                                    <option value='4' SELECTED>{% else %}
-                                    <option value='4'>{% endif %}Anyone</option>
-                                {% if topic.visibility==3 %}
-                                    <option value='3' SELECTED>{% else %}
-                                    <option value='3'>{% endif %}Organization Only</option>
-                                {% if topic.visibility==2 %}
-                                    <option value='2' SELECTED>{% else %}
-                                    <option value='2'>{% endif %}Students in Class</option>
-                                {% if topic.visibility<=1 %}
-                                    <option value='1' SELECTED>{% else %}
-                                    <option value='1'>{% endif %}Hidden (Staff Only)</option>
-                            </select></td>
-                            <td><a href="{{ cf.url }}courseadmin/edittopic/{{ topic.id }}" class='btn-mini btn'>Edit
-                                Questions</a></td>
-                        </tr>
-                    {% endif %}
-                {% endfor %}
-                </tbody>
-            </table>
-                <br/><br/>
-        <table class="table">
-                <thead>
-                <tr>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr><td></td>
-                     <td colspan='2'>Add Topic:
-                    <input name="0_name" type="text" class="input" value="[Name of new topic]">
-                            </td>
+    <form method="POST"
+          action="{{ cf.url }}cadmin/{{ course.id }}/topics_save">
+      <table class="table">
+        <thead>
+        <tr>
+          <th></th>
+          <th></th>
+          <th>Questions</th>
+          <th>Visibility</th>
+          <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for topic in topics %}
+          {% if topic.visibility >= 2 %}
+            <tr>
+              <td><input name="{{ topic.id }}_position"
+                         type="text" class="input-mini"
+                         value='{{ topic.position }}'></td>
+              <td><input name="{{ topic.id }}_name" type="text"
+                         class="input" value='{{ topic.title }}'>
+              </td>
+              <td>{{ topic.numquestions }}</td>
+              <td><select name="{{ topic.id }}_visibility">
+                {% if topic.visibility>=4 %}
+                  <option value='4' SELECTED>{% else %}
+                  <option value='4'>{% endif %}Anyone</option>
+                {% if topic.visibility==3 %}
+                  <option value='3' SELECTED>{% else %}
+                  <option value='3'>{% endif %}Organization
+                Only</option>
+                {% if topic.visibility==2 %}
+                  <option value='2' SELECTED>{% else %}
+                  <option value='2'>{% endif %}Students in
+                Class</option>
+                {% if topic.visibility<=1 %}
+                  <option value='1' SELECTED>{% else %}
+                  <option value='1'>{% endif %}Hidden (Staff
+                Only)</option>
+              </select></td>
+              <td>
+                <a href="{{ cf.url }}cadmin/{{ course.id }}/edittopic/{{ topic.id }}"
+                   class='btn-mini btn'>Edit
+                  Questions</a></td>
+            </tr>
+          {% endif %}
+        {% endfor %}
+        </tbody>
+      </table>
+      <h5>Hidden Practice Topics</h5>
+      <table class="table">
+        <thead>
+        <tr>
+          <th></th>
+          <th></th>
+          <th>Questions</th>
+          <th>Visibility</th>
+          <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for topic in topics %}
+          {% if topic.visibility < 2 %}
+            <tr>
+              <td><input name="{{ topic.id }}_position"
+                         type="text" class="input-mini"
+                         value='{{ topic.position }}'></td>
+              <td><input name="{{ topic.id }}_name" type="text"
+                         class="input" value='{{ topic.title }}'>
+              </td>
+              <td>{{ topic.numquestions }}</td>
+              <td><select name="{{ topic.id }}_visibility">
+                {% if topic.visibility>=4 %}
+                  <option value='4' SELECTED>{% else %}
+                  <option value='4'>{% endif %}Anyone</option>
+                {% if topic.visibility==3 %}
+                  <option value='3' SELECTED>{% else %}
+                  <option value='3'>{% endif %}Organization
+                Only</option>
+                {% if topic.visibility==2 %}
+                  <option value='2' SELECTED>{% else %}
+                  <option value='2'>{% endif %}Students in
+                Class</option>
+                {% if topic.visibility<=1 %}
+                  <option value='1' SELECTED>{% else %}
+                  <option value='1'>{% endif %}Hidden (Staff
+                Only)</option>
+              </select></td>
+              <td>
+                <a href="{{ cf.url }}cadmin/{{ course.id }}/edittopic/{{ topic.id }}"
+                   class='btn-mini btn'>Edit
+                  Questions</a></td>
+            </tr>
+          {% endif %}
+        {% endfor %}
+        </tbody>
+      </table>
+      <br/><br/>
+      <table class="table">
+        <thead>
+        <tr>
+          <th></th>
+          <th></th>
+          <th></th>
+          <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td></td>
+          <td colspan='2'>Add Topic:
+            <input name="0_name" type="text" class="input"
+                   value="[Name of new topic]">
+          </td>
 
-                            <td><input name="0_position" type="hidden" value="0">
-                            <input name="0_visibility" type="hidden" value="2"></td>
-                </tr>
-                </tbody>
-            </table>
-            <br/>
+          <td><input name="0_position" type="hidden" value="0">
+            <input name="0_visibility" type="hidden" value="2"></td>
+        </tr>
+        </tbody>
+      </table>
+      <br/>
 
-            <div class='pull-right'>
-                <input type="submit" name="save" value="Save Changes" class='btn btn-primary'>
-                <input type="submit" name="cancel" value="Cancel" class='btn btn-danger'>
-            </div>
-        </form>
-    </div>
+      <div class='pull-right'>
+        <input type="submit" name="save" value="Save Changes"
+               class='btn btn-primary'>
+        <input type="submit" name="cancel" value="Cancel"
+               class='btn btn-danger'>
+      </div>
+    </form>
+  </div>
 
 {% endblock body %}

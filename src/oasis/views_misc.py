@@ -21,7 +21,7 @@ from .lib import Users2, DB, Topics, \
 MYPATH = os.path.dirname(__file__)
 
 from .lib.Audit import audit
-from .lib.UserDB import check_perm
+from .lib.Permissions import check_perm
 
 from oasis import app, authenticated
 
@@ -30,14 +30,14 @@ from oasis import app, authenticated
 @app.route("/att/qatt/<int:qt_id>/<int:version>/<int:variation>/<fname>")
 def attachment_question(qt_id, version, variation, fname):
     """ Serve the given question attachment """
-    qt = DB.get_qtemplate(qt_id)
-    if len(qt['embed_id']) < 1:  # if it's not embedded, check auth
+    qtemplate = DB.get_qtemplate(qt_id)
+    if len(qtemplate['embed_id']) < 1:  # if it's not embedded, check auth
         if 'user_id' not in session:
             session['redirect'] = request.path
             return redirect(url_for('index'))
     if Attach.is_restricted(fname):
         abort(403)
-    (mtype, fname) = Attach.get_q_att_details(qt_id, version, variation, fname)
+    (mtype, fname) = Attach.q_att_details(qt_id, version, variation, fname)
     if not mtype:
         abort(404)
 
@@ -48,17 +48,17 @@ def attachment_question(qt_id, version, variation, fname):
 # Does its own auth because it may be used in embedded questions
 def attachment_qtemplate(qt_id, version, variation, fname):
     """ Serve the given question attachment """
-    qt = DB.get_qtemplate(qt_id)
-    if len(qt['embed_id']) < 1:  # if it's not embedded, check auth
+    qtemplate = DB.get_qtemplate(qt_id)
+    if len(qtemplate['embed_id']) < 1:  # if it's not embedded, check auth
         if 'user_id' not in session:
             session['redirect'] = request.path
             return redirect(url_for('index'))
-    (mimetype, filename) = Attach.get_q_att_details(qt_id, version, variation, fname)
+    (mtype, filename) = Attach.q_att_details(qt_id, version, variation, fname)
     if Attach.is_restricted(fname):
         abort(403)
-    if not mimetype:
+    if not mtype:
         abort(404)
-    return send_file(filename, mimetype)
+    return send_file(filename, mtype)
 
 
 @app.route("/logout")
@@ -121,9 +121,9 @@ def main_news():
     )
 
 
-@app.route("/courseadmin/editquestion/<int:topic_id>/<int:qt_id>")
+@app.route("/cadmin/<int:course_id>/editquestion/<int:topic_id>/<int:qt_id>")
 @authenticated
-def qedit_redirect(topic_id, qt_id):
+def qedit_redirect(course_id, topic_id, qt_id):
     """ Work out the appropriate question editor and redirect to it """
     etype = DB.get_qt_editor(qt_id)
     if etype == "Raw":
@@ -133,6 +133,7 @@ def qedit_redirect(topic_id, qt_id):
 
     flash("Unknown Question Type, can't Edit")
     return redirect(url_for('cadmin_edit_topic',
+                            course_id=course_id,
                             topic_id=topic_id))
 
 
@@ -146,16 +147,16 @@ def qedit_raw_edit(topic_id, qt_id):
 
     course_id = Topics.get_course_id(topic_id)
 
-    if not (check_perm(user_id, course_id, "OASIS_COURSECOORD")
-            or check_perm(user_id, course_id, "OASIS_COURSEADMIN")
-            or check_perm(user_id, course_id, "OASIS_QUESTIONEDITOR")
-            or check_perm(user_id, course_id, "OASIS_QUESTIONSOURCEVIEW")):
+    if not (check_perm(user_id, course_id, "courseadmin")
+            or check_perm(user_id, course_id, "courseadmin")
+            or check_perm(user_id, course_id, "questionedit")
+            or check_perm(user_id, course_id, "questionsource")):
         flash("You do not have question editor privilege in this course")
         return redirect(url_for("cadmin_edit_topic",
                                 topic_id=topic_id))
 
     course = Courses2.get_course(course_id)
-    topic = Topics.getTopic(topic_id)
+    topic = Topics.get_topic(topic_id)
     qtemplate = DB.get_qtemplate(qt_id)
     try:
         html = DB.get_qt_att(qt_id, "qtemplate.html")
@@ -171,9 +172,9 @@ def qedit_raw_edit(topic_id, qt_id):
         {
             'name': name,
             'mimetype': DB.get_qt_att_mimetype(qt_id, name)
-        } for name in attachnames if
-            not name in ['qtemplate.html', 'image.gif',
-                         'datfile.txt', '__datfile.txt', '__qtemplate.html']
+        } for name in attachnames
+        if not name in ['qtemplate.html', 'image.gif', 'datfile.txt',
+                        '__datfile.txt', '__qtemplate.html']
     ]
     return render_template(
         "courseadmin_raw_edit.html",
@@ -189,13 +190,13 @@ def qedit_raw_edit(topic_id, qt_id):
 @authenticated
 def qedit_raw_save(topic_id, qt_id):
     """ Accept the question editor form and save the results. """
-    VALID_EMBED="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+    valid = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
     user_id = session['user_id']
     course_id = Topics.get_course_id(topic_id)
-    if not (check_perm(user_id, course_id, "OASIS_COURSECOORD")
-            or check_perm(user_id, course_id, "OASIS_COURSEADMIN")
-            or check_perm(user_id, course_id, "OASIS_QUESTIONEDITOR")
-            or check_perm(user_id, course_id, "OASIS_QUESTIONSOURCEVIEW")):
+    if not (check_perm(user_id, course_id, "courseadmin")
+            or check_perm(user_id, course_id, "courseadmin")
+            or check_perm(user_id, course_id, "questionedit")
+            or check_perm(user_id, course_id, "questionsource")):
         flash("You do not have question editor privilege in this course")
         return redirect(url_for("cadmin_edit_topic", topic_id=topic_id))
 
@@ -206,7 +207,7 @@ def qedit_raw_save(topic_id, qt_id):
         return redirect(url_for("cadmin_edit_topic", topic_id=topic_id))
 
     version = DB.incr_qt_version(qt_id)
-    owner = Users2.getUser(user_id)
+    owner = Users2.get_user(user_id)
     DB.update_qt_owner(qt_id, user_id)
     audit(3, user_id, qt_id, "qeditor",
           "version=%s,message=%s" %
@@ -221,7 +222,7 @@ def qedit_raw_save(topic_id, qt_id):
     if 'embed_id' in form:
         embed_id = form['embed_id']
         embed_id = ''.join([ch for ch in embed_id
-                            if ch in VALID_EMBED])
+                            if ch in valid])
         if not DB.update_qt_embedid(qt_id, embed_id):
             flash("Error updating EmbedID, "
                   "possibly the value is already used elsewhere.")
@@ -232,22 +233,33 @@ def qedit_raw_save(topic_id, qt_id):
             and form['newattachmentname'] == "qtemplate.html"):
         if 'newhtml' in form:
             html = form['newhtml'].encode("utf8")
-            DB.create_qt_att(qt_id, "qtemplate.html", "text/plain", html, version)
+            DB.create_qt_att(qt_id,
+                             "qtemplate.html",
+                             "text/plain",
+                             html,
+                             version)
 
     # They uploaded a new qtemplate.html
     if 'newindex' in request.files:
         data = request.files['newindex'].stream.getvalue()
         if len(data) > 1:
             html = data
-            DB.create_qt_att(qt_id, "qtemplate.html", "text/plain", html, version)
+            DB.create_qt_att(qt_id,
+                             "qtemplate.html",
+                             "text/plain",
+                             html,
+                             version)
 
     # They uploaded a new datfile
     if 'newdatfile' in request.files:
         data = request.files['newdatfile'].stream.getvalue()
         if len(data) > 1:
-            df = data
-            DB.create_qt_att(qt_id, "datfile.txt", "text/plain", df, version)
-            qvars = QEditor.parseDatfile(df)
+            DB.create_qt_att(qt_id,
+                             "datfile.txt",
+                             "text/plain",
+                             data,
+                             version)
+            qvars = QEditor.parseDatfile(data)
             for row in range(0, len(qvars)):
                 DB.add_qt_variation(qt_id, row + 1, qvars[row], version)
 
@@ -278,13 +290,13 @@ def qedit_raw_save(topic_id, qt_id):
         if len(form['newattachmentname']) > 1:
             newname = form['newattachmentname']
     if 'newattachment' in request.files:
-        f = request.files['newattachment']
+        fptr = request.files['newattachment']
         if not newname:  # If they haven't supplied a filename we use
                          # the name of the file they uploaded.
             # TODO: Security check? We don't create disk files with this name
-            newname = f.filename
-        data = f.read()
-        mtype = f.content_type
+            newname = fptr.filename
+        data = fptr.read()
+        mtype = fptr.content_type
         DB.create_qt_att(qt_id, newname, mtype, data, version)
         log(INFO, "File '%s' uploaded by %s" % (newname, session['username']))
 
@@ -298,13 +310,13 @@ def qedit_raw_attach(qt_id, fname):
     """ Serve the given question template attachment
         straight from DB so it's fresh
     """
-    mimetype = DB.get_qt_att_mimetype(qt_id, fname)
+    mtype = DB.get_qt_att_mimetype(qt_id, fname)
     data = DB.get_qt_att(qt_id, fname)
     if not data:
         abort(404)
-    if not mimetype:
-        mimetype = "text/plain"
-    if mimetype == "text/html":
-        mimetype = "text/plain"
+    if not mtype:
+        mtype = "text/plain"
+    if mtype == "text/html":
+        mtype = "text/plain"
     sIO = StringIO.StringIO(data)
-    return send_file(sIO, mimetype, as_attachment=True, attachment_filename=fname)
+    return send_file(sIO, mtype, as_attachment=True, attachment_filename=fname)

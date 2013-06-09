@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>OASIS Assessment System</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="{{ cf.static }}css/bootstrap.min.css" rel="stylesheet" media="screen">
-    <script src="{{ cf.static }}js/jquery-1.8.3.min.js"></script>
-    <script src="{{ cf.static }}js/bootstrap.min.js"></script>
+  <title>OASIS Assessment System</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="{{ cf.static }}css/bootstrap.min.css" rel="stylesheet"
+        media="screen">
+  <script src="{{ cf.static }}js/jquery-1.8.3.min.js"></script>
+  <script src="{{ cf.static }}js/bootstrap.min.js"></script>
 
 </head>
 <body>
@@ -14,69 +15,73 @@
 
 <div class='container'>
 
-    <br/><br/><br/>
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
+  <br/><br/><br/>
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
 
-            {% for message in messages %}
-                <div class="alert-error alert">{{ message }}</div>
-            {% endfor %}
+      {% for message in messages %}
+        <div class="alert-error alert">{{ message }}</div>
+      {% endfor %}
 
-        {% endif %}
-    {% endwith %}
-    <div class="row">
-        <div class="span8 offset1 well">
-            <div class='container container-fluid'>
-                <br/>
+    {% endif %}
+  {% endwith %}
+  <div class="row">
+    <div class="span8 offset1 well">
+      <div class='container container-fluid'>
+        <br/>
 
-                <FORM NAME='login' METHOD='post' ACTION='{{ cf.url }}login/signup/submit'>
-                    <img src='{{ cf.static }}oalogo.gif' alt='OASIS'
-                         style='height:60px; margin-right: 24px;'>
-                    <br/>
+        <FORM NAME='login' METHOD='post'
+              ACTION='{{ cf.url }}login/signup/submit'>
+          <img src='{{ cf.static }}oalogo.gif' alt='OASIS'
+               style='height:60px; margin-right: 24px;'>
+          <br/>
 
-                    <h3>New Account Sign-Up</h3>
+          <h3>New Account Sign-Up</h3>
 
-                    <p>Please choose a username and password to log in to OASIS.</p>
+          <p>Please choose a username and password to log in to
+            OASIS.</p>
 
-                    <p>We will send a confirmation email
-                        to the provided address.</p>
-                    <TABLE>
-                        <TR>
-                            <TH CLASS='loginfield'>Username:</TH>
-                            <TD><INPUT TYPE='text' NAME='username'/></TD>
-                        </TR>
-                        <TR>
-                            <TH CLASS='loginfield'>Password:</TH>
-                            <TD><INPUT TYPE='password' NAME='password'/></TD>
-                        </TR>
-                        <TR>
-                            <TH CLASS='loginfield'>Confirm Password:</TH>
-                            <TD><INPUT TYPE='password' NAME='confirm'/></TD>
-                        </TR>
-                        <TR>
-                            <TH CLASS='loginfield'>E-Mail Address:</TH>
-                            <TD><INPUT TYPE='email' NAME='email'/></TD>
-                        </TR>
-                    </table>
+          <p>We will send a confirmation email
+            to the provided address.</p>
+          <TABLE>
+            <TR>
+              <TH CLASS='loginfield'>Username:</TH>
+              <TD><INPUT TYPE='text' NAME='username'/></TD>
+            </TR>
+            <TR>
+              <TH CLASS='loginfield'>Password:</TH>
+              <TD><INPUT TYPE='password' NAME='password'/></TD>
+            </TR>
+            <TR>
+              <TH CLASS='loginfield'>Confirm Password:</TH>
+              <TD><INPUT TYPE='password' NAME='confirm'/></TD>
+            </TR>
+            <TR>
+              <TH CLASS='loginfield'>E-Mail Address:</TH>
+              <TD><INPUT TYPE='email' NAME='email'/></TD>
+            </TR>
+          </table>
 
-                    <br/>
-                    <INPUT class="btn btn-primary" TYPE='submit' NAME='submit' VALUE='Sign Up!'
-                           style="margin-right: 20px;"/>
+          <br/>
+          <INPUT class="btn btn-primary" TYPE='submit' NAME='submit'
+                 VALUE='Sign Up!'
+                 style="margin-right: 20px;"/>
 
-                </FORM>
+        </FORM>
 
-            </div>
-        </div>
+      </div>
     </div>
-    <br/>
+  </div>
+  <br/>
 
-    <div class="row">
-        <div class="offset1 span8">
-            <p><b>Note:</b> This system is still under development. It should be functional and useful, but
-                may be a little rough around the edges in places. </p>
-        </div>
-
+  <div class="row">
+    <div class="offset1 span8">
+      <p><b>Note:</b> This system is still under development. It should be
+        functional and useful, but
+        may be a little rough around the edges in places. </p>
     </div>
+
+  </div>
 </div>
 
 </body>

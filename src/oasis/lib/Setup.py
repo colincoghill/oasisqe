@@ -119,119 +119,48 @@ def doTopicPageCommands(request, topic_id, user_id):
                 new_maxscore = float(form.get('new_maxscore', 0))
             except ValueError:
                 new_maxscore = 0
-            newid = DB.create_qt(user_id, new_title, "No Description", 1, new_maxscore, 0)
+            newid = DB.create_qt(user_id,
+                                 new_title,
+                                 "No Description",
+                                 1,
+                                 new_maxscore,
+                                 0)
             if newid:
                 mesg.append("Created new question, id %s" % newid)
-                DB.update_qt_pos(newid, topic_id, new_position)
-                DB.create_qt_att(newid, "qtemplate.html", "application/oasis-html", "empty", 1)
-                DB.create_qt_att(newid, "qtemplate.html", "application/oasis-html", "empty", 1)
+                DB.update_qt_pos(newid,
+                                 topic_id,
+                                 new_position)
+                DB.create_qt_att(newid,
+                                 "qtemplate.html",
+                                 "application/oasis-html",
+                                 "empty",
+                                 1)
+                DB.create_qt_att(newid,
+                                 "qtemplate.html",
+                                 "application/oasis-html",
+                                 "empty",
+                                 1)
                 if new_qtype == "oqe":
                     mesg.append("Creating new question, id %s as OQE" % newid)
-                    DB.create_qt_att(newid, "_editor.oqe", "application/oasis-oqe", "", 1)
+                    DB.create_qt_att(newid,
+                                     "_editor.oqe",
+                                     "application/oasis-oqe",
+                                     "",
+                                     1)
                 if new_qtype == "raw":
-                    mesg.append("Creating new question, id %s as RAW (%s)" % (newid, new_qtype))
-                    DB.create_qt_att(newid, "datfile.txt", "application/oasis-dat", "0", 1)
+                    mesg.append("Creating new question, id %s as RAW (%s)" %
+                                (newid, new_qtype))
+                    DB.create_qt_att(newid,
+                                     "datfile.txt",
+                                     "application/oasis-dat",
+                                     "0",
+                                     1)
             else:
                 mesg.append("Error creating new question, id %s" % newid)
-                log(ERROR, "Unable to create new question (%s) (%s)" % (new_title, new_position))
+                log(ERROR,
+                    "Unable to create new question (%s) (%s)" %
+                    (new_title, new_position))
     return {'mesg': mesg}
-
-#
-#
-# def _processClassListUpload(session, course_id, formdata):
-#     """ Accept an uploaded CSV file and update the list of students in the course from it.
-#     """
-#
-#     data = formdata['newlist'].value
-#     data = data.replace('"', '')
-#     data = data.split("\n")
-#
-#     course_info = CourseAPI.getCourse(course_id)
-#     classname = course_info['name']
-#
-#     # assume we're using the group of the same name as the course
-#     oasis_groupid = Groups.getGroupByTitle(classname)
-#     out = "<h3>Processing New Class List</h3>"
-#     out += "<br />Return to <a href='$SPATH$/courseadmin/top/%d'>Course Page</a>" % course_id
-#
-#     if not oasis_groupid:
-#         out += "Course %s isn't in OASIS." % (classname,)
-#         return out
-#
-#     import_userlist = []
-#     for line in data:
-#         if "\t" in line:
-#             e = line.split("\t")
-#         else:
-#             e = line.split(",")
-#         if len(e) >= 4:
-#             import_userlist.append({'oasis_id': None,
-#                                     'netid': e[0].rstrip().lstrip(),
-#                                     'family_name': e[1].rstrip().lstrip(),
-#                                     'given_name': e[2].rstrip().lstrip(),
-#                                     'universityid': e[3].rstrip()})
-#         else:
-#             if len(line) > 4:
-#                 out += "<li>Bad line: <pre>%s</pre></li>" % line
-#
-#     for k in import_userlist:
-#         k['oasis_id'] = Users.getUidByUname(k['netid'])
-#
-#     Groups.flushUsersInGroup(oasis_groupid)
-#     for i in import_userlist:
-#         if i['oasis_id'] is not None:
-#             if oasis_groupid is not None:
-#                 out += "<li>adding %s to %s</li>" % (i['netid'], classname)
-#                 Groups.addUserToGroup(i['oasis_id'], oasis_groupid)
-#         else:
-#             Users.create(i['netid'], "secret", i['given_name'], i['family_name'], 3, i['universityid'])
-#             out += "<li style='color: green;'>create account for %s (%s)</li>" % (i['netid'], i['universityid'])
-#             uid = Users.getUidByUname(i['netid'])
-#             if not uid:
-#                 out += "<li style='color: red;'>Unable to create user account for %s</li>" % (i,)
-#             else:
-#                 if oasis_groupid is not None:
-#                     out += "<li style='color: green;'>Adding %s to %s</li>" % (i['netid'], classname)
-#                     Groups.addUserToGroup(i['oasis_id'], oasis_groupid)
-#                 out += "<li style='color: green;'>Password for %s Set to [%s]</li>" % (i['netid'], i['universityid'])
-#                 Audit.audit(1, session['user_id'], uid,
-#                             "UserImport", "%s reset password for %s." % (
-#                             session['username'], i['netid']))
-#                 Users.setPassword(uid, i['universityid'])
-#
-#     out += "<p>%d students in course</p>" % (len(import_userlist))
-#     out += "<br />Return to <a href='$SPATH$/setup/coursequestions/%d'>Course Page</a>" % (course_id,)
-#
-#     return out
-#
-#
-# def _getClassListUpload(session, course, formdata):
-#     """ Allow the user to upload a CSV file containing the list of
-#         students in the given course.
-#     """
-#
-#     out = "ERROR"
-#     if "submit" in formdata:
-#         if "newlist" in formdata:
-#             output = _processClassListUpload(session, course, formdata)
-#             return output
-#
-#     else:
-#         course_info = CourseAPI.getCourse(course)
-#         coursetitle = course_info['name']
-#
-#         out = "<h2>Upload New Classlist</h2>"
-#         out += "<p>Please choose a .csv file containing the list of students in %s.</p>" % coursetitle
-#         out += "<p><i>The first 4 columns of the file should be: <br />"
-#         out += "<pre>netid,familyname,givenname,studentid</pre></i></p>"
-#         out += "<p>For example:</p><pre>jblo934,Bloggs,Joe,12345678</pre>"
-#         out += "<form method='post' ENCTYPE='multipart/form-data' >"
-#         out += "<input type='file' name='newlist' />"
-#         out += "<input type='submit' name='submit' value='Upload' />"
-#         out += "</form>"
-#         out += "<br />Return to <a href='$SPATH$/courseadmin/top/%d'>Course Page</a>" % course
-#     return out
-#
 
 
 def get_sorted_courselist(with_stats=False, only_active=True):

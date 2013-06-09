@@ -44,15 +44,16 @@ def mark_q(user_id, qtid, request):
 
     if qid:
         try:
-            marks = General.markQuestion(qid, answers)
+            marks = General.mark_q(qid, answers)
             DB.set_q_status(qid, 3)    # 3 = marked
             DB.set_q_marktime(qid)
         except OaMarkerError:
             log(INFO,
-                "getMarkQuestionPage(%d, %d, %s) Marker ERROR" % (user_id, qtid, request.form))
+                "getMarkQuestionPage(%d, %d, %s) Marker ERROR" %
+                (user_id, qtid, request.form))
             marks = {}
 
-        out += General.renderMarkResults(qid, marks)
+        out += General.render_mark_results(qid, marks)
         parts = [int(var[1:])
                  for var in marks.keys()
                  if re.search("^A([0-9]+)$", var) > 0]

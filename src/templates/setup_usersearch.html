@@ -1,47 +1,51 @@
 {% extends "page_nav.html" %}
 {% block js %}
-    <script>
+  <script>
 
-        $("input[name='usersearch_name']").focus();
+    $("input[name='usersearch_name']").focus();
 
 
-    </script>
+  </script>
 {% endblock js %}
 {% block body %}
-    <br/>
-    <p>Return to <a href="{{ cf.url }}setup/top">Setup</a></p>
+  <br/>
+  <p>Return to <a href="{{ cf.url }}setup/top">Setup</a></p>
 
-    <div class="container-fluid">
-        <div class="well">
-            <h2>User Account Search</h2>
+  <div class="container-fluid">
+    <div class="well">
+      <h2>User Account Search</h2>
 
-            <FORM METHOD='post' ACTION='{{ cf.url }}setup/usersearch'>
-                <label>Search for: <INPUT TYPE='text' NAME='usersearch_name' VALUE='{{ findname }}'></label>
-                <input class='btn btn-primary' type='submit' name='submit' value='Search'>
-            </FORM>
-        </div>
-
-        {% if users %}
-            <H3>Search results:</H3>
-            <table class="table">
-                {% for user in users %}
-                    <tr>
-                        <th><a href='{{ cf.url }}setup/userview/{{ user.id }}'>{{ user.uname }}
-                            ({{ user.fullname }})</a></th>
-                    </tr>
-                {% endfor %}
-            </table>
-        {% elif nonefound %}
-            No matches found
-        {% endif %}
-
-
-        <br/><a class='btn' href='{{ cf.url }}setup/usercreate'>Create New</a> User Account
-
+      <FORM METHOD='post' ACTION='{{ cf.url }}setup/usersearch'>
+        <label>Search for: <INPUT TYPE='text' NAME='usersearch_name'
+                                  VALUE='{{ findname }}'></label>
+        <input class='btn btn-primary' type='submit' name='submit'
+               value='Search'>
+      </FORM>
     </div>
 
-    <br/>
-    <p>Return to <a href="{{ cf.url }}setup/top">Setup</a></p>
+    {% if users %}
+      <H3>Search results:</H3>
+      <table class="table">
+        {% for user in users %}
+          <tr>
+            <th>
+              <a href='{{ cf.url }}setup/userview/{{ user.id }}'>{{ user.uname }}
+                ({{ user.fullname }})</a></th>
+          </tr>
+        {% endfor %}
+      </table>
+    {% elif nonefound %}
+      No matches found
+    {% endif %}
+
+
+    <br/><a class='btn' href='{{ cf.url }}setup/usercreate'>Create New</a>
+    User Account
+
+  </div>
+
+  <br/>
+  <p>Return to <a href="{{ cf.url }}setup/top">Setup</a></p>
 
 {% endblock body %}
 {% block pagetitle %}User Admin{% endblock %}

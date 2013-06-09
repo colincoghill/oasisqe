@@ -17,7 +17,7 @@ from .lib import Exams, API, Stats
 
 MYPATH = os.path.dirname(__file__)
 
-from .lib.UserDB import satisfyPerms
+from .lib.Permissions import satisfy_perms
 
 from oasis import app, authenticated
 
@@ -28,7 +28,7 @@ def api_exam_qtemplates(course_id, exam_id):
     """ Return a JSON list of all the qtemplates used for the given exam.
     """
     user_id = session['user_id']
-    if not satisfyPerms(user_id, course_id, ("OASIS_CREATEASSESSMENT",)):
+    if not satisfy_perms(user_id, course_id, ("examcreate",)):
         abort(401)
 
     if exam_id == 0:   # New assessment may be being created
@@ -57,7 +57,7 @@ def api_stats_qtemplates_year(qt_id, year):
     start_time = datetime.datetime(year=year, month=1, day=1, hour=0)
     end_time = datetime.datetime(year=year, month=12, day=31, hour=23)
 
-    counts = Stats.getQDailyPracticeCount(start_time, end_time, qt_id)
+    counts = Stats.daily_prac_q_count(start_time, end_time, qt_id)
     return jsonify(result=counts)
 
 
@@ -70,7 +70,7 @@ def api_stats_qt_year_scores(qt_id, year):
     start_time = datetime.datetime(year=year, month=1, day=1, hour=0)
     end_time = datetime.datetime(year=year, month=12, day=31, hour=23)
 
-    scores = Stats.getQDailyPracticeScores(start_time, end_time, qt_id)
+    scores = Stats.daily_prac_q_scores(start_time, end_time, qt_id)
     return jsonify(result=scores)
 
 
@@ -87,7 +87,7 @@ def api_stats_qtemplates_3month_scores(qt_id):
     end_time = now+days3
     start_time = now-month3
 
-    scores = Stats.getQDailyPracticeScores(start_time, end_time, qt_id)
+    scores = Stats.daily_prac_q_scores(start_time, end_time, qt_id)
     return jsonify(result=scores)
 
 
@@ -104,7 +104,7 @@ def api_stats_qtemplates_3month(qt_id):
     end_time = now+days3
     start_time = now-month3
 
-    counts = Stats.getQDailyPracticeCount(start_time, end_time, qt_id)
+    counts = Stats.daily_prac_q_count(start_time, end_time, qt_id)
     return jsonify(result=counts)
 
 
@@ -121,7 +121,7 @@ def api_stats_practice_load():
     end_time = now+days3
     start_time = now-month3
 
-    counts = Stats.get_daily_practice_load(start_time, end_time)
+    counts = Stats.daily_prac_load(start_time, end_time)
     return jsonify(result=counts)
 
 
@@ -134,7 +134,7 @@ def api_stats_practice_load_year(year):
     start_time = datetime.datetime(year=year, month=1, day=1, hour=0)
     end_time = datetime.datetime(year=year, month=12, day=31, hour=23)
 
-    counts = Stats.get_daily_practice_load(start_time, end_time)
+    counts = Stats.daily_prac_load(start_time, end_time)
     return jsonify(result=counts)
 
 
@@ -146,7 +146,7 @@ def api_exam_available_qtemplates(course_id, exam_id):
     if 'user_id' not in session:
         abort(401)
     user_id = session['user_id']
-    if not satisfyPerms(user_id, course_id, ("OASIS_CREATEASSESSMENT",)):
+    if not satisfy_perms(user_id, course_id, ("examcreate",)):
         abort(401)
 
-    return jsonify(result=API.getCreateExamQuestionList(course_id))
+    return jsonify(result=API.exam_available_q_list(course_id))

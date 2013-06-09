@@ -1,73 +1,82 @@
 {% extends "page_assess.html" %}
 {% block body %}
-    <br/>
-    <div class='alert alert-danger'>
-        <p><b>Note:</b> This section of OASIS is for assessed work and could be worth
-            real coursework marks. </p>
-    </div>
-    {% if current_num > 0 %}
-        <div class="container-fluid ">
+  <br/>
+  <div class='alert alert-danger'>
+    <p><b>Note:</b> This section of OASIS is for assessed work and could be
+      worth
+      real coursework marks. </p>
+  </div>
+  {% if current_num > 0 %}
+    <div class="container-fluid ">
 
-        <h2>Active Assessments</h2>
-        <table class="table table-striped">
-            {% for exam in exams if exam.active and not exam.is_done %}
-                <tr>
-                    <th>{{ exam.course.name }}</th>
-                    <th><a href="{{ cf.url }}assess/startexam/{{ exam.cid }}/{{ exam.id }}">{{ exam.title }}</a></th>
-                    <td>{{ exam.duration }} mins</td>
-                </tr>
-                <tr class='alert alert-info'>
-                    <td colspan='2'>{{ exam.period }}</td>
-                    <td><a class='btn btn-large' href="{{ cf.url }}assess/startexam/{{ exam.cid }}/{{ exam.id }}">
-                        Go
-                    </a><br/><br/></td>
-                </tr>
-            {% endfor %}
-        </table>
-        <br/><br/>
-    {% endif %}
+    <h2>Active Assessments</h2>
+    <table class="table table-striped">
+      {% for exam in exams if exam.active and not exam.is_done %}
+        <tr>
+          <th>{{ exam.course.name }}</th>
+          <th>
+            <a href="{{ cf.url }}assess/startexam/{{ exam.cid }}/{{ exam.id }}">{{ exam.title }}</a>
+          </th>
+          <td>{{ exam.duration }} mins</td>
+        </tr>
+        <tr class='alert alert-info'>
+          <td colspan='2'>{{ exam.period }}</td>
+          <td><a class='btn btn-large'
+                 href="{{ cf.url }}assess/startexam/{{ exam.cid }}/{{ exam.id }}">
+            Go
+          </a><br/><br/></td>
+        </tr>
+      {% endfor %}
+    </table>
+    <br/><br/>
+  {% endif %}
 
 {% if upcoming_num %}<h2>Upcoming Assessments</h2>
 
-    <table class="table table-striped">
-        {% for exam in exams if exam.future %}
-            <tr>
-                <th>{{ exam.course.name }}</th>
-                <th><a href="{{ cf.url }}assess/startexam/{{ exam.cid }}/{{ exam.id }}">{{ exam.title }}</a></th>
-                <td>{{ exam.duration }} mins</td>
-            </tr>
-            <tr>
-                <td colspan='2'>{{ exam.period }}</td>
-                <td>{% if exam.can_preview %}
-                    <a class='btn' href="{{ cf.url }}assess/startexam/{{ exam.cid }}/{{ exam.id }}">
-                        Preview
-                    </a>{% endif %}<br/><br/></td>
-            </tr>
+  <table class="table table-striped">
+    {% for exam in exams if exam.future %}
+      <tr>
+        <th>{{ exam.course.name }}</th>
+        <th>
+          <a href="{{ cf.url }}assess/startexam/{{ exam.cid }}/{{ exam.id }}">{{ exam.title }}</a>
+        </th>
+        <td>{{ exam.duration }} mins</td>
+      </tr>
+      <tr>
+        <td colspan='2'>{{ exam.period }}</td>
+        <td>{% if exam.can_preview %}
+          <a class='btn'
+             href="{{ cf.url }}assess/startexam/{{ exam.cid }}/{{ exam.id }}">
+            Preview
+          </a>{% endif %}<br/><br/></td>
+      </tr>
 
-        {% endfor %}
-    </table><br/>
-    <br/>
+    {% endfor %}
+  </table><br/>
+  <br/>
 {% endif %}
 
 <h2>Past Assessments</h2>
 
 <table class="table table-striped">
-    {% for exam in exams if (exam.active and exam.is_done) or (exam.past and exam.start.year >= cf.today.year) %}
-        <tr>
-            <th>{{ exam.course.name }}</th>
-            <th colspan='2'>{{ exam.title }}</th>
-        </tr>
-        <tr>
-            <td colspan='2'>{{ exam.period }}</td>
-            <td style='padding-bottom: 40px;'>{% if exam.is_done %}
-                <a class='btn' href="{{ cf.url }}assess/viewmarked/{{ exam.cid }}/{{ exam.id }}">
-                    Results
-                </a>{% endif %}</td>
-        </tr>
-    {% endfor %}
+  {% for exam in exams if (exam.active and exam.is_done) or (exam.past and exam.start.year >= cf.today.year) %}
+    <tr>
+      <th>{{ exam.course.name }}</th>
+      <th colspan='2'>{{ exam.title }}</th>
+    </tr>
+    <tr>
+      <td colspan='2'>{{ exam.period }}</td>
+      <td style='padding-bottom: 40px;'>{% if exam.is_done %}
+        <a class='btn'
+           href="{{ cf.url }}assess/viewmarked/{{ exam.cid }}/{{ exam.id }}">
+          Results
+        </a>{% endif %}</td>
+    </tr>
+  {% endfor %}
 </table>
 
-<div class='pull-right'><a href="{{ cf.url }}assess/previousexams">Older Assessments</a></div>
+<div class='pull-right'><a href="{{ cf.url }}assess/previousexams">Older
+  Assessments</a></div>
 </div>
 
 {% endblock body %}

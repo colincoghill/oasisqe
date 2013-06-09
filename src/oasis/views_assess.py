@@ -19,7 +19,7 @@ from .lib import DB, General, Exams, Courses2, Assess
 
 MYPATH = os.path.dirname(__file__)
 
-from .lib.UserDB import check_perm
+from .lib.Permissions import check_perm
 
 from oasis import app, authenticated
 
@@ -29,7 +29,7 @@ from oasis import app, authenticated
 def assess_top():
     """ Top level assessment page. Let them choose an assessment."""
     user_id = session['user_id']
-    exams = Assess.get_exam_list_sorted(user_id=user_id, previous_years=False)
+    exams = Assess.get_exam_list_sorted(user_id=user_id, prev_years=False)
     current_num = len([e for e in exams if e['active']])
     upcoming_num = len([e for e in exams if e['future']])
     return render_template(
@@ -46,7 +46,7 @@ def assess_previousexams():
     """ Show a list of older exams - from previous years """
     user_id = session['user_id']
 
-    exams = Assess.get_exam_list_sorted(user_id=user_id, previous_years=True)
+    exams = Assess.get_exam_list_sorted(user_id=user_id, prev_years=True)
     years = [e['start'].year for e in exams]
     years = list(set(years))
     years.sort(reverse=True)
@@ -66,7 +66,7 @@ def assess_unlock(course_id, exam_id):
 
     exam = Exams.get_exam_struct(exam_id, user_id)
 
-    if not check_perm(user_id, course_id, "OASIS_PREVIEWASSESSMENT"):
+    if not check_perm(user_id, course_id, "exampreview"):
         if exam['future']:
             flash("That assessment is not yet available.")
             return redirect(url_for("assess_top"))
@@ -96,7 +96,7 @@ def assess_startexam(course_id, exam_id):
     user_id = session['user_id']
     exam = Exams.get_exam_struct(exam_id, user_id)
 
-    if not check_perm(user_id, course_id, "OASIS_PREVIEWASSESSMENT"):
+    if not check_perm(user_id, course_id, "exampreview"):
         if exam['future']:
             flash("That assessment is not yet available.")
             return redirect(url_for("assess_top"))
@@ -178,7 +178,7 @@ def assess_assessmentpage(course_id, exam_id, page):
 
         page = int(goto.split(' ', 2)[1])
 
-    q_id = General.getExamQuestion(exam_id, page, user_id)
+    q_id = General.get_exam_q(exam_id, page, user_id)
     timeleft = Exams.get_end_time(exam_id, user_id) - time.time()
     exam = Exams.get_exam_struct(exam_id, course_id)
 
@@ -329,8 +329,8 @@ def assess_viewmarked(course_id, exam_id):
         )
 
     results, examtotal = Assess.render_own_marked_exam(user_id, exam_id)
-    datemarked = General.humanDate(Exams.get_mark_time(exam_id, user_id))
-    datesubmit = General.humanDate(Exams.get_submit_time(exam_id, user_id))
+    datemarked = General.human_date(Exams.get_mark_time(exam_id, user_id))
+    datesubmit = General.human_date(Exams.get_submit_time(exam_id, user_id))
 
     if "user_fullname" in session:
         fullname = session['user_fullname']

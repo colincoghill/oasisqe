@@ -97,27 +97,7 @@ def set_active(course_id, active):
     MC.delete(key)
 
 
-def set_enrol_type(course_id, enrol_type):
-    """ Set the enrolment type of a course."""
-    assert isinstance(course_id, int)
-    assert isinstance(enrol_type, str) or isinstance(enrol_type, unicode)
-
-    run_sql("UPDATE courses SET enrol_type=%s WHERE course=%s;",
-            (enrol_type, course_id))
-    incr_version()
-
-
-def set_registration(course_id, registration):
-    """ Set the registration type of a course."""
-    assert isinstance(course_id, int)
-    assert isinstance(registration, str) or isinstance(registration, unicode)
-
-    run_sql("UPDATE courses SET registration=%s WHERE course=%s;",
-            (registration, course_id))
-    incr_version()
-
-
-def set_practice_visibility(cid, visibility):
+def set_prac_vis(cid, visibility):
     """ Who can do practice questions."""
     assert isinstance(cid, int)
     assert isinstance(visibility, str) or isinstance(visibility, unicode)
@@ -127,7 +107,7 @@ def set_practice_visibility(cid, visibility):
     incr_version()
 
 
-def set_assess_visibility(cid, visibility):
+def set_assess_vis(cid, visibility):
     """ Who can do assessments."""
     assert isinstance(cid, int)
     assert isinstance(visibility, str) or isinstance(visibility, unicode)
@@ -137,76 +117,15 @@ def set_assess_visibility(cid, visibility):
     incr_version()
 
 
-def set_enrol_location(cid, enrol_location):
-    """ Set the enrolment location of a course."""
-    assert isinstance(cid, int)
-    assert isinstance(enrol_location, str) or isinstance(enrol_location, unicode)
-
-    run_sql("UPDATE courses SET enrol_location=%s WHERE course=%s;",
-            (enrol_location, cid))
-    incr_version()
-
-
-def set_enrol_freq(cid, enrol_freq):
-    """ Set the enrolment sync frequency of a course in minutes."""
-    assert isinstance(cid, int)
-    assert isinstance(enrol_freq, int)
-
-    run_sql("UPDATE courses SET enrol_freq=%s WHERE course=%s;",
-            (enrol_freq, cid))
-    incr_version()
-
-
-def get_users(course):
+def get_users(course_id):
     """ Return a list of users in the course"""
-    groups = get_groups(course)
     allusers = []
-    for group in groups:
-        allusers += Groups.get_users(group)
+    for group in Groups.get_active_by_course(course_id):
+        allusers.append(group.members())
     return allusers
 
 
-def getInfoAll():
-    """ Return a summary of all active courses, sorted by name
-        [position] = { 'id':id, 'name':name, 'title':title }
-    """
-    ret = run_sql(
-        """SELECT course, title, description, owner, active, type,
-                  enrol_type, enrol_location, enrol_freq, registration,
-                  practice_visibility, assess_visibility
-             FROM courses
-             WHERE active='1'
-             ORDER BY title ;""")
-    info = {}
-    if ret:
-        count = 0
-        for row in ret:
-            info[count] = {
-                'id': int(row[0]),
-                'name': row[1],
-                'title': row[2],
-                'owner': row[3],
-                'active': row[4],
-                'type': row[5],
-                'enrol_type': row[6],
-                'enrol_location': row[7],
-                'enrol_freq': row[8],
-                'registration': row[9],
-                'practice_visibility': row[10],
-                'assess_visibility': row[11]
-            }
-            # Defaults added since database was created
-            if not row['enrol_location']:
-                row['enrol_location'] = ""
-            if not row['practice_visibility']:
-                row['practice_visibility'] = "all"
-            if not row['assess_visibility']:
-                row['assess_visibility'] = "all"
-            count += 1
-    return info
-
-
-def getAll(only_active=True):
+def get_all(only_active=True):
     """ Return a list of all courses in the system."""
     if only_active:
         sql = """SELECT course FROM courses WHERE active=1 ORDER BY title;"""
@@ -225,13 +144,12 @@ def getAll(only_active=True):
     return []
 
 
-def getFullCourseDict():
+def get_courses_dict():
     """ Return a summary of all courses, keyed by course id
         [id] = { 'id':id, 'name':name, 'title':title }
     """
     ret = run_sql(
         """SELECT course, title, description, owner, active, type,
-                  enrol_type, enrol_location, enrol_freq, registration,
                   practice_visibility, assess_visibility
              FROM courses;""")
     cdict = {}
@@ -244,15 +162,10 @@ def getFullCourseDict():
                 'owner': row[3],
                 'active': row[4],
                 'type': row[5],
-                'enrol_type': row[6],
-                'enrol_location': row[7],
-                'enrol_freq': row[8],
-                'registration': row[9],
-                'practice_visibility': row[10],
-                'assess_visibility': row[11]
+                'practice_visibility': row[6],
+                'assess_visibility': row[7]
             }
-            if course['enrol_location'] is None:
-                course['enrol_location'] = ''
+
             if not course['practice_visibility']:
                 course['practice_visibility'] = "all"
             if not course['assess_visibility']:
@@ -283,7 +196,7 @@ def create(name, description, owner, coursetype):
 
 def get_groups(course):
     """ Return a list of groups currently attached to this course."""
-    # TODO: need to figure out how to incorporate semester codes/timing.
+    #TODO: Update for new group system
     sql = "SELECT groupid FROM groupcourses WHERE active='1' AND course = %s;"
     params = (course, )
     ret = run_sql(sql, params)
@@ -291,20 +204,6 @@ def get_groups(course):
     if ret:
         groups = [row[0] for row in ret]
     return groups
-
-
-def getCourseGroupMap(only_active=True):
-    """ Return a dictionary mapping course ids to (multiple) group ids.
-        eg. { 5: [1,2,3], 6: [2,3] }
-        says that groups 1,2,3 are associated with course 5,and 2,3 with
-        course 6.
-        if only_active is set to False, will include inactive courses.
-    """
-    courses = getAll(only_active)
-    coursemap = {}
-    for course in courses:
-        coursemap[course] = get_groups(course)
-    return coursemap
 
 
 def add_group(group_id, course_id):
@@ -315,9 +214,7 @@ def add_group(group_id, course_id):
     run_sql(sql, params)
 
 
-# TODO most of this should be in Topics. Especially the SQL parts, so it's
-#  easier to cache without getting confused.
-def getTopicsInfoAll(course, archived=2, numq=True):
+def get_topics_all(course, archived=2, numq=True):
     """ Return a summary of all topics in the course.
         if archived=0, only return non archived courses
         if archived=1, only return archived courses
@@ -389,11 +286,11 @@ def get_topics(cid):
     return []
 
 
-def get_exams(cid, previous_years=False):
+def get_exams(cid, prev_years=False):
     """ Return a list of all assessments in the course."""
     assert isinstance(cid, int)
-    assert isinstance(previous_years, bool)
-    if not previous_years:
+    assert isinstance(prev_years, bool)
+    if not prev_years:
         now = datetime.datetime.now()
         year = now.year
         sql = """SELECT exam

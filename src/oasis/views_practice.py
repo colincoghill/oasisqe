@@ -12,7 +12,7 @@ from flask import render_template, session, request, abort
 from logging import log, ERROR
 from .lib import DB, Practice, Topics, General, Courses2, Setup
 MYPATH = os.path.dirname(__file__)
-from .lib.UserDB import check_perm
+from .lib.Permissions import check_perm
 
 from oasis import app, authenticated
 
@@ -45,7 +45,7 @@ def practice_choose_topic(course_id):
     return render_template(
         "practicecourse.html",
         courses=Setup.get_sorted_courselist(),
-        canpreview=check_perm(user_id, course_id, "OASIS_PREVIEWQUESTIONS"),
+        canpreview=check_perm(user_id, course_id, "questionpreview"),
         topics=topics,
         course=course
     )
@@ -76,7 +76,7 @@ def practice_choose_question(topic_id):
 
     return render_template(
         "practicetopic.html",
-        canpreview=check_perm(user_id, course_id, "OASIS_PREVIEWQUESTIONS"),
+        canpreview=check_perm(user_id, course_id, "questionpreview"),
         topics=topics,
         topic_id=topic_id,
         course=course,
@@ -104,7 +104,7 @@ def practice_choose_question_stats(topic_id):
 
     return render_template(
         "practicetopicstats.html",
-        canpreview=check_perm(user_id, course_id, "OASIS_PREVIEWQUESTIONS"),
+        canpreview=check_perm(user_id, course_id, "questionpreview"),
         topics=topics,
         topic_id=topic_id,
         course=course,
@@ -113,7 +113,7 @@ def practice_choose_question_stats(topic_id):
     )
 
 
-@app.route("/practice/question/<int:topic_id>/<qt_id>",
+@app.route("/practice/question/<int:topic_id>/<int:qt_id>",
            methods=['POST', 'GET'])
 @authenticated
 def practice_do_question(topic_id, qt_id):
@@ -135,12 +135,12 @@ def practice_do_question(topic_id, qt_id):
     except KeyError:
         abort(404)
     try:
-        qt = DB.get_qtemplate(qt_id)
+        qtemplate = DB.get_qtemplate(qt_id)
     except KeyError:
-        qt = None
+        qtemplate = None
         abort(404)
     questions = Practice.get_sorted_questions(course_id, topic_id, user_id)
-    q_title = qt['title']
+    q_title = qtemplate['title']
     q_pos = DB.get_qtemplate_topic_pos(qt_id, topic_id)
 
     blocked = Practice.is_q_blocked(user_id, course_id, topic_id, qt_id)
@@ -262,4 +262,3 @@ def practice_mark_question(topic_id, question_id):
         next_id=next_id,
         prev_id=prev_id
     )
-

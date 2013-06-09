@@ -12,6 +12,7 @@ from oasis.lib import General, DB
 DB.upgrade_db()
 
 
+
 def test_instance_generate_simple_answer():
     """ Convert some html templates + variables into resulting instance HTML
         and make sure it's doing it right. Focus on simple "ANSWER"
@@ -178,9 +179,9 @@ def test_date_ops():
     c = datetime.date(2013,11,1)
     d = datetime.date(2012,11,1)
 
-    assert General.isBetween(a,c,b) is True
-    assert General.isBetween(a,b,c) is True
-    assert General.isBetween(a,c,d) is False
+    assert General.is_between(a,c,b) is True
+    assert General.is_between(a,b,c) is True
+    assert General.is_between(a,c,d) is False
 
 
 

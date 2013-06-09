@@ -12,7 +12,8 @@ from oasis.lib.DB import run_sql
 
 def audit(aclass, instigator, obj, module, message):
     """Record the message in the audit system."""
-    sql = """INSERT INTO audit ("time", "class", "instigator", "object", "module", "longmesg")
+    sql = """INSERT INTO audit ("time", "class", "instigator",
+                                "object", "module", "longmesg")
             VALUES (NOW(), %s, %s, %s, %s, %s);"""
     params = (aclass, instigator, obj, module, message)
     run_sql(sql, params)
@@ -29,7 +30,8 @@ def get_records_by_user(uid, start=None, end=None, limit=100, offset=0):
     """
     uid = int(uid)
     if end:
-        sql = """SELECT "id", "instigator", "module", "longmesg", "time", "object", "message"
+        sql = """SELECT "id", "instigator", "module", "longmesg",
+                        "time", "object", "message"
                 FROM audit
                 WHERE ("object" = %s or "instigator" = %s)
                   AND "time" > %s
@@ -38,7 +40,8 @@ def get_records_by_user(uid, start=None, end=None, limit=100, offset=0):
                 LIMIT %s OFFSET %s;"""
         params = (uid, uid, start, end, limit, offset)
     elif start:
-        sql = """SELECT "id", "instigator", "module", "longmesg", "time", "object", "message"
+        sql = """SELECT "id", "instigator", "module", "longmesg",
+                        "time", "object", "message"
                 FROM audit
                 WHERE ("object" = %s or "instigator" = %s)
                   AND "time" > %s
@@ -46,7 +49,8 @@ def get_records_by_user(uid, start=None, end=None, limit=100, offset=0):
                 LIMIT %s OFFSET %s;"""
         params = (uid, uid, start, limit, offset)
     else:
-        sql = """SELECT "id", "instigator", "module", "longmesg", "time", "object", "message"
+        sql = """SELECT "id", "instigator", "module", "longmesg",
+                        "time", "object", "message"
                 FROM audit
                 WHERE ("object" = %s OR "instigator" = %s)
                 ORDER BY "time" DESC

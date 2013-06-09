@@ -1,0 +1,163 @@
+{% extends "page_nav.html" %}
+{% block body %}
+  <br/>
+  <p>Return to <a href="{{ cf.url }}admin/groups">Groups</a></p>
+  <div class="row">
+    <div class="span2">
+      <h4>Group Type
+      </h4>
+      <dl>
+        <dt>Staff
+          <br>
+        </dt>
+        <dd>Staff or assistants can be assigned activities like
+          course co-ordination or question creation.
+          <br>
+        </dd>
+        <dt>Enrolment
+          <br>
+        </dt>
+        <dd>Students can access course assessments and practice.
+          <br>
+        </dd>
+        <dt>Statistical
+          <br>
+        </dt>
+        <dd>Grouping for analysis and reporting. Members cannot
+          see they are in these groups.
+          <br>
+        </dd>
+      </dl>
+      <h4>Source</h4>
+
+      <p>Where the information on group membership comes from:
+      </p>
+      <dl>
+        <dt>Ad-Hoc
+          <br>
+        </dt>
+        <dd>Maintained manually - members can be added or removed by staff.
+          <br>
+        </dd>
+        <dt>External Feed
+          <br>
+        </dt>
+        <dd>Membership information comes from an external source, eg. an LDAP
+          server.
+          <br>
+        </dd>
+        <dt>Open Registration
+          <br>
+        </dt>
+        <dd>Users can enrol themselves into the group.
+          <br>
+        </dd>
+      </dl>
+    </div>
+    <div class="span8">
+      <h1>Edit Group
+        <br>
+      </h1>
+
+      <form method='post' action='{{ cf.url }}admin/edit_group_submit/{{ group.id }}' data-validate='parsley'>
+
+      <div class="well">
+
+
+        <label>Group Name:</label>
+        <input placeholder="Group name" name='name'
+               class="required input-medium" value='{{ group.name }}'
+               type="text">
+        <label>Title:</label>
+        <input class="input-xxlarge" type="text" name='title' value='{{ group.title }}'>
+        <label>Group Type:</label>
+        <select name='gtype' value='{{ group.gtype }}'>
+          {% for gtype in gtypes %}
+            <option value='{{ gtype.type }}'>{{ gtype.title }}</option>
+          {% endfor %}
+        </select>
+        <label>Group is Active:</label>
+        <select name='period' value='{{ group.period.id }}'>
+          {% for period in periods %}
+            <option value='{{ period.id }}'>{{ period.name }}</option>
+          {% endfor %}
+        </select>
+        <label>Source:</label>
+
+        <p></p>
+        <select id='source_select'>
+          <option value='feed'>External Feed</option>
+          <option value='adhoc'>Ad-Hoc</option>
+          <option value='open'>Open Registration</option>
+        </select>
+
+        <div id='feed_select'>
+          <label>Feed: <select name='feed'>
+            {% for feed in feeds %}
+              <option value='{{ feed.id }}'>{{ feed.name }}</option>
+            {% endfor %}
+          </select></label>
+          <br/><label>Arguments to feed:
+          <input placeholder="name" class="input-xlarge" id='feed_args'
+                 name='feed_args' type="text">
+
+        </label>
+          <p>To update this feed, OASIS will run:          </p>
+          <pre><span id='feed_cmd'></span><a class="btn">Test</a></pre>
+        </div>
+        <div class="form-actions">
+
+          <input type="submit" name="save_changes" value="Save"
+                 class='btn btn-primary'>
+          <input type="submit" name="cancel_edit" id="cancel" value="Cancel"
+                 class='btn btn-danger'>
+        </div>
+      </div>
+      </form>
+    </div>
+  </div>
+
+  <p>Return to <a href="{{ cf.url }}admin/groups">Groups</a></p>
+
+  <br/>
+  <br/>
+  <br/>
+
+{% endblock body %}
+{% block js %}
+
+  <script>
+    function update_feed_vals() {
+      if ($('#source_select').val() == 'feed') {
+        $('#feed_select').show();
+      } else {
+        $('#feed_select').hide();
+      }
+      $('#feed_cmd').html("{{ cf.feed_dir }}/feedscript.py " + $('#feed_args').val() + ' <i>timeperiod</i>')
+
+    }
+
+    // onload
+    $(function () {
+      $('#cancel').click(function () {
+        $('#form').parsley('destroy');
+        $('#form').submit();
+      });
+
+      $('#source_select').change(function () {
+        update_feed_vals();
+      });
+      $('#feed_args').change(function () {
+        update_feed_vals();
+      });
+
+      $('#cancel').click(function () {
+        $('#form').parsley('destroy');
+        $('#form').submit();
+      });
+      update_feed_vals();
+    });
+
+  </script>
+{% endblock js %}
+{% block pagetitle %}Server Admin{% endblock %}

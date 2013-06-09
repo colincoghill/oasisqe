@@ -9,12 +9,12 @@ from ..lib.DB import run_sql, IntegrityError
 from logging import log, ERROR
 import datetime
 
+
 class Period(object):
     """ A time period is relatively simple, mainly just name and
         start and finish.
     """
 
-    # TODO:  SQLAlchemy this.
     def __init__(self, id=None, name=None,
                  title=None, start=None, finish=None,
                  code=None):
@@ -129,7 +129,7 @@ class Period(object):
                        VALUES (%s, %s, %s, %s,%s);"""
             params = (self.name, self.title, self.start, self.finish, dbcode)
             try:
-                ret = run_sql(sql, params)
+                run_sql(sql, params)
             except IntegrityError:
                 try:
                     exists = Period(name=self.name)
@@ -156,7 +156,7 @@ class Period(object):
         params = (self.name, self.title, self.start, self.finish, dbcode,
                   self.id)
         try:
-            ret = run_sql(sql, params)
+            run_sql(sql, params)
         except IntegrityError:
             try:
                 exists = Period(name=self.name)
