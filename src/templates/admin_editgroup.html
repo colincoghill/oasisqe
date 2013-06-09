@@ -2,7 +2,7 @@
 {% block body %}
   <br/>
   <p>Return to <a href="{{ cf.url }}admin/groups">Groups</a></p>
- <div class="row">
+  <div class="row">
     <div class="span2">
       <h4>Group Type
       </h4>
@@ -29,6 +29,7 @@
         </dd>
       </dl>
       <h4>Source</h4>
+
       <p>Where the information on group membership comes from:
       </p>
       <dl>
@@ -41,7 +42,8 @@
         <dt>External Feed
           <br>
         </dt>
-        <dd>Membership information comes from an external source, eg. an LDAP server.
+        <dd>Membership information comes from an external source, eg. an LDAP
+          server.
           <br>
         </dd>
         <dt>Open Registration
@@ -56,53 +58,66 @@
       <h1>Edit Group
         <br>
       </h1>
+
+      <form method='post' action='{{ cf.url }}admin/edit_group_submit' data-validate='parsley'>
+
       <div class="well">
-        <form>
-          <label>Group Name:</label>
-          <input placeholder="Group name" class="input-medium"
-          type="text">
-          <label>Title:</label>
-          <input class="input-xxlarge" type="text">
-          <label>Group Type:</label>
-          <select>
-            <option>Staff</option>
-            <option>Enrolment</option>
-            <option>Statistical</option>
-          </select>
-          <label>Group is Active:</label>
-          <select name='period'>
-            {% for period in periods %}
+
+
+        <label>Group Name:</label>
+        <input placeholder="Group name" name='name'
+               class="required input-medium"
+               type="text">
+        <label>Title:</label>
+        <input class="input-xxlarge" type="text">
+        <label>Group Type:</label>
+        <select>
+          <option>Staff</option>
+          <option>Enrolment</option>
+          <option>Statistical</option>
+        </select>
+        <label>Group is Active:</label>
+        <select name='period'>
+          {% for period in periods %}
             <option value='{{ period.id }}'>{{ period.name }}</option>
-            {% endfor %}
-          </select>
-          <label>Source:</label>
-          <p></p>
-          <select id='source_select'>
-            <option value='feed'>External Feed</option>
-            <option value='adhoc'>Ad-Hoc</option>
-            <option value='open'>Open Registration</option>
-          </select>
+          {% endfor %}
+        </select>
+        <label>Source:</label>
+
+        <p></p>
+        <select id='source_select'>
+          <option value='feed'>External Feed</option>
+          <option value='adhoc'>Ad-Hoc</option>
+          <option value='open'>Open Registration</option>
+        </select>
+
         <div id='feed_select'>
           <label>Feed: <select name='feed'>
             {% for feed in feeds %}
-            <option value='{{ feed.id }}'>{{ feed.name }}</option>
+              <option value='{{ feed.id }}'>{{ feed.name }}</option>
             {% endfor %}
           </select></label>
-        <br/><label>Arguments to feed:
-          <input placeholder="name" class="input-xlarge" id='feed_args' name='feed_args' type="text">
+          <br/><label>Arguments to feed:
+          <input placeholder="name" class="input-xlarge" id='feed_args'
+                 name='feed_args' type="text">
           <a class="btn">Test</a>
-          </label>
-        <p>To update this feed, OASIS will run:<pre><span id='feed_cmd'></span></pre> </p>
+        </label>
+
+          <p>To update this feed, OASIS will run:          </p>
+          <pre><span id='feed_cmd'></span></pre>
+
         </div>
-        </form>
+
         <div class="form-actions">
-          <button type="submit" class="btn btn-primary">Submit</button>
-          <input class="btn" value="Reset" type="reset">
+
+          <input type="submit" name="save_changes" value="Save"
+                 class='btn btn-primary'>
+          <input type="submit" name="cancel_edit" id="cancel" value="Cancel"
+                 class='btn btn-danger'>
+
         </div>
       </div>
-      <ul></ul>
-      <ul></ul>
-      <p></p>
+      </form>
     </div>
   </div>
 
@@ -114,23 +129,37 @@
 
 {% endblock body %}
 {% block js %}
+
   <script>
+    function update_feed_vals() {
+      if ($('#source_select').val() == 'feed') {
+        $('#feed_select').show();
+      } else {
+        $('#feed_select').hide();
+      }
+      $('#feed_cmd').html("{{ cf.feed_dir }}/feedscript.py " + $('#feed_args').val() + ' <i>timeperiod</i>')
+
+    }
+
+    // onload
     $(function () {
       $('#cancel').click(function () {
         $('#form').parsley('destroy');
         $('#form').submit();
       });
 
-      $('#source_select').change(function() {
-        if ($('#source_select').val() == 'feed') {
-        $('#feed_select').show();
-        } else {
-          $('#feed_select').hide();
-        }
+      $('#source_select').change(function () {
+        update_feed_vals();
       });
-      $('#feed_args').change(function() {
-        $('#feed_cmd').html("{{ cf.feed_dir }}/feedscript.py "+$('#feed_args').val()+' <i>timeperiod</i>')
+      $('#feed_args').change(function () {
+        update_feed_vals();
       });
+
+      $('#cancel').click(function () {
+        $('#form').parsley('destroy');
+        $('#form').submit();
+      });
+      update_feed_vals();
     });
 
   </script>
