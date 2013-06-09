@@ -71,13 +71,13 @@
         <label>Title:</label>
         <input class="input-xxlarge" type="text" name='title' value='{{ group.title }}'>
         <label>Group Type:</label>
-        <select>
-          <option>Staff</option>
-          <option>Enrolment</option>
-          <option>Statistical</option>
+        <select name='gtype' value='{{ group.gtype }}'>
+          {% for gtype in gtypes %}
+            <option value='{{ gtype.type }}'>{{ gtype.title }}</option>
+          {% endfor %}
         </select>
         <label>Group is Active:</label>
-        <select name='period'>
+        <select name='period' value='{{ group.period.id }}'>
           {% for period in periods %}
             <option value='{{ period.id }}'>{{ period.name }}</option>
           {% endfor %}

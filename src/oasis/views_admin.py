@@ -98,11 +98,13 @@ def admin_add_group():
     """ Present page to add a group to the system """
     feeds = Feeds.all_list()
     periods = Periods.all_list()
+    gtypes = Groups.all_gtypes()
     return render_template(
         "admin_editgroup.html",
         feeds=feeds,
         periods=periods,
-        group={'id':0}
+        group=Groups.Group(gtype=1),
+        gtypes=gtypes
     )
 
 
@@ -113,11 +115,13 @@ def admin_edit_group(g_id):
     feeds = Feeds.all_list()
     periods = Periods.all_list()
     group = Groups.Group(id=g_id)
+    gtypes = Groups.all_gtypes()
     return render_template(
         "admin_editgroup.html",
         feeds=feeds,
         periods=periods,
-        group=group
+        group=group,
+        gtypes=gtypes
     )
 
 
@@ -131,13 +135,21 @@ def admin_edit_group_submit(g_id):
 
     name = request.form.get('name', None)
     title = request.form.get('title', None)
+    gtype = request.form.get('gtype', None)
+
+    error = False
 
     if g_id == 0:  # It's a new one being created
-        group = Groups.Group(
-            id=0,
-            name=name,
-            title=title
-        )
+        try:
+            group = Groups.Group(
+                id=0,
+                name=name,
+                title=title
+            )
+        except KeyError:
+            pass
+        else:
+            error = "A Group with that name already exists!"
     else:
         try:
             group = Groups.Group(id=g_id)
@@ -147,28 +159,22 @@ def admin_edit_group_submit(g_id):
     group.id = g_id
     group.name = name
     group.title = title
-
-    error = False
+    group.gtype = gtype
 
     if not name:
         error =  "Can't Save: Name must be supplied"
 
     try:
         group.save()
-    except ValueError, err:  # Probably a duplicate or something
+    except KeyError, err:  # Probably a duplicate or something
         error = "Can't Save: %s" % err
 
     if error:
         flash(error)
-        return render_template(
-            "admin_editgroup.html",
-            group=group
-        )
+        return redirect(url_for("admin_edit_group", g_id=group.id))
 
     flash("Changes saved", category='success')
     return redirect(url_for("admin_groups"))
-
-
 
 
 

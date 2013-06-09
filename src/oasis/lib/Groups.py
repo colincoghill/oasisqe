@@ -33,16 +33,11 @@ class Group(object):
         """ If just id is provided, load existing database
             record or raise KeyError.
 
-            If rest is provided, create a new one. Raise KeyError if there's
+            If gtype is provided, create a new one. Raise KeyError if there's
             already an entry with the same name or code.
         """
 
-        if not name:  # search
-            if id:
-                self._fetch_by_id(id)
-            else:
-                raise ValueError("Must provide group ID or other fields")
-        else:  # create new
+        if not id and not name:  # new
             self.id = 0
             self.name = name
             self.title = title
@@ -51,6 +46,12 @@ class Group(object):
             self.source = source
             self.period = period
             self.feed = feed
+
+        if id:
+            self._fetch_by_id(id)
+        elif name:
+            self._fetch_by_name(name)
+
 
     def _fetch_by_id(self, g_id):
         """ Initialise from database, or KeyError
@@ -75,6 +76,31 @@ class Group(object):
 
         return
 
+
+    def _fetch_by_name(self, name):
+        """ Initialise from database, or KeyError
+        """
+        sql = """SELECT "id", "title", "gtype", "active",
+                        "source", "period", "feed"
+                 FROM "ugroups"
+                 WHERE name=%s;"""
+        params = (name,)
+        ret = run_sql(sql, params)
+        if not ret:
+            raise KeyError("Group with name '%s' not found" % name)
+
+        self.id = int(ret[0][0])
+        self.name = name
+        self.title = ret[0][1]
+        self.gtype = ret[0][2]
+        self.active = ret[0][3]
+        self.source = ret[0][4]
+        self.period = ret[0][5]
+        self.feed = ret[0][6]
+
+        return
+
+
     def members(self):
         """ Return a list of userids in the group. """
         ret = run_sql("""SELECT userid FROM usergroups WHERE groupid=%s;""",
@@ -98,13 +124,12 @@ class Group(object):
         run_sql("""DELETE FROM usergroups WHERE groupid = %s;""", (self.id,))
 
     def save(self):
-        """ Store us back to database. If id is 0, create new, else update.
+        """ Store us back to database.
         """
-
-        if not self.id:
-            sql = """INSERT INTO ugroups ("name", "title")
+        if not self.id:  # it's a new one
+            sql = """INSERT INTO ugroups ("name", "title", "gtype")
                        VALUES (%s, %s);"""
-            params = (self.name, self.title)
+            params = (self.name, self.title, self.gtype)
             try:
                 run_sql(sql, params)
             except IntegrityError:
@@ -119,9 +144,9 @@ class Group(object):
             return
 
         sql = """UPDATE ugroups
-                 SET name=%s, title=%s
+                 SET name=%s, title=%s, gtype=%s
                  WHERE id=%s;"""
-        params = (self.name, self.title,
+        params = (self.name, self.title, self.gtype,
                   self.id)
         try:
             run_sql(sql, params)
@@ -200,3 +225,21 @@ def all_groups():
 
     return groups
 
+
+def all_gtypes():
+    """ Return a summary of all group types
+    """
+
+    ret = run_sql(
+        """SELECT "type", "title", "description"
+           FROM "grouptypes";""")
+    gtypes = []
+    if ret:
+        for row in ret:
+            gtypes.append({
+                'type': int(row[0]),
+                'title': row[1],
+                'description': row[2]
+            })
+
+    return gtypes
