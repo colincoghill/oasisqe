@@ -22,7 +22,7 @@ class Group(object):
     """
 
     def __init__(self,
-                 id=None,
+                 f_id=None,
                  name=None,
                  title=None,
                  gtype=None,
@@ -38,7 +38,7 @@ class Group(object):
             already an entry with the same name or code.
         """
 
-        if not id:  # new
+        if not f_id:  # new
             self.id = 0
             self.name = name
             self.title = title
@@ -49,8 +49,8 @@ class Group(object):
             self.feed = feed
             self.feedargs = feedargs
 
-        if id:
-            self._fetch_by_id(id)
+        if f_id:
+            self._fetch_by_id(f_id)
 
     def _fetch_by_id(self, g_id):
         """ Initialise from database, or KeyError
@@ -151,7 +151,7 @@ def get_by_feed(feed_id):
     groups = []
     if ret:
         for row in ret:
-            groups.append(Group(id=row[0]))
+            groups.append(Group(f_id=row[0]))
 
     return groups
 
@@ -168,7 +168,7 @@ def get_by_period(period_id):
     groups = []
     if ret:
         for row in ret:
-            groups.append(Group(id=row[0]))
+            groups.append(Group(f_id=row[0]))
 
     return groups
 
@@ -204,7 +204,7 @@ def get_active_by_course(course_id):
     groups = []
     if ret:
         for row in ret:
-            groups.append(Group(id=row[0]))
+            groups.append(Group(f_id=row[0]))
 
     return groups
 
@@ -218,7 +218,7 @@ def all_groups():
     groups = []
     if ret:
         for row in ret:
-            groups.append(Group(id=row[0]))
+            groups.append(Group(f_id=row[0]))
 
     return groups
 

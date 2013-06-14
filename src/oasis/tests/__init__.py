@@ -19,9 +19,9 @@ def setup():
     f.close()
     global DB
 
-    from lib import DB  # Do this *after* writing the test ini file.
+    from oasis.lib import DB  # Do this *after* writing the test ini file.
 
-    ret = DB.run_sql("SELECT name, value FROM config WHERE name='test_status';")
+    DB.run_sql("SELECT name, value FROM config WHERE name='test_status';")
     # assert ret
 
 def teardown():

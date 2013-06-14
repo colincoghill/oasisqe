@@ -14,7 +14,7 @@ class Feed(object):
         that do the main work of importing.
     """
 
-    def __init__(self, id=None, name=None,
+    def __init__(self, f_id=None, name=None,
                  title=None, script=None, envvar=None,
                  comments=None, freq=None, active=None):
         """ If just id is provided, load existing database
@@ -25,8 +25,8 @@ class Feed(object):
         """
 
         if not script:  # search
-            if id:
-                self._fetch_by_id(id)
+            if f_id:
+                self._fetch_by_id(f_id)
 
         else:  # create new
             self.id = 0
@@ -144,7 +144,7 @@ def all_list():
     feeds = []
     for row in ret:
         feed_id = row[0]
-        feeds.append(Feed(id=feed_id))
+        feeds.append(Feed(f_id=feed_id))
 
     return feeds
 
@@ -162,7 +162,7 @@ def active_hourly():
     feeds = []
     for row in ret:
         feed_id = row[0]
-        feeds.append(Feed(id=feed_id))
+        feeds.append(Feed(f_id=feed_id))
 
     return feeds
 
@@ -180,6 +180,6 @@ def active_daily():
     feeds = []
     for row in ret:
         feed_id = row[0]
-        feeds.append(Feed(id=feed_id))
+        feeds.append(Feed(f_id=feed_id))
 
     return feeds

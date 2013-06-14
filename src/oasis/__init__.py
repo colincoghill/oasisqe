@@ -12,7 +12,7 @@ from flask import Flask, session, redirect, url_for, request, \
     render_template, flash, abort
 import datetime
 import logging
-from logging import log, INFO, ERROR
+from logging import log, INFO
 from logging.handlers import SMTPHandler, RotatingFileHandler
 from functools import wraps
 import smtplib

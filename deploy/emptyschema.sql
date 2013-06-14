@@ -167,7 +167,7 @@ CREATE TABLE ugroups (
     "source" character varying DEFAULT 'adhoc'::character varying,
     "feed" integer references feeds("id") NULL,
     "period" integer references periods("id"),
-    "feedargs" character varying DEFAULT "",
+    "feedargs" character varying DEFAULT '',
     "active" boolean default TRUE
 );
 

@@ -15,7 +15,7 @@ class Period(object):
         start and finish.
     """
 
-    def __init__(self, id=None, name=None,
+    def __init__(self, p_id=None, name=None,
                  title=None, start=None, finish=None,
                  code=None):
         """ If just id, name or code is provided, load existing database
@@ -26,8 +26,8 @@ class Period(object):
         """
 
         if not start:  # search
-            if id:
-                self._fetch_by_id(id)
+            if p_id:
+                self._fetch_by_id(p_id)
             elif name:
                 self._fetch_by_name(name)
             elif code:
@@ -209,6 +209,6 @@ def all_list():
     periods = []
     for row in ret:
         p_id = row[0]
-        periods.append(Period(id=p_id))
+        periods.append(Period(p_id=p_id))
 
     return periods

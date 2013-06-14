@@ -23,7 +23,7 @@ import jinja2
 
 from logging import log, INFO, WARN, ERROR
 from oasis.lib.OaExceptions import OaMarkerError
-from . import Courses, Groups, Exams
+from . import Courses, Exams
 from oasis.lib import OaConfig, DB, Topics, script_funcs, OqeSmartmarkFuncs
 
 
@@ -55,19 +55,6 @@ def get_topic_list(cid, numq=True):
                       'num': num,
                       'visibility': Topics.get_vis(topic)})
     return tlist
-
-
-def add_course(name, description, owner, coursetype=1):
-    """ Add a course to the database.
-        type:   1 = Standard Class
-                2 = OASIS Tutorial/Demonstration
-                3 = Development/Testing
-                0 = Deleted
-    """
-    cid = Courses.create(name, description, owner, coursetype)
-    gid = Groups.create(name, description, owner, coursetype)
-    Courses.add_group(gid, cid)
-    return cid
 
 
 def get_q_list(tid, uid=None, numdone=True):

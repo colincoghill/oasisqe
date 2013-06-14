@@ -114,7 +114,7 @@ def admin_edit_group(g_id):
     """ Present page to add a group to the system """
     feeds = Feeds.all_list()
     periods = Periods.all_list()
-    group = Groups.Group(id=g_id)
+    group = Groups.Group(f_id=g_id)
     gtypes = Groups.all_gtypes()
     return render_template(
         "admin_editgroup.html",
@@ -143,17 +143,16 @@ def admin_edit_group_submit(g_id):
 
     error = False
 
+    group = None
     if g_id == 0:  # It's a new one being created
         if Groups.get_ids_by_name(name):
-            group = None
             error = "A Group with that name already exists!"
         else:
-            group = Groups.Group(id=0)
+            group = Groups.Group(f_id=0)
     else:
         try:
-            group = Groups.Group(id=g_id)
+            group = Groups.Group(f_id=g_id)
         except KeyError:
-            group = None
             return abort(404)
 
     if not name:
@@ -188,7 +187,7 @@ def admin_edit_group_submit(g_id):
 def admin_edit_period(p_id):
     """ Present page to edit a time period in the system """
     try:
-        period = Periods.Period(id=p_id)
+        period = Periods.Period(p_id=p_id)
     except KeyError:
         return abort(404)
     else:
@@ -205,7 +204,7 @@ def admin_edit_period(p_id):
 def admin_edit_feed(feed_id):
     """ Present page to edit a feed in the system """
     try:
-        feed = Feeds.Feed(id=feed_id)
+        feed = Feeds.Feed(f_id=feed_id)
     except KeyError:
         return abort(404)
     scripts = ['feed_url.py', 'feed_ldap.py', 'feed_spreadsheet.py']
@@ -256,7 +255,7 @@ def admin_edit_group_feed_submit(feed_id):
 
     if feed_id == 0:  # It's a new one being created
         feed = Feeds.Feed(
-            id=0,
+            f_id=0,
             name=name,
             title=title,
             script=script,
@@ -267,7 +266,7 @@ def admin_edit_group_feed_submit(feed_id):
         )
     else:
         try:
-            feed = Feeds.Feed(id=feed_id)
+            feed = Feeds.Feed(f_id=feed_id)
         except KeyError:
             return abort(404)
 
@@ -327,7 +326,7 @@ def admin_edit_period_submit(p_id):
 
     if p_id == 0:  # It's a new one being created
         period = Periods.Period(
-            id=0,
+            p_id=0,
             name=name,
             title=title,
             code=code,
@@ -336,7 +335,7 @@ def admin_edit_period_submit(p_id):
         )
     else:
         try:
-            period = Periods.Period(id=p_id)
+            period = Periods.Period(p_id=p_id)
         except KeyError:
             return abort(404)
 
