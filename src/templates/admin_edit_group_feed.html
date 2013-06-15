@@ -63,19 +63,20 @@
                    class="input-xxlarge"
                    type="text" value="{{ feed.title }}">
 
-            <label>Script Filename: {{ cf.group_feeds_dir }}</label>
-            <select name='script' value='{{ feed.script }}'>
+            <label for='script'>Script File: {{ cf.group_feeds_dir }}</label>
+            <select name='script' id='script' value='{{ feed.script }}'>
               {% for script in scripts %}
                 <option value='{{ script }}'
-                        {% if script == feed.script %}selected{% endif %}>{{ script }}</option>
+                  {% if script == feed.script %}selected{% endif %}>{{ script }}
+                </option>
               {% endfor %}
             </select>
             <label>Env. Variable: (optional)</label>
             <input placeholder="1234" name='envvar'
                    class="input-medium" value="{{ feed.envvar }}"
                    type="text">
-            <label>Comments: (optional)</label>
-            <textarea name='comments'
+            <label for='comments'>Comments: (optional)</label>
+            <textarea id='comments' name='comments'
                       placeholder="This reads from a file which is populated nightly from our main database."
                       rows="6"
                       class="input-block-level">{{ feed.comments }}</textarea>
