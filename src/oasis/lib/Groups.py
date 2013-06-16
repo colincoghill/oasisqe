@@ -198,7 +198,7 @@ def get_active_by_course(course_id):
         """SELECT "ugroups"."id"
            FROM "ugroups", "groupcourses"
            WHERE "ugroups"."active" = TRUE
-           AND "groupcourses"."group" = "ugroups"."id"
+           AND "groupcourses"."groupid" = "ugroups"."id"
            AND "groupcourses"."course" = %s;""",
         (course_id,))
     groups = []
@@ -215,6 +215,24 @@ def all_groups():
     ret = run_sql(
         """SELECT "id"
            FROM "ugroups";""")
+    groups = []
+    if ret:
+        for row in ret:
+            groups.append(Group(f_id=row[0]))
+
+    return groups
+
+
+def active_enrolment_groups():
+    """ Return a summary of all active enrolment groups
+        Active means current or near future
+    """
+    ret = run_sql(
+        """SELECT "ugroups"."id"
+           FROM "ugroups", "periods"
+           WHERE "ugroups"."gtype" = 2
+             AND "ugroups"."period" = "periods"."id"
+             AND "periods"."finish" > NOW();""")  # enrolment
     groups = []
     if ret:
         for row in ret:

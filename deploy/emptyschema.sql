@@ -183,7 +183,7 @@ CREATE TABLE marklog (
 
 CREATE TABLE groupcourses (
     "id" SERIAL PRIMARY KEY,
-    "group" integer REFERENCES ugroups("id") NOT NULL,
+    "groupid" integer REFERENCES ugroups("id") NOT NULL,
     "course" integer REFERENCES courses("course")NOT NULL
 );
 

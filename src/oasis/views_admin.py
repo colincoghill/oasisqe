@@ -384,10 +384,11 @@ def admin_course(course_id):
 
     course = Courses2.get_course(course_id)
     course['size'] = len(Courses.get_users(course_id))
-
+    groups = Groups.active_enrolment_groups()
     return render_template(
         "admin_course.html",
         course=course,
+        groups=groups
     )
 
 
