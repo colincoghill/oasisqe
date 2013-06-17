@@ -17,6 +17,14 @@ There's a downloadable build at:
 
 http://www.oasisqe.com/downloads
 
+Documentation
+=============
+
+(Early) documentation is being assembled at https://github.com/colincoghill/oasisqe-docs
+
+A copy of the (outdated) 2004 OASIS Manual is at: http://www.oasisqe.com/downloads/docs/OASIS%20User%20Manual%20Ed%201%20Dec%202004.doc
+
+It's better than nothing, and does describe question creation reasonably well.
 
 What is this?
 =============
