@@ -15,6 +15,6 @@ Sections:
    installation
    configuration
    users
-   courses
+   admin_courses
    tasks
 
