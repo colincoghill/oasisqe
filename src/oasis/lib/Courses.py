@@ -208,6 +208,18 @@ def add_group(group_id, course_id):
     run_sql(sql, params)
 
 
+def del_group(group_id, course_id):
+    """ Remove a group from the course."""
+    assert isinstance(group_id, int)
+    assert isinstance(course_id, int)
+
+    sql = "DELETE FROM groupcourses" \
+          " WHERE groupid=%s AND course=%s;"
+    params = (group_id, course_id)
+    run_sql(sql, params)
+
+
+
 def get_topics_all(course, archived=2, numq=True):
     """ Return a summary of all topics in the course.
         if archived=0, only return non archived courses

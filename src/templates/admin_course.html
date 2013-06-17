@@ -38,7 +38,7 @@
             Active
           </option>
           <option value='0'
-                  {% if not course.active %}SELECTED{% endif %}>
+            {% if not course.active %}SELECTED{% endif %}>
             Inactive
           </option>
         </select>
@@ -80,8 +80,7 @@
               <td>{{ group.startdate }}</td>
               <td>{{ group.enddate }}</td>
               <td>
-                <button class='btn btn-danger btn-mini'><i
-                    class='icon icon-trash'> </i></button>
+                <i class='icon icon-trash'> </i><input type='checkbox' name='delgroup' value='{{ group.id }}'>
               </td>
 
             </Tr>
@@ -98,9 +97,7 @@
             <option value='{{ group.id }}'>{{ group.title }}</option>
           {% endfor %}
         </select>
-        <button class='btn'>Add</button>
-        <br/>or
-        <button class='btn'>Create New Group</button>
+        <input type='checkbox' name='group_addbtn' value='1'>Add</button>
       </div>
 
       <br/></div>

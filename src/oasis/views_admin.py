@@ -424,6 +424,15 @@ def admin_course_save(course_id):
 
     changed = False
     course = Courses2.get_course(course_id)
+
+    delgroup = form.get('delgroup', None)
+    if delgroup:
+        for g_id in delgroup:
+            changed = True
+            group = Groups.Group(g_id)
+            flash("Removing group %s" % group.name, "info")
+            Courses.del_group(int(g_id), course_id)
+
     if 'course_name' in form:
         name = form['course_name']
         if not name == course['name']:
@@ -446,22 +455,22 @@ def admin_course_save(course_id):
             changed = True
             Courses.set_active(course_id, active)
 
-    newgroup = form.get('addgroup', None)
-    if newgroup:
-        Courses.add_group(newgroup, course_id)
-        changed = True
-        flash("Group added.")
+    addbtn = form.get('group_addbtn')
+    if addbtn:
+        newgroup = form.get('addgroup', None)
+        if newgroup:
+            Courses.add_group(newgroup, course_id)
+            changed = True
+            flash("Group added.")
 
     if changed:
         Courses2.reload_if_needed()
         flash("Course changes saved!")
-        return redirect(url_for("admin_courses"))
+        return redirect(url_for("admin_course", course_id=course_id))
+
     course = Courses2.get_course(course_id)
     course['size'] = len(Courses.get_users(course_id))
-    return render_template(
-        "admin_course.html",
-        course=course
-    )
+    return redirect(url_for("admin_courses"))
 
 
 @app.route("/admin/add_course/save", methods=['POST', ])
