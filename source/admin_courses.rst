@@ -31,6 +31,8 @@ doesn't require setting up integration with external systems, so is a good place
 
 4. And choose the *Add Course* button:
 
+It will ask you for
+
 
 
 
