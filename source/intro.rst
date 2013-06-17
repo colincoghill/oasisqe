@@ -18,6 +18,7 @@ This code has been developed mostly under the auspices of The University of Auck
 
 
 Sections:
+---------
 
 .. toctree::
    :maxdepth: 2
