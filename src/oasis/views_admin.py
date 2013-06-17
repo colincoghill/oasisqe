@@ -46,16 +46,6 @@ def admin_courses():
     )
 
 
-@app.route("/admin/enrol/top")
-@require_perm('sysadmin')
-def admin_enrol_top():
-    """ Present menu page of enrolment related options """
-    log(INFO, "Enrol top")
-    return render_template(
-        "admin_enrol_top.html"
-    )
-
-
 @app.route("/admin/feeds")
 @require_perm('sysadmin')
 def admin_feeds():
