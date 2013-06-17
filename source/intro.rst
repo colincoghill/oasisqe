@@ -17,12 +17,11 @@ The plan is to release this code as a series of OSS releases, as I get enough fe
 This code has been developed mostly under the auspices of The University of Auckland, and is used successfully by us. The University does not, however, otherwise endorse it or commit to any support of other users.
 
 
-Sections:
----------
-
 .. toctree::
    :maxdepth: 2
 
-   history
+
    features
+   history
+   research
    license
