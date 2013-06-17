@@ -168,6 +168,7 @@ def admin_edit_group_submit(g_id):
             group.period = period
             group.feed = feed
             group.feedargs = feed_args
+            group.active = True
 
             group.save()
         except KeyError, err:  # Probably a duplicate or something
@@ -385,12 +386,14 @@ def admin_course(course_id):
     course = Courses2.get_course(course_id)
     course['size'] = len(Courses.get_users(course_id))
     groups = Courses.get_groups(course_id)
-    allgroups = Groups.active_enrolment_groups()
+    choosegroups = [group
+                    for g_id, group in Groups.enrolment_groups().iteritems()
+                    if not g_id in groups]
     return render_template(
         "admin_course.html",
         course=course,
         groups=groups,
-        allgroups=allgroups
+        choosegroups=choosegroups
     )
 
 

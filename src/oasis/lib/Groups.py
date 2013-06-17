@@ -191,7 +191,7 @@ def get_ids_by_name(name):
         return groups
 
 
-def get_active_by_course(course_id):
+def active_by_course(course_id):
     """ Return a summary of all active or future groups with the given feed
     """
     ret = run_sql(
@@ -203,10 +203,10 @@ def get_active_by_course(course_id):
              AND "ugroups"."period" = "periods"."id"
              AND "periods"."finish" > NOW();;""",
         (course_id,))
-    groups = []
+    groups = {}
     if ret:
         for row in ret:
-            groups.append(Group(f_id=row[0]))
+            groups[row[0]] = Group(f_id=row[0])
 
     return groups
 
@@ -225,7 +225,7 @@ def all_groups():
     return groups
 
 
-def active_enrolment_groups():
+def enrolment_groups():
     """ Return a summary of all active enrolment groups
         Active means current or near future
     """
@@ -235,11 +235,11 @@ def active_enrolment_groups():
            WHERE "ugroups"."gtype" = 2
              AND "ugroups"."active" = TRUE
              AND "ugroups"."period" = "periods"."id"
-             AND "periods"."finish" > NOW();""")  # enrolment
-    groups = []
+             AND "periods"."finish" > NOW();""")  # gtype 2 =  enrolment
+    groups = {}
     if ret:
         for row in ret:
-            groups.append(Group(f_id=row[0]))
+            groups[row[0]] = Group(f_id=row[0])
 
     return groups
 

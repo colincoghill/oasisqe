@@ -72,7 +72,7 @@
             <th>end</th>
             <th></th>
           </tr>
-          {% for group in groups %}
+          {% for g_id, group in groups.iteritems() %}
             <Tr>
               <td>{{ group.name }}</td>
               <td>Manual</td>
@@ -94,7 +94,7 @@
 
         <h5>Add Group:</h5>
         <select name='addgroup'>
-          {% for group in allgroups %}
+          {% for group in choosegroups %}
             <option value='{{ group.id }}'>{{ group.title }}</option>
           {% endfor %}
         </select>

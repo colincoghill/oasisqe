@@ -120,7 +120,7 @@ def set_assess_vis(cid, visibility):
 def get_users(course_id):
     """ Return a list of users in the course"""
     allusers = []
-    for group in Groups.get_active_by_course(course_id):
+    for g_id, group in Groups.active_by_course(course_id).iteritems():
         allusers.append(group.members())
     return allusers
 
@@ -195,9 +195,9 @@ def create(name, description, owner, coursetype):
 
 
 def get_groups(course_id):
-    """ Return a list of groups currently attached to this course."""
+    """ Return a dict of groups currently attached to this course."""
 
-    return Groups.get_active_by_course(course_id)
+    return Groups.active_by_course(course_id)
 
 
 def add_group(group_id, course_id):
