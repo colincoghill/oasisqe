@@ -6,10 +6,17 @@
 Welcome to OASIS QE's documentation!
 ====================================
 
-Contents:
+Chapters:
 
 .. toctree::
    :maxdepth: 2
+
+   intro
+   student
+   teacher
+   questioncreation
+   administrator
+   developer
 
 
 
