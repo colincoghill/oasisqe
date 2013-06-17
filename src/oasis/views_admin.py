@@ -424,12 +424,11 @@ def admin_course_save(course_id):
 
     changed = False
     course = Courses2.get_course(course_id)
+    groups = Courses.get_groups(course_id)
 
-    delgroup = form.get('delgroup', None)
-    if delgroup:
-        for g_id in delgroup:
+    for g_id, group in groups.iteritems():
+        if form.get('delgroup_%s' % g_id):
             changed = True
-            group = Groups.Group(g_id)
             flash("Removing group %s" % group.name, "info")
             Courses.del_group(int(g_id), course_id)
 
@@ -461,7 +460,8 @@ def admin_course_save(course_id):
         if newgroup:
             Courses.add_group(newgroup, course_id)
             changed = True
-            flash("Group added.")
+            group = Groups.Group(newgroup)
+            flash("Group %s added." % group.name)
 
     if changed:
         Courses2.reload_if_needed()
