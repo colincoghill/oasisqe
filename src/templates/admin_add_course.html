@@ -1,78 +1,283 @@
 {% extends "page_courseadmin.html" %}
 {% block js %}
-  <script>
-    $("#enrol_type").change(function () {
-      var etype = $(this).val();
-      if (etype == 'manual') {
-        $("#enrol_location_box").hide();
-      } else {
-        $("#enrol_location_box").show();
-      }
-    });
+    <script>
+        $("#enrol_type").change(function () {
+            var etype = $(this).val();
+            if (etype == 'manual') {
+                $("#enrol_location_box").hide();
+            } else {
+                $("#enrol_location_box").show();
+            }
+        });
 
 
-    // On load
-    $(function () {
-      var etype = $("#enrol_type").val();
-      if (etype == 'manual') {
-        $("#enrol_location_box").hide();
-      } else {
-        $("#enrol_location_box").show();
-      }
-    });
+        // On load
+        $(function () {
+            var etype = $("#enrol_type").val();
+            if (etype == 'manual') {
+                $("#enrol_location_box").hide();
+            } else {
+                $("#enrol_location_box").show();
+            }
+        });
 
-  </script>
+    </script>
 {% endblock %}
 {% block body %}
-  <br>
-  <p>Return to <a href="{{ cf.url }}admin/courses">Course Choice</a></p>
+    <br>
+    <p>Return to <a href="{{ cf.url }}admin/courses">Course Choice</a></p>
 
-  <h3>Adding a new course</h3>
-  <form id="form" method='post' action='{{ cf.url }}admin/add_course/save'
-        data-validate="parsley">
-    <div class="container-fluid well">
-      <h4>Course</h4>
+    <h3>Adding a new course</h3>
+    <form id="form" method='post' action='{{ cf.url }}admin/add_course/save'
+          data-validate="parsley">
+        <div class="container-fluid well">
+            <h4>Course</h4>
 
-      <div class='input'>
-        <label>Name:
-          <input type='text' class='required' name='course_name'
-                 value='{{ course.name }}'> (eg. ELECTENG101)
-        </label>
-      </div>
-      <div class='input'>
-        <label>Title: <input type='text' class='required'
-                             name='course_title'
-                             value='{{ course.title }}'> (eg.
-          Introduction to Electrical Engineering)
-        </label>
-      </div>
+            <div class='input'>
+                <label>Name:
+                    <input type='text' class='required' name='course_name'
+                           value='{{ course.name }}'> (eg. ELECTENG101)
+                </label>
+            </div>
+            <div class='input'>
+                <label>Title: <input type='text' class='required'
+                                     name='course_title'
+                                     value='{{ course.title }}'> (eg.
+                    Introduction to Electrical Engineering)
+                </label>
+            </div>
+            <div class='input'>
+                <label>Description: <textarea name='course_desc'>{{ course.description }}</textarea> (a paragraph describing the course content. Optional.)
+                </label>
+            </div>
 
-      <div class='input'>
-        <label>Status: <select name='course_active' class='select'>
-          <option value='1' {% if course.active %}SELECTED{% endif %}>
-            Active
-          </option>
-          <option value='0'
-                  {% if not course.active %}SELECTED{% endif %}>
-            Inactive
-          </option>
-        </select>
-          (Inactive courses will be hidden)</label>
-      </div>
+        </div>
 
-    </div>
+        <div class="container-fluid well">
+            <h4>Quick Configuration</h4>
 
-    <div class='pull-right'>
-      <input type="submit" name="save_changes" value="Create Course"
-             class='btn btn-primary'>
-      <input type="submit" name="cancel_edit" id="cancel" value="Cancel"
-             class='btn btn-danger'>
-    </div>
+            <p>OASIS allows a lot of functionality in how a course is
+                configured. The
+                following options will set some sensible defaults for different
+                situations.
+                You can fine-tune the configuration later, if needed. Any of
+                the options set here
+                can be changed later, these choices do not limit what's
+                possible.</p>
+
+            <div><h3>Course Type</h3>
+                <p>Choose the type of course that best suits your needs, as a starting
+                    point:</p>
+
+                <div class='row'>
+                    <div class='span1 offset1'>
+                        <br/>
+                        <input type='radio' name='coursetemplate' value='demo'>
+                    </div>
+                    <div class='span8'>
+                        <h4>Demonstration</h4>
+
+                        <p>This is suitable for a demonstration course. Practice
+                            questions
+                            will be available to all users, by default, and
+                            students can sign
+                            themselves up to the course to do any assessments.
+                        </p>
+                    </div>
+                </div>
+
+                <div class='row'>
+                    <div class='span1 offset1'>
+                        <br/>
+                        <input type='radio' name='coursetemplate'
+                               value='casual'>
+                    </div>
+                    <div class='span8'>
+                        <h4>Casual</h4>
+
+                        <p>Useful for small courses (1-30 students) where a
+                            single course administrator
+                            can manage the student membership themselves.
+                        </p>
+                    </div>
+                </div>
+
+                <div class='row'>
+                    <div class='span1 offset1'>
+                        <br/>
+                        <input type='radio' name='coursetemplate'
+                               value='standard'>
+                    </div>
+                    <div class='span8'>
+                        <h4>Standard</h4>
+
+                        <p>A typical large organization course. Enrolment
+                            information comes
+                            from an external system, and there may be multiple
+                            staff assigned
+                            to the course.
+                        </p>
+                    </div>
+                </div>
+
+                <div class='row'>
+                    <div class='span1 offset1'>
+                        <br/>
+                        <input type='radio' name='coursetemplate' value='large'>
+                    </div>
+                    <div class='span8'>
+                        <h4>Large Scale.</h4>
+
+                        <p>There will be many staff assigned to the course, and
+                            several
+                            groups of students. Possibly several thousand
+                            students in total.
+                        </p>
+                    </div>
+                </div>
+                <hr>
+                <h3>Repetition</h3>
+                <p>Will the course run regularly, or will it only run once, for now?</p>
+
+                <div class='row'>
+                    <div class='span1 offset1'>
+                        <br/>
+                        <input type='radio' name='courserepeat' value='eternal'>
+                    </div>
+                    <div class='span8'>
+                        <h4>Eternal</h4>
+
+                        <p>The course is always available, students may come and
+                            go. This is
+                            especially suitable for demonstration courses.
+                        </p>
+                    </div>
+                </div>
+
+                <div class='row'>
+                    <div class='span1 offset1'>
+                        <br/>
+                        <input type='radio' name='courserepeat' value='single' checked>
+                    </div>
+                    <div class='span8'>
+                        <h4>Single</h4>
+
+                        <p>This course is a once-off. To repeat it in the
+                            future, additional
+                            configuration will be needed.
+                        </p>
+                    </div>
+                </div>
+
+                <div class='row'>
+                    <div class='span1 offset1'>
+                        <br/>
+                        <input type='radio' name='courserepeat' value='annual'>
+                    </div>
+                    <div class='span8'>
+                        <h4>Annual</h4>
+
+                        <p>Repeats every year, during a similar time period
+                            (semester/term)
+                    </div>
+                </div>
+
+                <div class='row'>
+                    <div class='span1 offset1'>
+                        <br/>
+                        <input type='radio' name='courserepeat' value='often'>
+                    </div>
+                    <div class='span8'>
+                        <h4>Often</h4>
+
+                        <p>This course runs multiple times a year.
+                    </div>
+                </div>
+
+                <hr>
+                <h3>Visibility</h3>
+                <p>How visible will the course content be, by default?</p>
+                <p>Note that visibility is controllable to a finer level from
+                within the course itself, this setting just controls the default.</p>
+
+                <div class='row'>
+                    <div class='span1 offset1'>
+                        <br/>
+                        <input type='radio' name='coursevis' value='open'>
+                    </div>
+                    <div class='span8'>
+                        <h4>Open</h4>
+
+                        <p>Anyone with an account can practice the questions in the course.
+                            This can allow students to try a course out before
+                            they enrol in it. Also appropriate for demonstration
+                            courses.
+                        </p>
+                    </div>
+                </div>
+
+                <div class='row'>
+                    <div class='span1 offset1'>
+                        <br/>
+                        <input type='radio' name='coursevis' value='refresher'>
+                    </div>
+                    <div class='span8'>
+                        <h4>Refresher</h4>
+
+                        <p>Students who are, or have been, enrolled in the
+                            course in the past can access the practice section. This
+                            allows them to go back and refresh their skills later.
+                        </p>
+                    </div>
+                </div>
+
+                <div class='row'>
+                    <div class='span1 offset1'>
+                        <br/>
+                        <input type='radio' name='coursevis' value='closed' CHECKED>
+                    </div>
+                    <div class='span8'>
+                        <h4>Closed</h4>
+
+                        <p>Only students with a current active enrolment in the
+                            course can access the practice section.
+                        </p>
+                    </div>
+                </div>
+
+                <div class='row'>
+                    <div class='span1 offset1'>
+                        <br/>
+                        <input type='radio' name='coursevis' value='hidden'>
+                    </div>
+                    <div class='span8'>
+                        <h4>Hidden</h4>
+
+                        <p>The course does not show up in the practice section
+                            at all. This is useful if you're just using it to learn
+                            how to use OASIS and experimenting. You can open it
+                            up later.
+                        </p>
+                    </div>
+                </div>
 
 
-  </form>
-  <br>
-  <br/>
+
+
+            </div>
+
+        </div>
+
+        <div class='pull-right'>
+            <input type="submit" name="save_changes" value="Create Course"
+                   class='btn btn-primary'>
+            <input type="submit" name="cancel_edit" id="cancel" value="Cancel"
+                   class='btn btn-danger'>
+        </div>
+
+    </form>
+    <br>
+    <br/>
 
 {% endblock body %}
 $(function () {
