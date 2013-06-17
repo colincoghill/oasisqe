@@ -50,7 +50,14 @@
                 <label>Description: <textarea name='course_desc'>{{ course.description }}</textarea> (a paragraph describing the course content. Optional.)
                 </label>
             </div>
+            <div class='input'>
+                <label for='courseowner'>Username of Course Owner:</label>
+                <input type='text' class='required'
+                                     name='courseowner'
+                                     id='courseowner'
+                                     value='{{ course.owner }}'>
 
+            </div>
         </div>
 
         <div class="container-fluid well">
@@ -90,7 +97,7 @@
                     <div class='span1 offset1'>
                         <br/>
                         <input type='radio' name='coursetemplate'
-                               value='casual'>
+                               value='casual' checked>
                     </div>
                     <div class='span8'>
                         <h4>Casual</h4>
@@ -219,7 +226,7 @@
                 <div class='row'>
                     <div class='span1 offset1'>
                         <br/>
-                        <input type='radio' name='coursevis' value='refresher'>
+                        <input type='radio' name='coursevis' value='refresher' CHECKED>
                     </div>
                     <div class='span8'>
                         <h4>Refresher</h4>
@@ -234,7 +241,7 @@
                 <div class='row'>
                     <div class='span1 offset1'>
                         <br/>
-                        <input type='radio' name='coursevis' value='closed' CHECKED>
+                        <input type='radio' name='coursevis' value='closed'>
                     </div>
                     <div class='span8'>
                         <h4>Closed</h4>

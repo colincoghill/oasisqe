@@ -216,3 +216,11 @@ textarea { width: 100%; border: 1px solid #333; padding: 4px; }
 .datatable td,th {
     font-size: small;
 }
+
+.parsley-error-list {
+    color: darkred;
+}
+
+input .parsley-error {
+    background-color: #ffe0e0;
+}

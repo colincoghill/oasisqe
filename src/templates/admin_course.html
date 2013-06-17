@@ -24,7 +24,7 @@
 {% endblock %}
 {% block body %}
   <br>
-  <p>Return to <a href="{{ cf.url }}admin/courses">Course Choice</a></p>
+  <p>Return to <a href="{{ cf.url }}cadmin/{{ course.id }}/top">Course Top</a></p>
   <h2>Server Administration</h2>
   <h3>{{ course.name }} ({{ course.title }})</h3>
   <form method='post' action='{{ cf.url }}admin/course/save/{{ course.id }}'>
@@ -97,7 +97,7 @@
             <option value='{{ group.id }}'>{{ group.title }}</option>
           {% endfor %}
         </select>
-        <input type='checkbox' name='group_addbtn' value='1'>Add</button>
+        <input type='checkbox' name='group_addbtn' value='1'>Add
       </div>
 
       <br/></div>
@@ -113,7 +113,7 @@
   </form>
   <br>
   <br/>
-  <p>Return to <a href="{{ cf.url }}admin/courses">Course Choice</a></p>
+  <p>Return to <a href="{{ cf.url }}cadmin/{{ course.id }}/top">Course Top</a></p>
 
 {% endblock body %}
 {% block pagetitle %}Server Admin{% endblock %}

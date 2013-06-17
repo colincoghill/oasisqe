@@ -19,7 +19,7 @@ from .lib import Courses, Courses2, Setup, Periods, Feeds
 MYPATH = os.path.dirname(__file__)
 from .lib import DB, Groups
 from oasis import app, require_perm
-from logging import log, INFO
+# from logging import log, INFO
 
 
 @app.route("/admin/top")
