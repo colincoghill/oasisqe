@@ -9,7 +9,7 @@ Welcome to OASIS QE's documentation!
 Chapters:
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
 
    intro
    student
