@@ -3,10 +3,16 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to OASIS QE's documentation!
-====================================
+OASIS QE Manual
+===============
+
+This is very much a *work in progress*, until it is finished, you can try the (very) old manual:
+
+    http://www.oasisqe.com/downloads/docs/OASIS%20User%20Manual%20Ed%201%20Dec%202004.doc
+
 
 Chapters:
+=========
 
 .. toctree::
    :maxdepth: 3
