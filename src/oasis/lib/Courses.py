@@ -194,16 +194,10 @@ def create(name, description, owner, coursetype):
     return 0
 
 
-def get_groups(course):
+def get_groups(course_id):
     """ Return a list of groups currently attached to this course."""
-    #TODO: Update for new group system
-    sql = "SELECT groupid FROM groupcourses WHERE active='1' AND course = %s;"
-    params = (course, )
-    ret = run_sql(sql, params)
-    groups = []
-    if ret:
-        groups = [row[0] for row in ret]
-    return groups
+
+    return Groups.get_active_by_course(course_id)
 
 
 def add_group(group_id, course_id):

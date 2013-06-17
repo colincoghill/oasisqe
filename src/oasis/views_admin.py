@@ -384,11 +384,13 @@ def admin_course(course_id):
 
     course = Courses2.get_course(course_id)
     course['size'] = len(Courses.get_users(course_id))
-    groups = Groups.active_enrolment_groups()
+    groups = Courses.get_groups(course_id)
+    allgroups = Groups.active_enrolment_groups()
     return render_template(
         "admin_course.html",
         course=course,
-        groups=groups
+        groups=groups,
+        allgroups=allgroups
     )
 
 
@@ -412,12 +414,10 @@ def admin_add_course():
 def admin_course_save(course_id):
     """ accept saved settings """
     form = request.form
-    if 'cancel_edit' in form:
+    cancel_edit = form.get("cancel_edit", False)
+    if cancel_edit:
         flash("Course edits cancelled")
         return redirect(url_for("admin_courses"))
-
-    if not 'save_changes' in form:
-        abort(400)
 
     changed = False
     course = Courses2.get_course(course_id)
@@ -442,6 +442,12 @@ def admin_course_save(course_id):
         if not (active == course['active']):
             changed = True
             Courses.set_active(course_id, active)
+
+    newgroup = form.get('addgroup', None)
+    if newgroup:
+        Courses.add_group(newgroup, course_id)
+        changed = True
+        flash("Group added.")
 
     if changed:
         Courses2.reload_if_needed()

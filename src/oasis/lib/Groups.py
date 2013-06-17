@@ -196,10 +196,12 @@ def get_active_by_course(course_id):
     """
     ret = run_sql(
         """SELECT "ugroups"."id"
-           FROM "ugroups", "groupcourses"
+           FROM "ugroups", "groupcourses", "periods"
            WHERE "ugroups"."active" = TRUE
-           AND "groupcourses"."groupid" = "ugroups"."id"
-           AND "groupcourses"."course" = %s;""",
+             AND "groupcourses"."groupid" = "ugroups"."id"
+             AND "groupcourses"."course" = %s
+             AND "ugroups"."period" = "periods"."id"
+             AND "periods"."finish" > NOW();;""",
         (course_id,))
     groups = []
     if ret:
@@ -231,6 +233,7 @@ def active_enrolment_groups():
         """SELECT "ugroups"."id"
            FROM "ugroups", "periods"
            WHERE "ugroups"."gtype" = 2
+             AND "ugroups"."active" = TRUE
              AND "ugroups"."period" = "periods"."id"
              AND "periods"."finish" > NOW();""")  # enrolment
     groups = []
