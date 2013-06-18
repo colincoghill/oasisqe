@@ -32,6 +32,9 @@ CREATE TABLE users (
     "confirmed" character varying
 );
 
+INSERT INTO users (uname, passwd, givenname, source, confirmed)
+       VALUES ('admin', '-NOLOGIN-', 'Admin', 'local', TRUE);
+
 CREATE TABLE qtemplates (
     "qtemplate" SERIAL PRIMARY KEY,
     "owner" integer REFERENCES users("id") NOT NULL,
@@ -220,6 +223,42 @@ CREATE TABLE permissiondesc (
     "description" character varying(255),
     "sharable" boolean DEFAULT true NOT NULL
 );
+
+INSERT INTO permissiondesc ("permission", "name", "description", "sharable")
+       VALUES (1, 'sysadmin', 'System Administrator', TRUE);
+INSERT INTO permissiondesc ("permission", "name", "description", "sharable")
+       VALUES (2, 'useradmin', 'User Administrator', TRUE);
+INSERT INTO permissiondesc ("permission", "name", "description", "sharable")
+       VALUES (3, 'courseadmin', 'Course Administrator', TRUE);
+INSERT INTO permissiondesc ("permission", "name", "description", "sharable")
+       VALUES (4, 'coursecoord', 'Course Coordinator', TRUE);
+INSERT INTO permissiondesc ("permission", "name", "description", "sharable")
+       VALUES (5, 'questionedit', 'Question Editor', TRUE);
+INSERT INTO permissiondesc ("permission", "name", "description", "sharable")
+       VALUES (8, 'viewmarks', 'View Marks', TRUE);
+INSERT INTO permissiondesc ("permission", "name", "description", "sharable")
+       VALUES (9, 'altermarks', 'Alter Marks',TRUE);
+INSERT INTO permissiondesc ("permission", "name", "description", "sharable")
+       VALUES (10, 'questionpreview', 'Preview Practice',TRUE);
+INSERT INTO permissiondesc ("permission", "name", "description", "sharable")
+       VALUES (11, 'exampreview', 'Preview Assessments',TRUE);
+INSERT INTO permissiondesc ("permission", "name", "description", "sharable")
+       VALUES (14, 'examcreate', 'Create Assessments',TRUE);
+INSERT INTO permissiondesc ("permission", "name", "description", "sharable")
+       VALUES (15, 'memberview', 'View Group Members',TRUE);
+INSERT INTO permissiondesc ("permission", "name", "description", "sharable")
+       VALUES (16, 'surveypreview', 'Preview Surveys',TRUE);
+INSERT INTO permissiondesc ("permission", "name", "description", "sharable")
+       VALUES (17, 'surveycreate', 'Create Surveys',TRUE);
+INSERT INTO permissiondesc ("permission", "name", "description", "sharable")
+       VALUES (18, 'sysmesg', 'Set System Messages',TRUE);
+INSERT INTO permissiondesc ("permission", "name", "description", "sharable")
+       VALUES (19, 'syscourses', 'Add/Remove Courses',TRUE);
+INSERT INTO permissiondesc ("permission", "name", "description", "sharable")
+       VALUES (20, 'surveyresults', 'View Survey Results',TRUE);
+
+SELECT setval(permissiondesc_permission_seq, 21);
+
 
 CREATE TABLE permissions (
     "id" SERIAL PRIMARY KEY,

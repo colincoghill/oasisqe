@@ -6,12 +6,13 @@
   <h2>{{ course.name }} ({{ course.title }})</h2>
 
   <div class="container-fluid well">
-    <h5>Active Practice Topics</h5>
-
+    <h5>Practice Topics</h5>
+<p>These topics are currently active. You can select one to edit it or
+view more details.</p>
     <table class="table">
       <thead>
       <tr>
-        <th></th>
+        <th>Name</th>
         <th>Questions</th>
       </tr>
       </thead>
@@ -82,10 +83,58 @@
     </div>
     -->
 
+
+  <div class="container-fluid well">
+    <h5>People</h5>
+
+  <p>{{ course.name }} currently has {{ course.size }} students and {{ course.staffnum }} staff, composed from the following group(s):</p>
+
+      <div>{% if groups %}
+
+        <table class='table'>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Size</th>
+            <th>start</th>
+            <th>end</th>
+            <th></th>
+          </tr>
+          </thead>
+          {% for g_id, group in groups.iteritems() %}
+            <Tr>
+              <td>{{ group.name }}</td>
+              <td>Manual</td>
+              <td>{{ group.size }}</td>
+              <td>{{ group.startdate }}</td>
+              <td>{{ group.enddate }}</td>
+              <td>
+                <i class='icon icon-trash'> </i><input type='checkbox' name='delgroup_{{ group.id }}' value='{{ group.id }}'>
+              </td>
+
+            </Tr>
+          {% endfor %}
+        </table>
+      {% else %}
+        None.
+      {% endif %}
+      </div>
+
+        <h5>Add Group:</h5>
+        <select name='addgroup'>
+        <option value=''>--</option>
+          {% for group in choosegroups %}
+
+            <option value='{{ group.id }}'>{{ group.title }}</option>
+          {% endfor %}
+        </select>
+
+    </div>
+
   <div class="container-fluid well">
     <h5>Course Settings</h5>
 
-    <p><a href="{{ cf.url }}cadmin/{{ course.id }}/enrolment">People</a></p>
     <!--    <p><a href="{{cf.url}}setup/studentsearch/{{course.id}}">Student Search</a></p>   -->
     <p><a href="{{ cf.url }}cadmin/{{ course.id }}/perms">Permissions</a>
     </p>

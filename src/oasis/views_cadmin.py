@@ -13,7 +13,7 @@ from flask import render_template, session, request, redirect, \
     abort, url_for, flash
 
 from .lib import OaConfig, Users2, DB, Topics, Permissions, \
-    Exams, Courses, Courses2, Setup, CourseAdmin
+    Exams, Courses, Courses2, Setup, CourseAdmin, Groups
 
 MYPATH = os.path.dirname(__file__)
 
@@ -37,12 +37,17 @@ def cadmin_top(course_id):
              for exam_id in Courses.get_exams(course_id, prev_years=False)]
 
     exams.sort(key=lambda y: y['start_epoch'], reverse=True)
-
+    groups = Courses.get_groups(course_id)
+    choosegroups = [group
+                    for g_id, group in Groups.enrolment_groups().iteritems()
+                    if not g_id in groups]
     return render_template(
         "courseadmin_top.html",
         course=course,
         topics=topics,
-        exams=exams
+        exams=exams,
+        choosegroups=choosegroups,
+        groups=groups
     )
 
 
