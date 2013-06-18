@@ -1,8 +1,14 @@
 #!/usr/bin/python2.7
 
 
-import sys
-sys.path.append("/opt/oasisqe/3.9/src")
+import sys, os
+
+# we should be SOMETHING/bin/reset_admin_password, find APPDIR
+# and add "SOMETHING/src" to our path
+
+APPDIR = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), "src")
+sys.path.append(APPDIR)
+
 
 from oasis.lib import Stats, Feeds
 
