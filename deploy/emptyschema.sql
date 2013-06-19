@@ -257,7 +257,7 @@ INSERT INTO permissiondesc ("permission", "name", "description", "sharable")
 INSERT INTO permissiondesc ("permission", "name", "description", "sharable")
        VALUES (20, 'surveyresults', 'View Survey Results',TRUE);
 
-SELECT setval(permissiondesc_permission_seq, 21);
+SELECT setval('permissiondesc_permission_seq', 21);
 
 
 CREATE TABLE permissions (
