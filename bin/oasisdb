@@ -1,0 +1,102 @@
+#!/usr/bin/python
+
+# Script to look at the OASIS database and make any fixes or
+# upgrades if needed. Will prompt before doing anything dangerous.
+
+import os
+import sys
+
+# we should be SOMETHING/bin/reset_admin_password, find APPDIR
+# and add "SOMETHING/src" to our path
+APPDIR = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), "src")
+sys.path.append(APPDIR)
+
+from oasis.lib import DB
+
+
+def public_tables():
+    """ Return a list of names of all tables in schema ("public" is default)
+    """
+
+    ret = DB.run_sql("SELECT * FROM pg_stat_user_tables;")
+    tables = [row[2] for row in ret]
+    return tables
+
+
+def is_safe():
+    """ Is it safe to do dangerous stuff to the database? Mainly tries to
+        figure out if there is real data in it.
+    """
+
+    # If there are only 2 or fewer user accounts and questions, assume it's
+    # ok.
+
+    what = is_oasis_db()
+    if what == "no":
+        return False
+
+    if what == "empty":
+        return True
+
+    return False
+
+
+def is_oasis_db():
+    """ Is this likely an OASIS database? Look at the table names to see
+        if we have the more specific ones.
+        Return "yes", "no", or "empty"
+    """
+
+    expect = ['qtvariations', 'users', 'examqtemplates', 'marks', 'qtattach',
+              'questions', 'guesses', 'exams', 'qtemplates']
+
+    tables = public_tables()
+
+    if len(tables) == 0:
+        return "empty"
+
+    if set(expect).issubset(tables):
+        return "yes"
+
+    return "no"
+
+
+def upgrade_3_6_to_3_9_2():
+    """ Given a 3.6 database, upgrade it to 3.9.2.
+    """
+
+    raise NotImplementedError
+
+
+def upgrade_3_9_1_to_3_9_2():
+    """ Given a 3.9.1 database, upgrade it to 3.9.2.
+    """
+
+    raise NotImplementedError
+
+
+def clean_install():
+    """ Install a fresh blank schema.
+    """
+
+    raise NotImplementedError
+
+
+if __name__ == "__main__":
+    what = is_oasis_db()
+    if what == "empty":
+        print "Empty database detected, you can install a clean setup with:"
+        print ""
+        print "oasisdb empty"
+        sys.exit()
+
+    if what == "no":
+        print "This appears not to be an OASIS database. Please make sure you"
+        print "have the correct database settings in the configuration."
+        sys.exit()
+
+    print "OASIS database detected"
+
+    ver = DB.get_db_version()
+    print "Detected DB Version", ver
+
