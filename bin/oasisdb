@@ -23,7 +23,15 @@ def public_tables():
     return tables
 
 
-def is_safe():
+def num_records(table_name):
+    """ How many rows are in the given table.
+    """
+    ret = DB.run_sql('SELECT count(*) FROM "%s";' % table_name)
+    num = int(ret[0][0])
+    return num
+
+
+def check_safe():
     """ Is it safe to do dangerous stuff to the database? Mainly tries to
         figure out if there is real data in it.
     """
@@ -38,7 +46,27 @@ def is_safe():
     if what == "empty":
         return True
 
-    return False
+    users = num_records("users")
+    print '%s user records' % users
+    qtemplates = num_records("qtemplates")
+    print '%s question templates' % qtemplates
+    exams = num_records("exams")
+    print '%s assessments' % exams
+
+    if users > 3:
+        print "May contain critical data."
+        return False
+
+    if qtemplates > 2:
+        print "May contain critical data."
+        return False
+
+    if exams > 0:
+        print "May contain critical data."
+        return False
+
+    print "Probably doesn't contain critical data."
+    return True
 
 
 def is_oasis_db():
@@ -99,4 +127,6 @@ if __name__ == "__main__":
 
     ver = DB.get_db_version()
     print "Detected DB Version", ver
-
+    if not check_safe():
+        print "Unsafe to continue."
+        sys.exit()

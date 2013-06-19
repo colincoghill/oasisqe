@@ -44,7 +44,7 @@ def add_prac_q_count(year, month, day, hour, qtemplate, count, avgscore):
     DB.run_sql(sql, params)
 
 
-def upe_prac_q_count(year, month, day, hour, qtemplate, count, avgscore):
+def update_prac_q_count(year, month, day, hour, qtemplate, count, avgscore):
     """ Insert a practice count for the given time/qtemplate """
     sql = """UPDATE stats_prac_q_course SET "count"=%s, "avgscore"=%s
                  WHERE hour=%s
@@ -99,11 +99,27 @@ def populate_prac_q_count(start=None, end=None):
             'qtemplate': int(row[5]),
             'avgscore': float(row[6])
         }
-        exist_count = prac_q_count(data['year'], data['month'], data['day'], data['hour'], data['qtemplate'])
+        exist_count = prac_q_count(data['year'],
+                                   data['month'],
+                                   data['day'],
+                                   data['hour'],
+                                   data['qtemplate'])
         if exist_count is False:  # could be 0
-            add_prac_q_count(data['year'], data['month'], data['day'], data['hour'], data['qtemplate'], data['count'], data['avgscore'])
+            add_prac_q_count(data['year'],
+                             data['month'],
+                             data['day'],
+                             data['hour'],
+                             data['qtemplate'],
+                             data['count'],
+                             data['avgscore'])
         else:
-            upe_prac_q_count(data['year'], data['month'], data['day'], data['hour'], data['qtemplate'], data['count'], data['avgscore'])
+            update_prac_q_count(data['year'],
+                                data['month'],
+                                data['day'],
+                                data['hour'],
+                                data['qtemplate'],
+                                data['count'],
+                                data['avgscore'])
 
 
 def daily_prac_q_count(start_time, end_time, qt_id):

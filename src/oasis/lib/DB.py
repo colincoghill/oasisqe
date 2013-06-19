@@ -1350,7 +1350,7 @@ def get_db_version():
         pass
 
     # We don't have a setting, need to figure it out
-    try: # stats_prac_q_course was added for 3.9.1
+    try:  # stats_prac_q_course was added for 3.9.1
         ret = run_sql("SELECT 1 FROM stats_prac_q_course;")
         if ret:
             return "3.9.1"
