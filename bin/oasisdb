@@ -16,7 +16,7 @@ sys.path.append(os.path.join(APPDIR, "src"))
 # WARNING: We do imports later, after we've checked some things.
 
 
-def public_tables():
+def public_tables(DB):
     """ Return a list of names of all tables in schema ("public" is default)
     """
 
@@ -25,7 +25,7 @@ def public_tables():
     return tables
 
 
-def num_records(table_name):
+def num_records(DB, table_name):
     """ How many rows are in the given table.
     """
     ret = DB.run_sql('SELECT count(*) FROM "%s";' % table_name)
@@ -33,7 +33,7 @@ def num_records(table_name):
     return num
 
 
-def check_safe():
+def check_safe(DB):
     """ Is it safe to do dangerous stuff to the database? Mainly tries to
         figure out if there is real data in it.
     """
@@ -41,37 +41,36 @@ def check_safe():
     # If there are only 2 or fewer user accounts and questions, assume it's
     # ok.
 
-    what = is_oasis_db()
+    what = is_oasis_db(DB)
     if what == "no":
         return False
 
     if what == "empty":
         return True
 
-    users = num_records("users")
+    users = num_records(DB, "users")
     print '%s user records' % users
-    qtemplates = num_records("qtemplates")
+    qtemplates = num_records(DB, "qtemplates")
     print '%s question templates' % qtemplates
-    exams = num_records("exams")
+    exams = num_records(DB, "exams")
     print '%s assessments' % exams
 
-    if users > 3:
-        print "May contain critical data."
+    if users > 2:
+        print "Contains non-default data."
         return False
 
-    if qtemplates > 2:
-        print "May contain critical data."
+    if qtemplates > 1:
+        print "Contains non-default data."
         return False
 
     if exams > 0:
-        print "May contain critical data."
+        print "Contains non-default data."
         return False
 
-    print "Probably doesn't contain critical data."
     return True
 
 
-def is_oasis_db():
+def is_oasis_db(DB):
     """ Is this likely an OASIS database? Look at the table names to see
         if we have the more specific ones.
         Return "yes", "no", or "empty"
@@ -80,7 +79,7 @@ def is_oasis_db():
     expect = ['qtvariations', 'users', 'examqtemplates', 'marks', 'qtattach',
               'questions', 'guesses', 'exams', 'qtemplates']
 
-    tables = public_tables()
+    tables = public_tables(DB)
 
     if len(tables) == 0:
         return "empty"
@@ -91,21 +90,21 @@ def is_oasis_db():
     return "no"
 
 
-def upgrade_3_6_to_3_9_2():
+def upgrade_3_6_to_3_9_2(DB):
     """ Given a 3.6 database, upgrade it to 3.9.2.
     """
 
     raise NotImplementedError
 
 
-def upgrade_3_9_1_to_3_9_2():
+def upgrade_3_9_1_to_3_9_2(DB):
     """ Given a 3.9.1 database, upgrade it to 3.9.2.
     """
 
     raise NotImplementedError
 
 
-def clean_install():
+def clean_install(DB):
     """ Install a fresh blank schema.
     """
 
@@ -120,7 +119,9 @@ def cmd_options():
     """
     usage="%prog [--help] [--init] [--upgrade] [--version]"
     version="%prog 3.9.2"
-    parser = OptionParser(usage=usage, version=version)
+    parser = OptionParser(usage=usage,
+                          version=version,
+                          description="OASIS Database Tool. This can be used to initialize or upgrade an OASIS database. Usage with no options will display some status information. It requires an already configured OASIS setup.")
 
     parser.add_option("-i", "--init",
                       dest="init",
@@ -132,20 +133,37 @@ def cmd_options():
                       default=False,
                       action='store_true',
                       help='upgrade the db to be compatible with this version of OASIS')
+    parser.add_option("--erase-existing",
+                      dest='eraseall',
+                      default=False,
+                      action='store_true',
+                      help='erase any existing data first. DANGEROUS.')
 
-    return parser.parse_args()
+    (options, args) = parser.parse_args()
+    return parser, options, args
 
 
-if __name__ == "__main__":
-    (options, args) = cmd_options()
+def erase_existing(DB):
+    """ Remove the existing tables. DANGEROUS
+    """
+    with open(os.path.join(APPDIR, "deploy", "eraseexisting_392.sql")) as f:
+        sql = f.read()
+    print "Removing existing tables."
+    DB.run_sql(sql)
 
-    from oasis.lib import DB
 
-    what = is_oasis_db()
+
+def do_init(DB, opt_erase_existing=False):
+    """ Check the database looks fairly safe to mess with then, if so, setup
+        our tables.
+    """
+
+    what = is_oasis_db(DB)
     if what == "empty":
         print "Empty database detected, installing a clean setup:"
         print ""
-        clean_install()
+        erase_existing(DB)  # might be some dregs, like sequences or views
+        clean_install(DB)
         sys.exit()
 
     if what == "no":
@@ -153,11 +171,54 @@ if __name__ == "__main__":
         print "have the correct database settings in the configuration."
         sys.exit()
 
-    print "OASIS database detected"
-
+    print "There is already an OASIS database here."
     ver = DB.get_db_version()
     print "Detected DB Version", ver
-    if not check_safe():
-        print "Unsafe to continue."
+    print
+    safe = check_safe(DB)
+    if opt_erase_existing:
+        erase_existing(DB)
+        clean_install(DB)
         sys.exit()
+
+    if safe:
+        print "However it does not contain much data so may be safe to erase."
+        print "call with  --erase-existing "
+        print "to do so."
+        sys.exit()
+
+    print "It contains data, please be SURE you have the correct database"
+    print "settings and wish to erase the existing data"
+    print "before using   the   --erase-existing   option."
+    sys.exit()
+
+
+def do_upgrade(DB):
+    """ Upgade the databse from an older version of OASIS.
+    """
+
+    raise NotImplementedError
+
+
+if __name__ == "__main__":
+    (parser, options, args) = cmd_options()
+    from oasis.lib import OaConfig
+
+
+    print "Connecting to database:"
+    print "  host: ", OaConfig.dbhost
+    print "  database: ", OaConfig.dbname
+    print "  username: ", OaConfig.dbuname
+    print
+
+    from oasis.lib import DB
+
+    if options.init:
+        do_init(DB, opt_erase_existing=options.eraseall)
+
+    if options.upgrade:
+        do_upgrade(DB)
+
+    parser.print_help()
+
 
