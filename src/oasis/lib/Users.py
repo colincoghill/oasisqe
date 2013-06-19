@@ -65,11 +65,24 @@ def get_user_record(user_id):
     params = (user_id,)
     ret = run_sql(sql, params)
     if ret:
+        row = ret[0]
+        if row[1]:
+            uname = unicode(row[1], 'utf-8')
+        else:
+            uname = u""
+        if row[2]:
+            givenname = unicode(row[2], 'utf-8')
+        else:
+            givenname = u""
+        if row[3]:
+            familyname = unicode(row[3], 'utf-8')
+        else:
+            familyname = u""
         user_rec = {'id': user_id,
-                    'uname': ret[0][1],
-                    'givenname': unicode(ret[0][2], 'utf-8'),
-                    'familyname': unicode(ret[0][3], 'utf-8'),
-                    'fullname': unicode("%s %s" % (ret[0][2], ret[0][3]), 'utf-8'),
+                    'uname': uname,
+                    'givenname': givenname,
+                    'familyname': familyname,
+                    'fullname': u"%s %s" % (givenname, familyname),
                     'student_id': ret[0][4],
                     'acctstatus': ret[0][5],
                     'email': ret[0][6],

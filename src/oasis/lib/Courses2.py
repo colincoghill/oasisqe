@@ -110,4 +110,4 @@ def get_course(course_id):
     return COURSES[course_id]
 
 
-reload_if_needed()
+# reload_if_needed()

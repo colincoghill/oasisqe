@@ -8,8 +8,8 @@ import sys
 
 # we should be SOMETHING/bin/reset_admin_password, find APPDIR
 # and add "SOMETHING/src" to our path
-APPDIR = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), "src")
-sys.path.append(APPDIR)
+APPDIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+sys.path.append(os.path.join(APPDIR, "src"))
 
 from oasis.lib import DB
 
@@ -107,15 +107,18 @@ def clean_install():
     """ Install a fresh blank schema.
     """
 
-    raise NotImplementedError
+    with open(os.path.join(APPDIR, "deploy", "emptyschema.sql")) as f:
+        sql = f.read()
+
+    DB.run_sql(sql)
 
 
 if __name__ == "__main__":
     what = is_oasis_db()
     if what == "empty":
-        print "Empty database detected, you can install a clean setup with:"
+        print "Empty database detected, installing a clean setup:"
         print ""
-        print "oasisdb empty"
+        clean_install()
         sys.exit()
 
     if what == "no":
@@ -130,3 +133,4 @@ if __name__ == "__main__":
     if not check_safe():
         print "Unsafe to continue."
         sys.exit()
+
