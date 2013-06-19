@@ -14,6 +14,7 @@ DROP TABLE IF EXISTS usergroups;
 DROP TABLE IF EXISTS ugroups;
 DROP TABLE IF EXISTS periods;
 DROP TABLE IF EXISTS feeds;
+DROP TABLE IF EXISTS groups;
 DROP TABLE IF EXISTS grouptypes;
 
 DROP TABLE IF EXISTS marklog;
@@ -44,4 +45,30 @@ DROP TABLE IF EXISTS config;
 
 DROP SEQUENCE IF EXISTS users_version_seq;
 DROP SEQUENCE IF EXISTS courses_version_seq;
+DROP SEQUENCE IF EXISTS audit_id_seq;
+DROP SEQUENCE IF EXISTS audit_id_seq;
+DROP SEQUENCE IF EXISTS courses_course_seq;
+DROP SEQUENCE IF EXISTS examqtemplates_id_seq;
+DROP SEQUENCE IF EXISTS examquestions_id_seq;
+DROP SEQUENCE IF EXISTS exams_exam_seq;
+DROP SEQUENCE IF EXISTS examtimers_id_seq;
+DROP SEQUENCE IF EXISTS groupcourses_id_seq;
+DROP SEQUENCE IF EXISTS grouptypes_type_seq;
+DROP SEQUENCE IF EXISTS groups_id_seq;
+DROP SEQUENCE IF EXISTS guesses_id_seq;
+DROP SEQUENCE IF EXISTS marklog_id_seq;
+DROP SEQUENCE IF EXISTS marks_id_seq;
+DROP SEQUENCE IF EXISTS permissiondesc_permission_seq;
+DROP SEQUENCE IF EXISTS permissions_id_seq;
+DROP SEQUENCE IF EXISTS qattach_qattach_seq;
+DROP SEQUENCE IF EXISTS qtattach_qtattach_seq;
+DROP SEQUENCE IF EXISTS qtemplates_qtemplate_seq;
+DROP SEQUENCE IF EXISTS qtvariations_id_seq;
+DROP SEQUENCE IF EXISTS questions_question_seq;
+DROP SEQUENCE IF EXISTS questiontopics_id_seq;
+DROP SEQUENCE IF EXISTS topics_topic_seq;
+DROP SEQUENCE IF EXISTS userexams_id_seq;
+DROP SEQUENCE IF EXISTS usergroups_id_seq;
+DROP SEQUENCE IF EXISTS users_id_seq;
+
 COMMIT;

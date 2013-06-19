@@ -36,7 +36,7 @@ class DbConn:
         if not self.conn:
             log(INFO, "DB relogin failed!")
 
-    def run_sql(self, sql, params=None):
+    def run_sql(self, sql, params=None, quiet=False):
         """ Execute SQL commands over the connection. """
         try:
             cur = self.conn.cursor()
@@ -47,8 +47,10 @@ class DbConn:
 
         except BaseException, err:
             # it's possible that database connection timed out. Try once more.
-            log(ERROR, "DB Error (%s) '%s' (%s)" % (err, sql, repr(params)))
-            raise
+            if not quiet:
+                log(ERROR, "DB Error (%s) '%s' (%s)" % (err, sql, repr(params)))
+                raise
+            return None
 
         if sql.split()[0].upper() in ("SELECT", "SHOW", "DESC", "DESCRIBE"):
             recset = cur.fetchall()

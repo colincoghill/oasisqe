@@ -14,36 +14,12 @@ SET standard_conforming_strings = on;
 -- Put this into logic:  INSERT INTO users (uname, passwd, givenname, source, confirmed)
 --       VALUES ('admin', '-NOLOGIN-', 'Admin', 'local', TRUE);
 
+BEGIN;
 
-
--- OLD
-CREATE TABLE courses (
-    course integer DEFAULT nextval('courses_course_seq'::regclass) NOT NULL,
-    title character varying(128) NOT NULL,
-    description text,
-    owner integer,
-    active integer DEFAULT 1,
-    "type" integer,
-    enrol_type character varying DEFAULT 'manual'::character varying,
-    enrol_location character varying,
-    enrol_freq integer DEFAULT 120,
-    registration character varying DEFAULT 'controlled'::character varying,
-    practice_visibility character varying DEFAULT 'all'::character varying,
-    assess_visibility character varying DEFAULT 'enrol'::character varying
-);
--- NEW
-CREATE TABLE courses (
-    "course" SERIAL PRIMARY KEY,
-    "title" character varying(128) NOT NULL,
-    "description" text,
-    "owner" integer,
-    "active" integer DEFAULT 1,
-    "type" integer,
-    "practice_visibility" character varying DEFAULT 'all'::character varying,
-    "assess_visibility" character varying DEFAULT 'enrol'::character varying
-);
-
-
+ALTER TABLE courses DROP COLUMN "enrol_type";
+ALTER TABLE courses DROP COLUMN "enrol_location";
+ALTER TABLE courses DROP COLUMN "enrol_freq";
+ALTER TABLE courses DROP COLUMN "registration";
 
 CREATE TABLE periods (
     "id" SERIAL PRIMARY KEY,
@@ -73,12 +49,6 @@ CREATE TABLE feeds (
     "active" boolean default False
 );
 
-CREATE TABLE grouptypes (
-    "type" SERIAL PRIMARY KEY,
-    "title" character varying(128) NOT NULL,
-    "description" text
-);
-
 INSERT INTO grouptypes ("type", "title", "description")
   VALUES ('1', 'staff', 'Staff');
 INSERT INTO grouptypes ("type", "title", "description")
@@ -100,24 +70,12 @@ CREATE TABLE ugroups (
 );
 
 
+ALTER TABLE groupcourses DROP COLUMN "active";
+ALTER TABLE groupcourses ADD FOREIGN KEY("groupid") REFERENCES ugroups("id");
+ALTER TABLE groupcourses ADD FOREIGN KEY("course") REFERENCES courses("course");
 
-
--- OLD
-CREATE TABLE groupcourses (
-    id integer DEFAULT nextval('groupcourses_id_seq'::regclass) NOT NULL,
-    groupid integer NOT NULL,
-    active integer DEFAULT 0,
-    course integer NOT NULL
-);
--- NEW
-CREATE TABLE groupcourses (
-    "id" SERIAL PRIMARY KEY,
-    "groupid" integer REFERENCES ugroups("id") NOT NULL,
-    "course" integer REFERENCES courses("course")NOT NULL
-);
-
-
-
+ALTER TABLE permissiondesc ALTER COLUMN "permission" SET NOT NULL;
+ALTER TABLE permissiondesc ADD UNIQUE("permission");
 
 INSERT INTO permissiondesc ("permission", "name", "description", "sharable")
        VALUES (1, 'sysadmin', 'System Administrator', TRUE);
@@ -155,69 +113,19 @@ INSERT INTO permissiondesc ("permission", "name", "description", "sharable")
 SELECT setval('permissiondesc_permission_seq', 21);
 
 
+ALTER TABLE permissions ADD FOREIGN KEY("userid") REFERENCES users("id");
+ALTER TABLE permissions ADD FOREIGN KEY("permission") REFERENCES permissiondesc("permission");
 
--- OLD
-CREATE TABLE permissions (
-    id integer DEFAULT nextval('permissions_id_seq'::regclass) NOT NULL,
-    course integer NOT NULL,
-    userid integer NOT NULL,
-    permission integer
-);
--- NEW
-CREATE TABLE permissions (
-    "id" SERIAL PRIMARY KEY,
-    "course" integer NOT NULL,
-    "userid" integer references users("id"),
-    "permission" integer REFERENCES permissiondesc("permission")
-);
+
+ALTER TABLE stats_prac_q_course ADD COLUMN "avgscore" float NULL;
 
 
 
 
--- OLD
-CREATE TABLE stats_prac_q_course (
-    qtemplate integer NOT NULL,
-    "when" timestamp with time zone,
-    hour integer NOT NULL,
-    day integer NOT NULL,
-    month integer NOT NULL,
-    year integer NOT NULL,
-    "number" integer NOT NULL
-);
--- NEW
-CREATE TABLE stats_prac_q_course (
-    qtemplate integer NOT NULL,
-    "when" timestamp with time zone,
-    "hour" integer NOT NULL,
-    "day" integer NOT NULL,
-    "month" integer NOT NULL,
-    "year" integer NOT NULL,
-    "number" integer NULL,
-    "avgscore" float NULL
-);
-
-
-
-
-
-
--- OLD
-CREATE TABLE usergroups (
-    id integer DEFAULT nextval('usergroups_id_seq'::regclass) NOT NULL,
-    userid integer NOT NULL,
-    groupid integer NOT NULL,
-    "type" integer,
-    semester character varying
-);
--- NEW
-CREATE TABLE usergroups (
-    "id" SERIAL PRIMARY KEY,
-    "userid" integer REFERENCES users("id") NOT NULL,
-    "groupid" integer REFERENCES ugroups("id") NOT NULL
-);
-
-
-
+ALTER TABLE usergroups ADD FOREIGN KEY("userid") REFERENCES users("id");
+ALTER TABLE usergroups ADD FOREIGN KEY("groupid") REFERENCES ugroups("id");
+ALTER TABLE usergroups DROP COLUMN "type";
+ALTER TABLE usergroups DROP COLUMN "semester";
 
 
 CREATE TABLE config (
@@ -226,3 +134,6 @@ CREATE TABLE config (
 );
 INSERT INTO config ("name", "value") VALUES ('dbversion', '3.9.2');
 
+
+
+COMMIT;

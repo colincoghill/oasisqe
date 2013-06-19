@@ -36,10 +36,10 @@ from Pool import MCPool
 MC = MCPool('127.0.0.1:11211', 3)
 
 
-def run_sql(sql, params=None):
+def run_sql(sql, params=None, quiet=False):
     """ Execute SQL commands using the dbpool"""
     conn = dbpool.begin()
-    res = conn.run_sql(sql, params)
+    res = conn.run_sql(sql, params, quiet=quiet)
     dbpool.commit(conn)
     return res
 
@@ -1343,7 +1343,7 @@ def get_db_version():
     try:
         ret = run_sql("""SELECT "value"
                          FROM config
-                         WHERE "name" = 'dbversion';""")
+                         WHERE "name" = 'dbversion';""", quiet=True)
         if ret:
             return ret[0][0]
     except psycopg2.DatabaseError:
@@ -1351,8 +1351,8 @@ def get_db_version():
 
     # We don't have a setting, need to figure it out
     try:  # stats_prac_q_course was added for 3.9.1
-        ret = run_sql("SELECT 1 FROM stats_prac_q_course;")
-        if ret:
+        ret = run_sql("SELECT 1 FROM stats_prac_q_course;", quiet=True)
+        if isinstance(ret, list):
             return "3.9.1"
 
     except psycopg2.DatabaseError:
@@ -1366,4 +1366,4 @@ def get_db_version():
         pass
 
     # No database at all?
-    return "none"
+    return "unknown"

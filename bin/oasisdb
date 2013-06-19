@@ -100,19 +100,34 @@ def upgrade_3_6_to_3_9_2(DB):
 def upgrade_3_9_1_to_3_9_2(DB):
     """ Given a 3.9.1 database, upgrade it to 3.9.2.
     """
-
-    raise NotImplementedError
-
-
-def clean_install(DB):
-    """ Install a fresh blank schema.
-    """
-
-    with open(os.path.join(APPDIR, "deploy", "emptyschema.sql")) as f:
+    with open(os.path.join(APPDIR, "deploy", "migrate_391_to_392.sql")) as f:
         sql = f.read()
 
     DB.run_sql(sql)
-    print "Installed fresh tables."
+    print "Migrated table structure from 3.9.1 to 3.9.2"
+    generate_admin_passwd(DB)
+
+
+def clean_install_3_9_1(DB):
+    """ Install a fresh blank v3.9.1 schema.
+    """
+
+    with open(os.path.join(APPDIR, "deploy", "emptyschema_391.sql")) as f:
+        sql = f.read()
+
+    DB.run_sql(sql)
+    print "Installed v3.9.1 table structure."
+
+
+def clean_install_3_9_2(DB):
+    """ Install a fresh blank v3.9.2 schema.
+    """
+
+    with open(os.path.join(APPDIR, "deploy", "emptyschema_392.sql")) as f:
+        sql = f.read()
+
+    DB.run_sql(sql)
+    print "Installed v3.9.2 table structure."
 
 
 def generate_admin_passwd(DB):
@@ -164,6 +179,11 @@ def cmd_options():
                       default=False,
                       action='store_true',
                       help='erase any existing data first. DANGEROUS.')
+    parser.add_option("--oasis-ver",
+                      dest='oaver',
+                      metavar="X.Y.Z",
+                      default='3.9.2',
+                      help='work with a specific OASIS version. (default 3.9.2)')
 
     (options, args) = parser.parse_args()
     return parser, options, args
@@ -179,7 +199,7 @@ def erase_existing(DB):
 
 
 
-def do_init(DB, opt_erase_existing=False):
+def do_init(DB, options):
     """ Check the database looks fairly safe to mess with then, if so, setup
         our tables.
     """
@@ -188,8 +208,17 @@ def do_init(DB, opt_erase_existing=False):
     if what == "empty":
         print "Empty database detected, installing a clean setup:"
         print ""
-        erase_existing(DB)  # might be some dregs, like sequences or views
-        clean_install(DB)
+
+        if options.oaver == '3.9.1':
+            erase_existing(DB)  # might be some dregs, like sequences or views
+            clean_install_3_9_1(DB)
+        elif options.oaver == '3.9.2':
+            erase_existing(DB)  # might be some dregs, like sequences or views
+            clean_install_3_9_2(DB)
+        else:
+            print "Unknown database version (%s)" % (options.oaver,)
+            print "Available options:      3.9.1     3.9.2"
+            sys.exit()
         generate_admin_passwd(DB)
         sys.exit()
 
@@ -203,13 +232,22 @@ def do_init(DB, opt_erase_existing=False):
     print "Detected DB Version", ver
     print
     safe = check_safe(DB)
-    if opt_erase_existing:
-        erase_existing(DB)
-        clean_install(DB)
+    if options.eraseall:
+        if options.oaver == '3.9.1':
+            erase_existing(DB)  # might be some dregs, like sequences or views
+            clean_install_3_9_1(DB)
+        elif options.oaver == '3.9.2':
+            erase_existing(DB)  # might be some dregs, like sequences or views
+            clean_install_3_9_2(DB)
+        else:
+            print "Unknown database version (%s)" % (options.oaver,)
+            print "Available options:      3.9.1     3.9.2"
+            sys.exit()
         generate_admin_passwd(DB)
         sys.exit()
 
     if safe:
+        print
         print "However it does not contain much data so may be safe to erase."
         print "call with  --erase-existing "
         print "to do so."
@@ -221,11 +259,18 @@ def do_init(DB, opt_erase_existing=False):
     sys.exit()
 
 
-def do_upgrade(DB):
+def do_upgrade(DB, options):
     """ Upgade the databse from an older version of OASIS.
     """
 
-    raise NotImplementedError
+    dbver = DB.get_db_version()
+    if dbver == "3.9.1":
+        upgrade_3_9_1_to_3_9_2(DB)
+        sys.exit()
+    if dbver == "3.9.2":
+        print "Your database is already the latest version (3.9.2)"
+        sys.exit()
+    return
 
 
 if __name__ == "__main__":
@@ -242,11 +287,26 @@ if __name__ == "__main__":
     from oasis.lib import DB
 
     if options.init:
-        do_init(DB, opt_erase_existing=options.eraseall)
+        do_init(DB, options=options)
 
     if options.upgrade:
-        do_upgrade(DB)
+        do_upgrade(DB, options=options)
 
-    parser.print_help()
+    what = is_oasis_db(DB)
+    if what == "empty":
+        print "Empty database detected."
+        print ""
 
+    if what == "no":
+        print "This appears not to be an OASIS database. Please make sure you"
+        print "have the correct database settings in the configuration."
+        sys.exit()
+
+    if what == "yes":
+        print "There is already an OASIS database here."
+        ver = DB.get_db_version()
+        print "Detected DB Version", ver
+
+
+    print "For options, try:     oasisdb --help             "
 
