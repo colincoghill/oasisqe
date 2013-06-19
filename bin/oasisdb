@@ -112,6 +112,32 @@ def clean_install(DB):
         sql = f.read()
 
     DB.run_sql(sql)
+    print "Installed fresh tables."
+
+
+def generate_admin_passwd(DB):
+    """ Generate a new random password for the admin account.
+    """
+    from oasis.lib import Users, OaConfig, Users2, Permissions
+
+    passwd = Users.gen_confirm_code()
+
+    uid = Users.uid_by_uname('admin')
+    if not uid:
+        uid = Users.create(uname="admin",
+                       passwd="NOLOGIN",
+                       email=OaConfig.email,
+                       givenname="Admin",
+                       familyname="Account",
+                       acctstatus=1,
+                       studentid="",
+                       source="local",
+                       confirm_code="",
+                       confirm=True)
+    Users2.set_password(uid, passwd)
+
+    Permissions.add_perm(uid, 0, 1)  # superuser
+    print "You should be able to log in to OASIS as admin, with password: ", passwd
 
 
 def cmd_options():
@@ -146,7 +172,7 @@ def cmd_options():
 def erase_existing(DB):
     """ Remove the existing tables. DANGEROUS
     """
-    with open(os.path.join(APPDIR, "deploy", "eraseexisting_392.sql")) as f:
+    with open(os.path.join(APPDIR, "deploy", "eraseexisting.sql")) as f:
         sql = f.read()
     print "Removing existing tables."
     DB.run_sql(sql)
@@ -164,6 +190,7 @@ def do_init(DB, opt_erase_existing=False):
         print ""
         erase_existing(DB)  # might be some dregs, like sequences or views
         clean_install(DB)
+        generate_admin_passwd(DB)
         sys.exit()
 
     if what == "no":
@@ -179,6 +206,7 @@ def do_init(DB, opt_erase_existing=False):
     if opt_erase_existing:
         erase_existing(DB)
         clean_install(DB)
+        generate_admin_passwd(DB)
         sys.exit()
 
     if safe:
