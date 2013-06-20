@@ -1,34 +1,10 @@
 {% extends "page_courseadmin.html" %}
-{% block js %}
-    <script>
-        $("#enrol_type").change(function () {
-            var etype = $(this).val();
-            if (etype == 'manual') {
-                $("#enrol_location_box").hide();
-            } else {
-                $("#enrol_location_box").show();
-            }
-        });
-
-
-        // On load
-        $(function () {
-            var etype = $("#enrol_type").val();
-            if (etype == 'manual') {
-                $("#enrol_location_box").hide();
-            } else {
-                $("#enrol_location_box").show();
-            }
-        });
-
-    </script>
-{% endblock %}
 {% block body %}
     <br>
     <p>Return to <a href="{{ cf.url }}setup/courses">Course Choice</a></p>
 
     <h3>Adding a new course</h3>
-    <form id="form" method='post' action='{{ cf.url }}admin/add_course/save'
+    <form id="form" method='post' action='{{ cf.url }}cadmin/add_course/save'
           data-validate="parsley">
         <div class="container-fluid well">
             <h4>Course</h4>
@@ -36,18 +12,17 @@
             <div class='input'>
                 <label>Name:
                     <input type='text' class='required' name='course_name'
-                           value='{{ course.name }}'> (eg. ELECTENG101)
+                           value='' placeholder='(eg. ELECTENG101)'>
                 </label>
             </div>
             <div class='input'>
                 <label>Title: <input type='text' class='required'
                                      name='course_title'
-                                     value='{{ course.title }}'> (eg.
-                    Introduction to Electrical Engineering)
+                                     value='' placeholder='(eg. Introduction to Electrical Engineering)'>
                 </label>
             </div>
             <div class='input'>
-                <label>Description: <textarea name='course_desc'>{{ course.description }}</textarea> (a paragraph describing the course content. Optional.)
+                <label>Description: <textarea name='course_desc' placeholder='(a paragraph describing the course content. Optional.)'></textarea>
                 </label>
             </div>
             <div class='input'>
@@ -55,7 +30,7 @@
                 <input type='text' class='required'
                                      name='courseowner'
                                      id='courseowner'
-                                     value='{{ course.owner }}'>
+                                     value='admin'>
 
             </div>
         </div>

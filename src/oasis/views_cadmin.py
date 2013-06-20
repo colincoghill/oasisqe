@@ -19,7 +19,7 @@ MYPATH = os.path.dirname(__file__)
 
 from .lib.Permissions import satisfy_perms
 
-from oasis import app, require_course_perm
+from oasis import app, require_course_perm, require_perm
 
 
 @app.route("/cadmin/<int:course_id>/top")
@@ -133,6 +133,72 @@ def cadmin_prev_assessments(course_id):
         course=course,
         exams=exams,
         years=years
+    )
+
+
+@app.route("/cadmin/add_course")
+@require_perm('sysadmin')
+def cadmin_add_course():
+    """ Present page to ask for information about a new course being added
+    """
+
+    return render_template(
+        "cadmin_add_course.html"
+    )
+
+
+@app.route("/cadmin/add_course/save", methods=['POST', ])
+@require_perm('sysadmin')
+def cadmin_add_course_save():
+    """ accept saved settings for a new course"""
+    user_id = session['user_id']
+    form = request.form
+    if 'cancel_edit' in form:
+        flash("Course creation cancelled")
+        return redirect(url_for("admin_courses"))
+
+    if not 'save_changes' in form:
+        abort(400)
+
+    if not 'course_name' in form:
+        flash("You must give the course a name!")
+        return redirect(url_for("cadmin_add_course"))
+
+    if not 'course_title' in form:
+        flash("You must give the course a title!")
+        return redirect(url_for("cadmin_add_course"))
+
+    name = form['course_name']
+    title = form['course_title']
+
+    if len(name) < 1:
+        flash("You must give the course a name!")
+        return redirect(url_for("cadmin_add_course"))
+
+    if len(title) < 1:
+        flash("You must give the course a title!")
+        return redirect(url_for("cadmin_add_course"))
+
+    course_id = Courses.create(name, title, user_id, 1)
+    if not course_id:
+        flash("Error Adding Course!")
+        return redirect(url_for("admin_add_course"))
+
+    if 'course_active' in form:
+        active = form['course_active']
+        if active == '1' or active == 1:
+            active = True
+        else:
+            active = False
+        Courses.set_active(course_id, active)
+
+    Courses2.reload_if_needed()
+    flash("Course %s added!" % name)
+    course = Courses2.get_course(course_id)
+    course['size'] = 0
+    return render_template(
+        "cadmin_course.html",
+        course=course
     )
 
 

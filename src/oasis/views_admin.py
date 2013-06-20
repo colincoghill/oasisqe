@@ -380,25 +380,10 @@ def admin_course(course_id):
                     for g_id, group in Groups.enrolment_groups().iteritems()
                     if not g_id in groups]
     return render_template(
-        "admin_course.html",
+        "cadmin_course.html",
         course=course,
         groups=groups,
         choosegroups=choosegroups
-    )
-
-
-@app.route("/admin/add_course")
-@require_perm('sysadmin')
-def admin_add_course():
-    """ Present page to administer settings for a given course """
-    course = {
-        'course_name': '',
-        'course_title': '',
-        'active': True
-    }
-    return render_template(
-        "admin_add_course.html",
-        course=course
     )
 
 
@@ -461,61 +446,6 @@ def admin_course_save(course_id):
     course = Courses2.get_course(course_id)
     course['size'] = len(Courses.get_users(course_id))
     return redirect(url_for("admin_courses"))
-
-
-@app.route("/admin/add_course/save", methods=['POST', ])
-@require_perm('sysadmin')
-def admin_add_course_save():
-    """ accept saved settings for a new course"""
-    user_id = session['user_id']
-    form = request.form
-    if 'cancel_edit' in form:
-        flash("Course creation cancelled")
-        return redirect(url_for("admin_courses"))
-
-    if not 'save_changes' in form:
-        abort(400)
-
-    if not 'course_name' in form:
-        flash("You must give the course a name!")
-        return redirect(url_for("admin_add_course"))
-
-    if not 'course_title' in form:
-        flash("You must give the course a title!")
-        return redirect(url_for("admin_add_course"))
-
-    name = form['course_name']
-    title = form['course_title']
-
-    if len(name) < 1:
-        flash("You must give the course a name!")
-        return redirect(url_for("admin_add_course"))
-
-    if len(title) < 1:
-        flash("You must give the course a title!")
-        return redirect(url_for("admin_add_course"))
-
-    course_id = Courses.create(name, title, user_id, 1)
-    if not course_id:
-        flash("Error Adding Course!")
-        return redirect(url_for("admin_add_course"))
-
-    if 'course_active' in form:
-        active = form['course_active']
-        if active == '1' or active == 1:
-            active = True
-        else:
-            active = False
-        Courses.set_active(course_id, active)
-
-    Courses2.reload_if_needed()
-    flash("Course %s added!" % name)
-    course = Courses2.get_course(course_id)
-    course['size'] = 0
-    return render_template(
-        "admin_course.html",
-        course=course
-    )
 
 
 @app.route("/admin/edit_messages")
