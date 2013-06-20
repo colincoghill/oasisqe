@@ -52,7 +52,7 @@
                 <div class='row'>
                     <div class='span1 offset1'>
                         <br/>
-                        <input type='radio' name='coursetemplate' value='demo'>
+                        <input type='radio' name='coursetemplate' value='demo' {% if course.coursetemplate=='demo' %}CHECKED{% endif %}>
                     </div>
                     <div class='span8'>
                         <h4>Demonstration</h4>
@@ -70,7 +70,7 @@
                     <div class='span1 offset1'>
                         <br/>
                         <input type='radio' name='coursetemplate'
-                               value='casual' checked>
+                               value='casual' {% if course.coursetemplate=='casual' %}CHECKED{% endif %}>
                     </div>
                     <div class='span8'>
                         <h4>Casual</h4>
@@ -86,7 +86,7 @@
                     <div class='span1 offset1'>
                         <br/>
                         <input type='radio' name='coursetemplate'
-                               value='standard'>
+                               value='standard' {% if course.coursetemplate=='standard' %}CHECKED{% endif %}>
                     </div>
                     <div class='span8'>
                         <h4>Standard</h4>
@@ -103,7 +103,7 @@
                 <div class='row'>
                     <div class='span1 offset1'>
                         <br/>
-                        <input type='radio' name='coursetemplate' value='large'>
+                        <input type='radio' name='coursetemplate' value='large' {% if course.coursetemplate=='large' %}CHECKED{% endif %}>
                     </div>
                     <div class='span8'>
                         <h4>Large Scale.</h4>
@@ -122,7 +122,7 @@
                 <div class='row'>
                     <div class='span1 offset1'>
                         <br/>
-                        <input type='radio' name='courserepeat' value='eternal'>
+                        <input type='radio' name='courserepeat' value='eternal' {% if course.courserepeat=='eternal' %}CHECKED{% endif %}>
                     </div>
                     <div class='span8'>
                         <h4>Eternal</h4>
@@ -137,7 +137,7 @@
                 <div class='row'>
                     <div class='span1 offset1'>
                         <br/>
-                        <input type='radio' name='courserepeat' value='single' checked>
+                        <input type='radio' name='courserepeat' value='single' {% if course.courserepeat=='single' %}CHECKED{% endif %}>
                     </div>
                     <div class='span8'>
                         <h4>Single</h4>
@@ -152,7 +152,7 @@
                 <div class='row'>
                     <div class='span1 offset1'>
                         <br/>
-                        <input type='radio' name='courserepeat' value='annual'>
+                        <input type='radio' name='courserepeat' value='annual' {% if course.courserepeat=='annual' %}CHECKED{% endif %}>
                     </div>
                     <div class='span8'>
                         <h4>Annual</h4>
@@ -165,7 +165,7 @@
                 <div class='row'>
                     <div class='span1 offset1'>
                         <br/>
-                        <input type='radio' name='courserepeat' value='often'>
+                        <input type='radio' name='courserepeat' value='often' {% if course.courserepeat=='often' %}CHECKED{% endif %}>
                     </div>
                     <div class='span8'>
                         <h4>Often</h4>
@@ -183,7 +183,7 @@
                 <div class='row'>
                     <div class='span1 offset1'>
                         <br/>
-                        <input type='radio' name='coursevis' value='open'>
+                        <input type='radio' name='coursevis' value='open' {% if course.coursevis=='open' %}CHECKED{% endif %}>
                     </div>
                     <div class='span8'>
                         <h4>Open</h4>
@@ -200,7 +200,7 @@
                 <div class='row'>
                     <div class='span1 offset1'>
                         <br/>
-                        <input type='radio' name='coursevis' value='refresher' CHECKED>
+                        <input type='radio' name='coursevis' value='refresher' {% if course.coursevis=='refresher' %}CHECKED{% endif %}>
                     </div>
                     <div class='span8'>
                         <h4>Refresher</h4>
@@ -215,7 +215,7 @@
                 <div class='row'>
                     <div class='span1 offset1'>
                         <br/>
-                        <input type='radio' name='coursevis' value='closed'>
+                        <input type='radio' name='coursevis' value='closed' {% if course.coursevis=='closed' %}CHECKED{% endif %}>
                     </div>
                     <div class='span8'>
                         <h4>Closed</h4>
@@ -229,7 +229,7 @@
                 <div class='row'>
                     <div class='span1 offset1'>
                         <br/>
-                        <input type='radio' name='coursevis' value='hidden'>
+                        <input type='radio' name='coursevis' value='hidden' {% if course.coursevis=='hidden' %}CHECKED{% endif %}>
                     </div>
                     <div class='span8'>
                         <h4>Hidden</h4>

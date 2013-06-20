@@ -176,11 +176,17 @@ def cadmin_add_course_save():
     name = form.get('name', '')
     title = form.get('title', '')
     owner = form.get('owner', 'admin')
+    coursetemplate = form.get('coursetemplate', 'casual')
+    courserepeat = form.get('courserepeat', 'single')
+    coursevis = form.get('coursevis', 'hidden')
 
     course = {
         'name': name,
         'title': title,
-        'owner': owner
+        'owner': owner,
+        'coursetemplate': coursetemplate,
+        'courserepeat': courserepeat,
+        'coursevis': coursevis
     }
 
     if len(name) < 1:
