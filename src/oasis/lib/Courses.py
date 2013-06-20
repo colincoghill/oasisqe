@@ -388,7 +388,7 @@ def _create_config_demonstration(course_id, period_id):
         group = Groups.Group(g_id=0)
 
     group.name = name
-    group.title = "Staff in %s" % (course['name'],)
+    group.title = "%s, Staff" % (course['name'],)
     group.gtype = 1  # staff
     group.source = "adhoc"
     group.period = period_id
@@ -407,7 +407,7 @@ def _create_config_demonstration(course_id, period_id):
         group = Groups.Group(g_id=0)
 
     group.name = name
-    group.title = "Self registered students in %s" % (course['name'],)
+    group.title = "%s, Students, Self Registered" % (course['name'],)
     group.gtype = 2  # enrolment
     group.source = "open"
     group.period = period_id
@@ -426,7 +426,7 @@ def _create_config_demonstration(course_id, period_id):
         group = Groups.Group(g_id=0)
 
     group.name = name
-    group.title = "Students in %s" % (course['name'],)
+    group.title = "%s, Students" % (course['name'],)
     group.gtype = 2  # student
     group.source = "adhoc"
     group.period = period_id
@@ -451,7 +451,7 @@ def _create_config_casual(course_id, period_id):
         group = Groups.Group(g_id=0)
 
     group.name = name
-    group.title = "Staff in %s" % (course['name'],)
+    group.title = "%s, Staff" % (course['name'],)
     group.gtype = 1  # staff
     group.source = "adhoc"
     group.period = period_id
@@ -470,7 +470,7 @@ def _create_config_casual(course_id, period_id):
         group = Groups.Group(g_id=0)
 
     group.name = name
-    group.title = "Students in %s" % (course['name'],)
+    group.title = "%s, Students" % (course['name'],)
     group.gtype = 2  # student
     group.source = "adhoc"
     group.period = period_id
@@ -502,7 +502,7 @@ def _create_config_standard(course_id, period_id):
         group = Groups.Group(g_id=0)
 
     group.name = name
-    group.title = "Staff in %s" % (course['name'],)
+    group.title = "%s, Staff" % (course['name'],)
     group.gtype = 1  # staff
     group.source = "adhoc"
     group.period = period_id
@@ -520,7 +520,7 @@ def _create_config_standard(course_id, period_id):
         group = Groups.Group(g_id=0)
 
     group.name = name
-    group.title = "Students in %s" % (course['name'],)
+    group.title = "%s, Students" % (course['name'],)
     group.gtype = 2  # student
     group.source = "adhoc"
     group.period = period_id
@@ -554,7 +554,7 @@ def _create_config_large(course_id, period_id):
         group = Groups.Group(g_id=0)
 
     group.name = name
-    group.title = "Staff in %s" % (course['name'],)
+    group.title = "%s, Staff" % (course['name'],)
     group.gtype = 1  # staff
     group.source = "adhoc"
     group.period = period_id
@@ -572,7 +572,7 @@ def _create_config_large(course_id, period_id):
         group = Groups.Group(g_id=0)
 
     group.name = name
-    group.title = "Students in %s" % (course['name'],)
+    group.title = "%s, Students" % (course['name'],)
     group.gtype = 2  # student
     group.source = "adhoc"
     group.period = period_id

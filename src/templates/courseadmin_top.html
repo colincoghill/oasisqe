@@ -90,8 +90,8 @@ view more details.</p>
   <p>{{ course.name }} currently has {{ course.size }} students and {{ course.staffnum }} staff, composed from the following group(s):</p>
 
       <div>{% if groups %}
-
-        <table class='table'>
+<h4>Staff</h4>
+        <table class='table datatable'>
         <thead>
           <tr>
             <th>Name</th>
@@ -102,7 +102,43 @@ view more details.</p>
             <th></th>
           </tr>
           </thead>
-          {% for g_id, group in groups.iteritems() %}
+          {% for g_id, group in groups.iteritems() if group.gtype==1 %}
+            <Tr>
+              <td>{{ group.title }}</td>
+              <td>{{ group.source }}</td>
+              <td>{{ group.size }}</td>
+              <td>{{ group.startdate }}</td>
+              <td>{{ group.enddate }}</td>
+               <td>
+                <a href='{{ cf.url }}cadmin/group/{{ group.id }}/edit' class='btn btn-mini'><i class='icon icon-edit'> </i> edit</a>
+              </td>
+
+
+            </Tr>
+          {% endfor %}
+        </table>
+          <br/>
+           <h5>Add Staff Group:</h5>
+        <select name='addgroup'>
+        <option value=''>--</option>
+          {% for group in choosegroups if group.gtype==1 %}
+
+            <option value='{{ group.id }}'>{{ group.title }}</option>
+          {% endfor %}
+        </select>
+<h4>Students</h4>
+          <table class='table datatable'>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Size</th>
+            <th>start</th>
+            <th>end</th>
+            <th></th>
+          </tr>
+          </thead>
+          {% for g_id, group in groups.iteritems() if group.gtype==2 %}
             <Tr>
               <td>{{ group.title }}</td>
               <td>{{ group.source }}</td>
@@ -110,25 +146,29 @@ view more details.</p>
               <td>{{ group.startdate }}</td>
               <td>{{ group.enddate }}</td>
               <td>
-                <i class='icon icon-trash'> </i><input type='checkbox' name='delgroup_{{ group.id }}' value='{{ group.id }}'>
+                <a href='{{ cf.url }}cadmin/group/{{ group.id }}/edit' class='btn btn-mini'><i class='icon icon-edit'> </i> edit</a>
               </td>
 
             </Tr>
           {% endfor %}
         </table>
+          <br/>
+ <h5>Add Student Group:</h5>
+        <select name='addgroup'>
+        <option value=''>--</option>
+          {% for group in choosegroups if group.gtype==2 %}
+
+            <option value='{{ group.id }}'>{{ group.title }}</option>
+          {% endfor %}
+        </select>
+
+
       {% else %}
         None.
       {% endif %}
       </div>
 
-        <h5>Add Group:</h5>
-        <select name='addgroup'>
-        <option value=''>--</option>
-          {% for group in choosegroups %}
 
-            <option value='{{ group.id }}'>{{ group.title }}</option>
-          {% endfor %}
-        </select>
 
     </div>
 
@@ -158,3 +198,15 @@ view more details.</p>
   <p>Return to <a href="{{ cf.url }}setup/courses">Course Choice</a></p>
 
 {% endblock body %}
+{% block js %}
+<script>
+$(function () {
+      $(".datatable").dataTable({
+            "bPaginate": false,
+            "bLengthChange": false,
+            "bFilter": false
+          }
+      );
+      });
+</script>
+{% endblock js %}

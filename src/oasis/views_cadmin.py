@@ -39,8 +39,8 @@ def cadmin_top(course_id):
     exams.sort(key=lambda y: y['start_epoch'], reverse=True)
     groups = Courses.get_groups(course_id)
     choosegroups = [group
-                    for g_id, group in Groups.enrolment_groups().iteritems()
-                    if not g_id in groups]
+                    for group in Groups.all_groups()
+                    if not group.id in groups]
     return render_template(
         "courseadmin_top.html",
         course=course,
