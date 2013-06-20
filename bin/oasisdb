@@ -46,6 +46,8 @@ def do_list_courses(DB, options, args):
     print "Course listing"
     for course in courses:
         print '%(id)s: %(name)s  (%(title)s)' % course
+    else:
+        print "There are no courses in the database."
 
 
 def do_list_users(DB, options, args):
@@ -70,6 +72,8 @@ def do_list_users(DB, options, args):
         else:
             user['conf'] = "[email unconfirmed]"
         print "%(id)s: %(uname)s  (%(givenname)s %(familyname)s) %(email)s %(conf)s" % user
+    else:
+        print "There are no users in the database."
 
 
 def do_show(DB, options, args):
@@ -88,6 +92,7 @@ def do_show(DB, options, args):
     print "Where item is one of:"
     print "   courses      List all courses in the database"
     print "   users        List all users in the database"
+
 
 def check_safe(DB):
     """ Is it safe to do dangerous stuff to the database? Mainly tries to
@@ -300,7 +305,7 @@ def do_status(DB, options, args):
     if safe:
         print
         print "However it does not contain much data so may be safe to erase with:"
-        print "oasisdb init --erase-existing "
+        print "    oasisdb init --erase-existing "
         sys.exit()
 
     print "It contains data, please be SURE you have the correct database"
@@ -393,15 +398,19 @@ if __name__ == "__main__":
 
     if args[0] == 'init':
         do_init(DB, options=options)
+        sys.exit()
 
     if args[0] == 'upgrade':
         do_upgrade(DB, options=options)
+        sys.exit()
 
     if args[0] == 'show':
         do_show(DB, options, args)
+        sys.exit()
 
     if args[0] == 'status':
         do_status(DB, options, args)
+        sys.exit()
 
     if args[0] == 'resetpw':
         generate_admin_passwd(DB)
