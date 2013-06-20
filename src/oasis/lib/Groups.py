@@ -22,7 +22,7 @@ class Group(object):
     """
 
     def __init__(self,
-                 f_id=None,
+                 g_id=None,
                  name=None,
                  title=None,
                  gtype=None,
@@ -38,7 +38,7 @@ class Group(object):
             already an entry with the same name or code.
         """
 
-        if not f_id:  # new
+        if not g_id:  # new
             self.id = 0
             self.name = name
             self.title = title
@@ -49,8 +49,8 @@ class Group(object):
             self.feed = feed
             self.feedargs = feedargs
 
-        if f_id:
-            self._fetch_by_id(f_id)
+        if g_id:
+            self._fetch_by_id(g_id)
 
     def _fetch_by_id(self, g_id):
         """ Initialise from database, or KeyError
@@ -151,7 +151,7 @@ def get_by_feed(feed_id):
     groups = []
     if ret:
         for row in ret:
-            groups.append(Group(f_id=row[0]))
+            groups.append(Group(g_id=row[0]))
 
     return groups
 
@@ -168,7 +168,7 @@ def get_by_period(period_id):
     groups = []
     if ret:
         for row in ret:
-            groups.append(Group(f_id=row[0]))
+            groups.append(Group(g_id=row[0]))
 
     return groups
 
@@ -191,6 +191,19 @@ def get_ids_by_name(name):
         return groups
 
 
+def get_by_name(name):
+        """ Return (the first) group with the given name
+        """
+        sql = """SELECT "id"
+                 FROM "ugroups"
+                 WHERE name=%s;"""
+        params = (name,)
+        ret = run_sql(sql, params)
+        if not ret:
+            return 0
+        return Group(g_id=int(ret[0][0]))
+
+
 def active_by_course(course_id):
     """ Return a summary of all active or future groups with the given feed
     """
@@ -206,7 +219,7 @@ def active_by_course(course_id):
     groups = {}
     if ret:
         for row in ret:
-            groups[row[0]] = Group(f_id=row[0])
+            groups[row[0]] = Group(g_id=row[0])
 
     return groups
 
@@ -220,7 +233,7 @@ def all_groups():
     groups = []
     if ret:
         for row in ret:
-            groups.append(Group(f_id=row[0]))
+            groups.append(Group(g_id=row[0]))
 
     return groups
 
@@ -239,7 +252,7 @@ def enrolment_groups():
     groups = {}
     if ret:
         for row in ret:
-            groups[row[0]] = Group(f_id=row[0])
+            groups[row[0]] = Group(g_id=row[0])
 
     return groups
 

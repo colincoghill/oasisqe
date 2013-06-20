@@ -104,7 +104,7 @@ def admin_edit_group(g_id):
     """ Present page to add a group to the system """
     feeds = Feeds.all_list()
     periods = Periods.all_list()
-    group = Groups.Group(f_id=g_id)
+    group = Groups.Group(g_id=g_id)
     gtypes = Groups.all_gtypes()
     return render_template(
         "admin_editgroup.html",
@@ -138,10 +138,10 @@ def admin_edit_group_submit(g_id):
         if Groups.get_ids_by_name(name):
             error = "A Group with that name already exists!"
         else:
-            group = Groups.Group(f_id=0)
+            group = Groups.Group(g_id=0)
     else:
         try:
-            group = Groups.Group(f_id=g_id)
+            group = Groups.Group(g_id=g_id)
         except KeyError:
             return abort(404)
 

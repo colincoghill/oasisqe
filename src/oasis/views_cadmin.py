@@ -214,7 +214,7 @@ def cadmin_add_course_save():
             course=course
         )
 
-    Courses.create_config(course_id, coursetemplate, courserepeat)
+    Courses.create_config(course_id, coursetemplate, int(courserepeat))
 
     flash("Course %s added!" % name)
     course = Courses2.get_course(course_id)

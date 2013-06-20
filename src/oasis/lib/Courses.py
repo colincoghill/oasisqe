@@ -6,7 +6,7 @@
 """ Courses.py
     Handle course related operations.
 """
-from oasis.lib import Topics, Groups
+from oasis.lib import Topics, Groups, Periods, Feeds
 
 from oasis.lib.DB import run_sql, dbpool, MC
 from logging import log, ERROR
@@ -205,6 +205,37 @@ def get_course_by_name(name):
     return course
 
 
+def get_course(course_id):
+    """ Return a course dict for the given name, or None
+         { 'id':id, 'name':name, 'title':title }
+    """
+    ret = run_sql(
+        """SELECT course, title, description, owner, active, type,
+                  practice_visibility, assess_visibility
+           FROM courses
+           WHERE course=%s;""", (course_id,))
+    course = None
+    if ret:
+        row = ret[0]
+        course = {
+                'id': int(row[0]),
+                'name': row[1],
+                'title': row[2],
+                'owner': row[3],
+                'active': row[4],
+                'type': row[5],
+                'practice_visibility': row[6],
+                'assess_visibility': row[7]
+        }
+
+        if not course['practice_visibility']:
+            course['practice_visibility'] = "all"
+        if not course['assess_visibility']:
+            course['assess_visibility'] = "all"
+
+    return course
+
+
 def create(name, description, owner, coursetype):
     """ Add a course to the database."""
     conn = dbpool.begin()
@@ -346,39 +377,73 @@ def get_exams(cid, prev_years=False):
     return []
 
 
-def create_config(course_id, coursetemplate, courserepeat):
+def _create_config_demonstration(course_id, period_id):
+    """ Create any needed groups/configs for a demonstration course
+    """
+
+    course = get_course(course_id)
+    # An ad-hoc Staff group
+    name = "COURSE_%s_STAFF_%s" % (course['name'], period_id)
+    group = Groups.get_by_name(name)
+    if not group:
+        group = Groups.Group(g_id=0)
+
+    group.name = name
+    group.title = "Staff in %s" % (course['name'],)
+    group.gtype = 1  # staff
+    group.source = "adhoc"
+    group.period = period_id
+    group.feed = None
+    group.feedargs = ""
+    group.active = True
+    group.save()
+
+
+def create_config(course_id, coursetemplate, period_id):
     """ Course is being created. Setup some configuration depending on
         given values.
     """
 
     # First, course template
-
+    if coursetemplate == "demo":
+        _create_config_demonstration(course_id, period_id)
+    elif coursetemplate == "casual":
+        pass
+    elif coursetemplate == "standard":
+        pass
+    elif coursetemplate == "large":
+        pass
 
     # demonstration
-    #    Create a staff group
-    #           name_staff_period
     #    Create a student group set to open registration
-    #           name_open_period
+    #           COURSE_name_OPEN_period
     #    Create a student group set to ad-hoc
-    #           name_adhoc_period
+    #           COURSE_name_ADHOC_period
 
 
     # casual
-    #    Create a staff group
-    #           name_staff_period
+    #    Create an adhoc staff group
+    #           COURSE_name_STAFF_period
     #    Create a student group set to ad-hoc
-    #           name_adhoc_period
+    #           COURSE_adhoc_period
 
 
     # standard
-    #    Create a staff group
-    #           name_staff_period
+    #    Create an adhoc staff group
+    #           COURSE_name_STAFF_period
     #    Create a student group set to ad-hoc
-    #           name_adhoc_period
+    #           COURSE_name_ADHOC_period
     #    Create a student group set to (unconfigured) feed
-    #           name_feed_period
+    #           COURSE_name_feed_period
 
 
+    # large
+    #    Create a staff group set to (unconfigured) feed
+    #           COURSE_name_STAFF_feed_period
+    #    Create an adhoc staff group
+    #           COURSE_name_STAFF_period
+    #    Create a student group set to ad-hoc
+    #           COURSE_name_ADHOC_period
+    #    Create a student group set to (unconfigured) feed
+    #           COURSE_name_feed_period
 
-
-    pass
