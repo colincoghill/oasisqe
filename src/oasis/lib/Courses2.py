@@ -12,7 +12,7 @@ from logging import log, INFO
 
 # Todo: this may misbehave when we're running parallel web servers.
 # Maybe make it expire automatically
-# every 10 mins or something.
+# every 10 mins or something. Or throw it all out and use flask-caching
 
 # Get the latest version of the course info
 # We can cache information until this changes, then we
@@ -107,6 +107,8 @@ def get_course(course_id):
     """
 
     reload_if_needed()
+    if not course_id in COURSES:
+        load_courses()
     return COURSES[course_id]
 
 

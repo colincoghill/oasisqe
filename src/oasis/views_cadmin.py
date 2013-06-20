@@ -141,9 +141,14 @@ def cadmin_prev_assessments(course_id):
 def cadmin_add_course():
     """ Present page to ask for information about a new course being added
     """
-
+    course = {
+        'name': '',
+        'title': '',
+        'owner': 'admin'
+    }
     return render_template(
-        "cadmin_add_course.html"
+        "cadmin_add_course.html",
+        course=course
     )
 
 
@@ -160,39 +165,53 @@ def cadmin_add_course_save():
     if not 'save_changes' in form:
         abort(400)
 
-    if not 'course_name' in form:
+    if not 'name' in form:
         flash("You must give the course a name!")
         return redirect(url_for("cadmin_add_course"))
 
-    if not 'course_title' in form:
+    if not 'title' in form:
         flash("You must give the course a title!")
         return redirect(url_for("cadmin_add_course"))
 
-    name = form['course_name']
-    title = form['course_title']
+    name = form.get('name', '')
+    title = form.get('title', '')
+    owner = form.get('owner', 'admin')
+
+    course = {
+        'name': name,
+        'title': title,
+        'owner': owner
+    }
 
     if len(name) < 1:
         flash("You must give the course a name!")
-        return redirect(url_for("cadmin_add_course"))
+        return render_template(
+            "cadmin_add_course.html",
+            course=course
+        )
 
+    existing = Courses.get_course_by_name(name)
+    if existing:
+        flash("Course name must be unique, there is already a %(name)s" % existing)
+        return render_template(
+            "cadmin_add_course.html",
+            course=course
+        )
     if len(title) < 1:
         flash("You must give the course a title!")
-        return redirect(url_for("cadmin_add_course"))
+        return render_template(
+            "cadmin_add_course.html",
+            course=course
+        )
 
     course_id = Courses.create(name, title, user_id, 1)
     if not course_id:
         flash("Error Adding Course!")
-        return redirect(url_for("admin_add_course"))
+        return render_template(
+            "cadmin_add_course.html",
+            course=course
+        )
 
-    if 'course_active' in form:
-        active = form['course_active']
-        if active == '1' or active == 1:
-            active = True
-        else:
-            active = False
-        Courses.set_active(course_id, active)
-
-    Courses2.reload_if_needed()
     flash("Course %s added!" % name)
     course = Courses2.get_course(course_id)
     course['size'] = 0

@@ -174,6 +174,37 @@ def get_courses_dict():
     return cdict
 
 
+def get_course_by_name(name):
+    """ Return a course dict for the given name, or None
+         { 'id':id, 'name':name, 'title':title }
+    """
+    ret = run_sql(
+        """SELECT course, title, description, owner, active, type,
+                  practice_visibility, assess_visibility
+           FROM courses
+           WHERE lower(title) LIKE lower(%s);""", (name,))
+    course = None
+    if ret:
+        row = ret[0]
+        course = {
+                'id': int(row[0]),
+                'name': row[1],
+                'title': row[2],
+                'owner': row[3],
+                'active': row[4],
+                'type': row[5],
+                'practice_visibility': row[6],
+                'assess_visibility': row[7]
+        }
+
+        if not course['practice_visibility']:
+            course['practice_visibility'] = "all"
+        if not course['assess_visibility']:
+            course['assess_visibility'] = "all"
+
+    return course
+
+
 def create(name, description, owner, coursetype):
     """ Add a course to the database."""
     conn = dbpool.begin()

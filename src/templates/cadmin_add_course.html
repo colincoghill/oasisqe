@@ -11,26 +11,24 @@
 
             <div class='input'>
                 <label>Name:
-                    <input type='text' class='required' name='course_name'
-                           value='' placeholder='(eg. ELECTENG101)'>
+                    <input type='text' class='required' name='name'
+                           value='{{ course.name }}'
+                           placeholder='(eg. ELECTENG101)'>
                 </label>
             </div>
             <div class='input'>
                 <label>Title: <input type='text' class='required'
-                                     name='course_title'
-                                     value='' placeholder='(eg. Introduction to Electrical Engineering)'>
-                </label>
-            </div>
-            <div class='input'>
-                <label>Description: <textarea name='course_desc' placeholder='(a paragraph describing the course content. Optional.)'></textarea>
+                                     name='title'
+                                     value='{{ course.title }}'
+                                     placeholder='(eg. Introduction to Electrical Engineering)'>
                 </label>
             </div>
             <div class='input'>
                 <label for='courseowner'>Username of Course Owner:</label>
                 <input type='text' class='required'
-                                     name='courseowner'
+                                     name='owner'
                                      id='courseowner'
-                                     value='admin'>
+                                     value='{{ course.owner }}'>
 
             </div>
         </div>
