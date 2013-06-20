@@ -355,8 +355,28 @@ def create_config(course_id, coursetemplate, courserepeat):
 
     # demonstration
     #    Create a staff group
+    #           name_staff_period
     #    Create a student group set to open registration
+    #           name_open_period
     #    Create a student group set to ad-hoc
+    #           name_adhoc_period
+
+
+    # casual
+    #    Create a staff group
+    #           name_staff_period
+    #    Create a student group set to ad-hoc
+    #           name_adhoc_period
+
+
+    # standard
+    #    Create a staff group
+    #           name_staff_period
+    #    Create a student group set to ad-hoc
+    #           name_adhoc_period
+    #    Create a student group set to (unconfigured) feed
+    #           name_feed_period
+
 
 
 

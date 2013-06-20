@@ -23,14 +23,6 @@
                                      placeholder='(eg. Introduction to Electrical Engineering)'>
                 </label>
             </div>
-            <div class='input'>
-                <label for='courseowner'>Username of Course Owner:</label>
-                <input type='text' class='required'
-                                     name='owner'
-                                     id='courseowner'
-                                     value='{{ course.owner }}'>
-
-            </div>
         </div>
 
         <div class="container-fluid well">
@@ -99,24 +91,6 @@
                             from an external system, and there may be multiple
                             staff assigned
                             to the course. Practice
-                            questions will be available to anyone in the course, or
-                            anyone who has taken the course in the past.
-                        </p>
-                    </div>
-                </div>
-
-                <div class='row'>
-                    <div class='span1 offset1'>
-                        <br/>
-                        <input type='radio' name='coursetemplate' value='large' {% if course.coursetemplate=='large' %}CHECKED{% endif %}>
-                    </div>
-                    <div class='span8'>
-                        <h4>Large Scale.</h4>
-
-                        <p>There will be many staff assigned to the course, and
-                            several
-                            groups of students. Possibly several thousand
-                            students in total. Practice
                             questions will be available to anyone in the course, or
                             anyone who has taken the course in the past.
                         </p>
