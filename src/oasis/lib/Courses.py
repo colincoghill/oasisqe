@@ -398,35 +398,80 @@ def _create_config_demonstration(course_id, period_id):
     group.active = True
     group.save()
 
+    # An Open Registration student group
+    name = "COURSE_%s_OPEN_%s" % (course['name'], period_id)
+    group = Groups.get_by_name(name)
+    if not group:
+        group = Groups.Group(g_id=0)
 
-def create_config(course_id, coursetemplate, period_id):
-    """ Course is being created. Setup some configuration depending on
-        given values.
+    group.name = name
+    group.title = "Self registered students in %s" % (course['name'],)
+    group.gtype = 2  # enrolment
+    group.source = "open"
+    group.period = period_id
+    group.feed = None
+    group.feedargs = ""
+    group.active = True
+    group.save()
+
+    # An ad-hoc student group
+    name = "COURSE_%s_ADHOC_%s" % (course['name'], period_id)
+    group = Groups.get_by_name(name)
+    if not group:
+        group = Groups.Group(g_id=0)
+
+    group.name = name
+    group.title = "Students in %s" % (course['name'],)
+    group.gtype = 2  # student
+    group.source = "adhoc"
+    group.period = period_id
+    group.feed = None
+    group.feedargs = ""
+    group.active = True
+    group.save()
+
+
+def _create_config_casual(course_id, period_id):
+    """ Create any needed groups/configs for a casual course
     """
 
-    # First, course template
-    if coursetemplate == "demo":
-        _create_config_demonstration(course_id, period_id)
-    elif coursetemplate == "casual":
-        pass
-    elif coursetemplate == "standard":
-        pass
-    elif coursetemplate == "large":
-        pass
+    course = get_course(course_id)
+    # An ad-hoc Staff group
+    name = "COURSE_%s_STAFF_%s" % (course['name'], period_id)
+    group = Groups.get_by_name(name)
+    if not group:
+        group = Groups.Group(g_id=0)
 
-    # demonstration
-    #    Create a student group set to open registration
-    #           COURSE_name_OPEN_period
-    #    Create a student group set to ad-hoc
-    #           COURSE_name_ADHOC_period
+    group.name = name
+    group.title = "Staff in %s" % (course['name'],)
+    group.gtype = 1  # staff
+    group.source = "adhoc"
+    group.period = period_id
+    group.feed = None
+    group.feedargs = ""
+    group.active = True
+    group.save()
+
+    # An ad-hoc student group
+    name = "COURSE_%s_ADHOC_%s" % (course['name'], period_id)
+    group = Groups.get_by_name(name)
+    if not group:
+        group = Groups.Group(g_id=0)
+
+    group.name = name
+    group.title = "Students in %s" % (course['name'],)
+    group.gtype = 2  # student
+    group.source = "adhoc"
+    group.period = period_id
+    group.feed = None
+    group.feedargs = ""
+    group.active = True
+    group.save()
 
 
-    # casual
-    #    Create an adhoc staff group
-    #           COURSE_name_STAFF_period
-    #    Create a student group set to ad-hoc
-    #           COURSE_adhoc_period
-
+def _create_config_standard(course_id, period_id):
+    """ Create any needed groups/configs for a standard course
+    """
 
     # standard
     #    Create an adhoc staff group
@@ -436,6 +481,43 @@ def create_config(course_id, coursetemplate, period_id):
     #    Create a student group set to (unconfigured) feed
     #           COURSE_name_feed_period
 
+    course = get_course(course_id)
+    # An ad-hoc Staff group
+    name = "COURSE_%s_STAFF_%s" % (course['name'], period_id)
+    group = Groups.get_by_name(name)
+    if not group:
+        group = Groups.Group(g_id=0)
+
+    group.name = name
+    group.title = "Staff in %s" % (course['name'],)
+    group.gtype = 1  # staff
+    group.source = "adhoc"
+    group.period = period_id
+    group.feed = None
+    group.feedargs = ""
+    group.active = True
+    group.save()
+
+    # An ad-hoc student group
+    name = "COURSE_%s_ADHOC_%s" % (course['name'], period_id)
+    group = Groups.get_by_name(name)
+    if not group:
+        group = Groups.Group(g_id=0)
+
+    group.name = name
+    group.title = "Students in %s" % (course['name'],)
+    group.gtype = 2  # student
+    group.source = "adhoc"
+    group.period = period_id
+    group.feed = None
+    group.feedargs = ""
+    group.active = True
+    group.save()
+
+
+def _create_config_large(course_id, period_id):
+    """ Create any needed groups/configs for a large course
+    """
 
     # large
     #    Create a staff group set to (unconfigured) feed
@@ -446,4 +528,53 @@ def create_config(course_id, coursetemplate, period_id):
     #           COURSE_name_ADHOC_period
     #    Create a student group set to (unconfigured) feed
     #           COURSE_name_feed_period
+
+    course = get_course(course_id)
+    # An ad-hoc Staff group
+    name = "COURSE_%s_STAFF_%s" % (course['name'], period_id)
+    group = Groups.get_by_name(name)
+    if not group:
+        group = Groups.Group(g_id=0)
+
+    group.name = name
+    group.title = "Staff in %s" % (course['name'],)
+    group.gtype = 1  # staff
+    group.source = "adhoc"
+    group.period = period_id
+    group.feed = None
+    group.feedargs = ""
+    group.active = True
+    group.save()
+
+    # An ad-hoc student group
+    name = "COURSE_%s_STAFF_%s" % (course['name'], period_id)
+    group = Groups.get_by_name(name)
+    if not group:
+        group = Groups.Group(g_id=0)
+
+    group.name = name
+    group.title = "Students in %s" % (course['name'],)
+    group.gtype = 2  # student
+    group.source = "adhoc"
+    group.period = period_id
+    group.feed = None
+    group.feedargs = ""
+    group.active = True
+    group.save()
+
+
+def create_config(course_id, coursetemplate, period_id):
+    """ Course is being created. Setup some configuration depending on
+        given values.
+    """
+
+    # First, course template
+    if coursetemplate == "demo":
+        _create_config_demonstration(course_id, period_id)
+    elif coursetemplate == "casual":
+        _create_config_casual(course_id, period_id)
+    elif coursetemplate == "standard":
+        _create_config_standard(course_id, period_id)
+    elif coursetemplate == "large":
+        _create_config_large(course_id, period_id)
 
