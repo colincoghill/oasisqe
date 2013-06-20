@@ -144,7 +144,9 @@ def cadmin_add_course():
     course = {
         'name': '',
         'title': '',
-        'owner': 'admin'
+        'owner': 'admin',
+        'coursetemplate': 'casual',
+        'courserepeat': '1'  # indefinite period
     }
     return render_template(
         "cadmin_add_course.html",
@@ -194,7 +196,7 @@ def cadmin_add_course_save():
 
     existing = Courses.get_course_by_name(name)
     if existing:
-        flash("Course name must be unique, there is already a %(name)s" % existing)
+        flash("There is already a course called %(name)s" % existing)
         return render_template(
             "cadmin_add_course.html",
             course=course
