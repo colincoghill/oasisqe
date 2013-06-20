@@ -11,10 +11,7 @@ Sections:
 .. toctree::
    :maxdepth: 2
 
-   components
-   installation
-   configuration
-   users
+
    admin_courses
-   tasks
+
 
