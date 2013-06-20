@@ -33,6 +33,62 @@ def num_records(DB, table_name):
     return num
 
 
+def do_list_courses(DB, options, args):
+    """ Print a list of courses in the database.
+    """
+    # Use direct database access, partly this could be used for debugging/testing
+    # OASIS own DB logic so we don't want to rely on that.
+
+    # Remember we may have to check version
+    ret = DB.run_sql("SELECT course, title, description FROM courses;")
+    courses = [{'id': row[0], 'name': row[1], 'title': row[2]}
+                for row in ret]
+    print "Course listing"
+    for course in courses:
+        print '%(id)s: %(name)s  (%(title)s)' % course
+
+
+def do_list_users(DB, options, args):
+    """ Print a list of courses in the database.
+    """
+    # Use direct database access, partly this could be used for debugging/testing
+    # OASIS own DB logic so we don't want to rely on that.
+
+    # Remember we may have to check version
+    ret = DB.run_sql("SELECT id, uname, givenname, familyname, email, confirmed FROM users;")
+    users = [{'id': row[0],
+              'uname': row[1],
+              'givenname': row[2],
+              'familyname': row[3],
+              'email': row[4],
+              'confirmed': row[5]}
+             for row in ret]
+    print "User listing"
+    for user in users:
+        if user['confirmed']:
+            user['conf'] = "[email confirmed]"
+        else:
+            user['conf'] = "[email unconfirmed]"
+        print "%(id)s: %(uname)s  (%(givenname)s %(familyname)s) %(email)s %(conf)s" % user
+
+
+def do_show(DB, options, args):
+    """ User has done     oasisdb show something
+    """
+    if len(args) <= 1:
+        args=['show', 'help']
+
+    if args[1] == "courses":
+        return do_list_courses(DB, options, args)
+    elif args[1] == "users":
+        return do_list_users(DB, options, args)
+
+    print "Usage:  oasisdb show <item>"
+    print
+    print "Where item is one of:"
+    print "   courses      List all courses in the database"
+    print "   users        List all users in the database"
+
 def check_safe(DB):
     """ Is it safe to do dangerous stuff to the database? Mainly tries to
         figure out if there is real data in it.
@@ -152,28 +208,21 @@ def generate_admin_passwd(DB):
     Users2.set_password(uid, passwd)
 
     Permissions.add_perm(uid, 0, 1)  # superuser
-    print "You should be able to log in to OASIS as admin, with password: ", passwd
+    print "Admin password reset to: ", passwd
 
 
 def cmd_options():
     """ Parse any command line options
     """
-    usage="%prog [--help] [--init] [--upgrade] [--version]"
+
+    descr = """OASIS Database Tool. It requires an already configured OASIS setup, and can be used to initialize or upgrade an OASIS database.
+    """
+    usage="%prog [--help] [--version] [command ...]"
     version="%prog 3.9.2"
     parser = OptionParser(usage=usage,
                           version=version,
-                          description="OASIS Database Tool. This can be used to initialize or upgrade an OASIS database. Usage with no options will display some status information. It requires an already configured OASIS setup.")
+                          description=descr)
 
-    parser.add_option("-i", "--init",
-                      dest="init",
-                      default=False,
-                      action='store_true',
-                      help="initialize db, creating table structure and admin account.")
-    parser.add_option("-u", "--upgrade",
-                      dest="upgrade",
-                      default=False,
-                      action='store_true',
-                      help='upgrade the db to be compatible with this version of OASIS')
     parser.add_option("--erase-existing",
                       dest='eraseall',
                       default=False,
@@ -184,9 +233,30 @@ def cmd_options():
                       metavar="X.Y.Z",
                       default='3.9.2',
                       help='work with a specific OASIS version. (default 3.9.2)')
+    parser.add_option("-v", "--verbose",
+                      dest='verbose',
+                      default=False,
+                      action='store_true',
+                      help='verbose output')
 
     (options, args) = parser.parse_args()
     return parser, options, args
+
+
+def show_help():
+    """ Show script usage help.
+    """
+    parser.print_help()
+    print """
+Commands:
+    status              - Show some status information about the database.
+    show users          - List the users in the database.
+    show courses        - List the courses in the database.
+    resetpw             - Change the admin password.
+
+    init                - Set up the OASIS table structure in the database.
+    upgrade             - Upgrade an older OASIS database to the newest version.
+"""
 
 
 def erase_existing(DB):
@@ -197,6 +267,46 @@ def erase_existing(DB):
     print "Removing existing tables."
     DB.run_sql(sql)
 
+
+def do_status(DB, options, args):
+    """ Show some status information
+    """
+
+    from oasis.lib import OaConfig
+
+    print "Connecting to database:"
+    print "  host: ", OaConfig.dbhost
+    print "  database: ", OaConfig.dbname
+    print "  username: ", OaConfig.dbuname
+    print
+
+    what = is_oasis_db(DB)
+    if what == "empty":
+        print "Empty database detected."
+        print ""
+        print "You can install a new one with:     oasisdb init"
+        sys.exit()
+
+    if what == "no":
+        print "This appears not to be an OASIS database. Please make sure you"
+        print "have the correct database settings in the configuration."
+        sys.exit()
+
+    print "There is already an OASIS database here."
+    ver = DB.get_db_version()
+    print "Detected DB Version", ver
+    print
+    safe = check_safe(DB)
+    if safe:
+        print
+        print "However it does not contain much data so may be safe to erase with:"
+        print "oasisdb init --erase-existing "
+        sys.exit()
+
+    print "It contains data, please be SURE you have the correct database"
+    print "settings and wish to erase the existing data"
+    print "before using the   --erase-existing   option."
+    sys.exit()
 
 
 def do_init(DB, options):
@@ -249,8 +359,7 @@ def do_init(DB, options):
     if safe:
         print
         print "However it does not contain much data so may be safe to erase."
-        print "call with  --erase-existing "
-        print "to do so."
+        print "To do so:     oasisdb init --erase-existing  "
         sys.exit()
 
     print "It contains data, please be SURE you have the correct database"
@@ -275,38 +384,29 @@ def do_upgrade(DB, options):
 
 if __name__ == "__main__":
     (parser, options, args) = cmd_options()
-    from oasis.lib import OaConfig
 
-
-    print "Connecting to database:"
-    print "  host: ", OaConfig.dbhost
-    print "  database: ", OaConfig.dbname
-    print "  username: ", OaConfig.dbuname
-    print
+    if not args:
+        show_help()
+        sys.exit()
 
     from oasis.lib import DB
 
-    if options.init:
+    if args[0] == 'init':
         do_init(DB, options=options)
 
-    if options.upgrade:
+    if args[0] == 'upgrade':
         do_upgrade(DB, options=options)
 
-    what = is_oasis_db(DB)
-    if what == "empty":
-        print "Empty database detected."
-        print ""
+    if args[0] == 'show':
+        do_show(DB, options, args)
 
-    if what == "no":
-        print "This appears not to be an OASIS database. Please make sure you"
-        print "have the correct database settings in the configuration."
+    if args[0] == 'status':
+        do_status(DB, options, args)
+
+    if args[0] == 'resetpw':
+        generate_admin_passwd(DB)
         sys.exit()
 
-    if what == "yes":
-        print "There is already an OASIS database here."
-        ver = DB.get_db_version()
-        print "Detected DB Version", ver
+    show_help()
 
-
-    print "For options, try:     oasisdb --help             "
 

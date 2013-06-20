@@ -53,9 +53,7 @@ if not app.debug:  # Log info or higher
                     "File logger starting up")
     except IOError, err:  # Probably a permission denied or folder not exist
         logging.log(logging.ERROR,
-                    """Unable to open log file: %s
-Please check we are running as the 'oasisqe' user or
-otherwise have permission to write to it.\n\nContinuing...\n""" % err)
+                    """Unable to open log file: %s""" % err)
 
 
 @app.context_processor
