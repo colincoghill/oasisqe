@@ -353,6 +353,7 @@ def create_config(course_id, coursetemplate, courserepeat):
 
     # First, course template
 
+
     # demonstration
     #    Create a staff group
     #           name_staff_period

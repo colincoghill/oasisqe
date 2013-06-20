@@ -75,7 +75,7 @@
                     </div>
                 </div>
 {% if not feeds %}
-    <p><em>More options will become available if external feeds are set up in the Server Administration menu.</em></p>
+    <p><em>More options will become available if external feeds are configured in the Server Administration menu.</em></p>
             {% else %}
                 <div class='row'>
                     <div class='span1 offset1'>
@@ -107,7 +107,7 @@
                         <input type='radio' name='courserepeat' value='eternal' {% if course.courserepeat=='eternal' %}CHECKED{% endif %}>
                     </div>
                     <div class='span8'>
-                        <h4>Eternal</h4>
+                        <h4>Always</h4>
 
                         <p>The course has no fixed start or end, students may
                             come and go. This is
@@ -117,7 +117,7 @@
                 </div>
 {% if not periods %}
 
-    <p><em>More options will become available if time periods are setup in the
+    <p><em>More options will become available if time periods are configured in the
 server administration menu.</em></p>
     <br/><br/>
             {% else %}
