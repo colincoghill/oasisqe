@@ -344,3 +344,20 @@ def get_exams(cid, prev_years=False):
         exams = [int(row[0]) for row in ret]
         return exams
     return []
+
+
+def create_config(course_id, coursetemplate, courserepeat):
+    """ Course is being created. Setup some configuration depending on
+        given values.
+    """
+
+    # First, course template
+
+    # demonstration
+    #    Create a staff group
+    #    Create a student group set to open registration
+    #    Create a student group set to ad-hoc
+
+
+
+    pass

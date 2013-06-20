@@ -77,11 +77,14 @@
 
                         <p>Useful for small courses (1-30 students) where a
                             single course administrator
-                            can manage the student membership themselves.
+                            can manage the student membership themselves. Practice
+                            questions will be available to anyone currently in the course.
                         </p>
                     </div>
                 </div>
-
+{% if not feeds %}
+    <p><em>More options will become available if external feeds are set up in the Server Administration menu.</em></p>
+            {% else %}
                 <div class='row'>
                     <div class='span1 offset1'>
                         <br/>
@@ -95,7 +98,9 @@
                             information comes
                             from an external system, and there may be multiple
                             staff assigned
-                            to the course.
+                            to the course. Practice
+                            questions will be available to anyone in the course, or
+                            anyone who has taken the course in the past.
                         </p>
                     </div>
                 </div>
@@ -111,13 +116,16 @@
                         <p>There will be many staff assigned to the course, and
                             several
                             groups of students. Possibly several thousand
-                            students in total.
+                            students in total. Practice
+                            questions will be available to anyone in the course, or
+                            anyone who has taken the course in the past.
                         </p>
                     </div>
                 </div>
+            {% endif %}
                 <hr>
-                <h3>Repetition</h3>
-                <p>Will the course run regularly, or will it only run once, for now?</p>
+                <h3>Time Periods</h3>
+                <p>When does the course run?</p>
 
                 <div class='row'>
                     <div class='span1 offset1'>
@@ -127,13 +135,18 @@
                     <div class='span8'>
                         <h4>Eternal</h4>
 
-                        <p>The course is always available, students may come and
-                            go. This is
+                        <p>The course has no fixed start or end, students may
+                            come and go. This is
                             especially suitable for demonstration courses.
                         </p>
                     </div>
                 </div>
+{% if not periods %}
 
+    <p><em>More options will become available if time periods are setup in the
+server administration menu.</em></p>
+    <br/><br/>
+            {% else %}
                 <div class='row'>
                     <div class='span1 offset1'>
                         <br/>
@@ -175,80 +188,9 @@
                 </div>
 
                 <hr>
-                <h3>Visibility</h3>
-                <p>How visible will the course content be, by default?</p>
-                <p>Note that visibility is adjustable to a finer level from
-                within the course itself, this setting just sets the default.</p>
-
-                <div class='row'>
-                    <div class='span1 offset1'>
-                        <br/>
-                        <input type='radio' name='coursevis' value='open' {% if course.coursevis=='open' %}CHECKED{% endif %}>
-                    </div>
-                    <div class='span8'>
-                        <h4>Open</h4>
-
-                        <p>Anyone with an account can practice the questions in
-                            the course.
-                            This can allow students to try a course out before
-                            they enrol in it. Also appropriate for demonstration
-                            courses.
-                        </p>
-                    </div>
-                </div>
-
-                <div class='row'>
-                    <div class='span1 offset1'>
-                        <br/>
-                        <input type='radio' name='coursevis' value='refresher' {% if course.coursevis=='refresher' %}CHECKED{% endif %}>
-                    </div>
-                    <div class='span8'>
-                        <h4>Refresher</h4>
-
-                        <p>Students who are, or have been, enrolled in the
-                            course in the past can access the practice section. This
-                            allows them to go back and refresh their skills later.
-                        </p>
-                    </div>
-                </div>
-
-                <div class='row'>
-                    <div class='span1 offset1'>
-                        <br/>
-                        <input type='radio' name='coursevis' value='closed' {% if course.coursevis=='closed' %}CHECKED{% endif %}>
-                    </div>
-                    <div class='span8'>
-                        <h4>Closed</h4>
-
-                        <p>Only students with a current active enrolment in the
-                            course can access the practice section.
-                        </p>
-                    </div>
-                </div>
-
-                <div class='row'>
-                    <div class='span1 offset1'>
-                        <br/>
-                        <input type='radio' name='coursevis' value='hidden' {% if course.coursevis=='hidden' %}CHECKED{% endif %}>
-                    </div>
-                    <div class='span8'>
-                        <h4>Hidden</h4>
-
-                        <p>The course does not show up in the practice section
-                            at all. This is useful if you're just using it to learn
-                            how to use OASIS and experimenting. You can open it
-                            up later.
-                        </p>
-                    </div>
-                </div>
-
-
-
-
+</div>
             </div>
-
-        </div>
-
+{%  endif %}
         <div class='pull-right'>
             <input type="submit" name="save_changes" value="Create Course"
                    class='btn btn-primary'>
