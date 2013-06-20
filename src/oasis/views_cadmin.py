@@ -162,7 +162,7 @@ def cadmin_add_course_save():
     form = request.form
     if 'cancel_edit' in form:
         flash("Course creation cancelled")
-        return redirect(url_for("admin_courses"))
+        return redirect(url_for("setup_courses"))
 
     if not 'save_changes' in form:
         abort(400)

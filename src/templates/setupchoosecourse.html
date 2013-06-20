@@ -3,8 +3,10 @@
   <H2>Choose A Course</H2>
   <p>You must have administrator rights to the course.</p>
   <div class='container-fluid well'>
-
-      {% for name, course in courses %}
+{% if is_sysadmin %}
+    <h4>Active Courses</h4>
+  {%  endif %}
+      {% for name, course in courses if course.active %}
 
         <div class='row'>
           <div class='span2'><a name='course_{{ course.id }}'
@@ -15,9 +17,29 @@
 
       {% endfor %}
 
+  {% if is_sysadmin %}
+      <br/>
+    <h4>Hidden/Inactive Courses</h4>
+
+      {% for name, course in courses if not course.active %}
+        <div class='row'>
+          <div class='span2'><a name='course_{{ course.id }}'
+                                href='{{ cf.url }}cadmin/{{ course.id }}/top'>{{ course.name }} </a>
+          </div>
+          <div class='span6'>{{ course.title }}</div>
+            </div>
+      {% endfor %}
+
+
+
+
+
+
   <br/>
       <a class='btn' href='{{ cf.url }}cadmin/add_course'><i
         class='icon icon-plus'> </i>Add Course</a>
+
+  {% endif %}
   </div>
 {% endblock body %}
 {% block pagetitle %}Setup{% endblock %}

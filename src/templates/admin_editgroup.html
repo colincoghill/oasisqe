@@ -139,11 +139,6 @@
 
     // onload
     $(function () {
-      $('#cancel').click(function () {
-        $('#form').parsley('destroy');
-        $('#form').submit();
-      });
-
       $('#source_select').change(function () {
         update_feed_vals();
       });

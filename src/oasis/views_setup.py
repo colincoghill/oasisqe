@@ -33,9 +33,13 @@ def setup_top():
 @authenticated
 def setup_courses():
     """ Let the user choose a course to administer """
+    user_id = session['user_id']
+    is_sysadmin = check_perm(user_id, -1, 'sysadmin')
+
     return render_template(
         "setupchoosecourse.html",
-        courses=Setup.get_sorted_courselist()
+        courses=Setup.get_sorted_courselist(),
+        is_sysadmin=is_sysadmin
     )
 
 

@@ -171,16 +171,21 @@ server administration menu.</em></p>
             <input type="submit" name="cancel_edit" id="cancel" value="Cancel"
                    class='btn btn-danger'>
         </div>
+    </div>
 
     </form>
     <br>
     <br/>
 
 {% endblock body %}
+{% block js %}
+<script>
 $(function () {
-$( '#cancel' ).click(function() {
-$('#form').parsley( 'destroy' );
-$('#form').submit();
+    $( '#cancel' ).click(function() {
+        $('#form').parsley( 'destroy' );
+        $('#form').submit();
+    });
 });
-});
-{% block pagetitle %}Server Admin{% endblock %}
+</script>
+{% endblock js %}
+{% block pagetitle %}Course Admin{% endblock %}
