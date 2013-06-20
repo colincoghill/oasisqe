@@ -34,18 +34,6 @@ def admin_top():
     )
 
 
-@app.route("/admin/courses")
-@require_perm('sysadmin')
-def admin_courses():
-    """ Present page to administer courses in the system """
-    courses = Setup.get_sorted_courselist(with_stats=True, only_active=False)
-
-    return render_template(
-        "admin_courselist.html",
-        courses=courses
-    )
-
-
 @app.route("/admin/feeds")
 @require_perm('sysadmin')
 def admin_feeds():

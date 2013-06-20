@@ -17,7 +17,11 @@
 
       {% endfor %}
 
-  {% if is_sysadmin %}
+  {% if is_sysadmin %}  <br/>
+      <a class='btn' href='{{ cf.url }}cadmin/add_course'><i
+        class='icon icon-plus'> </i>Add Course</a>
+
+      <br/>
       <br/>
     <h4>Hidden/Inactive Courses</h4>
 
@@ -31,9 +35,6 @@
       {% endfor %}
 
 
-  <br/>
-      <a class='btn' href='{{ cf.url }}cadmin/add_course'><i
-        class='icon icon-plus'> </i>Add Course</a>
 
   {% endif %}
   </div>

@@ -89,7 +89,7 @@ view more details.</p>
 
   <p>{{ course.name }} currently has {{ course.size }} students and {{ course.staffnum }} staff, composed from the following group(s):</p>
 
-      <div>{% if groups %}
+      <div>
 <h4>Staff</h4>
         <table class='table datatable'>
         <thead>
@@ -119,13 +119,16 @@ view more details.</p>
         </table>
           <br/>
            <h5>Add Staff Group:</h5>
+      <form method='post' action='{{ cf.url }}cadmin/{{ course.id }}/add_group'>
         <select name='addgroup'>
         <option value=''>--</option>
           {% for group in choosegroups if group.gtype==1 %}
 
             <option value='{{ group.id }}'>{{ group.title }}</option>
           {% endfor %}
-        </select>
+
+        </select><input type='submit' name='add_staff' class='btn' value='Add'>
+      </form>
 <h4>Students</h4>
           <table class='table datatable'>
         <thead>
@@ -139,7 +142,7 @@ view more details.</p>
           </tr>
           </thead>
           {% for g_id, group in groups.iteritems() if group.gtype==2 %}
-            <Tr>
+            <tr>
               <td>{{ group.title }}</td>
               <td>{{ group.source }}</td>
               <td>{{ group.size }}</td>
@@ -149,26 +152,22 @@ view more details.</p>
                 <a href='{{ cf.url }}cadmin/group/{{ group.id }}/edit' class='btn btn-mini'><i class='icon icon-edit'> </i> edit</a>
               </td>
 
-            </Tr>
+            </tr>
           {% endfor %}
         </table>
           <br/>
  <h5>Add Student Group:</h5>
+      <form method='post' action='{{ cf.url }}cadmin/{{ course.id }}/add_group'>
         <select name='addgroup'>
-        <option value=''>--</option>
+        <option value='0'>--</option>
           {% for group in choosegroups if group.gtype==2 %}
 
             <option value='{{ group.id }}'>{{ group.title }}</option>
           {% endfor %}
-        </select>
+        </select><input type='submit' name='add_student'  class='btn' value='Add'>
+      </form>
 
-
-      {% else %}
-        None.
-      {% endif %}
       </div>
-
-
 
     </div>
 
@@ -188,8 +187,19 @@ view more details.</p>
             <a href="{{cf.url}}setup/uploadclass/{{course.id}}">Upload new</a> class list as a .csv file. (Not required for Faculty of Engineering)
             </div>
 -->
+    </div>
+  {% if is_sysadmin %}
+        <div class="container-fluid well">
+<h5>Systems Administrator</h5>
+    <form>
+    <input type='submit' name='deactivate_course' value='Deactivate Course' class='btn btn-small btn-danger'>
+        <p>Deactivating a course will remove it from most pages and deactivate any live assignments
+        or groups. It can be re-activated later, and any data will be retained. If you wish to remove a course, you must deactivate it first.</p>
+    </form>
 
   </div>
+
+    {% endif %}
 
   <br>
 
@@ -204,7 +214,8 @@ $(function () {
       $(".datatable").dataTable({
             "bPaginate": false,
             "bLengthChange": false,
-            "bFilter": false
+            "bFilter": false,
+            "bInfo": false
           }
       );
       });

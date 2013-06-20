@@ -17,7 +17,7 @@ from .lib import OaConfig, Users2, DB, Topics, Permissions, \
 
 MYPATH = os.path.dirname(__file__)
 
-from .lib.Permissions import satisfy_perms
+from .lib.Permissions import satisfy_perms, check_perm
 
 from oasis import app, require_course_perm, require_perm
 
@@ -31,6 +31,9 @@ def cadmin_top(course_id):
     course = Courses2.get_course(course_id)
     if not course:
         abort(404)
+
+    user_id = session['user_id']
+    is_sysadmin = check_perm(user_id, -1, 'sysadmin')
 
     topics = Courses2.get_topics_list(course_id)
     exams = [Exams.get_exam_struct(exam_id, course_id)
@@ -47,7 +50,8 @@ def cadmin_top(course_id):
         topics=topics,
         exams=exams,
         choosegroups=choosegroups,
-        groups=groups
+        groups=groups,
+        is_sysadmin=is_sysadmin
     )
 
 
@@ -62,7 +66,6 @@ def cadmin_config(course_id):
     return render_template(
         "courseadmin_config.html",
         course=course,
-
     )
 
 
@@ -665,3 +668,20 @@ def cadmin_permissions_save(course_id):
     CourseAdmin.save_perms(request, course_id, user_id)
     flash("Changes saved")
     return redirect(url_for("cadmin_permissions", course_id=course_id))
+
+
+@app.route("/cadmin/<int:course_id>/add_group", methods=["POST", ])
+@require_course_perm("useradmin")
+def cadmin_course_add_group(course_id):
+    """ We've been asked to add a group to the course.
+    """
+    group_id = int(request.form.get("addgroup", "0"))
+    if not group_id:
+        flash("No group selected")
+        return redirect(url_for('cadmin_top', course_id=course_id))
+
+    Courses.add_group(group_id, course_id)
+    group = Groups.Group(group_id)
+    flash("Group %s added" % (group.name,))
+    return redirect(url_for('cadmin_top', course_id=course_id))
+
