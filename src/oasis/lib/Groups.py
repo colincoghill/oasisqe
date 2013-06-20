@@ -139,6 +139,8 @@ class Group(object):
                     raise ValueError("Group with that name already exists")
 
 
+
+
 def get_by_feed(feed_id):
     """ Return a summary of all active or future groups with the given feed
     """

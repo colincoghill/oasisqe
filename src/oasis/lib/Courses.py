@@ -264,9 +264,9 @@ def get_groups(course_id):
 
 def add_group(group_id, course_id):
     """ Add a group to a course."""
-    sql = "INSERT INTO groupcourses (groupid, active, course) " \
-          "VALUES (%s, %s, %s);"
-    params = (group_id, 1, course_id)
+    sql = "INSERT INTO groupcourses (groupid, course) " \
+          "VALUES (%s, %s);"
+    params = (group_id, course_id)
     run_sql(sql, params)
 
 
@@ -279,7 +279,6 @@ def del_group(group_id, course_id):
           " WHERE groupid=%s AND course=%s;"
     params = (group_id, course_id)
     run_sql(sql, params)
-
 
 
 def get_topics_all(course, archived=2, numq=True):
@@ -383,7 +382,7 @@ def _create_config_demonstration(course_id, period_id):
 
     course = get_course(course_id)
     # An ad-hoc Staff group
-    name = "COURSE_%s_STAFF_%s" % (course['name'], period_id)
+    name = "C_%s_STAFF_%s" % (course['name'], period_id)
     group = Groups.get_by_name(name)
     if not group:
         group = Groups.Group(g_id=0)
@@ -398,8 +397,11 @@ def _create_config_demonstration(course_id, period_id):
     group.active = True
     group.save()
 
+    group = Groups.get_by_name(name)
+    add_group(group.id, course_id)
+
     # An Open Registration student group
-    name = "COURSE_%s_OPEN_%s" % (course['name'], period_id)
+    name = "C_%s_OPEN_%s" % (course['name'], period_id)
     group = Groups.get_by_name(name)
     if not group:
         group = Groups.Group(g_id=0)
@@ -414,8 +416,11 @@ def _create_config_demonstration(course_id, period_id):
     group.active = True
     group.save()
 
+    group = Groups.get_by_name(name)
+    add_group(group.id, course_id)
+
     # An ad-hoc student group
-    name = "COURSE_%s_ADHOC_%s" % (course['name'], period_id)
+    name = "C_%s_ADHOC_%s" % (course['name'], period_id)
     group = Groups.get_by_name(name)
     if not group:
         group = Groups.Group(g_id=0)
@@ -430,6 +435,9 @@ def _create_config_demonstration(course_id, period_id):
     group.active = True
     group.save()
 
+    group = Groups.get_by_name(name)
+    add_group(group.id, course_id)
+
 
 def _create_config_casual(course_id, period_id):
     """ Create any needed groups/configs for a casual course
@@ -437,7 +445,7 @@ def _create_config_casual(course_id, period_id):
 
     course = get_course(course_id)
     # An ad-hoc Staff group
-    name = "COURSE_%s_STAFF_%s" % (course['name'], period_id)
+    name = "C_%s_STAFF_%s" % (course['name'], period_id)
     group = Groups.get_by_name(name)
     if not group:
         group = Groups.Group(g_id=0)
@@ -452,8 +460,11 @@ def _create_config_casual(course_id, period_id):
     group.active = True
     group.save()
 
+    group = Groups.get_by_name(name)
+    add_group(group.id, course_id)
+
     # An ad-hoc student group
-    name = "COURSE_%s_ADHOC_%s" % (course['name'], period_id)
+    name = "C_%s_ADHOC_%s" % (course['name'], period_id)
     group = Groups.get_by_name(name)
     if not group:
         group = Groups.Group(g_id=0)
@@ -467,6 +478,8 @@ def _create_config_casual(course_id, period_id):
     group.feedargs = ""
     group.active = True
     group.save()
+    group = Groups.get_by_name(name)
+    add_group(group.id, course_id)
 
 
 def _create_config_standard(course_id, period_id):
@@ -483,7 +496,7 @@ def _create_config_standard(course_id, period_id):
 
     course = get_course(course_id)
     # An ad-hoc Staff group
-    name = "COURSE_%s_STAFF_%s" % (course['name'], period_id)
+    name = "C_%s_STAFF_%s" % (course['name'], period_id)
     group = Groups.get_by_name(name)
     if not group:
         group = Groups.Group(g_id=0)
@@ -497,9 +510,11 @@ def _create_config_standard(course_id, period_id):
     group.feedargs = ""
     group.active = True
     group.save()
+    group = Groups.get_by_name(name)
+    add_group(group.id, course_id)
 
     # An ad-hoc student group
-    name = "COURSE_%s_ADHOC_%s" % (course['name'], period_id)
+    name = "C_%s_ADHOC_%s" % (course['name'], period_id)
     group = Groups.get_by_name(name)
     if not group:
         group = Groups.Group(g_id=0)
@@ -513,6 +528,8 @@ def _create_config_standard(course_id, period_id):
     group.feedargs = ""
     group.active = True
     group.save()
+    group = Groups.get_by_name(name)
+    add_group(group.id, course_id)
 
 
 def _create_config_large(course_id, period_id):
@@ -531,7 +548,7 @@ def _create_config_large(course_id, period_id):
 
     course = get_course(course_id)
     # An ad-hoc Staff group
-    name = "COURSE_%s_STAFF_%s" % (course['name'], period_id)
+    name = "C_%s_STAFF_%s" % (course['name'], period_id)
     group = Groups.get_by_name(name)
     if not group:
         group = Groups.Group(g_id=0)
@@ -545,9 +562,11 @@ def _create_config_large(course_id, period_id):
     group.feedargs = ""
     group.active = True
     group.save()
+    group = Groups.get_by_name(name)
+    add_group(group.id, course_id)
 
     # An ad-hoc student group
-    name = "COURSE_%s_STAFF_%s" % (course['name'], period_id)
+    name = "C_%s_STAFF_%s" % (course['name'], period_id)
     group = Groups.get_by_name(name)
     if not group:
         group = Groups.Group(g_id=0)
@@ -561,6 +580,8 @@ def _create_config_large(course_id, period_id):
     group.feedargs = ""
     group.active = True
     group.save()
+    group = Groups.get_by_name(name)
+    add_group(group.id, course_id)
 
 
 def create_config(course_id, coursetemplate, period_id):

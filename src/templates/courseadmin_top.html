@@ -104,8 +104,8 @@ view more details.</p>
           </thead>
           {% for g_id, group in groups.iteritems() %}
             <Tr>
-              <td>{{ group.name }}</td>
-              <td>Manual</td>
+              <td>{{ group.title }}</td>
+              <td>{{ group.source }}</td>
               <td>{{ group.size }}</td>
               <td>{{ group.startdate }}</td>
               <td>{{ group.enddate }}</td>
