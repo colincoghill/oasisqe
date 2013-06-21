@@ -316,78 +316,28 @@ def cadmin_edit_exam_submit(course_id, exam_id):
     )
 
 
-@app.route("/cadmin/<int:course_id>/enrolment")
+@app.route("/cadmin/<int:course_id>/group/<int:group_id>/edit")
 @require_course_perm("useradmin")
-def cadmin_enrolments(course_id):
-    """ Present a page to view and edit all topics, including hidden. """
-#    user_id = session['user_id']
-
-    course = None
+def cadmin_editgroup(course_id, group_id):
+    """ Present a page for editing a group, membership, etc.
+    """
+    group = None
     try:
-        course = Courses2.get_course(course_id)
+        group = Groups.Group(group_id)
     except KeyError:
         abort(404)
 
-    if not course:
+    if not group:
         abort(404)
-    #
-    # groups = [Groups.get_dict(group_id)
-    #           for group_id in Courses.get_groups(course_id)]
-    #
-    # # it's possible one was never created, legacy database, etc.
-    # if not len(groups):
-    #     now = datetime.now()
-    #     forever = datetime(year=9999, month=12, day=31)
-    #     group_id = Groups.create(u"Staff",
-    #                              "Current Staff",
-    #                              user_id,
-    #                              2,
-    #                              startdate=now,
-    #                              enddate=forever)
-    #     Courses.add_group(group_id, course_id)
-    #     groups = [Groups.get_dict(group_id)
-    #               for group_id in Courses.get_groups(course_id)]
-    #     assert len(groups)
-    #
-    # for group in groups:
-    #     if not group['enddate']:
-    #         group['enddate'] = "-"
-    #     elif group['enddate'] > datetime(year=9990, month=1, day=1):
-    #         group['enddate'] = "-"
-    #
-    #     if group['startdate']:
-    #         group['startdate'] = group['startdate'].strftime("%d %b %Y")
-    #     else:
-    #         group['startdate'] = "-"
-    #     group['nummembers'] = len(Groups.get_users(group['id']))
 
-    return render_template("courseadmin_enrolment.html",
-                           course=course)
-    #   ,                   groups=groups)
+    course = Courses2.get_course(course_id)
+    ulist = group.members()
+    members = [Users2.get_user(uid) for uid in ulist]
+    return render_template("courseadmin_editgroup.html",
+                           course=course,
+                           group=group,
+                           members=members)
 
-#
-# @app.route("/cadmin/<int:course_id>/editgroup/<int:group_id>")
-# @require_course_perm("useradmin")
-# def cadmin_editgroup(course_id, group_id):
-#     """ Present a page for editing a group, membership, etc.
-#     """
-#     group = None
-#     try:
-#         group = Groups.get_dict(group_id)
-#     except KeyError:
-#         abort(404)
-#
-#     if not group:
-#         abort(404)
-#
-#     course = Courses2.get_course(course_id)
-#     ulist = Groups.get_users(group_id)
-#     members = [Users2.get_user(uid) for uid in ulist]
-#     return render_template("courseadmin_editgroup.html",
-#                            course=course,
-#                            group=group,
-#                            members=members)
-#
 #
 # @app.route("/cadmin/addgroup/<int:course_id>")
 # @require_course_perm("useradmin")
