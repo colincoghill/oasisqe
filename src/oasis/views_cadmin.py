@@ -222,12 +222,7 @@ def cadmin_add_course_save():
     Courses.create_config(course_id, coursetemplate, int(courserepeat))
 
     flash("Course %s added!" % name)
-    course = Courses2.get_course(course_id)
-    course['size'] = 0
-    return render_template(
-        "cadmin_course.html",
-        course=course
-    )
+    return redirect(url_for("cadmin_top", course_id=course_id))
 
 
 @app.route("/cadmin/<int:course_id>/createexam")
