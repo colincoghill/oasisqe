@@ -335,6 +335,8 @@ def do_init(DB, options):
             print "Available options:      3.9.1     3.9.2"
             sys.exit()
         generate_admin_passwd(DB)
+        print "Remember to restart OASIS if it's currently running."
+        print "On Linux you can use:      sudo service apache2 restart"
         sys.exit()
 
     if what == "no":
@@ -359,6 +361,8 @@ def do_init(DB, options):
             print "Available options:      3.9.1     3.9.2"
             sys.exit()
         generate_admin_passwd(DB)
+        print "Remember to restart OASIS if it's currently running."
+        print "On Linux you can use:      sudo service apache2 restart"
         sys.exit()
 
     if safe:

@@ -1,39 +1,74 @@
 {% extends "page_courseadmin.html" %}
 {% block body %}
-  <br>
-  <p>Return to <a href="{{ cf.url }}setup/courses">Course Choice</a></p>
+    <br>
+    <p>Return to <a href="{{ cf.url }}setup/courses">Course Choice</a></p>
 
-  <h2>{{ course.name }} ({{ course.title }})</h2>
+    <h2>{{ course.name }} ({{ course.title }})</h2>
 
-  <div class="container-fluid well">
-    <h5>Practice Topics</h5>
-<p>These topics are currently active. You can select one to edit it or
-view more details.</p>
-    <table class="table">
-      <thead>
-      <tr>
-        <th>Name</th>
-        <th>Questions</th>
-      </tr>
-      </thead>
-      <tbody>
-      {% for topic in topics %}
-        {% if topic.visibility >= 2 %}
-          <tr>
-            <td>
-              <a href="{{ cf.url }}cadmin/{{ course.id }}/topic/{{ topic.id }}">{{ topic.title }}</a>
-            </td>
-            <td>{{ topic.numquestions }}</td>
-          </tr>
-        {% endif %}
-      {% endfor %}
-      </tbody>
-    </table>
+    {% if is_sysadmin %}
+        <div class="container-fluid well sysadminbox">
+            <h5>Systems Administrator</h5>
+
+            <form>
+                <div class='row'>
+                    <div class='span5'>
+                <input type='submit' name='assign_coord'
+                       value='Assign Coordinator'
+                       class='btn btn-small btn-primary'>
+
+                <p>You can assign someone else to be the "owner" of the course. They
+                    will be given full control over the course and its options.</p>
+                    </div>
+                <div class='span5'>
+
+                    <input type='submit' name='deactivate_course'
+                       value='Deactivate Course'
+                       class='btn btn-small btn-danger'>
+
+                <p>Deactivating a course will remove it from most pages and
+                    deactivate any live assignments
+                    or groups. It can be re-activated later, and any data will
+                    be retained. If you wish to remove a course, you must
+                    deactivate it first.</p>
+                    </div>
+                    </div>
+            </form>
+
+        </div>
+
+    {% endif %}
+
+
+    <div class="container-fluid well">
+        <h5>Practice Topics</h5>
+
+        <p>These topics are currently active. You can select one to edit it or
+            view more details.</p>
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Questions</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for topic in topics %}
+                {% if topic.visibility >= 2 %}
+                    <tr>
+                        <td>
+                            <a href="{{ cf.url }}cadmin/{{ course.id }}/topic/{{ topic.id }}">{{ topic.title }}</a>
+                        </td>
+                        <td>{{ topic.numquestions }}</td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+            </tbody>
+        </table>
+        <br/>
+        <a href="{{ cf.url }}cadmin/{{ course.id }}/topics">Edit Topics</a>
+    </div>
     <br/>
-    <a href="{{ cf.url }}cadmin/{{ course.id }}/topics">Edit Topics</a>
-  </div>
-  <br/>
-  <!--
+    <!--
     <div class="container-fluid well">
         <h5>Current Assessments</h5>
 
@@ -84,140 +119,141 @@ view more details.</p>
     -->
 
 
-  <div class="container-fluid well">
-    <h5>People</h5>
+    <div class="container-fluid well">
+        <h5>People</h5>
 
-  <p>{{ course.name }} currently has {{ course.size }} students and {{ course.staffnum }} staff, composed from the following group(s):</p>
+        <p>{{ course.name }} currently has {{ course.size }} students
+            and {{ course.staffnum }} staff, composed from the following
+            group(s):</p>
 
-      <div>
-<h4>Staff</h4>
-        <table class='table datatable'>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Size</th>
-            <th>start</th>
-            <th>end</th>
-            <th></th>
-          </tr>
-          </thead>
-          {% for g_id, group in groups.iteritems() if group.gtype==1 %}
-            <Tr>
-              <td>{{ group.title }}</td>
-              <td>{{ group.source }}</td>
-              <td>{{ group.size }}</td>
-              <td>{{ group.startdate }}</td>
-              <td>{{ group.enddate }}</td>
-               <td>
-                <a href='{{ cf.url }}cadmin/{{ course.id }}/group/{{ group.id }}/edit' class='btn btn-mini'><i class='icon icon-edit'> </i> edit</a>
-              </td>
+        <div>
+            <h4>Staff</h4>
+            <table class='table datatable'>
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Size</th>
+                    <th>start</th>
+                    <th>end</th>
+                    <th></th>
+                </tr>
+                </thead>
+                {% for g_id, group in groups.iteritems() if group.gtype==1 %}
+                    <Tr>
+                        <td>{{ group.title }}</td>
+                        <td>{{ group.source }}</td>
+                        <td>{{ group.size }}</td>
+                        <td>{{ group.startdate }}</td>
+                        <td>{{ group.enddate }}</td>
+                        <td>
+                            <a href='{{ cf.url }}cadmin/{{ course.id }}/group/{{ group.id }}/edit'
+                               class='btn btn-mini'><i
+                                    class='icon icon-edit'> </i> edit</a>
+                        </td>
 
 
-            </Tr>
-          {% endfor %}
-        </table>
-          <br/>
-           <h5>Add Staff Group:</h5>
-      <form method='post' action='{{ cf.url }}cadmin/{{ course.id }}/add_group'>
-        <select name='addgroup'>
-        <option value=''>--</option>
-          {% for group in choosegroups if group.gtype==1 %}
+                    </Tr>
+                {% endfor %}
+            </table>
+            <br/>
+            <h5>Add Staff Group:</h5>
 
-            <option value='{{ group.id }}'>{{ group.title }}</option>
-          {% endfor %}
+            <form method='post'
+                  action='{{ cf.url }}cadmin/{{ course.id }}/add_group'>
+                <select name='addgroup'>
+                    <option value=''>--</option>
+                    {% for group in choosegroups if group.gtype==1 %}
 
-        </select><input type='submit' name='add_staff' class='btn' value='Add'>
-      </form>
-<h4>Students</h4>
-          <table class='table datatable'>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Size</th>
-            <th>start</th>
-            <th>end</th>
-            <th></th>
-          </tr>
-          </thead>
-          {% for g_id, group in groups.iteritems() if group.gtype==2 %}
-            <tr>
-              <td>{{ group.title }}</td>
-              <td>{{ group.source }}</td>
-              <td>{{ group.size }}</td>
-              <td>{{ group.startdate }}</td>
-              <td>{{ group.enddate }}</td>
-              <td>
-                <a href='{{ cf.url }}cadmin/{{ course.id }}/group/{{ group.id }}/edit' class='btn btn-mini'><i class='icon icon-edit'> </i> edit</a>
-              </td>
+                        <option value='{{ group.id }}'>{{ group.title }}</option>
+                    {% endfor %}
 
-            </tr>
-          {% endfor %}
-        </table>
-          <br/>
- <h5>Add Student Group:</h5>
-      <form method='post' action='{{ cf.url }}cadmin/{{ course.id }}/add_group'>
-        <select name='addgroup'>
-        <option value='0'>--</option>
-          {% for group in choosegroups if group.gtype==2 %}
+                </select><input type='submit' name='add_staff' class='btn'
+                                value='Add'>
+            </form>
+            <h4>Students</h4>
+            <table class='table datatable'>
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Size</th>
+                    <th>start</th>
+                    <th>end</th>
+                    <th></th>
+                </tr>
+                </thead>
+                {% for g_id, group in groups.iteritems() if group.gtype==2 %}
+                    <tr>
+                        <td>{{ group.title }}</td>
+                        <td>{{ group.source }}</td>
+                        <td>{{ group.size }}</td>
+                        <td>{{ group.startdate }}</td>
+                        <td>{{ group.enddate }}</td>
+                        <td>
+                            <a href='{{ cf.url }}cadmin/{{ course.id }}/group/{{ group.id }}/edit'
+                               class='btn btn-mini'><i
+                                    class='icon icon-edit'> </i> edit</a>
+                        </td>
 
-            <option value='{{ group.id }}'>{{ group.title }}</option>
-          {% endfor %}
-        </select><input type='submit' name='add_student'  class='btn' value='Add'>
-      </form>
+                    </tr>
+                {% endfor %}
+            </table>
+            <br/>
+            <h5>Add Student Group:</h5>
 
-      </div>
+            <form method='post'
+                  action='{{ cf.url }}cadmin/{{ course.id }}/add_group'>
+                <select name='addgroup'>
+                    <option value='0'>--</option>
+                    {% for group in choosegroups if group.gtype==2 %}
+
+                        <option value='{{ group.id }}'>{{ group.title }}</option>
+                    {% endfor %}
+                </select><input type='submit' name='add_student' class='btn'
+                                value='Add'>
+            </form>
+
+        </div>
 
     </div>
 
-  <div class="container-fluid well">
-    <h5>Course Settings</h5>
+    <div class="container-fluid well">
+        <h5>Course Settings</h5>
 
-    <!--    <p><a href="{{cf.url}}setup/studentsearch/{{course.id}}">Student Search</a></p>   -->
-    <p><a href="{{ cf.url }}cadmin/{{ course.id }}/perms">Permissions</a>
-    </p>
+        <!--    <p><a href="{{cf.url}}setup/studentsearch/{{course.id}}">Student Search</a></p>   -->
+        <p><a href="{{ cf.url }}cadmin/{{ course.id }}/perms">Permissions</a>
+        </p>
 
-    <p><a href="{{ cf.url }}cadmin/{{ course.id }}/config">Configuration</a>
-    </p>
+        <!-- <p><a href="{{ cf.url }}cadmin/{{ course.id }}/config">Configuration</a>
+        </p> -->
 
-    <!--     <p><a href="{{cf.url}}api/course/{{course.name}}/{{course.id}}/members?format=csv">Class List</a> as a CSV file.</p>
+        <!--     <p><a href="{{cf.url}}api/course/{{course.name}}/{{course.id}}/members?format=csv">Class List</a> as a CSV file.</p>
 
             <div style='border: solid 1px black dashed;'>
             <a href="{{cf.url}}setup/uploadclass/{{course.id}}">Upload new</a> class list as a .csv file. (Not required for Faculty of Engineering)
             </div>
 -->
     </div>
-  {% if is_sysadmin %}
-        <div class="container-fluid well">
-<h5>Systems Administrator</h5>
-    <form>
-    <input type='submit' name='deactivate_course' value='Deactivate Course' class='btn btn-small btn-danger'>
-        <p>Deactivating a course will remove it from most pages and deactivate any live assignments
-        or groups. It can be re-activated later, and any data will be retained. If you wish to remove a course, you must deactivate it first.</p>
-    </form>
-
-  </div>
-
-    {% endif %}
-
-  <br>
 
 
-  <br/>
-  <p>Return to <a href="{{ cf.url }}setup/courses">Course Choice</a></p>
+    <br>
+
+
+    <br/>
+    <p>Return to <a href="{{ cf.url }}setup/courses">Course Choice</a></p>
 
 {% endblock body %}
 {% block js %}
-<script>
-$(function () {
-      $(".datatable").dataTable({
-            "bPaginate": false,
-            "bLengthChange": false,
-            "bFilter": false,
-            "bInfo": false
-          }
-      );
-      });
-</script>
+    <script>
+        $(function () {
+            $(".datatable").dataTable({
+                        "bPaginate": false,
+                        "bLengthChange": false,
+                        "bFilter": false,
+                        "bInfo": false
+                    }
+            );
+        });
+    </script>
 {% endblock js %}
