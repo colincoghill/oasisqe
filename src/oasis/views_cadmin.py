@@ -422,6 +422,26 @@ def cadmin_deactivate(course_id):
     return redirect(url_for("cadmin_top", course_id=course_id))
 
 
+@app.route("/cadmin/<int:course_id>/group/<int:group_id>/detach_group", methods=["POST", ])
+@require_course_perm("courseadmin")
+def cadmin_group_detach(course_id, group_id):
+    """ Mark the course as inactive
+    """
+    course = None
+    try:
+        course = Courses2.get_course(course_id)
+    except KeyError:
+        abort(404)
+
+    if not course:
+        abort(404)
+
+    group = Groups.Group(g_id=group_id)
+    Courses.del_group(group_id, course_id)
+    flash("Group %s removed from course" % (group.name,))
+    return redirect(url_for("cadmin_top", course_id=course_id))
+
+
 @app.route("/cadmin/<int:course_id>/activate", methods=["POST", ])
 @require_course_perm("courseadmin")
 def cadmin_activate(course_id):

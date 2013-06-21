@@ -7,6 +7,24 @@
     <sub>{{ group.name }}</sub>
 
     <div class="container-fluid well">
+
+<div class='row'>
+    <div class='span5'>
+    <form method='post'
+                          action='{{ cf.url }}cadmin/{{ course.id }}/group/{{ group.id }}/detach_group'>
+                        <input type='submit' name='group_id'
+                               value='Remove from Course'
+                               class='btn btn-small btn-danger'>
+
+                        <p>This will unlink the connection between this group and the course.
+                        Members of the group will not be included as members of this course.
+                        The group will still exist in the system.</p>
+                        </form>
+        </div>
+
+</div>
+
+
         <h5>Members</h5>
 
         <table class="table">
