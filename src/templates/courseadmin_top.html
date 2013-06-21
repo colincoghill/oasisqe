@@ -2,37 +2,68 @@
 {% block body %}
     <br>
     <p>Return to <a href="{{ cf.url }}setup/courses">Course Choice</a></p>
-
+{% if not course.active %}
+    <div class='alert-info'>This course is currently marked as INACTIVE. It will not be visible in most of OASIS.</div>
+    {% endif %}
     <h2>{{ course.name }} ({{ course.title }})</h2>
 
     {% if is_sysadmin %}
         <div class="container-fluid well sysadminbox">
-            <h5>Systems Administrator</h5>
+            <h5>Systems Administrator Options</h5>
 
-            <form>
-                <div class='row'>
-                    <div class='span5'>
-                <input type='submit' name='assign_coord'
-                       value='Assign Coordinator'
-                       class='btn btn-small btn-primary'>
-
-                <p>You can assign someone else to be the "owner" of the course. They
-                    will be given full control over the course and its options.</p>
-                    </div>
+            <div class='row'>
                 <div class='span5'>
+                    <form method='post'
+                          action='{{ cf.url }}cadmin/{{ course.id }}/assign_coord'>
+                        <input type='text' class='typeahead' name='coord'
+                               placeholder='username'>
+                        <input type='submit' name='assign_coord'
+                               value='Assign Coordinator'
+                               class='btn btn-small btn-primary'>
 
-                    <input type='submit' name='deactivate_course'
-                       value='Deactivate Course'
-                       class='btn btn-small btn-danger'>
+                        <p>You can assign someone else to be the "owner" of the
+                            course. They
+                            will be given full control over the course and its
+                            options.</p>
+                    </form>
+                </div>
+                <div class='span5'>
+                    {% if course.active %}
+                    <form method='post'
+                          action='{{ cf.url }}cadmin/{{ course.id }}/deactivate'>
+                        <input type='submit' name='deactivate_course'
+                               value='Deactivate Course'
+                               class='btn btn-small btn-danger'>
 
-                <p>Deactivating a course will remove it from most pages and
-                    deactivate any live assignments
-                    or groups. It can be re-activated later, and any data will
-                    be retained. If you wish to remove a course, you must
-                    deactivate it first.</p>
-                    </div>
-                    </div>
-            </form>
+                        <p>Deactivating a course will remove it from most pages
+                            and
+                            deactivate any live assignments
+                            or groups. It can be re-activated later, and any
+                            data will
+                            be retained. <!-- <em>If you wish to remove a course, you
+                                must
+                                deactivate it first.</em> --></p>
+                        </form>
+                    {% else %}
+                        <form method='post'
+                          action='{{ cf.url }}cadmin/{{ course.id }}/activate'>
+                        <input type='submit' name='reactivate_course'
+                               value='Activate Course'
+                               class='btn btn-small btn-primary'>
+
+                        <p>This course is currently not visible from most of OASIS.</p>
+                        </form>
+                          <!-- <form method='post'
+                          action='{{ cf.url }}cadmin/{{ course.id }}/delete'>
+                        <input type='submit' name='delete_course'
+                               value='Delete Course'
+                               class='btn btn-small btn-danger'>
+                        <p></p>
+                        </form>  -->
+                    {% endif %}
+                </div>
+            </div>
+
 
         </div>
 

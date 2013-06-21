@@ -38,7 +38,7 @@ def setup_courses():
 
     return render_template(
         "setupchoosecourse.html",
-        courses=Setup.get_sorted_courselist(),
+        courses=Setup.get_sorted_courselist(only_active=False),
         is_sysadmin=is_sysadmin
     )
 

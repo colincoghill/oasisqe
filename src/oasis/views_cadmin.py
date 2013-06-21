@@ -403,6 +403,44 @@ def cadmin_edittopics(course_id):
                            topics=topics)
 
 
+@app.route("/cadmin/<int:course_id>/deactivate", methods=["POST", ])
+@require_course_perm("courseadmin")
+def cadmin_deactivate(course_id):
+    """ Mark the course as inactive
+    """
+    course = None
+    try:
+        course = Courses2.get_course(course_id)
+    except KeyError:
+        abort(404)
+
+    if not course:
+        abort(404)
+
+    Courses.set_active(course_id, False)
+    flash("Course %s marked as inactive" % (course['name'],))
+    return redirect(url_for("cadmin_top", course_id=course_id))
+
+
+@app.route("/cadmin/<int:course_id>/activate", methods=["POST", ])
+@require_course_perm("courseadmin")
+def cadmin_activate(course_id):
+    """ Mark the course as active
+    """
+    course = None
+    try:
+        course = Courses2.get_course(course_id)
+    except KeyError:
+        abort(404)
+
+    if not course:
+        abort(404)
+
+    Courses.set_active(course_id, True)
+    flash("Course %s marked as active" % (course['name']))
+    return redirect(url_for("cadmin_top", course_id=course_id))
+
+
 @app.route("/cadmin/<int:course_id>/topics_save", methods=['POST'])
 @require_course_perm("questionedit")
 def cadmin_edittopics_save(course_id):
