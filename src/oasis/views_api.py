@@ -11,15 +11,16 @@ import os
 import datetime
 
 
-from flask import session, abort, jsonify
+from flask import session, abort, jsonify, request
 
 from .lib import Exams, API, Stats
 
 MYPATH = os.path.dirname(__file__)
 
-from .lib.Permissions import satisfy_perms
+from oasis.lib.Permissions import satisfy_perms
+from oasis.lib import Users2
 
-from oasis import app, authenticated
+from oasis import app, authenticated, require_perm
 
 
 @app.route("/api/exam/<int:course_id>/<int:exam_id>/qtemplates")
@@ -150,3 +151,17 @@ def api_exam_available_qtemplates(course_id, exam_id):
         abort(401)
 
     return jsonify(result=API.exam_available_q_list(course_id))
+
+
+@app.route("/api/users/typeahead")
+@require_perm('useradmin')
+def api_users_typeahead():
+    """ Take a partially typed user name and return records that match it.
+    """
+    needle = request.form.get("query", None)
+    if not needle:
+        matches = []
+    else:
+        matches = Users2.find(needle)
+    return jsonify(result=matches)
+

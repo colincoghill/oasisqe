@@ -184,7 +184,7 @@ def uid_by_uname(uname):
     return None
 
 
-def find(search):
+def find(search, limit=20):
     """ return a list of user id's that reasonably match the search term.
         Search username then student ID then surname then first name.
         Return results in that order.
@@ -194,8 +194,8 @@ def find(search):
                         OR LOWER(familyname) LIKE LOWER(%s)
                         OR LOWER(givenname) LIKE LOWER(%s)
                         OR student_id LIKE %s
-                        OR LOWER(email) LIKE LOWER(%s);""",
-                  (search, search, search, search, search))
+                        OR LOWER(email) LIKE LOWER(%s) LIMIT %s;""",
+                  (search, search, search, search, search, limit))
     res = []
     if ret:
         res = [user[0] for user in ret]

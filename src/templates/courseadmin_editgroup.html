@@ -1,80 +1,88 @@
 {% extends "page_courseadmin.html" %}
 {% block body %}
+  <br/>
+  Back to <a href="{{ cf.url }}cadmin/{{ course.id }}/top">Course Page</a>
+  <h4>{{ course.name }} ({{ course.title }})</h4>
+  <H2>Group {{ group.title }}.</H2>
+  <sub>{{ group.name }}</sub>
+
+  <div class="container-fluid well">
+
+
+    <h5>Members</h5>
+
+    <table class="table">
+      <thead>
+      <tr>
+
+      </tr>
+      </thead>
+      <tbody>
+      {% for u in members %}
+        <tr>
+          <td>{{ u.uname }}</td>
+          <td>{{ u.email }}</td>
+          <td>{{ u.fullname }}</td>
+          <!-- <td><button name='remove_{{ u.id }}'><i class='icon icon-trash'> </i></button></td> -->
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    <form id='addperson_form' method='post'
+          action='{{ cf.url }}cadmin/{{ course.id }}/editgroup/{{ group.id }}/addperson'>
+      <label for='username'>Add a person to this group:</label> <br/>
+
+      <div class='input-append'>
+        <input type='text' name='uname'
+               id='username'
+               placeholder="username" class='typeahead'>
+        <button id='addperson_btn' class='btn' type='button'><i
+            class='icon icon-plus-sign'> </i> Add
+        </button>
+      </div>
+    </form>
     <br/>
-    Back to <a href="{{ cf.url }}cadmin/{{ course.id }}/top">Course Page</a>
-    <h4>{{ course.name }} ({{ course.title }})</h4>
-    <H2>Group {{ group.title }}.</H2>
-    <sub>{{ group.name }}</sub>
-
-    <div class="container-fluid well">
+    <!--   <button class='btn'><i class='icon icon-upload'> </i> Upload Spreadsheet</button> -->
+  </div>
 
 
-        <h5>Members</h5>
-
-        <table class="table">
-            <thead>
-            <tr>
-
-            </tr>
-            </thead>
-            <tbody>
-            {% for u in members %}
-                <tr>
-                    <td>{{ u.uname }}</td>
-                    <td>{{ u.email }}</td>
-                    <td>{{ u.fullname }}</td>
-                    <!-- <td><button name='remove_{{ u.id }}'><i class='icon icon-trash'> </i></button></td> -->
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-        <form id='addperson_form' method='post'
-              action='{{ cf.url }}cadmin/{{ course.id }}/editgroup/{{ group.id }}/addperson'>
-            <label for='username'>Add a person to this group:</label> <br/>
-
-            <div class='input-append'>
-                <input type='text' name='uname'
-                                             id='username'
-                                             placeholder="username">
-                <button id='addperson_btn' class='btn' type='button'><i
-                        class='icon icon-plus-sign'> </i> Add
-                </button>
-            </div>
-        </form>
+  <div class='container-fluid well'>
+    <div class='span5'>
+      <form method='post'
+            action='{{ cf.url }}cadmin/{{ course.id }}/group/{{ group.id }}/detach_group'>
+        <input type='submit' name='group_id'
+               value='Remove from Course'
+               class='btn btn-small btn-danger'><br/>
         <br/>
-        <!--   <button class='btn'><i class='icon icon-upload'> </i> Upload Spreadsheet</button> -->
+
+        <p>This will unlink the connection between this group and the course.
+          Members of the group will not be included as members of this course.
+          The group will still exist in the system.</p>
+      </form>
     </div>
 
-
-<div class='container-fluid well'>
-    <div class='span5'>
-    <form method='post'
-                          action='{{ cf.url }}cadmin/{{ course.id }}/group/{{ group.id }}/detach_group'>
-                        <input type='submit' name='group_id'
-                               value='Remove from Course'
-                               class='btn btn-small btn-danger'><br/>
-        <br/>
-
-                        <p>This will unlink the connection between this group and the course.
-                        Members of the group will not be included as members of this course.
-                        The group will still exist in the system.</p>
-                        </form>
-        </div>
-
-</div>
+  </div>
 
 
 {% endblock body %}
 {% block js %}
-    <script>
-        $(function () {
+  <script>
+    $(function () {
 
-            $("#addperson_btn").click(function () {
-                $("#addperson_form").submit();
+      $("#addperson_btn").click(function () {
+        $("#addperson_form").submit();
 
-            });
+      });
+
+      $('.typeahead').typeahead({
+        source: function (typeahead, query) {
+          return $.get('/api/users/typeahead', { query: query }, function (data) {
+            return typeahead.process(data);
+          });
+        }
+      });
 
 
-        });
-    </script>
+    });
+  </script>
 {% endblock %}

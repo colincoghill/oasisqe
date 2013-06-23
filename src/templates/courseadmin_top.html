@@ -196,7 +196,7 @@
                   action='{{ cf.url }}cadmin/{{ course.id }}/add_group'>
                 <select name='addgroup'>
                     <option value='0'>--</option>
-                    {% for group in choosegroups if group.gtype==2 %}
+                    {% for group in choosegroups %}
 
                         <option value='{{ group.id }}'>{{ group.title }}</option>
                     {% endfor %}
