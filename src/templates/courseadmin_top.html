@@ -158,8 +158,7 @@
             group(s):</p>
 
         <div>
-            <h4>Staff</h4>
-            <table class='table datatable'>
+            <table class='table'>
                 <thead>
                 <tr>
                     <th>Name</th>
@@ -167,54 +166,11 @@
                     <th>Size</th>
                     <th>start</th>
                     <th>end</th>
+                  <th>Role</th>
                     <th></th>
                 </tr>
                 </thead>
-                {% for g_id, group in groups.iteritems() if group.gtype==1 %}
-                    <Tr>
-                        <td>{{ group.title }}</td>
-                        <td>{{ group.source }}</td>
-                        <td>{{ group.size }}</td>
-                        <td>{{ group.startdate }}</td>
-                        <td>{{ group.enddate }}</td>
-                        <td>
-                            <a href='{{ cf.url }}cadmin/{{ course.id }}/group/{{ group.id }}/edit'
-                               class='btn btn-mini'><i
-                                    class='icon icon-edit'> </i> edit</a>
-                        </td>
-
-
-                    </Tr>
-                {% endfor %}
-            </table>
-            <br/>
-            <h5>Add Staff Group:</h5>
-
-            <form method='post'
-                  action='{{ cf.url }}cadmin/{{ course.id }}/add_group'>
-                <select name='addgroup'>
-                    <option value=''>--</option>
-                    {% for group in choosegroups if group.gtype==1 %}
-
-                        <option value='{{ group.id }}'>{{ group.title }}</option>
-                    {% endfor %}
-
-                </select><input type='submit' name='add_staff' class='btn'
-                                value='Add'>
-            </form>
-            <h4>Students</h4>
-            <table class='table datatable'>
-                <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Type</th>
-                    <th>Size</th>
-                    <th>start</th>
-                    <th>end</th>
-                    <th></th>
-                </tr>
-                </thead>
-                {% for g_id, group in groups.iteritems() if group.gtype==2 %}
+                {% for g_id, group in groups.iteritems() %}
                     <tr>
                         <td>{{ group.title }}</td>
                         <td>{{ group.source }}</td>
@@ -230,9 +186,12 @@
                     </tr>
                 {% endfor %}
             </table>
-            <br/>
-            <h5>Add Student Group:</h5>
 
+        {% if choosegroups %}
+                      <br/>
+            <h5>Add Group:</h5>
+      <p>The group will be associated with course, and will be able to act as students in the course. You
+      can grant them more permissions later if you wish.</p>
             <form method='post'
                   action='{{ cf.url }}cadmin/{{ course.id }}/add_group'>
                 <select name='addgroup'>
@@ -241,10 +200,11 @@
 
                         <option value='{{ group.id }}'>{{ group.title }}</option>
                     {% endfor %}
-                </select><input type='submit' name='add_student' class='btn'
+                </select>
+              <input type='submit' name='add_student' class='btn'
                                 value='Add'>
             </form>
-
+{% endif %}
         </div>
 
     </div>
