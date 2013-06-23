@@ -64,6 +64,7 @@ Other:
 
 3.9.4 OSS Release
 =================
+(This will also be the UoA release for Semester Two, 2013)
 
 Focus:  Question Editing
 
@@ -79,6 +80,7 @@ Documentation
 
 * Credits, Stephane's number stuff. Davy's editor. Nilroy's theme.
 * Support Web site
+
 
 
 3.9.5 OSS Release
