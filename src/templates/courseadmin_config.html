@@ -1,123 +1,149 @@
 {% extends "page_courseadmin.html" %}
 {% block body %}
-  <br>
-  <p>Return to <a href="{{ cf.url }}cadmin/{{ course.id }}/top">Course
-    Top</a></p>
+    <br>
+    <p>Return to <a href="{{ cf.url }}cadmin/{{ course.id }}/top">Course
+        Top</a></p>
 
-  <h2>{{ course.name }} ({{ course.title }})</h2>
-  <h3>Course Configuration</h3>
-  <form method="POST"
-        action="{{ cf.url }}cadmin/{{ course.id }}/config_submit">
+    <h2>{{ course.name }} ({{ course.title }})</h2>
+    <h3>Course Configuration</h3>
+    <form method="POST"
+          action="{{ cf.url }}cadmin/{{ course.id }}/config_submit">
+        <div class="container-fluid well">
+            <h5>Course Name</h5>
+
+            <div class="">
+                <label>Name:
+                    <input type='text' name='name' value='{{ course.name }}'>
+                </label>
+                <label>Title:
+                    <input type='text' name='title' value='{{ course.title }}'>
+                </label>
+            </div>
+        </div>
+    </form>
+    <br/><br/>
+  {% if is_sysadmin %}
+        <div class="container-fluid well sysadminbox">
+            <h5>Systems Administrator Options</h5>
+
+            <div class='row'>
+                <div class='span5'>
+                    <form method='post'
+                          action='{{ cf.url }}cadmin/{{ course.id }}/assign_coord'>
+                        <input type='text' class='typeahead' name='coord'
+                               placeholder='username'>
+                        <input type='submit' name='assign_coord'
+                               value='Assign Coordinator'
+                               class='btn btn-small btn-primary'>
+
+                        <p>You can assign someone else to be the "owner" of the
+                            course. They
+                            will be given full control over the course and its
+                            options.</p>
+                    </form>
+                </div>
+                <div class='span5'>
+                    {% if course.active %}
+                    <form method='post'
+                          action='{{ cf.url }}cadmin/{{ course.id }}/deactivate'>
+                        <input type='submit' name='deactivate_course'
+                               value='Deactivate Course'
+                               class='btn btn-small btn-danger'>
+
+                        <p>Deactivating a course will remove it from most pages
+                            and
+                            deactivate any live assignments
+                            or groups. It can be re-activated later, and any
+                            data will
+                            be retained. <!-- <em>If you wish to remove a course, you
+                                must
+                                deactivate it first.</em> --></p>
+                        </form>
+                    {% else %}
+                        <form method='post'
+                          action='{{ cf.url }}cadmin/{{ course.id }}/activate'>
+                        <input type='submit' name='reactivate_course'
+                               value='Activate Course'
+                               class='btn btn-small btn-primary'>
+
+                        <p>This course is currently not visible from most of OASIS.</p>
+                        </form>
+                          <!-- <form method='post'
+                          action='{{ cf.url }}cadmin/{{ course.id }}/delete'>
+                        <input type='submit' name='delete_course'
+                               value='Delete Course'
+                               class='btn btn-small btn-danger'>
+                        <p></p>
+                        </form>  -->
+                    {% endif %}
+                </div>
+            </div>
+
+
+        </div>
+
+    {% endif %}
     <div class="container-fluid well">
-      <h5>Course Name</h5>
+        <h5>People</h5>
 
-      <div class="">
-        <label>Name:
-          <input type='text' name='name' value='{{ course.name }}'>
-        </label>
-        <label>Title:
-          <input type='text' name='title' value='{{ course.title }}'>
-        </label>
-      </div>
-<br/><br/>
-      <h4>Enrolment Groups</h4>
+        <p>The following group(s) of people currently have access to {{ course.name }}:</p>
 
-      <p>{{ course.name }} currently has {{ course.size }} members and {{ course.staffnum }} staff, composed from the following group(s):</p>
-<h5>Student</h5>
-      <div>{% if student_groups %}
+        <div>
+            <table class='table'>
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Size</th>
+                    <th>start</th>
+                    <th>end</th>
+                  <th>Role</th>
+                    <th></th>
+                </tr>
+                </thead>
+                {% for g_id, group in groups.iteritems() %}
+                    <tr>
+                        <td>{{ group.title }}</td>
+                        <td>{{ group.source }}</td>
+                        <td>{{ group.size }}</td>
+                        <td>{{ group.startdate }}</td>
+                        <td>{{ group.enddate }}</td>
+                        <td>
+                            <a href='{{ cf.url }}cadmin/{{ course.id }}/group/{{ group.id }}/edit'
+                               class='btn btn-mini'><i
+                                    class='icon icon-edit'> </i> edit</a>
+                        </td>
 
-        <table class='table'>
-          <tr>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Size</th>
-            <th>start</th>
-            <th>end</th>
-            <th></th>
-          </tr>
-          {% for g_id, group in student_groups.iteritems() %}
-            <Tr>
-              <td>{{ group.name }}</td>
-              <td>Manual</td>
-              <td>{{ group.size }}</td>
-              <td>{{ group.startdate }}</td>
-              <td>{{ group.enddate }}</td>
-              <td>
-                <i class='icon icon-trash'> </i><input type='checkbox' name='delgroup_{{ group.id }}' value='{{ group.id }}'>
-              </td>
+                    </tr>
+                {% endfor %}
+            </table>
 
-            </Tr>
-          {% endfor %}
-        </table>
-      {% else %}
-        None.
-      {% endif %}
-      </div>
+        {% if choosegroups %}
+                      <br/>
+            <h5>Add Group:</h5>
+      <p>The group will be associated with course, and will be able to act as students in the course. You
+      can grant them more permissions later if you wish.</p>
+            <form method='post'
+                  action='{{ cf.url }}cadmin/{{ course.id }}/add_group'>
+                <select name='addgroup'>
+                    <option value='0'>--</option>
+                    {% for group in choosegroups %}
 
-<h5>Staff</h5>
-    <div>{% if staff_groups %}
+                        <option value='{{ group.id }}'>{{ group.title }}</option>
+                    {% endfor %}
+                </select>
+              <input type='submit' name='add_student' class='btn'
+                                value='Add'>
+            </form>
+{% endif %}
+        </div>
 
-        <table class='table'>
-          <tr>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Size</th>
-            <th>start</th>
-            <th>end</th>
-            <th></th>
-          </tr>
-          {% for g_id, group in staff_groups.iteritems() %}
-            <Tr>
-              <td>{{ group.name }}</td>
-              <td>Manual</td>
-              <td>{{ group.size }}</td>
-              <td>{{ group.startdate }}</td>
-              <td>{{ group.enddate }}</td>
-              <td>
-                <i class='icon icon-trash'> </i><input type='checkbox' name='delgroup_{{ group.id }}' value='{{ group.id }}'>
-              </td>
-
-            </Tr>
-          {% endfor %}
-        </table>
-      {% else %}
-        None.
-      {% endif %}
-      </div>
-        <br/>
-
-        <h5>Add Student Group:</h5>
-        <select name='addgroup'>
-        <option value=''>--</option>
-          {% for group in choosegroups %}
-
-            <option value='{{ group.id }}'>{{ group.title }}</option>
-          {% endfor %}
-        </select>
-
-      <h5>Add Staff Group:</h5>
-        <select name='addgroup'>
-        <option value=''>--</option>
-          {% for group in choosegroups %}
-            <option value='{{ group.id }}'>{{ group.title }}</option>
-          {% endfor %}
-        </select>
-      </div>
-
-      <br/></div>
-
-    <div class='pull-right'>
-      <input type="submit" name="save_changes" value="Apply Changes"
-             class='btn btn-primary'>
-      <input type="submit" name="cancel_edit" value="Cancel"
-             class='btn btn-danger'>
     </div>
-  </form>
-  <br>
+    <br>
 
-  <br/>
-  <p>Return to <a href="{{ cf.url }}cadmin/{{ course.id }}/top">Course
-    Top</a></p>
+    <br/>
+    <p>Return to <a href="{{ cf.url }}cadmin/{{ course.id }}/top">Course
+        Top</a></p>
 
 
 {% endblock body %}

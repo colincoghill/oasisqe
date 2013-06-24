@@ -63,9 +63,18 @@ def cadmin_config(course_id):
     if not course:
         abort(404)
 
+    user_id = session['user_id']
+    is_sysadmin = check_perm(user_id, -1, 'sysadmin')
+    groups = Courses.get_groups(course_id)
+    choosegroups = [group
+                    for group in Groups.all_groups()
+                    if not group.id in groups]
     return render_template(
         "courseadmin_config.html",
         course=course,
+        choosegroups=choosegroups,
+        groups=groups,
+        is_sysadmin=is_sysadmin
     )
 
 
@@ -333,15 +342,6 @@ def cadmin_editgroup(course_id, group_id):
                            group=group,
                            members=members)
 
-#
-# @app.route("/cadmin/addgroup/<int:course_id>")
-# @require_course_perm("useradmin")
-# def cadmin_addgroup(course_id):
-#     """ Present a page for creating a group
-#     """
-#     course = Courses2.get_course(course_id)
-#     return render_template("courseadmin_addgroup.html", course=course)
-#
 
 @app.route("/cadmin/<int:course_id>/editgroup/<int:group_id>/addperson",
            methods=["POST", ])
@@ -414,7 +414,7 @@ def cadmin_deactivate(course_id):
 
     Courses.set_active(course_id, False)
     flash("Course %s marked as inactive" % (course['name'],))
-    return redirect(url_for("cadmin_top", course_id=course_id))
+    return redirect(url_for("cadmin_config", course_id=course_id))
 
 
 @app.route("/cadmin/<int:course_id>/group/<int:group_id>/detach_group", methods=["POST", ])
@@ -434,7 +434,7 @@ def cadmin_group_detach(course_id, group_id):
     group = Groups.Group(g_id=group_id)
     Courses.del_group(group_id, course_id)
     flash("Group %s removed from course" % (group.name,))
-    return redirect(url_for("cadmin_top", course_id=course_id))
+    return redirect(url_for("cadmin_config", course_id=course_id))
 
 
 @app.route("/cadmin/<int:course_id>/activate", methods=["POST", ])
@@ -453,7 +453,7 @@ def cadmin_activate(course_id):
 
     Courses.set_active(course_id, True)
     flash("Course %s marked as active" % (course['name']))
-    return redirect(url_for("cadmin_top", course_id=course_id))
+    return redirect(url_for("cadmin_config", course_id=course_id))
 
 
 @app.route("/cadmin/<int:course_id>/topics_save", methods=['POST'])
@@ -681,10 +681,10 @@ def cadmin_course_add_group(course_id):
     group_id = int(request.form.get("addgroup", "0"))
     if not group_id:
         flash("No group selected")
-        return redirect(url_for('cadmin_top', course_id=course_id))
+        return redirect(url_for('cadmin_config', course_id=course_id))
 
     Courses.add_group(group_id, course_id)
     group = Groups.Group(group_id)
     flash("Group %s added" % (group.name,))
-    return redirect(url_for('cadmin_top', course_id=course_id))
+    return redirect(url_for('cadmin_config', course_id=course_id))
 
