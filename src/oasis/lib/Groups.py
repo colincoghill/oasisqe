@@ -88,8 +88,8 @@ class Group(object):
     def add_member(self, uid):
         """ Adds given user to the group."""
         run_sql(
-            """INSERT INTO usergroups (userid, groupid, "type")
-               VALUES (%s, %s, 2) """,
+            """INSERT INTO usergroups (userid, groupid)
+               VALUES (%s, %s) """,
             (uid, self.id))
 
     def flush_members(self):

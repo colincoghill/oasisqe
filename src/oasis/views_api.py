@@ -153,15 +153,15 @@ def api_exam_available_qtemplates(course_id, exam_id):
     return jsonify(result=API.exam_available_q_list(course_id))
 
 
-@app.route("/api/users/typeahead")
+@app.route("/api/users/typeahead", methods=['get',])
 @require_perm('useradmin')
 def api_users_typeahead():
     """ Take a partially typed user name and return records that match it.
     """
-    needle = request.form.get("query", None)
+    needle = request.form['term']
     if not needle:
-        matches = []
+        matches = ['eric','ernie','columbia']
     else:
-        matches = Users2.find(needle)
+        matches = Users2.typeahead(needle)
     return jsonify(result=matches)
 

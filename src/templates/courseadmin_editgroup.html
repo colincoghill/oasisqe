@@ -30,12 +30,12 @@
     </table>
     <form id='addperson_form' method='post'
           action='{{ cf.url }}cadmin/{{ course.id }}/editgroup/{{ group.id }}/addperson'>
-      <label for='username'>Add a person to this group:</label> <br/>
+      <label for='usersearch'>Add a person to this group:</label> <br/>
 
       <div class='input-append'>
         <input type='text' name='uname'
-               id='username'
-               placeholder="username" class='typeahead'>
+               id='usersearch'
+               placeholder="username" class=''>
         <button id='addperson_btn' class='btn' type='button'><i
             class='icon icon-plus-sign'> </i> Add
         </button>
@@ -74,13 +74,11 @@
 
       });
 
-      $('.typeahead').typeahead({
-        source: function (typeahead, query) {
-          return $.get('/api/users/typeahead', { query: query }, function (data) {
-            return typeahead.process(data);
-          });
+      $('#usersearch').autocomplete({
+        minLength: 3,
+        source: '{{ cf.url }}api/users/typeahead'
         }
-      });
+      );
 
 
     });

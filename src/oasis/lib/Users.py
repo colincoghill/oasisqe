@@ -202,6 +202,25 @@ def find(search, limit=20):
     return res
 
 
+def typeahead(search, limit=20):
+    """ return a list of user id's that reasonably match the search term.
+        Search username then student ID then surname then first name.
+        Return results in that order.
+    """
+    ret = run_sql("""SELECT id
+                     FROM users
+                     WHERE
+                         LOWER(uname) LIKE LOWER(%s)
+                       OR
+                         LOWER(email) LIKE LOWER(%s)
+                     LIMIT %s;""",
+                  (search, search, limit))
+    res = []
+    if ret:
+        res = [user[0] for user in ret]
+    return res
+
+
 def get_groups(user):
     """ Return a list of groups the user is a member of.  """
     assert isinstance(user, int)

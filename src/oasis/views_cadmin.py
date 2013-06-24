@@ -342,41 +342,41 @@ def cadmin_editgroup(course_id, group_id):
 #     course = Courses2.get_course(course_id)
 #     return render_template("courseadmin_addgroup.html", course=course)
 #
-#
-# @app.route("/cadmin/<int:course_id>/editgroup/<int:group_id>/addperson",
-#            methods=["POST", ])
-# @require_course_perm("useradmin")
-# def cadmin_editgroup_addperson(course_id, group_id):
-#     """ Add a person to the group.
-#     """
-#     group = None
-#     try:
-#         group = Groups.get_dict(group_id)
-#     except KeyError:
-#         abort(404)
-#
-#     if not group:
-#         abort(404)
-#
-#     if not "uname" in request.form:
-#         abort(400)
-#
-#     new_uname = request.form['uname']
-#     try:
-#         new_uid = Users2.uid_by_uname(new_uname)
-#     except KeyError:
-#         flash("User '%s' Not Found" % new_uname)
-#     else:
-#         if not new_uid:
-#             flash("User '%s' Not Found" % new_uname)
-#         else:
-#             Groups.add_user(new_uid, group_id)
-#             flash("Added '%s to group." % (new_uname,))
-#
-#     return redirect(url_for('cadmin_editgroup',
-#                             course_id=course_id,
-#                             group_id=group_id))
-#
+
+@app.route("/cadmin/<int:course_id>/editgroup/<int:group_id>/addperson",
+           methods=["POST", ])
+@require_course_perm("useradmin")
+def cadmin_editgroup_addperson(course_id, group_id):
+    """ Add a person to the group.
+    """
+    group = None
+    try:
+        group = Groups.Group(g_id=group_id)
+    except KeyError:
+        abort(404)
+
+    if not group:
+        abort(404)
+
+    if not "uname" in request.form:
+        abort(400)
+
+    new_uname = request.form['uname']
+    try:
+        new_uid = Users2.uid_by_uname(new_uname)
+    except KeyError:
+        flash("User '%s' Not Found" % new_uname)
+    else:
+        if not new_uid:
+            flash("User '%s' Not Found" % new_uname)
+        else:
+            group.add_member(new_uid)
+            flash("Added '%s to group." % (new_uname,))
+
+    return redirect(url_for('cadmin_editgroup',
+                            course_id=course_id,
+                            group_id=group_id))
+
 
 
 @app.route("/cadmin/<int:course_id>/topics", methods=['GET', 'POST'])
