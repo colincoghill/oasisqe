@@ -30,7 +30,7 @@
                 <div class='span5'>
                     <form method='post'
                           action='{{ cf.url }}cadmin/{{ course.id }}/assign_coord'>
-                        {% if coords %}Course-Coordinators: {% for coord in coords %}{{ coord.uname }}{% endfor %}{% endif %}
+                        {% if coords %}Course-Coordinators: {% for coord in coords %}{{ coord.uname }} {% endfor %}{% endif %}
                         <input type='text' class='typeahead' name='coord'
                                placeholder='username'>
                         <input type='submit' name='assign_coord'

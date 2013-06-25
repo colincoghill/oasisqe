@@ -3,7 +3,7 @@
   <br/>
   Back to <a href="{{ cf.url }}cadmin/{{ course.id }}/top">Course Page</a>
   <h4>{{ course.name }} ({{ course.title }})</h4>
-  <H2>Group {{ group.title }}. ({{ group.name }}</H2>
+  <H2>Group {{ group.title }}.</H2>
   {% if group.source=='adhoc' %}<p>Membership of this group is 'ad-hoc'. This means that you can
   add or remove people from the group on this page.</p>
   {% elif group.source=='open' %}<p>Membership of this group is 'open'.</p><p>This means that
@@ -14,11 +14,15 @@
 
   <div class="container-fluid well">
     <h5>Members</h5>
-
-    <table class="table">
+ <form id='member_edit' method='post'
+          action='{{ cf.url }}cadmin/{{ course.id }}/groupmember/{{ group.id }}'>
+    <table class="table datatable">
       <thead>
       <tr>
-
+<th>Username</th>
+         <th>Email</th>
+          <th>Fullname</th>
+          <th></th>
       </tr>
       </thead>
       <tbody>
@@ -27,11 +31,18 @@
           <td>{{ u.uname }}</td>
           <td>{{ u.email }}</td>
           <td>{{ u.fullname }}</td>
-          <!-- <td><button name='remove_{{ u.id }}'><i class='icon icon-trash'> </i></button></td> -->
+
+          <td>
+              {% if group.source=='adhoc' or group.source=='open' %}
+              <button class='btn btn-link remove_member' name='remove_{{ u.id }}'><i class='icon icon-trash'> </i></button>
+              {% endif %}
+          </td>
         </tr>
       {% endfor %}
       </tbody>
     </table>
+ </form>
+  <br><br/>
     <form id='addperson_form' method='post'
           action='{{ cf.url }}cadmin/{{ course.id }}/editgroup/{{ group.id }}/addperson'>
       <label for='usersearch'>Add a person to this group:</label> <br/>
@@ -77,6 +88,8 @@
         $("#addperson_form").submit();
 
       });
+
+        $(".datatable").dataTable();
 /*
       $('#usersearch').autocomplete({
         minLength: 3,
@@ -84,6 +97,11 @@
         }
       );
 */
+       $(".remove_member").click(
+               function() {
+                   $("#member_edit").submit();
+               }
+       );
 
 
     });
