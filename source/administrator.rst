@@ -11,7 +11,7 @@ Sections:
 .. toctree::
    :maxdepth: 2
 
-
+   installation
    admin_courses
 
 
