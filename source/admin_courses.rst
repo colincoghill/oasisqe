@@ -7,6 +7,40 @@ A Course in OASIS is a collection of *content* - questions and assessments,
 and groups of *people* - students and staff.
 
 
+Course Configuration
+--------------------
+
+Names
+^^^^^
+A course has a *name* and a *title*, for example "PHYSICS101" and "Introduction
+to Physics". The name must be unique.
+
+
+Members
+^^^^^^^
+A course will contain one or more *groups*. A *group* is a collection of users -
+staff or students. By default, anyone in one of the groups can access the
+content in the course - practice questions and assessments.
+
+Groups
+^^^^^^
+Membership in groups can be controlled in different ways. There are three main
+types of group:
+
+*adhoc*: The course coordinator can add or remove users from the group from the
+course administration area in OASIS. This is a good way to manage small courses,
+or content that is not related to an "official" course.
+
+*open*: An open group will allow users to add themselves to the group. If you
+have one or more open groups in your course, then any user can give themselves
+access to your course. This is ideal for demonstration or voluntary content.
+
+*feed*: The group membership is controlled external to OASIS - perhaps from
+a central university enrolment system. This will have to be configured by
+the OASIS systems administration, but once it is, course administrators can
+make use of these groups.
+
+
 Adding a Course
 ---------------
 
