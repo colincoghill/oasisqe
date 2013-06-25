@@ -62,7 +62,7 @@ Single Machine Install
 
     **as the 'root' user again**::
 
-        mkdir -p /var/cache/oasisqe/3.9
+        mkdir -p /var/cache/oasisqe/v3.9
         chown oasisqe /var/cache/oasisqe
         mkdir /var/log/oasisqe
         chown oasisqe /var/log/oasisqe
