@@ -17,7 +17,7 @@ Single Machine Install
    If you have a newer version it should work fine, but hasn't specifically been tested yet, let us know!
    32/64 bits doesn't matter. 64bit is probably recommended for a server unless you're low on RAM, in which
    case 32 might be slightly more compact.
-   
+
    Don't install any extras unless you need them for something else. OpenSSH Server is a good idea for
    remote management.
 
@@ -61,7 +61,7 @@ Single Machine Install
 6. Setup OASIS working space and logs.
    (as the 'root' user again)
 ```Shell
-    mkdir -p /var/cache/oasisqe/3.9
+    mkdir -p /var/cache/oasisqe/v3.9
     chown oasisqe /var/cache/oasisqe
     mkdir /var/log/oasisqe
     chown oasisqe /var/log/oasisqe
@@ -73,8 +73,11 @@ Single Machine Install
     nano /etc/oasisqe.ini
 ```
 You can use VI or some other editor instead of nano, if you like. Go through the file and fill in the various
-values appropriately. The main ones you will need to change are the email addresses, the database password, and the URL. 
+values appropriately. The main ones you will need to change are the email addresses, the database password, and the URL.
 Most of the other defaults are fine.
+
+If you are running in a Virtual Machine, you may need to change the URL and the static URL in the
+configuration file to be the IP address of your Virtual Machine.
 
 8. Setup Apache to serve OASIS
 ```Shell
@@ -89,7 +92,7 @@ Most of the other defaults are fine.
 
     OASIS should now be available at the URL you configured.
 
-10. Reset the Admin password
+10. Reset the OASIS Admin password
    If you forget it you can perform this step again and it will reset it again.
 ```Shell
     /opt/oasisqe/3.9/bin/reset_admin_password
@@ -114,11 +117,10 @@ Most of the other defaults are fine.
 Troubleshooting
 ---------------
 
-Apache errors (Internal Server Error 500) should show up in 
+Apache errors (Internal Server Error 500) should show up in
 ```
    /var/log/apache2/error.log
 ```
-
 
 
 
@@ -138,8 +140,8 @@ Single Machine Install
 
    32/64 bits doesn't matter. 64bit is probably recommended for a server unless you're low on RAM, in which
    case 32 might be slightly more compact.
-   
-   Go with defaults unless you need something else. 
+
+   Go with defaults unless you need something else.
 
 2. Install dependencies
    as root
@@ -183,7 +185,7 @@ Single Machine Install
 6. Setup OASIS working space and logs.
    (as the 'root' user again)
 ```Shell
-    mkdir -p /var/cache/oasisqe/3.9
+    mkdir -p /var/cache/oasisqe/v3.9
     chown oasisqe /var/cache/oasisqe
     mkdir /var/log/oasisqe
     chown oasisqe /var/log/oasisqe
@@ -195,8 +197,11 @@ Single Machine Install
     nano /etc/oasisqe.ini
 ```
 You can use VI or some other editor instead of nano, if you like. Go through the file and fill in the various
-values appropriately. The main ones you will need to change are the email addresses, the database password, and the URL. 
+values appropriately. The main ones you will need to change are the email addresses, the database password, and the URL.
 Most of the other defaults are fine.
+
+If you are running in a Virtual Machine, you may need to change the URL and the static URL in the
+configuration file to be the IP address of your Virtual Machine.
 
 8. Setup Apache to serve OASIS
 ```Shell
@@ -211,7 +216,7 @@ Most of the other defaults are fine.
 
     OASIS should now be available at the URL you configured.
 
-10. Reset the Admin password
+10. Reset the OASIS Admin password
    If you forget it you can perform this step again and it will reset it again.
 ```Shell
     /opt/oasisqe/3.9/bin/reset_admin_password
@@ -237,7 +242,7 @@ Most of the other defaults are fine.
 Troubleshooting
 ---------------
 
-Apache errors (Internal Server Error 500) should show up in 
+Apache errors (Internal Server Error 500) should show up in
 ```
    /var/log/apache2/error.log
 ```
