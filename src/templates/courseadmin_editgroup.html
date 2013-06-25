@@ -3,12 +3,16 @@
   <br/>
   Back to <a href="{{ cf.url }}cadmin/{{ course.id }}/top">Course Page</a>
   <h4>{{ course.name }} ({{ course.title }})</h4>
-  <H2>Group {{ group.title }}.</H2>
-  <sub>{{ group.name }}</sub>
+  <H2>Group {{ group.title }}. ({{ group.name }}</H2>
+  {% if group.source=='adhoc' %}<p>Membership of this group is 'ad-hoc'. This means that you can
+  add or remove people from the group on this page.</p>
+  {% elif group.source=='open' %}<p>Membership of this group is 'open'.</p><p>This means that
+    any valid user can sign themselves into this group, and you can also add or remove group members.</p>
+  {% else %}<p>Membership of this group is controlled from an external source, and members cannot
+  be added or removed from within OASIS.</p>
+  {% endif %}
 
   <div class="container-fluid well">
-
-
     <h5>Members</h5>
 
     <table class="table">
