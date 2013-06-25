@@ -92,6 +92,14 @@ class Group(object):
                VALUES (%s, %s) """,
             (uid, self.id))
 
+    def remove_member(self, uid):
+        """ Remove given user from the group."""
+        run_sql(
+            """DELETE FROM usergroups
+               WHERE groupid=%s AND userid=%s;""",
+            (self.id, uid))
+
+
     def flush_members(self):
         """ DANGEROUS:  Clears list of enrolled users in group.
             Use only just before importing new list.

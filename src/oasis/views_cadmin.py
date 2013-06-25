@@ -389,6 +389,41 @@ def cadmin_editgroup_addperson(course_id, group_id):
                             group_id=group_id))
 
 
+@app.route("/cadmin/<int:course_id>/groupmember/<int:group_id>",
+           methods=["POST", ])
+@require_course_perm(("useradmin", "coursecoord", "courseadmin"))
+def cadmin_editgroup_member(course_id, group_id):
+    """ Perform operation on group member. Remove/Edit/Etc
+    """
+    group = None
+    try:
+        group = Groups.Group(g_id=group_id)
+    except KeyError:
+        abort(404)
+
+    if not group:
+        abort(404)
+
+    done = False
+    cmds = request.form.keys()
+    # expecting   "remove_UID"
+    for cmd in cmds:
+        if '_' in cmd:
+            op, uid = cmd.split("_",1)
+            if op == "remove":
+                uid = int(uid)
+                user = Users2.get_user(uid)
+                group.remove_member(uid)
+                flash("%s removed from group" % user['uname'])
+                done = True
+
+    if not done:
+        flash("No actions?")
+    return redirect(url_for('cadmin_editgroup',
+                            course_id=course_id,
+                            group_id=group_id))
+
+
 @app.route("/cadmin/<int:course_id>/assign_coord", methods=["POST", ])
 @require_course_perm(("courseadmin", "coursecoord"))
 def cadmin_assign_coord(course_id):
