@@ -362,6 +362,7 @@ def cadmin_editgroup_addperson(course_id, group_id):
         abort(400)
 
     new_uname = request.form['uname']
+    # TODO: Sanitize username
     try:
         new_uid = Users2.uid_by_uname(new_uname)
     except KeyError:
@@ -369,14 +370,15 @@ def cadmin_editgroup_addperson(course_id, group_id):
     else:
         if not new_uid:
             flash("User '%s' Not Found" % new_uname)
+        elif new_uid in group.members():
+            flash("%s is already in the group." % new_uname)
         else:
             group.add_member(new_uid)
-            flash("Added '%s to group." % (new_uname,))
+            flash("Added %s to group." % (new_uname,))
 
     return redirect(url_for('cadmin_editgroup',
                             course_id=course_id,
                             group_id=group_id))
-
 
 
 @app.route("/cadmin/<int:course_id>/topics", methods=['GET', 'POST'])

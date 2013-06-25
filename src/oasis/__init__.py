@@ -385,6 +385,7 @@ def login_signup_submit():
     """ They've entered some information and want an account.
         Do some checks and send them a confirmation email if all looks good.
     """
+    # TODO: How do we stop someone using this to spam someone?
     if not OaConfig.open_registration:
         abort(404)
     form = request.form
@@ -400,6 +401,7 @@ def login_signup_submit():
     confirm = form['confirm']
     email = form['email']
 
+    # TODO: Sanitize username
     if username == "" or password == "" or confirm == "" or email == "":
         flash("Please fill in all fields")
         return redirect(url_for("login_signup"))
