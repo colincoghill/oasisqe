@@ -96,9 +96,6 @@
                     <th>Name</th>
                     <th>Type</th>
                     <th>Size</th>
-                    <th>start</th>
-                    <th>end</th>
-                  <th>Role</th>
                     <th></th>
                 </tr>
                 </thead>
@@ -106,9 +103,7 @@
                     <tr>
                         <td>{{ group.title }}</td>
                         <td>{{ group.source }}</td>
-                        <td>{{ group.size }}</td>
-                        <td>{{ group.startdate }}</td>
-                        <td>{{ group.enddate }}</td>
+                        <td>{{ group.size() }}</td>
                         <td>
                             <a href='{{ cf.url }}cadmin/{{ course.id }}/group/{{ group.id }}/edit'
                                class='btn btn-mini'><i

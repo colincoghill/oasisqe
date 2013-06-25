@@ -138,7 +138,11 @@ class Group(object):
                 if exists.id != self.id:
                     raise ValueError("Group with that name already exists")
 
+    def size(self):
+        """ How many people are in the group?
+        """
 
+        return len(self.members())
 
 
 def get_by_feed(feed_id):
