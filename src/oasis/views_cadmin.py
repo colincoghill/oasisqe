@@ -101,9 +101,12 @@ def cadmin_config_submit(course_id):
 
     new_name = form.get('name', course['name'])
 
+    existing = Courses.get_course_by_name(new_name)
     if not new_name == course['name']:
         if not (3 <= len(new_name) <= 20):
             flash("Course Name must be between 3 and 20 characters.")
+        elif existing:
+            flash("There is already a course called %(name)s" % existing)
         else:
             Courses.set_name(course['id'], new_name)
             saved = True
@@ -126,7 +129,7 @@ def cadmin_config_submit(course_id):
         flash("Changes Saved")
     else:
         flash("No changes made.")
-    return redirect(url_for("cadmin_top", course_id=course_id))
+    return redirect(url_for("cadmin_config", course_id=course_id))
 
 
 @app.route("/cadmin/<int:course_id>/previousassessments")
