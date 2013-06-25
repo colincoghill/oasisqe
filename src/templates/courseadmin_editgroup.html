@@ -43,6 +43,7 @@
     </table>
  </form>
   <br><br/>
+  {% if group.source=='adhoc' or group.source=='open' %}
     <form id='addperson_form' method='post'
           action='{{ cf.url }}cadmin/{{ course.id }}/editgroup/{{ group.id }}/addperson'>
       <label for='usersearch'>Add a person to this group:</label> <br/>
@@ -56,7 +57,9 @@
         </button>
       </div>
     </form>
-    <br/>
+      <br/>
+  {% endif %}
+
     <!--   <button class='btn'><i class='icon icon-upload'> </i> Upload Spreadsheet</button> -->
   </div>
 
