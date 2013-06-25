@@ -87,12 +87,12 @@ def delete_perm(uid, group_id, perm):
             (uid, group_id, perm))
 
 
-def add_perm(uid, group_id, perm):
+def add_perm(uid, course_id, perm):
     """ Assign a permission."""
     key = "permission-%s-super" % (uid,)
     MC.delete(key)
     run_sql("""INSERT INTO permissions (course, userid, permission)
-               VALUES (%s, %s, %s) """, (group_id, uid, perm))
+               VALUES (%s, %s, %s) """, (course_id, uid, perm))
 
 
 def get_course_perms(course_id):
@@ -106,6 +106,6 @@ def get_course_perms(course_id):
     if not ret:
         return []
     res = [(int(perm[1]), int(perm[2])) for perm in ret if
-           perm[2] in [2, 5, 10, 14, 11, 17, 16, 8, 9, 15]]
+           perm[2] in [2, 3, 4, 5, 10, 14, 11, 17, 16, 8, 9, 15]]
     # TODO: Magic numbers! get rid of them!
     return res

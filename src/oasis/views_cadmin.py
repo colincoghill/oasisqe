@@ -24,7 +24,8 @@ from oasis import app, require_course_perm, require_perm
 
 @app.route("/cadmin/<int:course_id>/top")
 @require_course_perm(("questionedit", "viewmarks",
-                      "altermarks", "examcreate"),
+                      "altermarks", "examcreate",
+                     "coursecoord", "courseadmin"),
                      redir="setup_top")
 def cadmin_top(course_id):
     """ Present top level course admin page """
@@ -56,7 +57,7 @@ def cadmin_top(course_id):
 
 
 @app.route("/cadmin/<int:course_id>/config")
-@require_course_perm("COURSE_ADMIN")
+@require_course_perm(("course_admin", "coursecoord"))
 def cadmin_config(course_id):
     """ Allow some course configuration """
     course = Courses2.get_course(course_id)
@@ -65,6 +66,9 @@ def cadmin_config(course_id):
 
     user_id = session['user_id']
     is_sysadmin = check_perm(user_id, -1, 'sysadmin')
+    coords = [Users2.get_user(perm[0])
+              for perm in Permissions.get_course_perms(course_id)
+              if perm[1] == 3] # course_coord
     groups = Courses.get_groups(course_id)
     choosegroups = [group
                     for group in Groups.all_groups()
@@ -72,6 +76,7 @@ def cadmin_config(course_id):
     return render_template(
         "courseadmin_config.html",
         course=course,
+        coords=coords,
         choosegroups=choosegroups,
         groups=groups,
         is_sysadmin=is_sysadmin
@@ -79,7 +84,7 @@ def cadmin_config(course_id):
 
 
 @app.route("/cadmin/<int:course_id>/config_submit", methods=["POST", ])
-@require_course_perm("COURSE_ADMIN")
+@require_course_perm(("courseadmin", "coursecoord"))
 def cadmin_config_submit(course_id):
     """ Allow some course configuration """
     course = Courses2.get_course(course_id)
@@ -126,7 +131,8 @@ def cadmin_config_submit(course_id):
 
 @app.route("/cadmin/<int:course_id>/previousassessments")
 @require_course_perm(("questionedit", "viewmarks",
-                      "altermarks", "examcreate"))
+                      "altermarks", "examcreate",
+                      "coursecoord", "courseadmin"))
 def cadmin_prev_assessments(course_id):
     """ Show a list of older assessments."""
     course = Courses2.get_course(course_id)
@@ -235,7 +241,7 @@ def cadmin_add_course_save():
 
 
 @app.route("/cadmin/<int:course_id>/createexam")
-@require_course_perm("examcreate")
+@require_course_perm(("examcreate", "coursecoord", "courseadmin"))
 def cadmin_create_exam(course_id):
     """ Provide a form to create/edit a new assessment """
     course = Courses2.get_course(course_id)
@@ -272,7 +278,7 @@ def cadmin_create_exam(course_id):
 
 
 @app.route("/cadmin/<int:course_id>/editexam/<int:exam_id>")
-@require_course_perm("examcreate")
+@require_course_perm(("examcreate", "coursecoord", "courseadmin"))
 def cadmin_edit_exam(course_id, exam_id):
     """ Provide a form to edit an assessment """
     course = Courses2.get_course(course_id)
@@ -297,7 +303,7 @@ def cadmin_edit_exam(course_id, exam_id):
 
 @app.route("/cadmin/<int:course_id>/exam_edit_submit/<int:exam_id>",
            methods=["POST", ])
-@require_course_perm("examcreate")
+@require_course_perm(("examcreate", "coursecoord", "courseadmin"))
 def cadmin_edit_exam_submit(course_id, exam_id):
     """ Provide a form to edit an assessment """
     user_id = session['user_id']
@@ -321,7 +327,7 @@ def cadmin_edit_exam_submit(course_id, exam_id):
 
 
 @app.route("/cadmin/<int:course_id>/group/<int:group_id>/edit")
-@require_course_perm("useradmin")
+@require_course_perm(("useradmin", "coursecoord", "courseadmin"))
 def cadmin_editgroup(course_id, group_id):
     """ Present a page for editing a group, membership, etc.
     """
@@ -335,6 +341,8 @@ def cadmin_editgroup(course_id, group_id):
         abort(404)
 
     course = Courses2.get_course(course_id)
+    if not course:
+        abort(404)
     ulist = group.members()
     members = [Users2.get_user(uid) for uid in ulist]
     return render_template("courseadmin_editgroup.html",
@@ -345,7 +353,7 @@ def cadmin_editgroup(course_id, group_id):
 
 @app.route("/cadmin/<int:course_id>/editgroup/<int:group_id>/addperson",
            methods=["POST", ])
-@require_course_perm("useradmin")
+@require_course_perm(("useradmin", "coursecoord", "courseadmin"))
 def cadmin_editgroup_addperson(course_id, group_id):
     """ Add a person to the group.
     """
@@ -381,8 +389,37 @@ def cadmin_editgroup_addperson(course_id, group_id):
                             group_id=group_id))
 
 
+@app.route("/cadmin/<int:course_id>/assign_coord", methods=["POST", ])
+@require_course_perm(("courseadmin", "coursecoord"))
+def cadmin_assign_coord(course_id):
+    """ Set someone as course coordinator
+    """
+    course = Courses2.get_course(course_id)
+    if not course:
+        abort(404)
+
+    if not "coord" in request.form:
+        abort(400)
+
+    new_uname = request.form['coord']
+    # TODO: Sanitize username
+    try:
+        new_uid = Users2.uid_by_uname(new_uname)
+    except KeyError:
+        flash("User '%s' Not Found" % new_uname)
+    else:
+        if not new_uid:
+            flash("User '%s' Not Found" % new_uname)
+        else:
+            Permissions.add_perm(new_uid, course_id, 3) # courseadmin
+            Permissions.add_perm(new_uid, course_id, 4) # coursecoord
+            flash("%s can now control the course." % (new_uname,))
+
+    return redirect(url_for('cadmin_config', course_id=course_id))
+
+
 @app.route("/cadmin/<int:course_id>/topics", methods=['GET', 'POST'])
-@require_course_perm("questionedit")
+@require_course_perm(("questionedit", "courseadmin", "coursecoord"))
 def cadmin_edittopics(course_id):
     """ Present a page to view and edit all topics, including hidden. """
     course = None
@@ -401,7 +438,7 @@ def cadmin_edittopics(course_id):
 
 
 @app.route("/cadmin/<int:course_id>/deactivate", methods=["POST", ])
-@require_course_perm("courseadmin")
+@require_course_perm(("courseadmin", "coursecoord"))
 def cadmin_deactivate(course_id):
     """ Mark the course as inactive
     """
@@ -420,7 +457,7 @@ def cadmin_deactivate(course_id):
 
 
 @app.route("/cadmin/<int:course_id>/group/<int:group_id>/detach_group", methods=["POST", ])
-@require_course_perm("courseadmin")
+@require_course_perm(("useradmin", "courseadmin", "coursecoord"))
 def cadmin_group_detach(course_id, group_id):
     """ Mark the course as inactive
     """
@@ -440,7 +477,7 @@ def cadmin_group_detach(course_id, group_id):
 
 
 @app.route("/cadmin/<int:course_id>/activate", methods=["POST", ])
-@require_course_perm("courseadmin")
+@require_course_perm(("courseadmin", 'coursecoord'))
 def cadmin_activate(course_id):
     """ Mark the course as active
     """
@@ -459,7 +496,7 @@ def cadmin_activate(course_id):
 
 
 @app.route("/cadmin/<int:course_id>/topics_save", methods=['POST'])
-@require_course_perm("questionedit")
+@require_course_perm(("questionedit", "coursecoord", 'courseadmin'))
 def cadmin_edittopics_save(course_id):
     """ Accept a submitted topics page and save it."""
     course = None
@@ -483,7 +520,7 @@ def cadmin_edittopics_save(course_id):
 
 
 @app.route("/cadmin/<int:course_id>/edittopic/<int:topic_id>")
-@require_course_perm("questionedit")
+@require_course_perm(("questionedit", 'coursecoord', 'courseadmin'))
 def cadmin_edit_topic(course_id, topic_id):
     """ Present a page to view and edit a topic, including adding/editing
         questions and setting some parameters.
@@ -535,7 +572,7 @@ def cadmin_edit_topic(course_id, topic_id):
 
 
 @app.route("/cadmin/<int:course_id>/topic/<int:topic_id>/<int:qt_id>/history")
-@require_course_perm("courseadmin")
+@require_course_perm(("questionedit", 'coursecoord', 'courseadmin'))
 def cadmin_view_qtemplate_history(course_id, topic_id, qt_id):
     """ Show the practice history of the question template. """
     if not course_id:
@@ -561,7 +598,7 @@ def cadmin_view_qtemplate_history(course_id, topic_id, qt_id):
 
 
 @app.route("/cadmin/<int:course_id>/topic/<int:topic_id>")
-@require_course_perm("courseadmin")
+@require_course_perm(("questionedit", 'coursecoord', 'courseadmin'))
 def cadmin_view_topic(course_id, topic_id):
     """ Present a page to view a topic, including basic stats """
     user_id = session['user_id']
@@ -611,7 +648,7 @@ def cadmin_view_topic(course_id, topic_id):
 
 @app.route("/cadmin/<int:course_id>/topic_save/<int:topic_id>",
            methods=['POST'])
-@require_course_perm("questionedit")
+@require_course_perm(("questionedit", 'coursecoord', 'courseadmin'))
 def cadmin_topic_save(course_id, topic_id):
     """ Receive the page from cadmin_edit_topic and process any changes. """
     user_id = session['user_id']
@@ -635,7 +672,7 @@ def cadmin_topic_save(course_id, topic_id):
 
 
 @app.route("/cadmin/<int:course_id>/perms")
-@require_course_perm("useradmin")
+@require_course_perm(("useradmin", 'coursecoord', 'courseadmin'))
 def cadmin_permissions(course_id):
     """ Present a page for them to assign permissions to the course"""
     course = Courses2.get_course(course_id)
@@ -661,7 +698,7 @@ def cadmin_permissions(course_id):
 
 
 @app.route("/cadmin/<int:course_id>/perms_save", methods=["POST", ])
-@require_course_perm("useradmin")
+@require_course_perm(("useradmin", 'coursecoord', 'courseadmin'))
 def cadmin_permissions_save(course_id):
     """ Present a page for them to save new permissions to the course """
     user_id = session['user_id']
@@ -676,7 +713,7 @@ def cadmin_permissions_save(course_id):
 
 
 @app.route("/cadmin/<int:course_id>/add_group", methods=["POST", ])
-@require_course_perm("useradmin")
+@require_course_perm(("useradmin", 'coursecoord', 'courseadmin'))
 def cadmin_course_add_group(course_id):
     """ We've been asked to add a group to the course.
     """
