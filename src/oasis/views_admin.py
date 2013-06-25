@@ -63,10 +63,11 @@ def admin_periods():
 def admin_groups():
     """ Present page to administer time periods in the system """
     groups = Groups.all_groups()
-
+    inactive_groups = [group for group in groups if group.period_obj().historical()]
     return render_template(
         "admin_groups.html",
-        groups=groups
+        groups=groups,
+        inactive_groups=inactive_groups
     )
 
 
@@ -115,7 +116,7 @@ def admin_edit_group_submit(g_id):
     title = request.form.get('title', "")
     gtype = request.form.get('gtype', 1)
     source = request.form.get('source', None)
-    feed = request.form.get('feed', "adhoc")
+    feed = request.form.get('feed', None)
     feed_args = request.form.get('feed_args', "")
     period = request.form.get('period', 1)
 

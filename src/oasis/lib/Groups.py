@@ -12,7 +12,7 @@
 # things that front the database are objects, will then investigate an ORM
 # like SQL Alchemy. Too big a jump to do it all in one go.
 
-
+from oasis.lib import Periods
 from oasis.lib.DB import run_sql, IntegrityError
 # from logging import log, WARN, INFO
 
@@ -46,6 +46,7 @@ class Group(object):
             self.active = active
             self.source = source
             self.period = period
+            self._period_obj = None
             self.feed = feed
             self.feedargs = feedargs
 
@@ -71,6 +72,7 @@ class Group(object):
         self.active = ret[0][3]
         self.source = ret[0][4]
         self.period = ret[0][5]
+        self._period_obj = None
         self.feed = ret[0][6]
         self.feedargs = ret[0][7]
 
@@ -98,7 +100,6 @@ class Group(object):
             """DELETE FROM usergroups
                WHERE groupid=%s AND userid=%s;""",
             (self.id, uid))
-
 
     def flush_members(self):
         """ DANGEROUS:  Clears list of enrolled users in group.
@@ -151,6 +152,24 @@ class Group(object):
         """
 
         return len(self.members())
+
+    def period_name(self):
+        """ Human name for period
+        """
+
+        sql = """SELECT name FROM periods WHERE id=%s;"""
+        params = (self.period,)
+        ret = run_sql(sql, params)
+        if not ret:
+            return 'unknown'
+        return ret[0][0]
+
+    def period_obj(self):
+        """ Period object
+        """
+        if not self._period_obj:
+            self._period_obj = Periods.Period(self.period)
+        return self._period_obj
 
 
 def get_by_feed(feed_id):
