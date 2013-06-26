@@ -35,7 +35,7 @@ When run, the feed scripts should output a one line status code followed by a si
   fsmi324
   jblo034
 
-Look at the files in the OASIS `deploy/feeds <https://github.com/colincoghill/oasisqe/tree/master/deploy/feeds>` folder for some example scripts.
+Look at the files in the OASIS `deploy/feeds <https://github.com/colincoghill/oasisqe/tree/master/deploy/feeds>`_ folder for some example scripts.
 
 
 User Account Feeds
