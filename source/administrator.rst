@@ -14,5 +14,6 @@ Sections:
    installation
    admin_feeds
    admin_courses
+   admin_oasisdb
 
 
