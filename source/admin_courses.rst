@@ -27,6 +27,15 @@ Groups
 Membership in groups can be controlled in different ways. There are three main
 types of group:
 
+.. sidebar:: Example Groups
+
+    "PHYSICS101" might contain four groups of members, for different amounts of time.
+
+        * Physics Students: Term 1, 2013
+        * Physics Students: Term 2, 2013
+        * Physics Tutors: Full Year, 2013
+        * Physics Staff: Any Time
+
 *adhoc*: The course coordinator can add or remove users from the group from the
 course administration area in OASIS. This is a good way to manage small courses,
 or content that is not related to an "official" course.
@@ -37,8 +46,13 @@ access to your course. This is ideal for demonstration or voluntary content.
 
 *feed*: The group membership is controlled external to OASIS - perhaps from
 a central university enrolment system. This will have to be configured by
-the OASIS systems administration, but once it is, course administrators can
+the OASIS systems administrator, but once it is, course administrators can
 make use of these groups.
+
+
+Groups exist for specific a time *period*. For example "Term 1, 2014". These
+can be set up by the systems administrator.
+
 
 
 Adding a Course
