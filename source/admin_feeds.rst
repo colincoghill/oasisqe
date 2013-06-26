@@ -8,12 +8,17 @@ small scripts which, when run, will communicate with other systems. For
 example, one might connect to a central LDAP server and retrieve enrolment
 information.
 
+
 .. sidebar:: License Aside
 
   One of the reasons for implementing external feeds as small scripts with
   a defined interface is that they are not bound by the AGPL license
   that OASIS comes under, and do not have to be written in Python.
   This allows you to link OASIS to non open-source systems.
+
+Working examples are included to cover several common cases,
+but you can add your own. If you name them local_SOMETHING,
+they will not be accidentally overwritten by future OASIS upgrades.
 
 
 .. image:: admin_feeds_example.png
