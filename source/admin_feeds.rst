@@ -1,7 +1,7 @@
 ..
 
-Feeds
-=====
+External Systems
+================
 
 To obtain information from other systems OASIS uses "feeds". These are
 small scripts which, when run, will communicate with other systems. For
