@@ -10,12 +10,10 @@ information.
 
 .. sidebar:: License Aside
 
-  One of the reasons for implementing external links as small scripts with
+  One of the reasons for implementing external feeds as small scripts with
   a defined interface is that they are not bound by the AGPL license
-  that OASIS comes under, and do not have to be written in Python. You
-  are free to modify any of the samples that come with OASIS or write your
-  own, in other languages, without having to provide their source code to
-  other parties. This allows you to link OASIS to non open-source systems.
+  that OASIS comes under, and do not have to be written in Python.
+  This allows you to link OASIS to non open-source systems.
 
 
 .. image:: admin_feeds_example.png
@@ -30,9 +28,7 @@ Group Feed
 Group Feed scripts tell OASIS how users are arranged into groups. For example: students
 enrolled in courses, or groups of tutors.
 
-When run, the feed scripts should output a one line status code followed by a simple list of usernames, one per line.
-
-.. code::
+When run, the feed scripts should output a one line status code followed by a simple list of usernames, one per line::
 
   OK
   ccog001
@@ -45,9 +41,7 @@ User Account Feed
 
 User account feeds tell OASIS how to look up details on users it has not seen before. For example
 when "fjon032" logs in for the first time, OASIS will run the User Account Feed scripts and expect
-one of them to return the user's full name and email address.
-
-.. code::
+one of them to return the user's full name and email address::
 
   uname: fjon032
   fullname: Freddie Jones
