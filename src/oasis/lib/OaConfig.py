@@ -54,6 +54,6 @@ enableMemcache = cp.getboolean("cache", "memcache_enable")
 uniqueKey = cp.get("cache", "cachekey")
 logfile = cp.get("app", "logfile")
 profile_log = cp.get("app", "profile_log")
-enrol_file_path = cp.get("app", "enrol_file_path")
+feed_path = cp.get("app", "feed_path")
 open_registration = cp.getboolean("web", "open_registration")
 

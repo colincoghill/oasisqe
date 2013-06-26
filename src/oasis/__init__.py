@@ -82,7 +82,7 @@ def template_context():
         'email': OaConfig.email,
         'today': today,
         'auth_type': auth_type,
-        'enrol_file_path': OaConfig.enrol_file_path,
+        'feed_path': OaConfig.feed_path,
         'open_registration': OaConfig.open_registration
     }}
 

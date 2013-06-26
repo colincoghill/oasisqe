@@ -133,7 +133,7 @@
       } else {
         $('#feed_select').hide();
       }
-      $('#feed_cmd').html("{{ cf.feed_dir }}/feedscript.py " + $('#feed_args').val() + ' <i>timeperiod</i>')
+      $('#feed_cmd').html("{{ cf.feed_path }}/group/" +$('#feed_name').val() + "/"+ $('#feed_args').val() + ' <i>timeperiod</i>')
 
     }
 
@@ -141,6 +141,9 @@
     $(function () {
       $('#source_select').change(function () {
         update_feed_vals();
+      });
+      $('#feed_select').change(function () {
+        $("#feed_name").val($('#feed_select').value);
       });
       $('#feed_args').change(function () {
         update_feed_vals();

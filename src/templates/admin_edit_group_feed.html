@@ -63,7 +63,7 @@
                    class="input-xxlarge"
                    type="text" value="{{ feed.title }}">
 
-            <label for='script'>Script File: {{ cf.group_feeds_dir }}</label>
+            <label for='script'>Script File (in the <em>{{ cf.feed_path }}/group/</em> folder on the server):</label>
             <select name='script' id='script' value='{{ feed.script }}'>
               {% for script in scripts %}
                 <option value='{{ script }}'
