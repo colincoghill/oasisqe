@@ -187,7 +187,11 @@ def admin_edit_feed(feed_id):
         feed = Feeds.Feed(f_id=feed_id)
     except KeyError:
         return abort(404)
-    scripts = ['feed_url.py', 'feed_ldap.py', 'feed_spreadsheet.py']
+    try:
+        scripts = Feeds.available_group_scripts()
+    except OSError, err:
+        flash(err)
+        scripts = []
     return render_template(
         "admin_edit_group_feed.html",
         feed=feed,

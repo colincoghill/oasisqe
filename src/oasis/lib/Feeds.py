@@ -5,8 +5,10 @@
     Used mainly by Groups
 """
 
-from ..lib.DB import run_sql
-from ..lib import Groups
+import os
+
+from oasis.lib.DB import run_sql
+from oasis.lib import Groups, OaConfig
 
 
 class Feed(object):
@@ -183,3 +185,16 @@ def active_daily():
         feeds.append(Feed(f_id=feed_id))
 
     return feeds
+
+
+def available_group_scripts():
+    """ Return a list of file names of available group feed scripts.
+    """
+
+    feed_dir = os.path.join(OaConfig.feed_path, "group")
+    files = [f
+             for f
+             in os.listdir(feed_dir)
+             if os.path.isfile(os.path.join(feed_dir, f))
+    ]
+    return files
