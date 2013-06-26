@@ -16,13 +16,13 @@ information.
   that OASIS comes under, and do not have to be written in Python.
   This allows you to link OASIS to non open-source systems.
 
+.. image:: admin_feeds_example.png
+  :width: 400px
+
+
 Working examples are included to cover several common cases,
 but you can add your own. If you name them local_SOMETHING,
 they will not be accidentally overwritten by future OASIS upgrades.
-
-
-.. image:: admin_feeds_example.png
-  :width: 400px
 
 You can have different feeds connecting to different systems if you wish.
 There are currently two supported types of feed:
@@ -41,6 +41,14 @@ When run, the feed scripts should output a one line status code followed by a si
   jblo034
 
 Look at the files in the OASIS `deploy/feeds <https://github.com/colincoghill/oasisqe/tree/master/deploy/feeds>`_ folder for some example scripts.
+
+If the feed encounters an error, it should output a one line ERROR code, followed
+by a human readable error message, for example::
+
+  ERROR
+  This feed script was unable to contact
+  the LDAP server, please see the server
+  log for details.
 
 
 User Account Feeds
