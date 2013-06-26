@@ -6,7 +6,7 @@
 """ Courses.py
     Handle course related operations.
 """
-from oasis.lib import Topics, Groups, Periods, Feeds
+from oasis.lib import Topics, Groups
 
 from oasis.lib.DB import run_sql, dbpool, MC
 from logging import log, ERROR

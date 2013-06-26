@@ -12,7 +12,7 @@ import datetime
 
 
 from flask import session, abort, jsonify, request
-from logging import log, ERROR, INFO
+# from logging import log, ERROR, INFO
 from oasis.lib import Exams, API, Stats
 
 MYPATH = os.path.dirname(__file__)

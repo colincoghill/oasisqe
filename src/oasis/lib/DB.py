@@ -15,7 +15,7 @@ import cPickle
 import datetime
 import json
 
-from logging import log, INFO, WARN, ERROR, FATAL
+from logging import log, INFO, WARN, ERROR
 
 IntegrityError = psycopg2.IntegrityError
 

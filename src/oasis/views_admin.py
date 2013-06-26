@@ -11,7 +11,7 @@
 import os
 from datetime import datetime
 
-from flask import render_template, session, \
+from flask import render_template, \
     request, redirect, abort, url_for, flash
 
 from .lib import Courses, Courses2, Setup, Periods, Feeds

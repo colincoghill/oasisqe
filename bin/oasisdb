@@ -98,7 +98,6 @@ def check_safe(DB):
     """ Is it safe to do dangerous stuff to the database? Mainly tries to
         figure out if there is real data in it.
     """
-
     # If there are only 2 or fewer user accounts and questions, assume it's
     # ok.
 

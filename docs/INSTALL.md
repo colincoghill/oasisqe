@@ -15,7 +15,7 @@ Single Machine Install
    Available from http://www.ubuntu.com/download
 
    If you have a newer version it should work fine, but hasn't specifically been tested yet, let us know!
-   32/64 bits doesn't matter. 64bit is probably recommended for a server unless you're low on RAM, in which
+   32/64 bits doesn't matter too much. 64bit is recommended for a server unless you're low on RAM, in which
    case 32 might be slightly more compact.
 
    Don't install any extras unless you need them for something else. OpenSSH Server is a good idea for
