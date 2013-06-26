@@ -10,16 +10,16 @@ information.
 
 .. sidebar:: License Aside
 
-   One of the reasons for implementing external links as small scripts with
-   a defined interface is that they are not bound by the AGPL license
-   that OASIS comes under, and do not have to be written in Python. You
-   are free to modify any of the samples that come with OASIS or write your
-   own, in other languages, without having to provide their source code to
-   other parties. This allows you to link OASIS to non open-source systems.
+  One of the reasons for implementing external links as small scripts with
+  a defined interface is that they are not bound by the AGPL license
+  that OASIS comes under, and do not have to be written in Python. You
+  are free to modify any of the samples that come with OASIS or write your
+  own, in other languages, without having to provide their source code to
+  other parties. This allows you to link OASIS to non open-source systems.
 
 
 .. image:: admin_feeds_example.png
-   :width: 400px
+  :width: 400px
 
 You can have different feeds connecting to different systems if you wish.
 There are currently two supported types of feed:
@@ -34,10 +34,10 @@ When run, the feed scripts should output a one line status code followed by a si
 
 .. code::
 
-   OK
-   ccog001
-   fsmi324
-   jblo034
+  OK
+  ccog001
+  fsmi324
+  jblo034
 
 
 User Account Feed
@@ -49,9 +49,9 @@ one of them to return the user's full name and email address.
 
 .. code::
 
-   uname: fjon032
-   fullname: Freddie Jones
-   email: f.jones@example.com
+  uname: fjon032
+  fullname: Freddie Jones
+  email: f.jones@example.com
 
 
 No Feeds
