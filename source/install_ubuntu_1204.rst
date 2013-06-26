@@ -111,7 +111,8 @@ Single Machine Install
 
 #. Setup daily schedule
 
-    OASIS needs a daily task to run that does things like updates statistics::
+    OASIS needs to run a daily task that does things like update statistics and
+    synchronize user information with external systems::
 
         crontab -e -u oasisqe
 
@@ -120,7 +121,7 @@ Single Machine Install
         # m h  dom mon dow   command
         0 7 * * * /opt/oasisqe/3.9/bin/run_daily
 
-    This will run the task at 5am every morning. You can choose another time if you wish.
+    This will run the task at 7am every morning. You can choose another time if you wish.
 
 
 Troubleshooting
