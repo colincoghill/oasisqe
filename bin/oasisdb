@@ -253,6 +253,7 @@ def show_help():
     parser.print_help()
     print """
 Commands:
+    help                - Provide information about a specific command.
     status              - Show some status information about the database.
     show users          - List the users in the database.
     show courses        - List the courses in the database.
@@ -260,6 +261,7 @@ Commands:
 
     init                - Set up the OASIS table structure in the database.
     upgrade             - Upgrade an older OASIS database to the newest version.
+    migrate             - Migrate data from another OASIS installation to this one.
 """
 
 
@@ -390,6 +392,29 @@ def do_upgrade(DB, options):
     return
 
 
+def do_migrate(DB, options, args):
+    """ Pull database from a previous installation and set it up in the current
+        installation. Possibly converting version in the process.
+    """
+    # print "Making sure current installation is up to date before migrating..."
+    # dbver = DB.get_db_version()
+    # if dbver == "3.9.1":
+    #     upgrade_3_9_1_to_3_9_2(DB)
+    # if dbver == "3.9.2":
+    #     print "Your database is already the latest version (3.9.2)"
+    # print "Probing previous installation..."
+    # print
+    print " Not Implemented"
+    sys.exit()
+
+
+def do_help(DB, options, args):
+    """ Display more help about a command
+    """
+    print " Not Implemented"
+    sys.exit()
+
+
 if __name__ == "__main__":
     (parser, options, args) = cmd_options()
 
@@ -398,6 +423,14 @@ if __name__ == "__main__":
         sys.exit()
 
     from oasis.lib import DB
+
+    if args[0] == 'help':
+        do_help(DB, options=options, args=args)
+        sys.exit()
+
+    if args[0] == 'migrate':
+        do_migrate(DB, options=options, args=args)
+        sys.exit()
 
     if args[0] == 'init':
         do_init(DB, options=options)
