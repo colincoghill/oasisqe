@@ -15,7 +15,7 @@ information.
    that OASIS comes under, and do not have to be written in Python. You
    are free to modify any of the samples that come with OASIS or write your
    own, in other languages, without having to provide their source code to
-   other parties.
+   other parties. This allows you to link OASIS to non open-source systems.
 
 
 .. image:: admin_feeds_example.png
