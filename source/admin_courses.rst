@@ -32,13 +32,13 @@ types of group:
     "PHYSICS101" might contain four groups of members, who will have access at different times.
 
         * Physics Students, Term 1, 2013
-             Membership controlled by University Enrolment System
+             Membership controlled by central LDAP server
         * Physics Students, Term 2, 2013
-             Membership controlled by University Enrolment System
+             Membership controlled by central LDAP server
         * Physics Tutors, Full Year, 2013
-             Membership controlled by Course Coordinator
+             Membership managed by Course Coordinator in OASIS
         * Physics Staff, Any Time
-             Membership controlled by Course Coordinator
+             Membership controlled by Course Coordinator in OASIS
 
 *adhoc*: The course coordinator can add or remove users from the group from the
 course administration area in OASIS. This is a good way to manage small courses,
