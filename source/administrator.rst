@@ -12,6 +12,7 @@ Sections:
    :maxdepth: 2
 
    installation
+   admin_feeds
    admin_courses
 
 

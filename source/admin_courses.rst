@@ -20,7 +20,9 @@ Members
 ^^^^^^^
 A course will contain one or more *groups*. A *group* is a collection of users -
 staff or students. By default, anyone in one of the groups can access the
-content in the course - practice questions and assessments.
+content in the course - practice questions and assessments. It is also possible to
+have a group of people be staff in one course and students in another.
+
 
 Groups
 ^^^^^^
@@ -59,6 +61,9 @@ can be set up by the systems administrator.
 
 Groups can be shared between multiple courses. For example the same group
 "Year 1 Students" could be associated with PHYSICS101, CHEMISTRY100 and BIOLOGY103
+
+When you add a new course, some groups will be created automatically which should
+suit most common situations, but you can add more later or reconfigure them.
 
 
 Adding a Course
@@ -108,11 +113,6 @@ the new course.
 .. image:: snap2_cadmin_addcourse.png
    :width: 400px
    :align: left
-
-
-Quick Configuration
-^^^^^^^^^^^^^^^^^^^
-
 
 
 
