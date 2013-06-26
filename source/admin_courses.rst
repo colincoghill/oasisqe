@@ -61,17 +61,13 @@ Groups can be shared between multiple courses. For example the same group
 "Year 1 Students" could be associated with PHYSICS101, CHEMISTRY100 and BIOLOGY103
 
 
-
 Adding a Course
 ---------------
 
 To start with, we'll create a simple course that users can enrol themselves into. This
 doesn't require setting up integration with external systems, so is a good place to start.
 
-As the administrator user, log in to OASIS and from the main menu select the **Setup** page.
-
-    .. image:: snap2_login_admin.png
-       :width: 200px
+As the administrator user, from the main menu select the **Setup** page.
 
     .. image:: snap2_main_menu_setup_hl.png
        :width: 400px
