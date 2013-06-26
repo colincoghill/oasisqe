@@ -22,8 +22,8 @@ information.
 You can have different feeds connecting to different systems if you wish.
 There are currently two supported types of feed:
 
-Group Feed
-^^^^^^^^^^
+Group Feeds
+^^^^^^^^^^^
 
 Group Feed scripts tell OASIS how users are arranged into groups. For example: students
 enrolled in courses, or groups of tutors.
@@ -35,17 +35,23 @@ When run, the feed scripts should output a one line status code followed by a si
   fsmi324
   jblo034
 
+Look at the files in the OASIS `deploy/feeds <https://github.com/colincoghill/oasisqe/tree/master/deploy/feeds>` folder for some example scripts.
 
-User Account Feed
-^^^^^^^^^^^^^^^^^
 
-User account feeds tell OASIS how to look up details on users it has not seen before. For example
-when "fjon032" logs in for the first time, OASIS will run the User Account Feed scripts and expect
-one of them to return the user's full name and email address::
+User Account Feeds
+^^^^^^^^^^^^^^^^^^
+
+User Account feeds tell OASIS how to find details on users with non-OASIS accounts.
+
+For example when "fjon032" logs in for the first time, OASIS may run the User
+Account Feed scripts and expect one of them to return the user's full name and
+email address::
 
   uname: fjon032
   fullname: Freddie Jones
   email: f.jones@example.com
+
+It may periodically re-run these daily to pick up any updates to the user's details.
 
 
 No Feeds
