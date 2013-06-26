@@ -50,12 +50,15 @@ access to your course. This is ideal for demonstration or voluntary content.
 
 *feed*: The group membership is controlled external to OASIS - perhaps from
 a central university enrolment system. This will have to be configured by
-the OASIS systems administrator, but once it is, course administrators can
+the OASIS systems administrator, but once it is, course coordinators can
 make use of these groups.
 
 
 Groups exist for specific a time *period*. For example "Term 1, 2014". These
 can be set up by the systems administrator.
+
+Groups can be shared between multiple courses. For example the same group
+"Year 1 Students" could be associated with PHYSICS101, CHEMISTRY100 and BIOLOGY103
 
 
 
