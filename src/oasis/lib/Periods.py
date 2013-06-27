@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 """ Time Periods.
 
     Support for semesters/terms/etc.

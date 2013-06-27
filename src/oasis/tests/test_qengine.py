@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 """ Test question engine related tasks.
     Creating qtemplates, generating instances, marking, etc.
 """

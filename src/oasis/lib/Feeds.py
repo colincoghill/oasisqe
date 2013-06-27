@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 """ Enrolment Feeds
 
     Support for importing enrolment data from elsewhere

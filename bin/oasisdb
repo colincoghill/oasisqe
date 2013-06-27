@@ -1,4 +1,6 @@
 #!/usr/bin/python
+# -*- coding: utf-8 -*-
+
 
 # Script to look at the OASIS database and make any fixes or
 # upgrades if needed. Will prompt before doing anything dangerous.
@@ -36,13 +38,14 @@ def num_records(DB, table_name):
 def do_list_courses(DB, options, args):
     """ Print a list of courses in the database.
     """
-    # Use direct database access, partly this could be used for debugging/testing
+    # Use direct database access, partly this could be used for testing
     # OASIS own DB logic so we don't want to rely on that.
 
     # Remember we may have to check version
     ret = DB.run_sql("SELECT course, title, description FROM courses;")
     courses = [{'id': row[0], 'name': row[1], 'title': row[2]}
-                for row in ret]
+               for row
+               in ret]
     print "Course listing"
     for course in courses:
         print '%(id)s: %(name)s  (%(title)s)' % course
@@ -53,7 +56,7 @@ def do_list_courses(DB, options, args):
 def do_list_users(DB, options, args):
     """ Print a list of courses in the database.
     """
-    # Use direct database access, partly this could be used for debugging/testing
+    # Use direct database access, partly this could be used for testing
     # OASIS own DB logic so we don't want to rely on that.
 
     # Remember we may have to check version
@@ -169,7 +172,6 @@ def upgrade_3_9_1_to_3_9_2(DB):
         generate_admin_passwd(DB)
 
 
-
 def clean_install_3_9_1(DB):
     """ Install a fresh blank v3.9.1 schema.
     """
@@ -201,16 +203,17 @@ def generate_admin_passwd(DB):
 
     uid = Users.uid_by_uname('admin')
     if not uid:
-        uid = Users.create(uname="admin",
-                       passwd="NOLOGIN",
-                       email=OaConfig.email,
-                       givenname="Admin",
-                       familyname="Account",
-                       acctstatus=1,
-                       studentid="",
-                       source="local",
-                       confirm_code="",
-                       confirm=True)
+        uid = Users.create(
+            uname="admin",
+            passwd="NOLOGIN",
+            email=OaConfig.email,
+            givenname="Admin",
+            familyname="Account",
+            acctstatus=1,
+            studentid="",
+            source="local",
+            confirm_code="",
+            confirm=True)
     Users2.set_password(uid, passwd)
 
     Permissions.add_perm(uid, 0, 1)  # superuser
@@ -223,8 +226,8 @@ def cmd_options():
 
     descr = """OASIS Database Tool. It requires an already configured OASIS setup, and can be used to initialize or upgrade an OASIS database.
     """
-    usage="%prog [--help] [--version] [command ...]"
-    version="%prog 3.9.2"
+    usage = "%prog [--help] [--version] [command ...]"
+    version = "%prog 3.9.2"
     parser = OptionParser(usage=usage,
                           version=version,
                           description=descr)
@@ -238,7 +241,7 @@ def cmd_options():
                       dest="noresetadmin",
                       default=False,
                       action='store_true',
-                      help= "don't reset the admin password")
+                      help="don't reset the admin password")
     parser.add_option("--oasis-ver",
                       dest='oaver',
                       metavar="X.Y.Z",
@@ -267,7 +270,7 @@ Commands:
 
     init                - Set up the OASIS table structure in the database.
     upgrade             - Upgrade an older OASIS database to the newest version.
-    migrate             - Migrate data from another OASIS installation to this one.
+    migrate             - Migrate data from another OASIS installation.
 """
 
 
@@ -311,7 +314,7 @@ def do_status(DB, options, args):
     safe = check_safe(DB)
     if safe:
         print
-        print "However it does not contain much data so may be safe to erase with:"
+        print "However it does not contain much data so may be safe to erase:"
         print "    oasisdb init --erase-existing "
         sys.exit()
 

@@ -1,7 +1,8 @@
 #!/usr/bin/python2.7
+# -*- coding: utf-8 -*-
 
-
-import sys, os
+import sys
+import os
 
 # we should be SOMETHING/bin/reset_admin_password, find APPDIR
 # and add "SOMETHING/src" to our path

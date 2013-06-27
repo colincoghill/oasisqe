@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 """ Code that links OASIS with external systems.
 
     Anything that wants to run an external program or connect over the network

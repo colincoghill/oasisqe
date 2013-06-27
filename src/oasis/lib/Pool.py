@@ -24,7 +24,7 @@ except AttributeError:
 log(INFO, "Unique key set to '%s'." % uniqueKey,)
 
 
-class DbConn:
+class DbConn(object):
     """Manage a single database connection."""
 
     def __init__(self, connectstring):
@@ -63,7 +63,7 @@ class DbConn:
         self.conn.commit()
 
 
-class DbPool:
+class DbPool(object):
     """ Manage a pool of DbConn.
         users should grab a database connection with begin(), run sql
         commands with run_sql() and then release it back to the pool with
@@ -100,7 +100,7 @@ class DbPool:
         self.connqueue.put(dbc)
 
 
-class fileCache:
+class fileCache(object):
     """Cache data in local files """
 
     def __init__(self, cachedir):
@@ -171,7 +171,7 @@ class fileCache:
 
 
 # noinspection PyUnusedLocal
-class FakeMCConn:
+class FakeMCConn(object):
     """ Dummy memcached connector for when we don't want to use memcached.
     """
 
@@ -191,7 +191,7 @@ class FakeMCConn:
         return None
 
 
-class MCConn:
+class MCConn(object):
     """ Look after a connection to a memcached server.
         Just a simple wrapper with some logging. """
 
@@ -253,7 +253,7 @@ class MCConn:
 
 # nowadays memcache-client comes with its own pool, but this works and I haven't
 # had time to evaluate the memcache one.
-class MCPool:
+class MCPool(object):
     """ Look after a pool of connections to the memcached. As well as reducing
         total number of connections used, libmemcache also doesn't appear to be
         threadsafe, so this gives us some protection.

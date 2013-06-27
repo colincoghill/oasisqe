@@ -46,7 +46,8 @@ def withinTolerance(guess, correct, tolerance):
 
 
 def marker_log_fn(qid):
-
+    """ When a marker script wishes to log an error, it comes through here.
+    """
     def real_markerlog(priority, mesg):
         """__marker.py has log() 'ed an error"""
         q_log(qid, priority, '__marker.py', mesg)
@@ -55,7 +56,8 @@ def marker_log_fn(qid):
 
 
 def result_log_fn(qid):
-
+    """ When a result script wishes to log an error, it comes through here.
+    """
     def real_resultlog(priority, mesg):
         """__result.py has log() 'ed an error"""
         q_log(qid, priority, '__result.py', mesg)
