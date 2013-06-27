@@ -14,7 +14,7 @@ from datetime import datetime
 from flask import render_template, \
     request, redirect, abort, url_for, flash
 
-from .lib import Courses, Courses2, Setup, Periods, Feeds
+from oasis.lib import Courses, Courses2, Setup, Periods, Feeds, External
 
 MYPATH = os.path.dirname(__file__)
 from .lib import DB, Groups
@@ -161,7 +161,6 @@ def admin_edit_group_submit(g_id):
     return redirect(url_for("admin_groups"))
 
 
-
 @app.route("/admin/edit_period/<int:p_id>")
 @require_perm('sysadmin')
 def admin_edit_period(p_id):
@@ -208,6 +207,26 @@ def admin_add_feed():
         "admin_edit_group_feed.html",
         feed={'id': 0},
         scripts=scripts
+    )
+
+
+@app.route("/admin/test_group_feed/<string:filename>")
+@require_perm('sysadmin')
+def test_group_feed(filename):
+    """ Run the group feed script and return the output or error message.
+    """
+    error = None
+    output = ""
+    try:
+        output = External.feeds_run_group_script("example_simple.py")
+    except BaseException, err:
+        error = err
+
+    return render_template(
+        "admin_test_group_feed.html",
+        output=output,
+        error=error,
+        scriptname=filename
     )
 
 

@@ -1,0 +1,31 @@
+{% extends "page_nav.html" %}
+{% block body %}
+  <div>
+    <br/>
+
+    <p>Return to <a href="{{ cf.url }}admin/feeds">Enrolment Feeds</a></p>
+
+
+       <div class="container-fluid well">
+        <h4>Script {{ scriptname }}</h4>
+         <p>Produced the following output: </p>
+          <pre>{{ output }}</pre>
+          {% if error %}
+              <p>And raised an exception:</p>
+              <pre style='color: darkred;'>
+              {{ error }}
+              </pre>
+           {% endif %}
+        </div>
+
+
+    <p>Return to <a href="{{ cf.url }}admin/feeds">Enrolment Feeds</a></p>
+
+    <br/>
+    <br/>
+    <br/>
+    <br/>
+
+  </div>
+{% endblock body %}
+{% block pagetitle %}Server Admin{% endblock %}

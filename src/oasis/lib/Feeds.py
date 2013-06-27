@@ -8,7 +8,7 @@
 import os
 
 from oasis.lib.DB import run_sql
-from oasis.lib import Groups, OaConfig
+from oasis.lib import Groups, External
 
 
 class Feed(object):
@@ -191,10 +191,4 @@ def available_group_scripts():
     """ Return a list of file names of available group feed scripts.
     """
 
-    feed_dir = os.path.join(OaConfig.feed_path, "group")
-    files = [f
-             for f
-             in os.listdir(feed_dir)
-             if os.path.isfile(os.path.join(feed_dir, f))
-    ]
-    return files
+    return External.feeds_available_group_scripts()
