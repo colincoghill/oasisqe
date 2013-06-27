@@ -3,7 +3,7 @@
 OASIS Database Tool
 -------------------
 
-This is provided as an program in the bin/ folder of the oasisqe installation. It
+This is provided as a program in the bin/ folder of the oasisqe installation. It
 provides many useful OASIS database related abilities::
 
   ./oasisdb
