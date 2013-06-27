@@ -45,7 +45,7 @@ When run, the feed scripts should output a one line status code followed by a si
 If the feed encounters an error, it should output a one line ERROR code, followed
 by a human readable error message, for example::
 
-  ERROR
+  ERROR FATAL
   This feed script was unable to contact
   the LDAP server, please see the server
   log for details.
@@ -53,6 +53,21 @@ by a human readable error message, for example::
 
 OASIS will report these errors (if any) in the Server Administration feeds pages of the
 application.
+
+The following status codes are meaningful to OASIS:
+
+OK
+  The feed worked and the output can be used.
+
+ERROR TEMPORARY
+  The error is temporary, OASIS can try again later.
+
+ERROR FATAL
+  The error is serious, OASIS should deactivate the feed and not try it again
+  until the systems administrator has investigated (and can manually reactivate
+  the feed when it is fixed)
+
+
 
 Look at the files in the OASIS `deploy/feeds <https://github.com/colincoghill/oasisqe/tree/master/deploy/feeds>`_ folder for some example scripts.
 
@@ -66,6 +81,7 @@ Account Feed scripts and expect one of them to return the user's full name and
 email address::
 
   ./user_feed_lookup fjon032
+  OK
   fjon032,Freddie Jones,f.jones@example.com
 
 It may periodically re-run these to pick up any changes to the user's details.
@@ -75,12 +91,21 @@ them to be more efficient when, for example, retrieving information on a new lar
 class with 500 students::
 
   ./script_fetch_students fjon032 dbla377 nrogers
+  OK
   fjon032,Freddie Jones,f.jones@example.com
   dbla377,NOTFOUND
   nrogers,Norville Rogers,shaggy@example.com
 
 In this example, the feed script could not find information about "dbla377"
 
+If there is an error, it should output a one line status code, followed
+by a human readable error message, for example::
+
+  ./script_fetch_students fjon032 dbla377 nrogers
+  ERROR TEMPORARY
+  Enrolment database is locked, please try later.
+
+The status codes are the same as for Group Feeds.
 
 No Feeds
 ^^^^^^^^
