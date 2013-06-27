@@ -40,7 +40,7 @@ When run, the feed scripts should output a one line status code followed by a si
   fsmi324
   jblo034
 
-Look at the files in the OASIS `deploy/feeds <https://github.com/colincoghill/oasisqe/tree/master/deploy/feeds>`_ folder for some example scripts.
+
 
 If the feed encounters an error, it should output a one line ERROR code, followed
 by a human readable error message, for example::
@@ -50,6 +50,11 @@ by a human readable error message, for example::
   the LDAP server, please see the server
   log for details.
 
+
+OASIS will report these errors (if any) in the Server Administration feeds pages of the
+application.
+
+Look at the files in the OASIS `deploy/feeds <https://github.com/colincoghill/oasisqe/tree/master/deploy/feeds>`_ folder for some example scripts.
 
 User Account Feeds
 ^^^^^^^^^^^^^^^^^^
