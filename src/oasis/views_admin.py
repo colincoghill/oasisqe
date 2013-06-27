@@ -202,23 +202,58 @@ def admin_edit_feed(feed_id):
 @require_perm('sysadmin')
 def admin_add_feed():
     """ Present page to add a feed to the system """
-    scripts = ['feed_url.py', 'feed_ldap.py', 'feed_spreadsheet.py']
+    try:
+        scripts = Feeds.available_group_scripts()
+    except OSError, err:
+        flash(err)
+        scripts = []
     return render_template(
         "admin_edit_group_feed.html",
         feed={'id': 0},
         scripts=scripts
     )
 
+#
+# @app.route("/admin/test_group_feed/<string:filename>")
+# @require_perm('sysadmin')
+# def test_group_feed(filename):
+#     """ Run the group feed script and return the output or error message.
+#     """
+#     error = None
+#     output = ""
+#     try:
+#         output = External.feeds_run_group_script("example_simple.py")
+#     except BaseException, err:
+#         error = err
+#
+#     return render_template(
+#         "admin_test_group_feed.html",
+#         output=output,
+#         error=error,
+#         scriptname=filename
+#     )
 
-@app.route("/admin/test_group_feed/<string:filename>")
+
+@app.route("/admin/group/<int:group_id>/test_feed_output")
 @require_perm('sysadmin')
-def test_group_feed(filename):
-    """ Run the group feed script and return the output or error message.
+def group_test_feed_output(group_id):
+    """ Run the feed script for the group and return the output or error message.
     """
     error = None
     output = ""
+    group = None
     try:
-        output = External.feeds_run_group_script("example_simple.py")
+        group = Groups.Group(g_id=group_id)
+    except KeyError:
+        abort(401)
+    if not group.source == "feed":
+        abort(401)
+
+    feed = Feeds.Feed(f_id=group.feed)
+    period = Periods.Period(p_id=group.period)
+    scriptrun = ' '.join([feed.script, group.feedargs, period.code])
+    try:
+        output = External.feeds_run_group_script(feed.script, args=[group.feedargs, period.code])
     except BaseException, err:
         error = err
 
@@ -226,7 +261,7 @@ def test_group_feed(filename):
         "admin_test_group_feed.html",
         output=output,
         error=error,
-        scriptname=filename
+        scriptrun=scriptrun
     )
 
 
@@ -359,7 +394,7 @@ def admin_edit_period_submit(p_id):
         error = "Can't Save: can't understand finish date."
 
     if name == "":
-        error =  "Can't Save: Name must be supplied"
+        error = "Can't Save: Name must be supplied"
 
     if not period.editable():
         error = "That time period is not editable!"

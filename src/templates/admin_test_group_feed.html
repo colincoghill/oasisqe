@@ -3,11 +3,12 @@
   <div>
     <br/>
 
-    <p>Return to <a href="{{ cf.url }}admin/feeds">Enrolment Feeds</a></p>
+    <p>Return to <a href="{{ cf.url }}admin/groups">Groups</a></p>
 
 
        <div class="container-fluid well">
-        <h4>Script {{ scriptname }}</h4>
+        <h4>Group Feed Script </h4>
+       <pre>{{ scriptrun }}</pre>
          <p>Produced the following output: </p>
           <pre>{{ output }}</pre>
           {% if error %}
@@ -19,7 +20,7 @@
         </div>
 
 
-    <p>Return to <a href="{{ cf.url }}admin/feeds">Enrolment Feeds</a></p>
+    <p>Return to <a href="{{ cf.url }}admin/groups">Groups</a></p>
 
     <br/>
     <br/>

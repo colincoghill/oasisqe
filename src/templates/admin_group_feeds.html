@@ -19,7 +19,8 @@
         <br>
     </p>
 
-    <p>These are implemented as scripts stored on the server.
+    <p>These are implemented as scripts stored on the server in the {{ cf.feed_path }} folder. You can
+        change this by changing the <em>feed_path</em> variable in the oasisqe.ini configuration file.
         <br>
     </p>
     <div class='container-fluid well'>
@@ -50,8 +51,6 @@
 
                         <td><a class='btn btn-mini'
                                href='{{ cf.url }}admin/edit_feed/{{ feed.id }}'>Edit</a>
-                            <a class='btn btn-mini'
-                               href='{{ cf.url }}admin/test_group_feed/{{ feed.script }}'>Test</a>
                         </td>
                     </tr>
                 {% endfor %}

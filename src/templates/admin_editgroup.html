@@ -92,9 +92,9 @@
         </select>
 
         <div id='feed_select'>
-          <label>Feed: <select name='feed'>
+          <label>Feed: <select name='feed' id='select_feed'>
             {% for feed in feeds %}
-              <option value='{{ feed.id }}' {% if group.feed==feed.id %}SELECTED{%endif %}>{{ feed.name }}</option>
+              <option class='feed_option' value='{{ feed.id }}' {% if group.feed==feed.id %}SELECTED{%endif %}>{{ feed.name }}</option>
             {% endfor %}
           </select></label>
           <br/><label>Arguments to feed:
@@ -102,8 +102,6 @@
                  name='feed_args' value='{{ group.feedargs }}' type="text">
 
         </label>
-          <p>To update this feed, OASIS will run:          </p>
-          <pre><span id='feed_cmd'></span></pre>
         </div>
         <div class="form-actions">
 
@@ -133,7 +131,6 @@
       } else {
         $('#feed_select').hide();
       }
-      $('#feed_cmd').html("{{ cf.feed_path }}/group/" +$('#feed_name').val() + "/"+ $('#feed_args').val() + ' <i>timeperiod</i>')
 
     }
 
@@ -142,8 +139,8 @@
       $('#source_select').change(function () {
         update_feed_vals();
       });
-      $('#feed_select').change(function () {
-        $("#feed_name").val($('#feed_select').value);
+      $('#select_feed').change(function () {
+          update_feed_vals();
       });
       $('#feed_args').change(function () {
         update_feed_vals();
