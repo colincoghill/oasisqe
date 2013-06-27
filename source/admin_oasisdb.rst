@@ -17,6 +17,7 @@ provides many useful OASIS database related abilities::
     --version          show program's version number and exit
     -h, --help         show this help message and exit
     --erase-existing   erase any existing data first. DANGEROUS.
+    --no-reset-adminpw don't reset the admin password
     --oasis-ver=X.Y.Z  work with a specific OASIS version. (default 3.9.2)
     -v, --verbose      verbose output
 
