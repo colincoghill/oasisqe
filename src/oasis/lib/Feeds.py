@@ -118,20 +118,6 @@ class Feed(object):
             return "manual"
         return "unknown"
 
-    def run(self):
-        """ Run the given feed.
-            Will find all current or future groups attached to the feed,
-            then run the external script once for each.
-        """
-        groups = Groups.get_by_feed(self.id)
-        for group in groups:
-            self.run_for_group(group)
-
-    def run_for_group(self, group):
-        """ Run the feed for the given group.
-        """
-        pass
-
 
 def all_list():
     """

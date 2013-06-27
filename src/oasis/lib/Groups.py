@@ -290,13 +290,34 @@ def all_groups():
 
 def enrolment_groups():
     """ Return a summary of all active enrolment groups
-        Active means current or near future
+        Active means current or future
     """
     ret = run_sql(
         """SELECT "ugroups"."id"
            FROM "ugroups", "periods"
            WHERE "ugroups"."gtype" = 2
              AND "ugroups"."active" = TRUE
+             AND "ugroups"."period" = "periods"."id"
+             AND "periods"."finish" > NOW();""")  # gtype 2 =  enrolment
+    groups = {}
+    if ret:
+        for row in ret:
+            groups[row[0]] = Group(g_id=row[0])
+
+    return groups
+
+
+def groups_to_feed():
+    """ Return list of all groups that are currently active and have an
+        external feed. Active means current or future.
+    """
+    # There's no need to sync past groups.
+    # NOTE: Unless they're statistical?
+    ret = run_sql(
+        """SELECT "ugroups"."id"
+           FROM "ugroups", "periods"
+           WHERE  "ugroups"."active" = TRUE
+             AND "ugroups"."source" = 'feed'
              AND "ugroups"."period" = "periods"."id"
              AND "periods"."finish" > NOW();""")  # gtype 2 =  enrolment
     groups = {}

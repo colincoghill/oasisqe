@@ -17,10 +17,11 @@ def feeds_available_group_scripts():
     """
 
     feed_dir = os.path.join(OaConfig.feed_path, "group")
-    files = [f
-             for f
-             in os.listdir(feed_dir)
-             if os.path.isfile(os.path.join(feed_dir, f))
+    files = [
+        f
+        for f
+        in os.listdir(feed_dir)
+        if os.path.isfile(os.path.join(feed_dir, f))
     ]
     return files
 
