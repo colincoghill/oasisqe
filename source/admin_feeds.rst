@@ -41,7 +41,6 @@ When run, the feed scripts should output a one line status code followed by a si
   jblo034
 
 
-
 If the feed encounters an error, it should output a one line ERROR code, followed
 by a human readable error message, for example::
 
