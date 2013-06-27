@@ -65,11 +65,21 @@ For example when "fjon032" logs in for the first time, OASIS may run the User
 Account Feed scripts and expect one of them to return the user's full name and
 email address::
 
-  uname: fjon032
-  fullname: Freddie Jones
-  email: f.jones@example.com
+  ./user_feed_lookup fjon032
+  fjon032,Freddie Jones,f.jones@example.com
 
-It may periodically re-run these daily to pick up any updates to the user's details.
+It may periodically re-run these to pick up any changes to the user's details.
+
+The User Account Feed scripts can accept multiple usernames at a time. This allows
+them to be more efficient when, for example, retrieving information on a new large
+class with 500 students::
+
+  ./script_fetch_students fjon032 dbla377 nrogers
+  fjon032,Freddie Jones,f.jones@example.com
+  dbla377,NOTFOUND
+  nrogers,Norville Rogers,shaggy@example.com
+
+In this example, the feed script could not find information about "dbla377"
 
 
 No Feeds
