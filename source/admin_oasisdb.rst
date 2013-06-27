@@ -121,3 +121,10 @@ that you take a backup of the database first::
   Admin password reset to:  tE9sCb8F6
 
 
+If you don't wish to reset the admin password every time you make major
+changes to the oasis database, use the --no-reset-adminpw  option::
+
+  ./oasisdb upgrade --no-reset-adminpw
+  Migrated table structure from 3.9.1 to 3.9.2
+
+
