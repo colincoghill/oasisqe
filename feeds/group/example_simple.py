@@ -7,7 +7,7 @@
 # Then a list of usernames
 
 print "OK"
-print "ccog001"
+print "coghillc"
 print "fjon001"
 print "vdin002"
 print "nrog032"

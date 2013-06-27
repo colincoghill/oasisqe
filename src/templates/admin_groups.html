@@ -38,7 +38,7 @@
             <td>{% if group.gtype==1 %}staff{% elif group.gtype==2 %}student{% elif group.gtype==3 %}stats{% endif %}</td>
             <td>{{ group.period_name() }}</td>
             <td>{{ group.source }}{% if group.source == 'feed' %}   <a class='btn btn-mini'
-                               href='{{ cf.url }}admin/group/{{ group.id }}/test_feed_output'>Test</a>
+                               href='{{ cf.url }}admin/group/{{ group.id }}/run_feed_update'>Run</a>
 
                 {% endif %}</td>
             <td>{{ group.size() }}</td>

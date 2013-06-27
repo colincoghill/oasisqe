@@ -87,8 +87,25 @@ class Group(object):
             return users
         return []
 
+    def member_unames(self):
+        """ Return a list of usernames in the group. """
+        ret = run_sql(
+            """SELECT users.uname
+               FROM users,usergroups
+               WHERE usergroups.groupid=%s
+               AND usergroups.userid=users.id;""",
+            (self.id,))
+        if ret:
+            uids = [row[0] for row in ret]
+            return uids
+        return []
+
     def add_member(self, uid):
         """ Adds given user to the group."""
+
+        if uid in self.members():
+            return
+
         run_sql(
             """INSERT INTO usergroups (userid, groupid)
                VALUES (%s, %s) """,

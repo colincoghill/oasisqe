@@ -187,7 +187,7 @@ def admin_edit_feed(feed_id):
     except KeyError:
         return abort(404)
     try:
-        scripts = Feeds.available_group_scripts()
+        scripts = External.feeds_available_group_scripts()
     except OSError, err:
         flash(err)
         scripts = []
@@ -203,7 +203,7 @@ def admin_edit_feed(feed_id):
 def admin_add_feed():
     """ Present page to add a feed to the system """
     try:
-        scripts = Feeds.available_group_scripts()
+        scripts = External.feeds_available_group_scripts()
     except OSError, err:
         flash(err)
         scripts = []
@@ -262,6 +262,39 @@ def group_test_feed_output(group_id):
         output=output,
         error=error,
         scriptrun=scriptrun
+    )
+
+
+@app.route("/admin/group/<int:group_id>/run_feed_update")
+@require_perm('sysadmin')
+def admin_group_update_from_feed(group_id):
+    """ Update group membership from feed
+    """
+    group = None
+    added = []
+    removed = []
+    unknown = []
+    error = None
+    try:
+        group = Groups.Group(g_id=group_id)
+    except KeyError:
+        abort(401)
+
+    if not group.source == "feed":
+        abort(401)
+    try:
+        (added, removed, unknown) = External.group_update_from_feed(group_id)
+    except BaseException, err:
+        error = err
+
+    members = group.member_unames()
+    return render_template(
+        "admin_run_group_feed.html",
+        added=added,
+        removed=removed,
+        unknown=unknown,
+        error=error,
+        members=members
     )
 
 

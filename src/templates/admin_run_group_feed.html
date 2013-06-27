@@ -1,0 +1,41 @@
+{% extends "page_nav.html" %}
+{% block body %}
+  <div>
+    <br/>
+
+    <p>Return to <a href="{{ cf.url }}admin/groups">Groups</a></p>
+
+
+       <div class="container-fluid well">
+        <h4>Group Feed Script </h4>
+         <p>Added the following users: </p>
+          <pre>{% for uname in added %}{{ uname }}
+{% endfor %}</pre>
+       <p>Removed users:</p>
+       <pre>{% for uname in removed %}{{ uname }}
+{% endfor %}</pre>
+       <p>Unknown users (not added):</p>
+       <pre>{% for uname in unknown %}{{ uname }}
+{% endfor %}</pre>
+       <p>Leaving the group with the following membership:</p>
+       <pre>{% for uname in members %}{{ uname }}
+{% endfor %}</pre>
+          {% if error %}
+              <p>And raised an exception:</p>
+              <pre style='color: darkred;'>
+              {{ error }}
+              </pre>
+           {% endif %}
+        </div>
+
+
+    <p>Return to <a href="{{ cf.url }}admin/groups">Groups</a></p>
+
+    <br/>
+    <br/>
+    <br/>
+    <br/>
+
+  </div>
+{% endblock body %}
+{% block pagetitle %}Server Admin{% endblock %}

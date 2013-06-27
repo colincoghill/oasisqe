@@ -4,7 +4,8 @@
     (except to OASIS database or memcache servers) should come through here.
 """
 
-from oasis.lib import OaConfig
+from oasis.lib import OaConfig, Groups, Feeds, Periods, Users2
+from logging import log, ERROR, INFO
 import os
 import subprocess
 
@@ -43,3 +44,43 @@ def feeds_run_group_script(filename, args=None):
     return output
 
 
+def group_update_from_feed(group_id):
+    """ Update group membership from it's feed
+        Returns (added, removed, unknown) with usernames of users added or removed
+    """
+
+    group = Groups.Group(g_id=group_id)
+    if not group.source == 'feed':
+        return
+
+    feed = Feeds.Feed(f_id=group.feed)
+    period = Periods.Period(p_id=group.period)
+    scriptrun = ' '.join([feed.script, group.feedargs, period.code])
+    try:
+        output = feeds_run_group_script(feed.script, args=[group.feedargs, period.code])
+    except BaseException, err:
+        log(ERROR, "Exception while running group feed '%s': %s" % (scriptrun, err))
+        raise
+
+    removed = []
+    added = []
+    unknown = []
+    old_members = group.member_unames()
+    new_members = output.split()[1:]
+    for uname in new_members:
+        uid = Users2.uid_by_uname(uname)
+        if not uid:
+            log(INFO, "Group feed contained unknown user account %s" % uname)
+            unknown.append(uname)
+            continue
+        if not uname in old_members:
+            group.add_member(uid)
+            added.append(uname)
+
+    for uname in old_members:
+        if not uname in new_members:
+            uid = Users2.uid_by_uname(uname)
+            group.remove_member(uid)
+            removed.append(uname)
+
+    return added, removed, unknown
