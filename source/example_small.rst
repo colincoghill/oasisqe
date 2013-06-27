@@ -1,8 +1,8 @@
 .. OASIS QE documentation master file, created by
 
 
-"Small" Example
-===============
+"Small" Installation
+====================
 
 This section will walk through the installation of an example small OASIS setup.
 
