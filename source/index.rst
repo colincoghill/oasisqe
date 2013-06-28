@@ -23,7 +23,7 @@ Chapters:
    questioncreation
    administrator
    developer
-   examples
+   installation
 
 
 Indices and tables
