@@ -15,21 +15,22 @@ Need to know
   * How to link our web server to the existing university systems for authentication.
   * How to retrieve account details and enrolment information from the university systems.
 
-
 In this case for the site we'll use the URL:
   http://www.oasisqe.com/uofa
 and email:
   uofa@oasisqe.com
 our local SMTP server is at:  smtp.oasisqe.com
 
-In this example our external system makes enrolment and authentication
-information available via an LDAP server.
+In this example our external system makes enrolment and account information available via
+an LDAP server. Password authentication is managed by the Kerberos service, which
+is supported by the Apache web server.
+
+The university already has a PostgreSQL database server, so we'll make use
+of that instead of installing our own one.
 
 
 Install and Configure
 ^^^^^^^^^^^^^^^^^^^^^
-
-Install the OASIS database server according to :doc:`installation_external_db`
 
 On the web application server we will need to change some things in the OASIS configuration file::
 
@@ -39,18 +40,24 @@ On the web application server we will need to change some things in the OASIS co
 First, the web interface. We need to tell OASIS our URL::
 
    [web]
-   url: https://www.oasisqe.com/medium
+   url: https://www.oasisqe.com/uofa
    statichost: https://www.oasisqe.com
-   staticpath: hobbies
+   staticpath: uofa
 
 And the contact e-mail address to display on the web interface::
 
-   email: medium@oasisqe.com
+   email: uofa@oasisqe.com
 
 
 Don't allow anyone to sign up and create an account::
 
    open_registration: False
+
+Instead, we want to use the web server's authentication. This will not present
+a login page, but will instead request authentication information from the web
+server::
+
+   default: webauth
 
 
 Information about the application comes next::
@@ -69,7 +76,7 @@ random and secret (use your own)::
 Since there's just one administrator, when the system generates serious errors,
 the email address to send them to will be the same as above::
 
-   email_admins: medium@oasisqe.com
+   email_admins: uofa@oasisqe.com
 
 Tell OASIS to send email via the organization's mail server::
 
@@ -80,14 +87,11 @@ We need to use external "feeds" to link to the enrolment system::
    #  location for scripts that handle feeds (eg. enrolment)
    feed_path: /var/lib/oasisqe/feeds
 
-
-
-The database configuration values come will already have been handled during the install
-process::
+Fill in the credentials and host information for our PostgreSQL database::
 
    [db]
 
-   host: localhost
+   host: dbserver.oasisqe.com
    dbname: oasisdb
    uname: oasisdb
    pass: SECRET
@@ -104,21 +108,59 @@ As will the cache settings::
 Any time we make changes to this configuration file, we must tell Apache
 to restart OASIS::
 
+Authentication
+^^^^^^^^^^^^^^
+
+When users log in to OASIS we want our web server to authenticate them, not
+OASIS itself. We can do this by configuring the web server, in this case Apache,
+to pass the credentials to OASIS::
+
+In this case our system already has Kerberos configured, we just need to
+tell Apache when to apply it::
+
+  nano /etc/apache2/sites-available/oasisqe
+
+Configure Apache to connect to our Kerberos service for authentication::
+
+    KrbAuthoritative on
+    KrbAuthRealms OASISQE.COM
+    KrbMethodK5Passwd On
+    KrbMethodNegotiate off
+    KrbVerifyKDC off
+    KrbDelegateBasic Off
+
+Add a section to tell Apache that it is to perform authentication for OASIS::
+
+      <Directory /oasis/login/webauth>
+                Options Indexes FollowSymLinks MultiViews
+                AllowOverride All
+                Order allow,deny
+                allow from all
+                AuthType Kerberos
+                AuthName "Netaccount Login"
+                require valid-user
+      </Directory>
+
+Now when the user goes to OASIS, if it doesn't know who they are, it will redirect
+them to /oasis/login/webauth. Apache will then prompt them for username and password
+and, if correct, will provide the username to OASIS.
+
+
+Any time you change the OASIS or Apache configuration files, restart Apache::
+
   service apache2 restart
 
+Check it Works
+^^^^^^^^^^^^^^
 
 Now we can log in to OASIS and verify that it all works:
 
-We open a web browser and go to the URL: https://www.oasisqe.com/medium
-(obviously, using our own URL here)
+We open a web browser and go to the URL: https://www.oasisqe.com/uofa
+(obviously, using our own URL here). Log in using your credentials from the
+central system.
 
-.. image:: snap2_login_admin.png
-   :width: 300px
 
-And we should see the main menu:
 
-.. image:: snap2_main_menu.png
-   :width: 300px
 
 
 
