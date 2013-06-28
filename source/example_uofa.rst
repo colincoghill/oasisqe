@@ -1,34 +1,37 @@
 .. OASIS QE documentation master file, created by
 
 
-"Small" Installation
+"UofA" Installation
 ====================
 
-This section will walk through the installation of an example small OASIS setup.
-
-In this case, we are installing OASIS standalone on a single server, to run a
-hobbyist study site. It does not integrate with external systems, and users
-can sign themselves up and decide which content they wish to access. The whole
-site is run by a single person, in their spare time.
+This section will walk through the installation of OASIS at an un-named university.
 
 Need to know
 ^^^^^^^^^^^^
   * The URL the site will run on
-  * The e-mail address of the person running/supporting OASIS
+  * The e-mail address of the person providing desktop support for OASIS
+  * The e-mail address of the systems administrator responsible for OASIS
+  * The address of an SMTP server OASIS can use to send email
+  * How to link our web server to the existing university systems for authentication.
+  * How to retrieve account details and enrolment information from the university systems.
 
-In this case we'll use:
-  http://www.oasisqe.com/hobbies
+
+In this case for the site we'll use the URL:
+  http://www.oasisqe.com/uofa
 and email:
-  hobbies@oasisqe.com
+  uofa@oasisqe.com
+our local SMTP server is at:  smtp.oasisqe.com
+
+In this example our external system makes enrolment and authentication
+information available via an LDAP server.
 
 
 Install and Configure
 ^^^^^^^^^^^^^^^^^^^^^
 
-Install OASIS according to :doc:`installation`
+Install the OASIS database server according to :doc:`installation_external_db`
 
-The OASIS configuration file should already default mostly to running in this
-mode, but you will need to change some things::
+On the web application server we will need to change some things in the OASIS configuration file::
 
    nano /etc/oasisqe.ini
 
@@ -36,18 +39,18 @@ mode, but you will need to change some things::
 First, the web interface. We need to tell OASIS our URL::
 
    [web]
-   url: https://www.oasisqe.com/hobbies
+   url: https://www.oasisqe.com/medium
    statichost: https://www.oasisqe.com
    staticpath: hobbies
 
 And the contact e-mail address to display on the web interface::
 
-   email: hobbies@oasisqe.com
+   email: medium@oasisqe.com
 
 
-Allow anyone to sign up and create an account::
+Don't allow anyone to sign up and create an account::
 
-   open_registration: True
+   open_registration: False
 
 
 Information about the application comes next::
@@ -66,19 +69,20 @@ random and secret (use your own)::
 Since there's just one administrator, when the system generates serious errors,
 the email address to send them to will be the same as above::
 
-   email_admins: hobbies@oasisqe.com
+   email_admins: medium@oasisqe.com
 
-Normally such a site will have been configured to send its own mail previously,
-but if we had an external mail server we could configure it here::
+Tell OASIS to send email via the organization's mail server::
 
-   smtp_server: localhost
+   smtp_server: mail.oasisqe.com
 
-We don't need external "feeds" for a site that manages its own accounts::
+We need to use external "feeds" to link to the enrolment system::
 
    #  location for scripts that handle feeds (eg. enrolment)
-   # feed_path:
+   feed_path: /var/lib/oasisqe/feeds
 
-The database configuration will already have been handled during the install
+
+
+The database configuration values come will already have been handled during the install
 process::
 
    [db]
@@ -96,10 +100,6 @@ As will the cache settings::
    cachedir: /var/cache/oasisqe/v3.9
    memcache_enable: True
 
-A low-usage site won't need memcached, so we could set memcache_enable: to False if we wanted. However,
-it's easy enough to install and does make OASIS respond significantly faster in many
-situations.
-
 
 Any time we make changes to this configuration file, we must tell Apache
 to restart OASIS::
@@ -109,7 +109,7 @@ to restart OASIS::
 
 Now we can log in to OASIS and verify that it all works:
 
-We open a web browser and go to the URL: https://www.oasisqe.com/hobbies
+We open a web browser and go to the URL: https://www.oasisqe.com/medium
 (obviously, using our own URL here)
 
 .. image:: snap2_login_admin.png

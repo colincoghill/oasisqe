@@ -9,8 +9,8 @@ Sections:
 .. toctree::
    :maxdepth: 2
 
-   example_small
-   example_large
+   example_hobby
+   example_uofa
 
 In this chapter, we walk through the installation and configuration of two common
 scenarios. Use these to gain a better understanding of how to configure OASIS,
