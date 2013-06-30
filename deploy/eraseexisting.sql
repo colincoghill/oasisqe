@@ -30,7 +30,7 @@ DROP TABLE IF EXISTS questions;
 DROP TABLE IF EXISTS qattach;
 DROP TABLE IF EXISTS qtattach;
 DROP TABLE IF EXISTS qtvariations;
-
+DROP TABLE IF EXISTS questionflags;
 DROP TABLE IF EXISTS questiontopics;
 DROP TABLE IF EXISTS topics;
 DROP TABLE IF EXISTS userexams;
@@ -38,6 +38,10 @@ DROP TABLE IF EXISTS exams;
 DROP TABLE IF EXISTS courses;
 DROP TABLE IF EXISTS stats_prac_q_course;
 
+
+DROP TABLE IF EXISTS statsqtassesshourly;
+DROP TABLE IF EXISTS statsqtpracticehourly;
+DROP TABLE IF EXISTS tips;
 
 DROP TABLE IF EXISTS qtemplates;
 DROP TABLE IF EXISTS users;
@@ -66,6 +70,7 @@ DROP SEQUENCE IF EXISTS qtemplates_qtemplate_seq;
 DROP SEQUENCE IF EXISTS qtvariations_id_seq;
 DROP SEQUENCE IF EXISTS questions_question_seq;
 DROP SEQUENCE IF EXISTS questiontopics_id_seq;
+DROP SEQUENCE IF EXISTS questionflags_id_seq;
 DROP SEQUENCE IF EXISTS topics_topic_seq;
 DROP SEQUENCE IF EXISTS userexams_id_seq;
 DROP SEQUENCE IF EXISTS usergroups_id_seq;

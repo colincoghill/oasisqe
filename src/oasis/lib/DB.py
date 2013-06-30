@@ -1350,10 +1350,10 @@ def get_db_version():
         pass
 
     # We don't have a setting, need to figure it out
-    try:  # stats_prac_q_course was added for 3.9.1
-        ret = run_sql("SELECT 1 FROM stats_prac_q_course;", quiet=True)
+    try:  # questionflags was removed for 3.9.1
+        ret = run_sql("SELECT 1 FROM questionflags;", quiet=True)
         if isinstance(ret, list):
-            return "3.9.1"
+            return "3.6"
 
     except psycopg2.DatabaseError:
         pass
@@ -1361,7 +1361,7 @@ def get_db_version():
     try:  # one of the very original fields
         ret = run_sql("""SELECT 1 from users;""")
         if ret:
-            return "3.6"
+            return "3.9.1"
     except psycopg2.DatabaseError:
         pass
 
