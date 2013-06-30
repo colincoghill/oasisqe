@@ -113,13 +113,13 @@
 
     var qt_msg = $("#qtemplateerrors");
     qt_msg.empty();
-    if (qtemplates.size() <= 0) {
+    if (!qtemplates || qtemplates.length <= 0) {
       qt_msg.append("<span class='alert-error'>You must have at least one question.</span>");
       errcount += 1;
     }
     if (errcount == 0) {
       enable_save();
-      alert("form is valid!");
+
     } else {
       alert("form is NOT VALID (" + errcount + " errors)");
     }
@@ -134,7 +134,6 @@
     // currently used. Now synchronize the form.
     var qf = $("#qtemplates");
     qf.empty();
-
     $.each(qtemplates, function (qnum, qtemplate) {
       var sel = get_question_choose_row(qnum + 1, qtemplate);
       qf.append(sel);
@@ -216,7 +215,7 @@
     });
     out += "</optgroup>";
     out += "</select> ";
-    var node = $(out);
+    var node = $($.parseHTML(out));
     node.click(function () {
       selectqtemplate($(this));
     });
@@ -409,7 +408,6 @@
         </select>
       </label>
       <br>
-
 
       <h5>Extra Instructions</h5>
 

@@ -10,10 +10,10 @@
   <p><b>Status:</b>{{ exam.archived }}</p>
   <p><b>Questions:</b>{{ exam.num_questions }}</p>
 
-  <p>Continue to <a href="{{ cf.url }}courseadmin/top/{{ course.id }}">Course
+  <p>Continue to <a href="{{ cf.url }}cadmin/{{ course.id }}/top">Course
     Page</a></p>
   <p>Go back and <a
-      href="{{ cf.url }}courseadmin/editexam/{{ course.id }}/{{ exam.id }}">Edit
+      href="{{ cf.url }}cadmin/{{ course.id }}/editexam/{{ exam.id }}">Edit
     Assessment</a></p>
 
 {% endblock body %}

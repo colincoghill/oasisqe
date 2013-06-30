@@ -65,14 +65,11 @@
                         <td>{% if exam.code %}{{ exam.code }}{% endif %}</td>
                         <td>{% if exam.future %}Upcoming{% elif exam.past %}Finished
                             {% elif exam.active %}<b>Active</b>{% endif %}</td>
-                        <td><a href="{{ cf.url }}assess/startexam/
-        {{ course.id }}/{{ exam.id }}"><sub>preview</sub></a>
+                        <td><a href="{{ cf.url }}assess/startexam/{{ course.id }}/{{ exam.id }}"><sub>preview</sub></a>
                             | <a
-                                    href="{{ cf.url }}cadmin/editexam/
-        {{ course.id }}/{{ exam.id }}"><sub>edit</sub></a>
+                                    href="{{ cf.url }}cadmin/{{ course.id }}/editexam/{{ exam.id }}"><sub>edit</sub></a>
                             | <a
-                                    href="{{ cf.url }}cadmin/examstatus/
-        {{ exam.id }}"><sub>results</sub></a></td>
+                                    href="{{ cf.url }}cadmin/examstatus/{{ exam.id }}"><sub>results</sub></a></td>
                     </tr>
                 {% endif %}
             {% endfor %}
