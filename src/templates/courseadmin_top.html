@@ -41,7 +41,7 @@
         <a href="{{ cf.url }}cadmin/{{ course.id }}/topics">Edit Topics</a>
     </div>
     <br/>
-    <!--
+
     <div class="container-fluid well">
         <h5>Current Assessments</h5>
 
@@ -68,10 +68,10 @@
                         <td><a href="{{ cf.url }}assess/startexam/
         {{ course.id }}/{{ exam.id }}"><sub>preview</sub></a>
                             | <a
-                                    href="{{ cf.url }}courseadmin/editexam/
+                                    href="{{ cf.url }}cadmin/editexam/
         {{ course.id }}/{{ exam.id }}"><sub>edit</sub></a>
                             | <a
-                                    href="{{ cf.url }}courseadmin/examstatus/
+                                    href="{{ cf.url }}cadmin/examstatus/
         {{ exam.id }}"><sub>results</sub></a></td>
                     </tr>
                 {% endif %}
@@ -81,15 +81,15 @@
         </table>
         <br/>
 
-        <a class='btn' href="{{ cf.url }}courseadmin/createexam/{{ course.id }}"><i class="icon-plus"> </i>Create
+        <a class='btn' href="{{ cf.url }}cadmin/{{ course.id }}/createexam"><i class="icon-plus"> </i>Create
             Assessment</a>
 
-        <div class='pull-right'><a href="{{ cf.url }}courseadmin/previousassessments/{{ course.id }}">Older
+        <div class='pull-right'><a href="{{ cf.url }}cadmin/previousassessments/{{ course.id }}">Older
             Assessments</a></div>
         <br>
 
     </div>
-    -->
+
 
 
     <div class="container-fluid well">

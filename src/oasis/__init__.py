@@ -450,7 +450,10 @@ def login_signup_submit():
 def login_webauth_submit():
     """ The web server should have verified their credentials and
         provide it in env['REMOTE_USER']
-        Check them, then set up the session or redirect back with an error. """
+        Check them, then set up the session or redirect back with an error.
+        If we haven't seen them before, check with our user account feed(s)
+        to see if we can find them.
+    """
     if not 'REMOTE_USER' in request.environ:
         flash("Incorrect name or password.")
         return redirect(url_for("index"))
@@ -458,7 +461,7 @@ def login_webauth_submit():
     username = request.environ['REMOTE_USER']
 
     if '@' in username:
-        username = username.split('@')[0]
+        username = username.split('@')[0]  # TODO: this is for UofA, how do we make it more general?
     user_id = Users2.uid_by_uname(username)
     if not user_id:
         flash("Incorrect name or password.")
@@ -545,7 +548,7 @@ def send_email(to_addr, from_addr=None, subject="Message from OASIS",
 
 
 from oasis import views_practice
-# from oasis import views_assess
+from oasis import views_assess
 from oasis import views_cadmin
 from oasis import views_admin
 from oasis import views_setup

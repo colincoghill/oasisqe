@@ -268,6 +268,8 @@ def cadmin_create_exam(course_id):
             'start_day': today.day,
             'start_hour': '10',
             'start_minute': '30',
+            'start': (today + timedelta(days=1)),
+            'end': (today + timedelta(days=1)),
             'end_hour': '10',
             'end_minute': '30',
             'end_year': today.year,
@@ -702,11 +704,11 @@ def cadmin_topic_save(course_id, topic_id):
         result = Setup.doTopicPageCommands(request, topic_id, user_id)
         if result:
             # flash(result['mesg'])
-            return redirect(url_for('cadmin_edit_topic', topic_id=topic_id))
+            return redirect(url_for('cadmin_edit_topic', course_id=course_id, topic_id=topic_id))
 
     flash("Error saving Topic Information!")
     log(ERROR, "Error saving Topic Information " % repr(request.form))
-    return redirect(url_for('cadmin_edit_topic', topic_id=topic_id))
+    return redirect(url_for('cadmin_edit_topic', course_id=course_id, topic_id=topic_id))
 
 
 @app.route("/cadmin/<int:course_id>/perms")

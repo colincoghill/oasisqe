@@ -259,7 +259,7 @@
   <h4>{{ course.name }} ({{ course.title }})</h4>
 
   <form method="post"
-        action="{{ cf.url }}courseadmin/exam_edit_submit/{{ course.id }}/{{ exam.id }}"
+        action="{{ cf.url }}cadmin/{{ course.id }}/exam_edit_submit/{{ exam.id }}"
         name="create_assessment">
     <br>
     {% if exam %}
