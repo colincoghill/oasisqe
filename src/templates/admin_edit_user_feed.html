@@ -1,0 +1,154 @@
+{% extends "page_nav.html" %}
+{% block body %}
+  <div>
+    <br/>
+
+    <p>Return to <a href="{{ cf.url }}admin/feeds">Enrolment Feeds</a></p>
+
+    <div class="row">
+      <div class="span2 help-block">
+        <h4>User Account Feeds
+          <br>
+        </h4>
+
+        <p>User Account feeds provide a way to import user account
+          information from
+          external systems into OASIS.
+          <br>
+        </p>
+
+        <p>Generally you would need only one or two.
+          <br>
+        </p>
+
+        <p>These are implemented as scripts stored in
+          the <em>{{ cf.feed_path }}/user</em> folder
+          on the server.
+          <br>
+        </p>
+
+        <p>A "feed script" should accept parameters containing a list of username
+          to look up, and should return the results as comma separated text output.
+          <br>
+        </p>
+
+        <p>If you need to pass confidential information to a script (eg.
+          an LDAP&nbsp;
+          password), you can put it in the "Env. Variable"&nbsp;
+          field, and this
+          will be supplied to the script in the environment variable
+          "OASIS_FEED_ENV"
+          <br>
+        </p>
+        <dl></dl>
+      </div>
+      <div class="span9">
+        <h3>Edit User Feed</h3>
+
+        <div class="well">
+          <form id='form' method='post'
+                action='{{ cf.url }}admin/edit_user_feed_submit/{{ feed.id }}'
+                data-validate="parsley">
+            <label>Short Name:</label>
+            <input placeholder="Short Name" name='name'
+                   class="required input-medium"
+                   type="text" value="{{ feed.name }}">
+            <label>Title:</label>
+            <input placeholder="Descriptive name" name='title'
+                   class="input-xxlarge"
+                   type="text" value="{{ feed.title }}">
+
+            <label for='script'>Script File (in the <em>{{ cf.feed_path }}/user/</em> folder on the server):</label>
+            <select name='script' id='script' value='{{ feed.script }}'>
+              {% for script in scripts %}
+                <option value='{{ script }}'
+                  {% if script == feed.script %}selected{% endif %}>{{ script }}
+                </option>
+              {% endfor %}
+            </select>
+            <label>Env. Variable: (optional)</label>
+            <input placeholder="1234" name='envvar'
+                   class="input-medium" value="{{ feed.envvar }}"
+                   type="text">
+            <label for='comments'>Comments: (optional)</label>
+            <textarea id='comments' name='comments'
+                      placeholder="This reads from a file which is populated nightly from our main database."
+                      rows="6"
+                      class="input-block-level">{{ feed.comments }}</textarea>
+            <label>Update Frequency:</label>
+
+            <p>OASIS will refresh user details from this feed how often?</p>
+            <label class="radio"
+                   for="onlogin">
+              <input value="1" id="onlogin" name="freq"
+                     type="radio"
+                     {% if feed.freq == 1 %}checked{% endif %}>
+              On Login</label>
+            <label class="radio" for="daily">
+              <input value="2" id="daily" name="freq"
+                     type="radio"
+                     {% if feed.freq == 2 %}checked{% endif %}>
+              Daily</label>
+            <label class="radio" for="manual">
+              <input value="3" id="manual" name="freq"
+                     type="radio"
+                     {% if feed.freq == 3 %}checked{% endif %}>
+              Manually</label>
+            <br/>
+            <label>Activate Feed:
+              <input name='active' type='checkbox' value='active'
+                  {% if feed.active %} checked{% endif %}>
+            </label>
+
+            <div class="form-actions">
+              <input class='btn btn-primary' type="submit"
+                     name='save'
+                     value='Save'>
+              <input class="btn btn-danger" value="Cancel"
+                     type="submit"
+                     name="cancel" id='cancel'>
+            </div>
+          </form>
+        </div>
+        <ul></ul>
+        <ul></ul>
+        <p></p>
+      </div>
+    </div>
+
+
+    <p>Return to <a href="{{ cf.url }}admin/userfeeds">User Account Feeds</a></p>
+
+    <br/>
+    <br/>
+    <br/>
+    <br/>
+
+  </div>
+{% endblock body %}
+{% block js %}
+  <script>
+
+    $(function () {
+      $(".datatable").dataTable({
+            "bPaginate": false,
+            "bLengthChange": false,
+            "bFilter": false
+          }
+      );
+
+      $('#showhistorical').click(function () {
+            $('.historical').toggle();
+          }
+      );
+
+      $('#cancel').click(function () {
+        $('#form').parsley('destroy');
+        $('#form').submit();
+      });
+    });
+
+
+  </script>
+{% endblock js %}
+{% block pagetitle %}Server Admin{% endblock %}

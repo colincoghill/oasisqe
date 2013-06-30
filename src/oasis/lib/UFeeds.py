@@ -28,7 +28,7 @@ class UFeed(object):
             already an entry with the same name or code.
         """
 
-        if not script:  # search
+        if not active:  # search
             if f_id:
                 self._fetch_by_id(f_id)
 
@@ -84,10 +84,10 @@ class UFeed(object):
         """
 
         if self.new:
-            sql = """INSERT INTO feeds ("name", "title", "script", "envvar",
+            sql = """INSERT INTO userfeeds ("name", "title", "script", "envvar",
                                         "comments", "freq", "status", "error",
                                         "active", "priority", "regex")
-                       VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);"""
+                       VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"""
             params = (self.name, self.title, self.script, self.envvar,
                       self.comments, self.freq, self.status, self.error,
                       self.active, self.priority, self.regex)
@@ -95,7 +95,7 @@ class UFeed(object):
             self.new = False
             return
 
-        sql = """UPDATE feeds
+        sql = """UPDATE userfeeds
                  SET name=%s,
                      title=%s,
                      script=%s,
@@ -119,7 +119,7 @@ class UFeed(object):
         """
 
         if self.freq in ('1', 1):
-            return "hourly"
+            return "on login"
         if self.freq in ('2', 2):
             return "daily"
         if self.freq in ('3', 3):

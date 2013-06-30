@@ -26,7 +26,7 @@ class Feed(object):
             already an entry with the same name or code.
         """
 
-        if not script:  # search
+        if not active:  # search
             if f_id:
                 self._fetch_by_id(f_id)
 

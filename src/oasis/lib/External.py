@@ -26,6 +26,20 @@ def feeds_available_group_scripts():
     return files
 
 
+def feeds_available_user_scripts():
+    """ Return a list of file names of available user feed scripts.
+    """
+
+    feed_dir = os.path.join(OaConfig.feed_path, "user")
+    files = [
+        f
+        for f
+        in os.listdir(feed_dir)
+        if os.path.isfile(os.path.join(feed_dir, f))
+    ]
+    return files
+
+
 def feeds_run_group_script(filename, args=None):
     """ Run the external group script with the given args (if any).
         Return resulting output as a list of strings or raise IOError

@@ -225,6 +225,41 @@ def admin_add_feed():
         scripts=scripts
     )
 
+@app.route("/admin/add_userfeed")
+@require_perm('sysadmin')
+def admin_add_userfeed():
+    """ Present page to add a user feed to the system """
+    try:
+        scripts = External.feeds_available_user_scripts()
+    except OSError, err:
+        flash(err)
+        scripts = []
+    return render_template(
+        "admin_edit_user_feed.html",
+        feed={'id': 0},
+        scripts=scripts
+    )
+
+@app.route("/admin/edit_userfeed/<int:feed_id>")
+@require_perm('sysadmin')
+def admin_edit_userfeed(feed_id):
+    """ Present page to edit a user feed in the system """
+    try:
+        feed = UFeeds.UFeed(f_id=feed_id)
+    except KeyError:
+        return abort(404)
+    try:
+        scripts = External.feeds_available_user_scripts()
+    except OSError, err:
+        flash(err)
+        scripts = []
+    return render_template(
+        "admin_edit_user_feed.html",
+        feed=feed,
+        scripts=scripts
+    )
+
+
 #
 # @app.route("/admin/test_group_feed/<string:filename>")
 # @require_perm('sysadmin')
@@ -379,6 +414,72 @@ def admin_edit_group_feed_submit(feed_id):
         )
     flash("Changes saved", category='success')
     return redirect(url_for("admin_feeds"))
+
+
+@app.route("/admin/edit_user_feed_submit/<int:feed_id>", methods=["POST", ])
+@require_perm('sysadmin')
+def admin_edit_user_feed_submit(feed_id):
+    """ Submit edit user feed form """
+    if "cancel" in request.form:
+        flash("Edit cancelled!")
+        return redirect(url_for("admin_userfeeds"))
+
+    name = request.form.get('name', '')
+    title = request.form.get('title', '')
+    script = request.form.get('script', '')
+    envvar = request.form.get('envvar', '')
+    comments = request.form.get('comments', '')
+    freq = int(request.form.get('freq', 1))
+    priority = int(request.form.get('priority', 1))
+    regex = request.form.get('regex', '')
+    active = request.form.get('active', 'inactive') == 'active'
+
+    if feed_id == 0:  # It's a new one being created
+        feed = UFeeds.UFeed(
+            f_id=0,
+            name=name,
+            title=title,
+            script=script,
+            envvar=envvar,
+            comments=comments,
+            freq=freq,
+            active=active,
+            priority=priority,
+            regex=regex
+        )
+    else:
+        try:
+            feed = UFeeds.UFeed(f_id=feed_id)
+        except KeyError:
+            return abort(404)
+
+    feed.id = feed_id
+    feed.name = name
+    feed.title = title
+    feed.script = script
+    feed.envvar = envvar
+    feed.comments = comments
+    feed.freq = freq
+    feed.active = active
+    feed.priority=priority
+    feed.regex=regex
+
+    if name == "":
+        flash("Can't Save: Name must be supplied")
+        return render_template(
+            "admin_edit_user_feed.html",
+            feed=feed
+        )
+    try:
+        feed.save()
+    except ValueError, err:  # Probably a duplicate or something
+        flash("Can't Save: %s" % err)
+        return render_template(
+            "admin_edit_user_feed.html",
+            feed=feed
+        )
+    flash("Changes saved", category='success')
+    return redirect(url_for("admin_userfeeds"))
 
 
 @app.route("/admin/edit_period_submit/<int:p_id>", methods=["POST", ])
