@@ -14,7 +14,7 @@ from datetime import datetime
 from flask import render_template, \
     request, redirect, abort, url_for, flash
 
-from oasis.lib import Courses, Courses2, Setup, Periods, Feeds, External
+from oasis.lib import Courses, Courses2, Setup, Periods, Feeds, External, UFeeds
 
 MYPATH = os.path.dirname(__file__)
 from .lib import DB, Groups
@@ -42,6 +42,18 @@ def admin_feeds():
     feeds = Feeds.all_list()
     return render_template(
         "admin_group_feeds.html",
+        feeds=feeds
+    )
+
+
+@app.route("/admin/userfeeds")
+@require_perm('sysadmin')
+def admin_userfeeds():
+    """ Present menu page of user account feed related options """
+
+    feeds = UFeeds.all_list()
+    return render_template(
+        "admin_user_feeds.html",
         feeds=feeds
     )
 

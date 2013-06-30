@@ -11,7 +11,7 @@ APPDIR = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__)
 sys.path.append(APPDIR)
 
 
-from oasis.lib import Stats, Feeds, Groups, External
+from oasis.lib import Stats, Groups, External
 
 
 def refresh_group_feeds():

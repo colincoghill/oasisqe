@@ -70,6 +70,23 @@ CREATE TABLE ugroups (
 );
 
 
+
+CREATE TABLE userfeeds (
+    "id" SERIAL PRIMARY KEY,
+    "name" character varying UNIQUE,
+    "title" character varying,
+    "script" character varying,
+    "envvar" character varying,
+    "freq" integer default 2,   -- 1 = hourly, 2 = daily, 3 = manually
+    "comments" text,
+    "priority" integer default 3,
+    "regex" character varying,
+    "status" character varying,
+    "error" character varying,
+    "active" boolean default False
+);
+
+
 ALTER TABLE groupcourses DROP COLUMN "active";
 ALTER TABLE groupcourses ADD FOREIGN KEY("groupid") REFERENCES ugroups("id");
 ALTER TABLE groupcourses ADD FOREIGN KEY("course") REFERENCES courses("course");

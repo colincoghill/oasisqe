@@ -25,9 +25,7 @@ Install:
  * Configurable login page
  * Use Apache web server for auth
     - What do we do with default accounts
- * Use uploadable spreadsheets, or spreadsheets in a nominated location for class lists
  * Enrol in (open) course
- * User account management from Course Admin section
  * Better error checking or handling of permissions on log file & cache
 
 Testing:
@@ -39,7 +37,6 @@ Documentation
  * Basic usage guide
  * Landing page - do a nice welcome/introduction page
  * Basic Question Creation Documentation
- * Basic admin guide
 
 
 3.9.3 OSS Release
