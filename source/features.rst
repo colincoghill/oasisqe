@@ -12,3 +12,5 @@ Features
 * Emphasis on practice
 * Online assessment
 * Statistics
+* Link with external systems for account management and authentication (optional)
+
