@@ -59,6 +59,22 @@ $(function () {
         validate_form();
       });
 
+  $('#start_minute').change( function() {
+      start_minute = $("#start_minute").val();
+        validate_form();
+  });
+    $('#start_hour').change( function() {
+        start_hour = $("#start_hour").val();
+        validate_form();
+  });
+    $('#end_hour').change( function() {
+        end_hour = $("#end_hour").val();
+        validate_form();
+  });
+    $('#end_minute').change( function() {
+        end_minute = $("#end_minute").val();
+        validate_form();
+  });
   $("#startdate").datepicker("setDate", start);
   $("#enddate").datepicker("setDate", end);
 
@@ -80,19 +96,17 @@ $(function () {
     var date_msg = $("#dateerrors");
 
     date_msg.empty();
-    if (end_date < start_date) {
+
+    var tmp_start = new Date(start_date);
+    var tmp_end = new Date(end_date);
+    tmp_start.setHours(start_hour);
+    tmp_end.setHours(end_hour);
+    tmp_start.setMinutes(start_minute);
+    tmp_end.setMinutes(end_minute);
+
+    if (tmp_end <= tmp_start) {
       date_msg.append("<span class='alert-error'>Start date must be before end date</span>");
       errcount += 1;
-    } else if (end_date == start_date) {
-      if (end_hour < start_hour) {
-        date_msg.append("<span class='alert-error'>Start must be before end</span>");
-        errcount += 1;
-      } else if (end_hour == start_hour) {
-        if (end_minute <= start_minute) {
-          date_msg.append("<span class='alert-error'>Start time must be before end</span>");
-          errcount += 1;
-        }
-      }
     }
 
     var dr = parseInt($("#duration").val(), 10);
@@ -120,8 +134,6 @@ $(function () {
     if (errcount == 0) {
       enable_save();
 
-    } else {
-      alert("form is NOT VALID (" + errcount + " errors)");
     }
   }
 
@@ -323,8 +335,7 @@ $(function () {
       <label>Code:
         <input name="assess_code" id="code"
                value="{% if exam.code %}{{ exam.code }}{% endif %}">
-        (leave blank
-        to disable)
+        (leave blank to disable)
       </label>
       <br>
       <h5>Make Available:</h5>
