@@ -8,6 +8,8 @@
 
 import datetime
 
+from oasis import log, INFO, ERROR
+
 from oasis.lib.Permissions import get_course_perms, add_perm, delete_perm
 from oasis.lib.Audit import audit
 from oasis.lib import Users2, DB, Topics, General, Exams, Courses
@@ -188,12 +190,14 @@ def exam_edit_submit(request, user_id, cid, exam_id):
 
     qns = {}
     for k in request.form.keys():
+
         v = request.form.getlist(k)
         if k.startswith("question_"):
             _, q, p = k.split("_")
             if not q in qns:
-                qns[int(q)] = []
-            qns[int(q)].append(v[0])
+                qns[q] = []
+            qns[q].append(int(v[0]))
+
 
     if not exam_id:
         exam_id = Exams.create(cid, user_id, title, atype, duration, astart,
@@ -208,9 +212,10 @@ def exam_edit_submit(request, user_id, cid, exam_id):
         Exams.set_code(exam_id, code)
         Exams.set_instant(exam_id, instant)
 
+    log(ERROR, "exam edit submit: %s" % repr(k))
     for pos, qts in qns.iteritems():
         if pos:
-            DB.update_exam_qt_in_pos(exam_id, pos, qts)
+            DB.update_exam_qt_in_pos(exam_id, int(pos), qts)
 
     return exam_id
 
