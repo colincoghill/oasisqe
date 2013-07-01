@@ -27,6 +27,7 @@ ALTER TABLE exams ADD COLUMN "instant" integer;
 
 ALTER TABLE users ADD COLUMN "confirmed" character varying;
 ALTER TABLE users ADD COLUMN "confirmation_code" character varying;
+ALTER TABLE users ALTER COLUMN "passwd" TYPE character varying;
 
 CREATE TABLE periods (
     "id" SERIAL PRIMARY KEY,
@@ -64,6 +65,11 @@ INSERT INTO grouptypes ("type", "title", "description")
   VALUES ('3', 'statistical', 'Statistical');
 SELECT SETVAL('grouptypes_type_seq', 3);
 
+ALTER TABLE usergroups DROP COLUMN IF EXISTS "type";
+ALTER TABLE usergroups DROP COLUMN IF EXISTS "semester";
+
+DELETE FROM usergroups;
+
 CREATE TABLE ugroups (
     "id" SERIAL PRIMARY KEY,
     "name" character varying UNIQUE,
@@ -93,6 +99,8 @@ CREATE TABLE userfeeds (
 );
 
 
+delete from groupcourses;
+
 ALTER TABLE groupcourses DROP COLUMN "active";
 ALTER TABLE groupcourses ADD FOREIGN KEY("groupid") REFERENCES ugroups("id");
 ALTER TABLE groupcourses ADD FOREIGN KEY("course") REFERENCES courses("course");
@@ -100,6 +108,8 @@ ALTER TABLE groupcourses ADD FOREIGN KEY("course") REFERENCES courses("course");
 ALTER TABLE permissiondesc ALTER COLUMN "permission" SET NOT NULL;
 ALTER TABLE permissiondesc ADD UNIQUE("permission");
 
+INSERT INTO permissiondesc ("permission", "name", "description", "sharable")
+       VALUES (0, 'all', 'All', TRUE);
 INSERT INTO permissiondesc ("permission", "name", "description", "sharable")
        VALUES (1, 'sysadmin', 'System Administrator', TRUE);
 INSERT INTO permissiondesc ("permission", "name", "description", "sharable")
@@ -111,6 +121,10 @@ INSERT INTO permissiondesc ("permission", "name", "description", "sharable")
 INSERT INTO permissiondesc ("permission", "name", "description", "sharable")
        VALUES (5, 'questionedit', 'Question Editor', TRUE);
 INSERT INTO permissiondesc ("permission", "name", "description", "sharable")
+       VALUES (6, 'unknown2', 'Unknown 2', TRUE);
+INSERT INTO permissiondesc ("permission", "name", "description", "sharable")
+       VALUES (7, 'unknown1', 'Unknown', TRUE);
+INSERT INTO permissiondesc ("permission", "name", "description", "sharable")
        VALUES (8, 'viewmarks', 'View Marks', TRUE);
 INSERT INTO permissiondesc ("permission", "name", "description", "sharable")
        VALUES (9, 'altermarks', 'Alter Marks',TRUE);
@@ -118,6 +132,10 @@ INSERT INTO permissiondesc ("permission", "name", "description", "sharable")
        VALUES (10, 'questionpreview', 'Preview Practice',TRUE);
 INSERT INTO permissiondesc ("permission", "name", "description", "sharable")
        VALUES (11, 'exampreview', 'Preview Assessments',TRUE);
+INSERT INTO permissiondesc ("permission", "name", "description", "sharable")
+       VALUES (12, 'unknown3', 'Unknown 3', TRUE);
+INSERT INTO permissiondesc ("permission", "name", "description", "sharable")
+       VALUES (13, 'unknown4', 'Unknown 4', TRUE);
 INSERT INTO permissiondesc ("permission", "name", "description", "sharable")
        VALUES (14, 'examcreate', 'Create Assessments',TRUE);
 INSERT INTO permissiondesc ("permission", "name", "description", "sharable")
@@ -141,8 +159,6 @@ ALTER TABLE permissions ADD FOREIGN KEY("permission") REFERENCES permissiondesc(
 
 ALTER TABLE usergroups ADD FOREIGN KEY("userid") REFERENCES users("id");
 ALTER TABLE usergroups ADD FOREIGN KEY("groupid") REFERENCES ugroups("id");
-ALTER TABLE usergroups DROP COLUMN "type";
-ALTER TABLE usergroups DROP COLUMN "semester";
 
 
 CREATE TABLE config (
