@@ -198,7 +198,6 @@ def exam_edit_submit(request, user_id, cid, exam_id):
                 qns[q] = []
             qns[q].append(int(v[0]))
 
-
     if not exam_id:
         exam_id = Exams.create(cid, user_id, title, atype, duration, astart,
                                aend, instructions, code=code, instant=instant)
