@@ -38,13 +38,13 @@ DROP TABLE IF EXISTS exams;
 DROP TABLE IF EXISTS courses;
 DROP TABLE IF EXISTS stats_prac_q_course;
 
-
 DROP TABLE IF EXISTS statsqtassesshourly;
 DROP TABLE IF EXISTS statsqtpracticehourly;
 DROP TABLE IF EXISTS tips;
 
 DROP TABLE IF EXISTS qtemplates;
 DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS userfeeds;
 DROP TABLE IF EXISTS config;
 
 DROP SEQUENCE IF EXISTS users_version_seq;
@@ -75,5 +75,5 @@ DROP SEQUENCE IF EXISTS topics_topic_seq;
 DROP SEQUENCE IF EXISTS userexams_id_seq;
 DROP SEQUENCE IF EXISTS usergroups_id_seq;
 DROP SEQUENCE IF EXISTS users_id_seq;
-
+DROP SEQUENCE IF EXISTS userfeeds_id_seq;
 COMMIT;

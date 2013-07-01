@@ -156,17 +156,13 @@ def is_oasis_db(DB):
 def upgrade_3_6_to_3_9_2(DB):
     """ Given a 3.6 database, upgrade it to 3.9.2.
     """
-    # Straight copy:
+    with open(os.path.join(APPDIR, "deploy", "migrate_36x_to_392.sql")) as f:
+        sql = f.read()
 
-    #
-
-    # Simple conversion:
-
-    # Complex conversion:
-
-    #  groups -> ugroups
-
-    raise NotImplementedError
+    DB.run_sql(sql)
+    print "Migrated table structure from 3.6 to 3.9.2"
+    if not options.noresetadmin:
+        generate_admin_passwd(DB)
 
 
 def upgrade_3_9_1_to_3_9_2(DB):
@@ -177,7 +173,7 @@ def upgrade_3_9_1_to_3_9_2(DB):
 
     DB.run_sql(sql)
     print "Migrated table structure from 3.9.1 to 3.9.2"
-    if not options.noresetadmin:  # silly, but maybe they did it
+    if not options.noresetadmin:
         generate_admin_passwd(DB)
 
 

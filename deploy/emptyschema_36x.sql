@@ -36,11 +36,7 @@ CREATE TABLE courses (
     description text,
     owner integer,
     active integer DEFAULT 1,
-    type integer,
-    enrol_type character varying DEFAULT 'manual'::character varying,
-    enrol_location character varying,
-    enrol_freq integer DEFAULT 120,
-    registration character varying DEFAULT 'controlled'::character varying
+    type integer
 );
 
 CREATE SEQUENCE courses_version_seq
@@ -98,9 +94,7 @@ CREATE TABLE exams (
     course integer,
     archived integer DEFAULT 0,
     duration integer,
-    markstatus integer DEFAULT 1,
-    code character varying,
-    instant integer
+    markstatus integer DEFAULT 1
 );
 
 CREATE SEQUENCE examtimers_id_seq
@@ -373,17 +367,6 @@ CREATE TABLE questiontopics (
     "position" integer
 );
 
-CREATE TABLE stats_prac_q_course (
-    qtemplate integer NOT NULL,
-    "when" timestamp with time zone,
-    hour integer NOT NULL,
-    day integer NOT NULL,
-    month integer NOT NULL,
-    year integer NOT NULL,
-    number integer NOT NULL,
-    avgscore double precision
-);
-
 CREATE TABLE statsqtassesshourly (
     assesses bigint,
     starttime timestamp without time zone,
@@ -576,8 +559,6 @@ CREATE INDEX qtvariations_qtemplate_version ON qtvariations USING btree (qtempla
 CREATE INDEX question_qtemplate ON questions USING btree (qtemplate);
 CREATE INDEX question_student ON questions USING btree (student);
 CREATE INDEX questions_question ON questions USING btree (question);
-CREATE INDEX stats_prac_q_course_qtemplate_idx ON stats_prac_q_course USING btree (qtemplate);
-CREATE INDEX stats_prac_q_course_when_idx ON stats_prac_q_course USING btree ("when");
 CREATE INDEX topics_course ON topics USING btree (course);
 CREATE INDEX userexams_lastchange_idx ON userexams USING btree (lastchange);
 CREATE INDEX usergroups_groupid ON usergroups USING btree (groupid);

@@ -1,8 +1,11 @@
 --
--- Make the changes needed to move from v3.9.1 to 3.9.2
+-- Make the changes needed to move from v3.6.x to 3.9.2
 -- This is just the SQL changes, the application will need to run some logic
 -- too. Use the "oasisdb" tool to run this, do not try to run it directly.
 --
+
+
+
 
 SET statement_timeout = 0;
 SET client_encoding = 'UTF8';
@@ -16,11 +19,14 @@ SET standard_conforming_strings = on;
 
 BEGIN;
 
-ALTER TABLE courses DROP COLUMN "enrol_type";
-ALTER TABLE courses DROP COLUMN "enrol_location";
-ALTER TABLE courses DROP COLUMN "enrol_freq";
-ALTER TABLE courses DROP COLUMN "registration";
+ALTER TABLE courses ADD COLUMN "practice_visibility" character varying DEFAULT 'all';
+ALTER TABLE courses ADD COLUMN "assess_visibility" character varying DEFAULT 'enrol';
 
+ALTER TABLE exams ADD COLUMN "code" character varying;
+ALTER TABLE exams ADD COLUMN "instant" integer;
+
+ALTER TABLE users ADD COLUMN "confirmed" character varying;
+ALTER TABLE users ADD COLUMN "confirmation_code" character varying;
 
 CREATE TABLE periods (
     "id" SERIAL PRIMARY KEY,
@@ -132,8 +138,6 @@ SELECT setval('permissiondesc_permission_seq', 21);
 
 ALTER TABLE permissions ADD FOREIGN KEY("userid") REFERENCES users("id");
 ALTER TABLE permissions ADD FOREIGN KEY("permission") REFERENCES permissiondesc("permission");
-
-ALTER TABLE stats_prac_q_course ADD COLUMN "avgscore" float NULL;
 
 ALTER TABLE usergroups ADD FOREIGN KEY("userid") REFERENCES users("id");
 ALTER TABLE usergroups ADD FOREIGN KEY("groupid") REFERENCES ugroups("id");

@@ -274,7 +274,6 @@ INSERT INTO permissiondesc ("permission", "name", "description", "sharable")
 
 SELECT setval('permissiondesc_permission_seq', 21);
 
-
 CREATE TABLE permissions (
     "id" SERIAL PRIMARY KEY,
     "course" integer NOT NULL,
@@ -351,7 +350,6 @@ CREATE TABLE usergroups (
     "userid" integer REFERENCES users("id") NOT NULL,
     "groupid" integer REFERENCES ugroups("id") NOT NULL
 );
-
 
 CREATE TABLE config (
     "name" character varying(50) unique primary key,

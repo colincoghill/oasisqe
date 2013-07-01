@@ -12,16 +12,16 @@ from flask import Flask, session, redirect, url_for, request, \
     render_template, flash, abort
 import datetime
 import logging
-from logging import log, INFO
+from logging import log, INFO, ERROR
 from logging.handlers import SMTPHandler, RotatingFileHandler
 from functools import wraps
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
-from .lib import OaConfig, Users2, Users, DB
-from .lib.Audit import audit
-from .lib.Permissions import satisfy_perms
+from oasis.lib import OaConfig, Users2, Users, DB
+from oasis.lib.Audit import audit
+from oasis.lib.Permissions import satisfy_perms
 
 app = Flask(__name__,
             template_folder=OaConfig.homedir + "/templates",
@@ -455,6 +455,7 @@ def login_webauth_submit():
         to see if we can find them.
     """
     if not 'REMOTE_USER' in request.environ:
+        log(ERROR, "REMOTE_USER not provided by web server and 'webauth' is being attempted.")
         flash("Incorrect name or password.")
         return redirect(url_for("index"))
 
