@@ -25,6 +25,10 @@ ALTER TABLE courses ADD COLUMN "assess_visibility" character varying DEFAULT 'en
 ALTER TABLE exams ADD COLUMN "code" character varying;
 ALTER TABLE exams ADD COLUMN "instant" integer;
 
+ALTER TABLE users ADD COLUMN "email" character varying;
+ALTER TABLE users ADD COLUMN "source" character varying;
+ALTER TABLE users ADD COLUMN "expiry" timestamp with time zone;
+
 ALTER TABLE users ADD COLUMN "confirmed" character varying;
 ALTER TABLE users ADD COLUMN "confirmation_code" character varying;
 ALTER TABLE users ALTER COLUMN "passwd" TYPE character varying;
@@ -160,6 +164,8 @@ ALTER TABLE permissions ADD FOREIGN KEY("permission") REFERENCES permissiondesc(
 ALTER TABLE usergroups ADD FOREIGN KEY("userid") REFERENCES users("id");
 ALTER TABLE usergroups ADD FOREIGN KEY("groupid") REFERENCES ugroups("id");
 
+
+INSERT INTO permissions (userid, course, permission) values (1, 0, 1);
 
 CREATE TABLE config (
     "name" character varying(50) unique primary key,
