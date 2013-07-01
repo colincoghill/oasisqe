@@ -42,7 +42,7 @@ $(function () {
     autoclose: true,
     defaultDate: start
   }).on("changeDate",function (ev) {
-        start = ev.date.valueOf();
+        start_date = ev.date.valueOf();
         validate_form();
       });
 
@@ -55,7 +55,7 @@ $(function () {
     autoclose: true,
     defaultDate: end
   }).on("changeDate",function (ev) {
-        end = ev.date.valueOf();
+        end_date = ev.date.valueOf();
         validate_form();
       });
 
@@ -246,10 +246,7 @@ $(function () {
 
       });
 
-  $(function () {
     validate_form();
-  });
-
 
 });
   </script>
@@ -381,9 +378,7 @@ $(function () {
       <p>Once started, the student will have <input name="duration"
                                                     id="duration"
                                                     class='input-mini'
-                                                    value="
-
-                                                        {% if exam %}{{ exam.duration }}{% else %}60{% endif %}">minutes
+                                                    value="{{ exam.duration }}">minutes
         to complete.<br>
 
       <div id="durationerrors"></div>
@@ -451,5 +446,4 @@ $(function () {
 
   </form>
   <br/><br/><br/><br/><br/><br/>
-  {{ test }}
 {% endblock body %}

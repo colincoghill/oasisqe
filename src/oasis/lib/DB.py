@@ -861,8 +861,9 @@ def update_exam_qt_in_pos(exam_id, position, qtlist):
     # Now insert the new set
     for alt in qtlist:
         if alt > 0:
-            run_sql("INSERT INTO examqtemplates (exam, position, qtemplate) "
-                    "VALUES (%s,%s,%s);",
+            if isinstance(alt, int):  # might be '---'
+                run_sql("INSERT INTO examqtemplates (exam, position, qtemplate)"
+                    " VALUES (%s,%s,%s);",
                     (exam_id, position, alt))
 
 

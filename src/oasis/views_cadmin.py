@@ -291,6 +291,13 @@ def cadmin_edit_exam(course_id, exam_id):
         flash("Assessment %s does not belong to this course." % int(exam_id))
         return redirect(url_for('cadmin_top', course_id=course_id))
 
+    exam['start_date'] = int(date_from_py2js(exam['start']))
+    exam['end_date'] = int(date_from_py2js(exam['end']))
+    exam['start_hour'] = int(exam['start'].hour)
+    exam['end_hour'] = int(exam['end'].hour)
+    exam['start_minute'] = int(exam['start'].minute)
+    exam['end_minute'] = int(exam['end'].minute)
+
     return render_template(
         "exam_edit.html",
         course=course,

@@ -192,8 +192,8 @@ def exam_edit_submit(request, user_id, cid, exam_id):
         if k.startswith("question_"):
             _, q, p = k.split("_")
             if not q in qns:
-                qns[q] = []
-            qns[q].append(v[0])
+                qns[int(q)] = []
+            qns[int(q)].append(v[0])
 
     if not exam_id:
         exam_id = Exams.create(cid, user_id, title, atype, duration, astart,
@@ -209,7 +209,8 @@ def exam_edit_submit(request, user_id, cid, exam_id):
         Exams.set_instant(exam_id, instant)
 
     for pos, qts in qns.iteritems():
-        DB.update_exam_qt_in_pos(exam_id, pos, qts)
+        if pos:
+            DB.update_exam_qt_in_pos(exam_id, pos, qts)
 
     return exam_id
 
