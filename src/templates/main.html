@@ -24,14 +24,14 @@
       </div>
     </div>
     <div class='row'>
-      <!--   <div class='span5'>
+       <div class='span5'>
                 <br/>
 
                 <b><a NAME='menu_assess' HREF='{{ cf.url }}assess/top'>Assess</a></b>
 
                 <p>This is where you should go for terms-tests and assignments. Work under this area may contribute to
                     your real coursework marks, so be sure to <b>practice</b> first.</p>
-            </div>   -->
+            </div>
       <div class='span5'>
         <b><a NAME='menu_setup'
               HREF='{{ cf.url }}setup/top'>Setup</a></b>
@@ -46,9 +46,11 @@
 
   </div>
   <br/>
+    {% if cf.auth_type =="local" %}
   <p>You may also <b><a NAME='menu_logout'
                         HREF='{{ cf.url }}logout'>Logout</a></b> to leave
     OASIS.</p>
+    {% endif %}
   <br/>
 
 

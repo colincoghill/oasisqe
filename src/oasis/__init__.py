@@ -465,10 +465,11 @@ def login_webauth_submit():
         username = username.split('@')[0]  # TODO: this is for UofA, how do we make it more general?
     user_id = Users2.uid_by_uname(username)
     if not user_id:
-        flash("Incorrect name or password.")
-        return redirect(url_for("index"))
+        Users2.create(uname=username, source='unknown', confirm=True)
+        user_id = Users2.uid_by_uname(username)
 
     user = Users2.get_user(user_id)
+
     session['username'] = username
     session['user_id'] = user_id
     session['user_givenname'] = user['givenname']
