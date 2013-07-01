@@ -2,33 +2,28 @@
 {% block js %}
   <script>
 
-  var start_hour = parseInt("{{ exam.start.hour }}", 10);
-  var end_hour = parseInt("{{ exam.end.hour }}", 10);
-  var start_minute = parseInt("{{ exam.start.minute }}", 10);
-  var end_minute = parseInt("{{ exam.end.minute }}", 10);
+$(function () {
 
-  var start_date = new Date({{ exam.start.year }}, {{ exam.start.month }}, {{ exam.start.day }});
-  var end_date = new Date({{ exam.end.year }}, {{ exam.end.month }}, {{ exam.end.day }});
+  var start;     // Start datetime
+  var end;       // End datetime
 
-  $("#start_hour").change(function () {
-    start_hour = parseInt($("#start_hour").val(), 10);
-    validate_form();
-  });
+  start = new Date({{ exam.start_date }});
+  end = new Date({{ exam.end_date }});
 
-  $("#start_minute").change(function () {
-    start_minute = parseInt($("#start_minute").val(), 10);
-    validate_form();
-  });
+  var start_date = new Date(start);
+  start_date.setHours(0);
+  start_date.setMinutes(0);
+  start_date.setSeconds(0);
 
-  $("#end_hour").change(function () {
-    end_hour = parseInt($("#end_hour").val(), 10);
-    validate_form();
-  });
+  var end_date = new Date(end);
+  end_date.setHours(0);
+  end_date.setMinutes(0);
+  end_date.setSeconds(0);
 
-  $("#end_minute").change(function () {
-    end_minute = parseInt($("#end_minute").val(), 10);
-    validate_form();
-  });
+  var start_hour = start.getHours();
+  var start_minute = start.getMinutes();
+  var end_hour = end.getHours();
+  var end_minute = end.getMinutes();
 
   $("#duration").change(function () {
     validate_form();
@@ -44,11 +39,12 @@
     endDate: '+6m',
     todayBtn: true,
     todayHighlight: true,
-    autoclose: true
+    autoclose: true,
+    defaultDate: start
   }).on("changeDate",function (ev) {
-        start_date = ev.date.valueOf();
+        start = ev.date.valueOf();
         validate_form();
-      }).datepicker('update', "{{ exam.start }}");
+      });
 
   $('#enddate').datepicker({
     format: 'D dd M yyyy',
@@ -56,11 +52,15 @@
     endDate: '+6m',
     todayBtn: true,
     todayHighlight: true,
-    autoclose: true
+    autoclose: true,
+    defaultDate: end
   }).on("changeDate",function (ev) {
-        end_date = ev.date.valueOf();
+        end = ev.date.valueOf();
         validate_form();
-      }).datepicker('update', "{{ exam.end }}");
+      });
+
+  $("#startdate").datepicker("setDate", start);
+  $("#enddate").datepicker("setDate", end);
 
   function enable_save() {
     $(".save_button").removeAttr("disabled").addClass("btn-primary");
@@ -250,6 +250,8 @@
     validate_form();
   });
 
+
+});
   </script>
 {% endblock %}
 {% block body %}
@@ -332,36 +334,35 @@
 
       <div>
         From: <input type='text' id="startdate" name="startdate"
-                     value="{{ exam.start }}"
+                     value=""
                      class="input-medium datepicker date" readonly=1>
         at <select class="select-mini" id="start_hour"
                    name="examstart_hour">
         <option>--</option>
         {% for num in range(0,24) %}
           <option value='{{ num }}'
-                  {% if num == exam.start.hour %}SELECTED{% endif %}>{{ "%02d"|format(num) }}</option>
+                  {% if num == exam.start_hour %}SELECTED{% endif %}>{{ "%02d"|format(num) }}</option>
         {% endfor %}
       </select>:
         <select class="select-mini" id="start_minute"
                 name="examstart_minute">
           <option>--</option>
           {% for num in range(0,60) %}
-            <option value='{{ num }}'
-                    {% if num == exam.start.minute %}SELECTED{% endif %}>{{ "%02d"|format(num) }}</option>
+            <option value='{{ num }}' {% if num == exam.start_minute %}SELECTED{% endif %}>{{ "%02d"|format(num) }}</option>
           {% endfor %}
         </select> (24 hour time)
       </div>
 
       <div id="dateerrors"><br/>.</div>
       <div>Until: <input type='text' name="enddate" id="enddate"
-                         value="{{ exam.end_date }}"
+                         value=""
                          class="input-medium datepicker date" readonly=1>
         at <select class="select-mini" id="end_hour"
                    name="examend_hour">
           <option>--</option>
           {% for num in range(0,24) %}
             <option value='{{ num }}'
-                    {% if num == exam.end.hour %}SELECTED{% endif %}>{{ "%02d"|format(num) }}</option>
+                    {% if num == exam.end_hour %}SELECTED{% endif %}>{{ "%02d"|format(num) }}</option>
           {% endfor %}
         </select>:
         <select class="select-mini" id="end_minute"
@@ -369,7 +370,7 @@
           <option>--</option>
           {% for num in range(0,60) %}
             <option value='{{ num }}'
-                    {% if num == exam.end.minute %}SELECTED{% endif %}>{{ "%02d"|format(num) }}</option>
+                    {% if num == exam.end_minute %}SELECTED{% endif %}>{{ "%02d"|format(num) }}</option>
           {% endfor %}
         </select> (24 hour time)
       </div>

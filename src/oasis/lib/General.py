@@ -19,6 +19,7 @@ import math
 import sys
 import traceback
 import datetime
+import time
 import jinja2
 
 from logging import log, INFO, WARN, ERROR
@@ -1086,3 +1087,11 @@ def human_date(date):
         return date.strftime("%b %d, %I:%M%P")
 
     return date.strftime("%Y %b %d, %I:%M%P")
+
+def date_from_py2js(when):
+    """ Convert date from Python datetime object to Javascript friendly
+        epoch integer.
+    """
+
+    return int(time.mktime(when.timetuple())) * 1000
+

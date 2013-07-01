@@ -12,12 +12,13 @@ from logging import log, ERROR
 from flask import render_template, session, request, redirect, \
     abort, url_for, flash
 
-from .lib import OaConfig, Users2, DB, Topics, Permissions, \
+from oasis.lib import OaConfig, Users2, DB, Topics, Permissions, \
     Exams, Courses, Courses2, Setup, CourseAdmin, Groups
 
 MYPATH = os.path.dirname(__file__)
 
-from .lib.Permissions import satisfy_perms, check_perm
+from oasis.lib.Permissions import satisfy_perms, check_perm
+from oasis.lib.General import date_from_py2js
 
 from oasis import app, require_course_perm, require_perm
 
@@ -253,7 +254,7 @@ def cadmin_create_exam(course_id):
 
     topics = CourseAdmin.get_create_exam_q_list(course_id)
 
-    today = date.today()
+    today = datetime.now()
     return render_template(
         "exam_edit.html",
         course=course,
@@ -261,20 +262,12 @@ def cadmin_create_exam(course_id):
         #  defaults
         exam={
             'id': 0,
-            'start_date': (today + timedelta(days=1)).strftime("%a %d %b %Y"),
-            'end_date': (today + timedelta(days=1)).strftime("%a %d %b %Y"),
-            'start_year': today.year,
-            'start_month': today.month,
-            'start_day': today.day,
-            'start_hour': '10',
-            'start_minute': '30',
-            'start': (today + timedelta(days=1)),
-            'end': (today + timedelta(days=1)),
-            'end_hour': '10',
-            'end_minute': '30',
-            'end_year': today.year,
-            'end_month': today.month,
-            'end_day': today.day,
+            'start_date': int(date_from_py2js(today)+86400000),  # tomorrow
+            'end_date': int(date_from_py2js(today)+90000000),  # tomorrow + hour
+            'start_hour': int(today.hour),
+            'end_hour': int(today.hour + 1),
+            'start_minute': int(today.minute),
+            'end_minute': int(today.minute),
             'duration': 60,
             'title': "Assessment",
             'archived': 1,
