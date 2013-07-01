@@ -275,6 +275,36 @@ def cadmin_create_exam(course_id):
     )
 
 
+@app.route("/cadmin/<int:course_id>/exam_results/<int:exam_id>")
+@require_course_perm(("examcreate", "coursecoord", "courseadmin"))
+def cadmin_exam_results(course_id, exam_id):
+    """ View the results of an assessment """
+    course = Courses2.get_course(course_id)
+    if not course:
+        abort(404)
+
+    exam = Exams.get_exam_struct(exam_id, course_id)
+    if not exam:
+        abort(404)
+
+    if not int(exam['cid']) == int(course_id):
+        flash("Assessment %s does not belong to this course." % int(exam_id))
+        return redirect(url_for('cadmin_top', course_id=course_id))
+
+    exam['start_date'] = int(date_from_py2js(exam['start']))
+    exam['end_date'] = int(date_from_py2js(exam['end']))
+    exam['start_hour'] = int(exam['start'].hour)
+    exam['end_hour'] = int(exam['end'].hour)
+    exam['start_minute'] = int(exam['start'].minute)
+    exam['end_minute'] = int(exam['end'].minute)
+
+    return render_template(
+        "cadmin_examresults.html",
+        course=course,
+        exam=exam
+    )
+
+
 @app.route("/cadmin/<int:course_id>/editexam/<int:exam_id>")
 @require_course_perm(("examcreate", "coursecoord", "courseadmin"))
 def cadmin_edit_exam(course_id, exam_id):
@@ -301,8 +331,7 @@ def cadmin_edit_exam(course_id, exam_id):
     return render_template(
         "exam_edit.html",
         course=course,
-        exam=exam,
-        test=repr(exam)
+        exam=exam
     )
 
 
