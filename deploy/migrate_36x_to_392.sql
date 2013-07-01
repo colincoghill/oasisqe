@@ -152,5 +152,16 @@ CREATE TABLE config (
 INSERT INTO config ("name", "value") VALUES ('dbversion', '3.9.2');
 
 
+CREATE TABLE stats_prac_q_course (
+    qtemplate integer NOT NULL,
+    "when" timestamp with time zone,
+    "hour" integer NOT NULL,
+    "day" integer NOT NULL,
+    "month" integer NOT NULL,
+    "year" integer NOT NULL,
+    "number" integer NULL,
+    "avgscore" float NULL
+);
+
 
 COMMIT;
