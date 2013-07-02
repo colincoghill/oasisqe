@@ -446,6 +446,15 @@ def login_signup_submit():
     return render_template("login_signup_submit.html", email=email)
 
 
+@app.route("/login/webauth/error")
+def login_webauth_error():
+    """ They've tried to use web authentication but the web server doesn't
+        appear to be providing the right credentials. Display an error page.
+    """
+
+    return render_template("login_webauth_error.html")
+
+
 @app.route("/login/webauth/submit")
 def login_webauth_submit():
     """ The web server should have verified their credentials and
@@ -456,8 +465,7 @@ def login_webauth_submit():
     """
     if not 'REMOTE_USER' in request.environ:
         log(ERROR, "REMOTE_USER not provided by web server and 'webauth' is being attempted.")
-        flash("Incorrect name or password.")
-        return redirect(url_for("index"))
+        return redirect(url_for("login_webauth_error"))
 
     username = request.environ['REMOTE_USER']
 
