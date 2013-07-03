@@ -21,9 +21,15 @@ and email:
   uofa@oasisqe.com
 our local SMTP server is at:  smtp.oasisqe.com
 
-In this example our external system makes enrolment and account information available via
+In this example our external system allows user details to be looked up by
 an LDAP server. Password authentication is managed by the Kerberos service, which
 is supported by the Apache web server.
+Group memberships come from a
+
+We will need to install the extra packages for Python LDAP support for the OASIS
+LDAP scripts::
+
+    apt-get install python-ldap
 
 The university already has a PostgreSQL database server, so we'll make use
 of that instead of installing our own one.
@@ -49,7 +55,7 @@ And the contact e-mail address to display on the web interface::
    email: uofa@oasisqe.com
 
 
-Don't allow anyone to sign up and create an account::
+Don't allow new people to sign themselves up and create accounts::
 
    open_registration: False
 
@@ -123,7 +129,7 @@ tell Apache when to apply it::
 
   nano /etc/apache2/sites-available/oasisqe
 
-Configure Apache to connect to our Kerberos service for authentication::
+Our Apache is already configured to connect to our Kerberos service for authentication::
 
     KrbAuthoritative on
     KrbAuthRealms OASISQE.COM
@@ -132,10 +138,12 @@ Configure Apache to connect to our Kerberos service for authentication::
     KrbVerifyKDC off
     KrbDelegateBasic Off
 
+(If you also need to set up Apache for Kerberos support, we use http://modauthkerb.sourceforge.net/ ,
+but there may be other methods, eg. if you're using IIS it can probably use the AD equivalent)
+
 Add a section to tell Apache that it is to perform authentication for OASIS::
 
-      <Directory /oasis/login/webauth>
-                Options Indexes FollowSymLinks MultiViews
+      <Directory /oasis/login/webauth/submit>
                 AllowOverride All
                 Order allow,deny
                 allow from all
@@ -146,8 +154,9 @@ Add a section to tell Apache that it is to perform authentication for OASIS::
 
 Now when the user goes to OASIS, if it doesn't know who they are, it will redirect
 them to /oasis/login/webauth. Apache will then prompt them for username and password
-and, if correct, will provide the username to OASIS.
-
+and, if correct, will provide the username to OASIS. When OASIS encounters a
+username it has not seen before, it will fill in some default details (mostly
+blank) and then see if it can look them up using a User Feed script.
 
 Any time you change the OASIS or Apache configuration files, restart Apache::
 
@@ -161,12 +170,6 @@ Now we can log in to OASIS and verify that it all works:
 We open a web browser and go to the URL: https://www.oasisqe.com/uofa
 (obviously, using our own URL here). Log in using your credentials from the
 central system.
-
-
-
-
-
-
 
 
 Create a Course
