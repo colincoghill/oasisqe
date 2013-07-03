@@ -113,7 +113,10 @@ Authentication
 
 When users log in to OASIS we want our web server to authenticate them, not
 OASIS itself. We can do this by configuring the web server, in this case Apache,
-to pass the credentials to OASIS::
+to pass the credentials to OASIS:
+
+  .. image:: example_uofa_diagram1.png
+    :width: 600px
 
 In this case our system already has Kerberos configured, we just need to
 tell Apache when to apply it::
