@@ -196,7 +196,8 @@ def exam_edit_submit(request, user_id, cid, exam_id):
             _, q, p = k.split("_")
             if not q in qns:
                 qns[q] = []
-            qns[q].append(int(v[0]))
+            if not v[0] == '---':
+                qns[q].append(int(v[0]))
 
     if not exam_id:
         exam_id = Exams.create(cid, user_id, title, atype, duration, astart,
