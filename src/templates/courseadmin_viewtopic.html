@@ -61,7 +61,7 @@
       });
     }
 
-
+{#
     function scoregraph(q_id, dom_id, title) {
       $.ajax({
         async: true,
@@ -77,18 +77,15 @@
           }
         }
       });
-    }
-
+    }#}
 
     $(document).ready(function () {
 
 
       {% for q in questions if q.position >= 1 %}
         countgraph({{ q.id }}, "chart_{{ q.id }}", "Practice History");
-        scoregraph({{ q.id }}, "chart2_{{ q.id }}", "Average Score");
+  //       scoregraph({{ q.id }}, "chart2_{{ q.id }}", "Average Score");
       {% endfor %}
-
-      //  bargraph( 67,"chart_67", "Practice History");
 
     });
   </script>
@@ -133,9 +130,10 @@
             <div style='height:120px; width:600px;'
                  id='chart_{{ q.id }}'>
             </div>
-            <div style='height:120px; width:600px;'
+        <!--    <div style='height:120px; width:600px;'
                  id='chart2_{{ q.id }}'>
             </div>
+            -->
           </td>
         </tr>
       {% endfor %}

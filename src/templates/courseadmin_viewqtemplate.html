@@ -56,7 +56,7 @@
       });
     }
 
-    function scoresgraph(q_id, dom_id, title, year) {
+  {#  function scoresgraph(q_id, dom_id, title, year) {
       $.ajax({
         async: true,
         url: "{{ cf.url }}api/stats/practice/qtemplate/" + q_id + "/" + year + "/scores",
@@ -71,16 +71,16 @@
           }
         }
       });
-    }
+    }#}
 
     $(document).ready(function () {
 
       {% for year in years %}
         bargraph({{ qtemplate.id }}, "chart_{{ year }}", "{{ year }} Practice", {{ year }});
       {% endfor %}
-      {% for year in years %}
-        scoresgraph({{ qtemplate.id }}, "chart2_{{ year }}", "{{ year }} Average Score", {{ year }});
-      {% endfor %}
+    //  {% for year in years %}
+     //   scoresgraph({{ qtemplate.id }}, "chart2_{{ year }}", "{{ year }} Average Score", {{ year }});
+    //  {% endfor %}
 
     });
   </script>
@@ -109,7 +109,7 @@
       {% endfor %}
       </tbody>
     </table>
-    <h4>Average Scores</h4>
+ <!--   <h4>Average Scores</h4>
     <table class='table'>
       <tbody>
       {% for year in years %}
@@ -125,6 +125,7 @@
       {% endfor %}
       </tbody>
     </table>
+    -->
   </div>
 
 {% endblock body %}
