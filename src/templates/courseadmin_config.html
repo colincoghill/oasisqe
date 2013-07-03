@@ -31,8 +31,8 @@
                 <div class='span5'>
                     <form method='post'
                           action='{{ cf.url }}cadmin/{{ course.id }}/assign_coord'>
-                        {% if coords %}Course-Coordinators: {% for coord in coords %}{{ coord.uname }} {% endfor %}{% endif %}
-                        <input type='text' class='typeahead' name='coord'
+                        {% if coords %}Course-Coordinators: {% for coord in coords %}<br/>&nbsp;&nbsp;{{ coord.uname }} ({{ coord.fullname }}) <a href='{{ cf.url }}cadmin/{{ course.id }}/remove_coord/{{ coord.uname }}'><i class='icon icon-trash'> </i> </a>{% endfor %}{% endif %}
+                        <br/><input type='text' class='typeahead' name='coord'
                                placeholder='username'>
                         <input type='submit' name='assign_coord'
                                value='Add Coordinator'

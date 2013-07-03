@@ -462,7 +462,7 @@ def cadmin_editgroup_member(course_id, group_id):
 @require_course_perm(("courseadmin", "coursecoord"))
 def cadmin_assign_coord(course_id):
     """ Set someone as course coordinator
-    """
+"""
     course = Courses2.get_course(course_id)
     if not course:
         abort(404)
@@ -480,9 +480,33 @@ def cadmin_assign_coord(course_id):
         if not new_uid:
             flash("User '%s' Not Found" % new_uname)
         else:
-            Permissions.add_perm(new_uid, course_id, 3) # courseadmin
-            Permissions.add_perm(new_uid, course_id, 4) # coursecoord
+            Permissions.add_perm(new_uid, course_id, 3)  # courseadmin
+            Permissions.add_perm(new_uid, course_id, 4)  # coursecoord
             flash("%s can now control the course." % (new_uname,))
+
+    return redirect(url_for('cadmin_config', course_id=course_id))
+
+
+@app.route("/cadmin/<int:course_id>/remove_coord/<string:coordname>")
+@require_course_perm(("courseadmin", "coursecoord"))
+def cadmin_remove_coord(course_id, coordname):
+    """ Remove someone as course coordinator
+    """
+    course = Courses2.get_course(course_id)
+    if not course:
+        abort(404)
+
+    try:
+        new_uid = Users2.uid_by_uname(coordname)
+    except KeyError:
+        flash("User '%s' Not Found" % coordname)
+    else:
+        if not new_uid:
+            flash("User '%s' Not Found" % coordname)
+        else:
+            Permissions.delete_perm(new_uid, course_id, 3)  # courseadmin
+            Permissions.delete_perm(new_uid, course_id, 4)  # coursecoord
+            flash("%s can no longer control the course." % (coordname,))
 
     return redirect(url_for('cadmin_config', course_id=course_id))
 
