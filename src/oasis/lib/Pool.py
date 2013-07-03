@@ -8,6 +8,11 @@
     the number of database connections down.
 """
 
+# There are better ways to do this now, but this code is complex and
+# has been running for literally a decade so it'll be a bit of work
+# to make sure a replacement works as well.
+
+
 import Queue
 import os
 import OaConfig
@@ -130,12 +135,9 @@ class fileCache(object):
                 log(ERROR,
                     "Can't create cache in %s/%s" % (self.cachedir, key))
         try:
-            # create with temporary name to avoid concurrent access issues
-            fname = os.tempnam("%s/%s" % (self.cachedir, key), "oatmp")
-            fptr = open(fname, "w")
+            fptr = open("%s/%s/DATA" % (self.cachedir, key), "wb")
             fptr.write(value)
             fptr.close()
-            os.rename(fname, "%s/%s/DATA" % (self.cachedir, key))
         except IOError, err:
             log(ERROR,
                 "File Cache Error. (%s)" % err)
