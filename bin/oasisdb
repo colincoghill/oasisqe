@@ -153,6 +153,14 @@ def is_oasis_db(DB):
     return "no"
 
 
+def calc_stats(DB):
+    """ Run stats generation over the whole database.
+    """
+    print "Calculating Statistics"
+    from oasis.lib import Stats
+    Stats.do_initial_stats_update()
+
+
 def upgrade_3_6_to_3_9_2(DB):
     """ Given a 3.6 database, upgrade it to 3.9.2.
     """
@@ -161,6 +169,7 @@ def upgrade_3_6_to_3_9_2(DB):
 
     DB.run_sql(sql)
     print "Migrated table structure from 3.6 to 3.9.2"
+    calc_stats(DB)
     if not options.noresetadmin:
         generate_admin_passwd(DB)
 
@@ -298,6 +307,7 @@ Commands:
     show users          - List the users in the database.
     show courses        - List the courses in the database.
     resetpw             - Change the admin password.
+    calcstats           - Refresh statistics calculation over whole database.
 
     init                - Set up the OASIS table structure in the database.
     upgrade             - Upgrade an older OASIS database to the newest version.
@@ -473,6 +483,10 @@ if __name__ == "__main__":
 
     if args[0] == 'show':
         do_show(DB, options, args)
+        sys.exit()
+
+    if args[0] == 'calcstats':
+        calc_stats(DB)
         sys.exit()
 
     if args[0] == 'status':

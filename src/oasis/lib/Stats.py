@@ -232,3 +232,15 @@ def do_daily_stats_update():
     populate_prac_q_count(start=st)
 
 
+def do_initial_stats_update():
+    """ To be run once, on upgrade from a system that didn't do this.
+        Will update stats from the beginning of the database, to now.
+        May take a while.
+    """
+
+    now = datetime.now()
+    st = datetime(1990, 1, 1)
+    populate_prac_q_count(start=st, end=now)
+
+
+
