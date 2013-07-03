@@ -111,5 +111,3 @@ def get_course(course_id):
         load_courses()
     return COURSES[course_id]
 
-
-# reload_if_needed()

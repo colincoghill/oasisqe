@@ -139,7 +139,7 @@ class Period(object):
                     pass
                 else:
                     if exists.id != self.id:
-                        raise ValueError("Time Period with that name already exists")
+                        raise ValueError("Time Period with name already exists")
 
                 try:
                     exists = Period(code=self.code)
@@ -147,7 +147,7 @@ class Period(object):
                     pass
                 else:
                     if exists.id != self.id:
-                        raise ValueError("Time Period with that code already exists")
+                        raise ValueError("Time Period with code already exists")
 
             self.new = False
             return
@@ -166,7 +166,7 @@ class Period(object):
                 pass
             else:
                 if exists.id != self.id:
-                    raise ValueError("Time Period with that name already exists")
+                    raise ValueError("Time Period with name already exists")
 
             try:
                 exists = Period(code=self.code)
@@ -174,8 +174,7 @@ class Period(object):
                 pass
             else:
                 if exists.id != self.id:
-                    raise ValueError("Time Period with that code already exists")
-
+                    raise ValueError("Time Period with code already exists")
 
     def historical(self):
         """ Is this period far enough in the past we can move it to "archive" or

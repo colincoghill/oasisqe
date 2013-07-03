@@ -56,7 +56,7 @@ def feeds_run_group_script(filename, args=None):
     if not os.path.isfile(full_path):
         raise IOError("Invalid group script file %s" % safe_fname)
 
-    cmd = [full_path,] + args
+    cmd = [full_path, ] + args
     output = subprocess.check_output(cmd)
     return output
 
@@ -77,14 +77,14 @@ def feeds_run_user_script(filename, args=None):
     if not os.path.isfile(full_path):
         raise IOError("Invalid user script file %s" % safe_fname)
 
-    cmd = [full_path,] + args
+    cmd = [full_path, ] + args
     output = subprocess.check_output(cmd)
     return output
 
 
 def group_update_from_feed(group_id):
     """ Update group membership from it's feed
-        Returns (added, removed, unknown) with usernames of users added or removed
+        Returns (added, removed, unknown) with usernames of users
     """
 
     group = Groups.Group(g_id=group_id)

@@ -8,7 +8,7 @@
 
 import datetime
 
-from oasis import log, INFO, ERROR
+# from oasis import log, INFO, ERROR
 
 from oasis.lib.Permissions import get_course_perms, add_perm, delete_perm
 from oasis.lib.Audit import audit
@@ -18,7 +18,6 @@ from oasis.lib import Users2, DB, Topics, General, Exams, Courses
 def do_topic_update(course, request):
     """Read the submitted form and make relevant changes to Topic information
     """
-    # TODO: Describe what this is doing
     categories = []
     topics = []
 
@@ -45,7 +44,10 @@ def do_topic_update(course, request):
                 Courses.incr_version()
             else:
                 if not i['name'] == "[Name of new topic]":
-                    Topics.create(course['id'], i['name'], int(i['visibility']), i['position'])
+                    Topics.create(course['id'],
+                                  i['name'],
+                                  int(i['visibility']),
+                                  i['position'])
                     Courses.incr_version()
 
         return True
@@ -58,22 +60,23 @@ def do_topic_update(course, request):
 def get_perm_short(pid):
     """ Return a short human readable name for the permission."""
 
-    pNames = {1: "Super User",
-              2: "User Administrator",
-              5: "Question Editor",
-              8: "View Marks",
-              9: "Alter Marks",
-              10: "Preview Questions",
-              11: "Preview Assessments",
-              14: "Create Assessments",
-              15: "View Class List",
-              16: "Preview Surveys",
-              17: "Create Surveys",
-              18: "Edit System Messages",
-              20: "View Survey Results"
+    pNames = {
+        1: "Super User",
+        2: "User Administrator",
+        5: "Question Editor",
+        8: "View Marks",
+        9: "Alter Marks",
+        10: "Preview Questions",
+        11: "Preview Assessments",
+        14: "Create Assessments",
+        15: "View Class List",
+        16: "Preview Surveys",
+        17: "Create Surveys",
+        18: "Edit System Messages",
+        20: "View Survey Results"
     }
 
-    if pNames.has_key(pid):
+    if pid in pNames:
         return pNames[pid]
     return None
 
@@ -115,20 +118,22 @@ def save_perms(request, cid, user_id):
                 if uname in newperms and perm in newperms[uname]:
                     if not perm in perms[uname]:
                         add_perm(uid, cid, perm)
-                        audit(1,
-                              user_id,
-                              uid,
-                              "CourseAdmin",
-                              "%s given %s permission by %s" % (uname, get_perm_short(perm), user_id,)
+                        audit(
+                            1,
+                            user_id,
+                            uid,
+                            "CourseAdmin",
+                            "%s given %s permission by %s" % (uname, get_perm_short(perm), user_id,)
                         )
                 else:
                     if uname in perms and perm in perms[uname]:
                         delete_perm(uid, cid, perm)
-                        audit(1,
-                              user_id,
-                              uid,
-                              "CourseAdmin",
-                              "%s had %s permission revoked by %s" % (uname, get_perm_short(perm), user_id,)
+                        audit(
+                            1,
+                            user_id,
+                            uid,
+                            "CourseAdmin",
+                            "%s had %s permission revoked by %s" % (uname, get_perm_short(perm), user_id,)
                         )
 
         for uname in newperms:
@@ -138,22 +143,24 @@ def save_perms(request, cid, user_id):
                 for perm in [2, 5, 10, 14, 11, 8, 9, 15]:
                     if perm in newperms[uname]:
                         add_perm(uid, cid, perm)
-                        audit(1,
-                              user_id,
-                              uid,
-                              "CourseAdmin",
-                              "%s given %s permission by %s" % (uname, get_perm_short(perm), user_id,)
+                        audit(
+                            1,
+                            user_id,
+                            uid,
+                            "CourseAdmin",
+                            "%s given %s permission by %s" % (uname, get_perm_short(perm), user_id,)
                         )
         if "adduser" in form:
             newuname = form['adduser']
             newuid = Users2.uid_by_uname(newuname)
             if newuid:
                 add_perm(newuid, cid, 10)
-            audit(1,
-                  user_id,
-                  newuid,
-                  "CourseAdmin",
-                  "%s given '%s' permission by %s" % (newuname, get_perm_short(10), user_id,)
+            audit(
+                1,
+                user_id,
+                newuid,
+                "CourseAdmin",
+                "%s given '%s' permission by %s" % (newuname, get_perm_short(10), user_id,)
             )
     return
 
@@ -212,7 +219,6 @@ def exam_edit_submit(request, user_id, cid, exam_id):
         Exams.set_code(exam_id, code)
         Exams.set_instant(exam_id, instant)
 
-    log(ERROR, "exam edit submit: %s" % repr(k))
     for pos, qts in qns.iteritems():
         if pos:
             DB.update_exam_qt_in_pos(exam_id, int(pos), qts)

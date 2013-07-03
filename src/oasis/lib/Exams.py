@@ -69,8 +69,12 @@ def get_mark_time(exam, student):
     """
     assert isinstance(exam, int)
     assert isinstance(student, int)
-    ret = run_sql("SELECT marktime FROM questions "
-                  "WHERE exam=%s AND student=%s ORDER BY marktime DESC LIMIT 1;", (exam, student))
+    ret = run_sql("""SELECT marktime
+                     FROM questions
+                     WHERE exam=%s
+                       AND student=%s
+                     ORDER BY marktime DESC
+                     LIMIT 1;""", (exam, student))
     if ret:
         lastview = ret[0][0]
         if lastview:
@@ -324,7 +328,9 @@ def touchUserExam(exam, user):
 
 
 def reset_mark(exam, user):
-    """ Remove the final mark for the student. This should let them resit the exam. """
+    """ Remove the final mark for the student.
+        This should let them resit the exam.
+    """
     assert isinstance(exam, int)
     assert isinstance(user, int)
     run_sql("DELETE FROM marklog WHERE exam=%s AND student=%s;", (exam, user))

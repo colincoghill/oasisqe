@@ -8,7 +8,6 @@
 """
 
 from oasis.lib.DB import run_sql
-from oasis.lib import Groups
 
 
 class Feed(object):

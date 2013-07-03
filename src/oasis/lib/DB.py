@@ -862,9 +862,10 @@ def update_exam_qt_in_pos(exam_id, position, qtlist):
     for alt in qtlist:
         if alt > 0:
             if isinstance(alt, int):  # might be '---'
-                run_sql("INSERT INTO examqtemplates (exam, position, qtemplate)"
-                    " VALUES (%s,%s,%s);",
-                    (exam_id, position, alt))
+                run_sql("""INSERT INTO examqtemplates
+                                (exam, position, qtemplate)
+                           VALUES (%s,%s,%s);""",
+                                (exam_id, position, alt))
 
 
 def update_qt_pos(qt_id, topic_id, position):
@@ -972,12 +973,13 @@ def copy_qt(qt_id):
     if not res:
         raise KeyError("QTemplate %d not found" % qt_id)
     orig = res[0]
-    newid = create_qt(int(orig[0]),
-                      orig[1],
-                      orig[2],
-                      orig[3],
-                      orig[4],
-                      int(orig[5])
+    newid = create_qt(
+        int(orig[0]),
+        orig[1],
+        orig[2],
+        orig[3],
+        orig[4],
+        int(orig[5])
     )
     if newid <= 0:
         raise IOError("Unable to create copy of QTemplate %d" % qt_id)
@@ -988,7 +990,6 @@ def add_qt_variation(qt_id, variation, data, version):
     """ Add a variation to the question template. """
     assert isinstance(qt_id, int)
     assert isinstance(variation, int)
-#    assert isinstance(data, str) or isinstance(data, unicode)
     assert isinstance(version, int)
     pick = cPickle.dumps(data)
     safedata = psycopg2.Binary(pick)
@@ -1126,6 +1127,7 @@ def add_exam_q(user, exam, question, position):
 #         return questions
 #     return []
 
+
 def get_student_q_practice_num(user_id, qt_id):
     """Return the number of times the given student has practiced the question
        Exclude assessed scores.
@@ -1217,7 +1219,7 @@ def get_student_q_practice_stats(user_id, qt_id, num=3):
     stats = []
     if ret:
         for row in ret:
-            ageseconds = 10000000000 #  could be from before we tracked it.
+            ageseconds = 10000000000  # could be from before we tracked it.
             age = row[2]
             try:
                 age = int(age)
@@ -1228,10 +1230,11 @@ def get_student_q_practice_stats(user_id, qt_id, num=3):
                     age = secs_to_human(age)
             except (TypeError, ValueError):
                 age = "more than 2 years"
-            stats.append({'score': float(row[0]),
-                          'question': int(row[1]),
-                          'age': age,
-                          'ageseconds': ageseconds
+            stats.append({
+                'score': float(row[0]),
+                'question': int(row[1]),
+                'age': age,
+                'ageseconds': ageseconds
             })
 
         return stats[::-1]   # reverse it so they're in time order
@@ -1317,7 +1320,7 @@ def touch_user_exam(exam_id, user_id):
     """
     assert isinstance(exam_id, int)
     assert isinstance(user_id, int)
-    sql = "UPDATE userexams SET lastchange = NOW() WHERE exam=%s AND student=%s;"
+    sql = "UPDATE userexams SET lastchange=NOW() WHERE exam=%s AND student=%s;"
     params = (exam_id, user_id)
     run_sql(sql, params)
 
