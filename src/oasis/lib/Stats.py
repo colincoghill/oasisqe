@@ -46,7 +46,7 @@ def add_prac_q_count(year, month, day, hour, qtemplate, count, avgscore):
 
 def update_prac_q_count(year, month, day, hour, qtemplate, count, avgscore):
     """ Insert a practice count for the given time/qtemplate """
-    sql = """UPDATE stats_prac_q_course SET "count"=%s, "avgscore"=%s
+    sql = """UPDATE stats_prac_q_course SET "number"=%s, "avgscore"=%s
                  WHERE hour=%s
                  AND month=%s
                  AND day=%s
