@@ -37,9 +37,7 @@
                  VALUE='{{ qtemplate.embed_id }}'>
 
           <p>{% if qtemplate.embed_id %}Embeddable at:
-            {{ cf.url }}embed/question/
-            <span style='color: darkgreen;'>{{ qtemplate.embed_id }}</span>
-            /question.html
+            {{ cf.url }}embed/question/<span style='color: darkgreen;'>{{ qtemplate.embed_id }}</span>/question.html
             {{ qtemplate.embedurl }}{% else %}Enter an embed value
             to be able to embed this
             question in an external web site. It may make the

@@ -240,8 +240,7 @@ def get_courses(user_id):
     for group in groups:
         res = run_sql("""SELECT course
                          FROM groupcourses
-                         WHERE active=1
-                           AND groupid=%s LIMIT 1;""",
+                         WHERE groupid=%s LIMIT 1;""",
                       (group,))
         if res:
             course_id = int(res[0][0])
