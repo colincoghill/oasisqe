@@ -11,6 +11,8 @@ run from a WSGI web server such as Apache or Nginx. """
 from flask import Flask, session, redirect, url_for, request, \
     render_template, flash, abort
 import datetime
+import _strptime  # import should prevent thread import blocking issues
+                  # ask Google about:     AttributeError: _strptime
 import logging
 from logging import log, INFO, ERROR
 from logging.handlers import SMTPHandler, RotatingFileHandler

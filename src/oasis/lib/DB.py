@@ -13,6 +13,8 @@
 import psycopg2
 import cPickle
 import datetime
+import _strptime  # import should prevent thread import blocking issues
+                  # ask Google about:     AttributeError: _strptime
 import json
 
 from logging import log, INFO, WARN, ERROR

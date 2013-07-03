@@ -10,6 +10,8 @@
 import time
 import json
 import datetime
+import _strptime  # import should prevent thread import blocking issues
+                  # ask Google about:     AttributeError: _strptime
 from logging import log, INFO, ERROR
 
 from .DB import run_sql, dbpool, MC

@@ -20,6 +20,8 @@ import sys
 import traceback
 import datetime
 import time
+import _strptime  # import should prevent thread import blocking issues
+                  # ask Google about:     AttributeError: _strptime
 import jinja2
 
 from logging import log, INFO, WARN, ERROR
