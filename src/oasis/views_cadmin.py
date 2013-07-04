@@ -302,15 +302,24 @@ def cadmin_exam_results(course_id, exam_id):
 
     groups = [Groups.Group(g_id=g_id) for g_id in Groups.active_by_course(course_id)]
     results = {}
+    uids = set([])
     for group in groups:
         results[group.id] = Exams.get_marks(group, exam_id)
+        for user_id in results[group.id]:
+            uids.add(user_id)
 
+    questions = Exams.get_qts_list(exam_id)
+    users = {}
+    for uid in uids:
+        users[uid] = Users2.get_user(uid)
     return render_template(
         "cadmin_examresults.html",
         course=course,
         exam=exam,
         results=results,
-        groups=groups
+        groups=groups,
+        users=users,
+        questions=questions
     )
 
 

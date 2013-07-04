@@ -12,14 +12,46 @@
 
   <div class="container-fluid well">
     <h5>Assessment Results</h5>
-
     <br/>
   {% for group in groups %}
       <h4>{{ group.title }}</h4>
-      <table class='table table-condensed'>
+      <table class='table table-condensed datatable'>
+      <tr><th>uname</th><th>Family Name</th><th>Given Name</th><th>ID</th>
+
+
+       {% for question in questions %}
+           <th>
+                      {% for qt in question %}
+                          {{ qt['position'] }}
+                          {% endfor %}
+           </th>
+                          {% endfor %}
+      <th>Total</th>
+       </tr>
+
           {% for user_id, result in results[group.id].iteritems() %}
-              <tr><td>{{ user_id }}</td><td>{{ result }}</td></tr>
+              <tr><td>{{ users[user_id]['uname'] }}</td>
+                  <td>{{ users[user_id]['familyname'] }}</td>
+                  <td>{{ users[user_id]['givenname'] }}</td>
+              <td>{{ users[user_id]['studentid'] }}</td>
+
+                  {% for question in questions %}<td>
+                      {% for qt in question %}
+
+                        {% if qt['id'] in result %}
+                  {{ result[qt['id']]['score'] }}&nbsp;
+                            {% else %}
+                            -- &nbsp;
+                      {% endif %}
+
+
+                      {% endfor %}
+                           </td>
+                      {% endfor %}
+<td></td>
+                      </tr>
           {% endfor %}
+
       </table>
   {% endfor %}
 

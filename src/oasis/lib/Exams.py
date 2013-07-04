@@ -520,8 +520,7 @@ def get_marks(group, exam_id):
     results = {}
 
     sql = """
-        SELECT u.id, u.givenname, u.familyname, u.student_id, u.uname, u.email,
-               q.qtemplate, q.score, q.name
+        SELECT u.id, q.qtemplate, q.score
         FROM users AS u,
              questions AS q,
              usergroups AS ug
@@ -537,12 +536,9 @@ def get_marks(group, exam_id):
         user_id = row[0]
         if not user_id in results:
             results[user_id] = {}
-        qtemplate = row[6]
+        qtemplate = row[1]
         results[user_id][qtemplate] = {
-            'user_id': row[0],
-            'uname': row[4],
-            'score': row[7],
-            'qtemplate': qtemplate
+            'score': row[2]
         }
 
     return results
