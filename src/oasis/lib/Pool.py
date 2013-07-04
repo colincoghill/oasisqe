@@ -123,19 +123,19 @@ class fileCache(object):
         if value is False:
             # We want to delete the item from the cache
             try:
-                os.unlink("%s/%s/DATA" % (self.cachedir, key))
+                os.unlink(os.path.join(self.cachedir, key, "DATA"))
             except OSError:
                 # this usually happens when the file is already gone
                 pass
             return
-        if not os.access("%s/%s" % (self.cachedir, key), os.W_OK):
+        if not os.access(os.path.join(self.cachedir, key), os.W_OK):
             try:
-                os.makedirs("%s/%s" % (self.cachedir, key))
+                os.makedirs(os.path.join(self.cachedir, key))
             except IOError:
                 log(ERROR,
                     "Can't create cache in %s/%s" % (self.cachedir, key))
         try:
-            fptr = open("%s/%s/DATA" % (self.cachedir, key), "wb")
+            fptr = open(os.path.join(self.cachedir, key, "DATA"), "wb")
             fptr.write(value)
             fptr.close()
         except IOError, err:
@@ -147,16 +147,16 @@ class fileCache(object):
     def getFilename(self, key):
         """ return the full path to the on-disk file """
         try:
-            fptr = open("%s/%s/DATA" % (self.cachedir, key), "r")
+            fptr = open(os.path.join(self.cachedir, key, "DATA"), "r")
         except IOError:
             return False, False
         fptr.close()
-        return "%s/%s/DATA" % (self.cachedir, key), True
+        return os.path.join(self.cachedir, key, "DATA"), True
 
     def get(self, key):
         """ fetch item. """
         try:
-            fptr = open("%s/%s/DATA" % (self.cachedir, key), "r")
+            fptr = open(os.path.join(self.cachedir, key, "DATA"), "r")
         except IOError:
             return False, False
         try:

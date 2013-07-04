@@ -17,17 +17,16 @@ cp = SafeConfigParser()
 
 mydir = os.path.dirname(os.path.realpath(__file__))
 
-if not cp.read("%s/defaults.ini" % mydir):
+if not cp.read(os.path.join(os.path.sep, mydir, "defaults.ini")):
     sys.exit("Unable to read configuration defaults %s/defaults.ini" % mydir)
 
-cp.read(['%s/defaults.ini' % mydir, '/etc/oasisqe.ini'])
-
+cp.read([os.path.join(mydir, 'defaults.ini'), os.path.join(os.path.sep, 'etc', 'oasisqe.ini')])
 
 parentURL = cp.get("web", "url")
 statichost = cp.get("web", "statichost")
 staticpath = cp.get("web", "staticpath")
 default = cp.get("web", "default")
-staticURL = statichost + "/" + staticpath
+staticURL = os.path.join(statichost, staticpath)
 homedir = cp.get("app", "homedir")
 secretkey = cp.get("app", "secretkey")
 admin_list = cp.get("app", "email_admins")
@@ -55,4 +54,6 @@ logfile = cp.get("app", "logfile")
 profile_log = cp.get("app", "profile_log")
 feed_path = cp.get("app", "feed_path")
 open_registration = cp.getboolean("web", "open_registration")
+enable_local_login = cp.getboolean("web", "enable_local_login")
+enable_webauth_login = cp.getboolean("web", "enable_webauth_login")
 

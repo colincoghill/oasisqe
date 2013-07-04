@@ -4,13 +4,14 @@
 # http://www.gnu.org/licenses/agpl-3.0.html
 
 """ Main entry point. This uses Flask to provide a WSGI app, it should be
-run from a WSGI web server such as Apache or Nginx. """
+    run from a WSGI web server such as Apache or Nginx. """
 
 # We include the views covering logging in/out and account signup and related.
 
 from flask import Flask, session, redirect, url_for, request, \
     render_template, flash, abort
 import datetime
+import os
 import _strptime  # import should prevent thread import blocking issues
                   # ask Google about:     AttributeError: _strptime
 import logging
@@ -26,9 +27,9 @@ from oasis.lib.Audit import audit
 from oasis.lib.Permissions import satisfy_perms
 
 app = Flask(__name__,
-            template_folder=OaConfig.homedir + "/templates",
-            static_folder=OaConfig.homedir + "/static",
-            static_url_path="/" + OaConfig.staticpath + "static")
+            template_folder=os.path.join(OaConfig.homedir, "templates"),
+            static_folder=os.path.join(OaConfig.homedir, "static"),
+            static_url_path=os.path.join(os.path.sep, OaConfig.staticpath, "static"))
 app.secret_key = OaConfig.secretkey
 app.config['MAX_CONTENT_LENGTH'] = 8 * 1024 * 1024  # 8MB max file size upload
 
@@ -85,7 +86,9 @@ def template_context():
         'today': today,
         'auth_type': auth_type,
         'feed_path': OaConfig.feed_path,
-        'open_registration': OaConfig.open_registration
+        'open_registration': OaConfig.open_registration,
+        'enable_local_login': OaConfig.enable_local_login,
+        'enable_webauth_login': OaConfig.enable_webauth_login,
     }}
 
 
@@ -325,11 +328,11 @@ def login_forgot_pass_submit():
               "that account.")
         return redirect(url_for("login_forgot_pass"))
 
-    text_body = render_template("email/forgot_pass.txt", code=code)
-    html_body = render_template("email/forgot_pass.html", code=code)
+    text_body = render_template(os.path.join("email", "forgot_pass.txt"), code=code)
+    html_body = render_template(os.path.join("email", "forgot_pass.html"), code=code)
     send_email(user['email'],
                from_addr=None,
-               subject = "OASIS Password Reset",
+               subject="OASIS Password Reset",
                text_body=text_body,
                html_body=html_body)
 
@@ -437,8 +440,8 @@ def login_signup_submit():
                           confirm=False)
     Users2.set_password(newuid, password)
 
-    text_body = render_template("email/confirmation.txt", code=code)
-    html_body = render_template("email/confirmation.html", code=code)
+    text_body = render_template(os.path.join("email", "confirmation.txt"), code=code)
+    html_body = render_template(os.path.join("email", "confirmation.html"), code=code)
     send_email(email,
                from_addr=None,
                subject="OASIS Signup Confirmation",
