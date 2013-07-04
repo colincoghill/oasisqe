@@ -3,12 +3,13 @@ oasisqe
 
 OASIS Question Engine
 
-Current Status:  first release, 3.9.1, is "minimal usable". You can use it to sign up, and admin
-can assign users permission to create questions for practicing.
+Current Status:  second pre-release, 3.9.2. 
 
-Priority for second release is user account/course enrolment management.
+This has most of the functionality of the original OASIS system, but still needs
+a lot more documentation and testing.
 
-After that, I'll work on the main web site, at:  https://www.oasisqe.com/
+Priority for third release is testing, documentation, and integration with other systems.
+
 
 Download
 ========
@@ -20,7 +21,7 @@ http://www.oasisqe.com/downloads
 Documentation
 =============
 
-(Early) documentation is being assembled at https://github.com/colincoghill/oasisqe-docs
+(Early) documentation is being assembled at https://www.oasisqe.com/docs
 
 A copy of the (outdated) 2004 OASIS Manual is at: http://www.oasisqe.com/downloads/docs/OASIS%20User%20Manual%20Ed%201%20Dec%202004.doc
 
@@ -51,7 +52,7 @@ successfully by us. The University does not, however, otherwise endorse it or co
 of other users.
 
 Feel free to download the software, as it is, and try it out. If you find it useful, use it!
-Right now it's mostly complete, but I've disabled several useful features that aren't 100%,
+Right now it's mostly complete, but needs more documentation and testing.
 I'm working on that now, along with some sample content.
 
 If you have any suggestions or improvements, please contact me.
