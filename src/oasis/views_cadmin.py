@@ -71,7 +71,7 @@ def cadmin_config(course_id):
     is_sysadmin = check_perm(user_id, -1, 'sysadmin')
     coords = [Users2.get_user(perm[0])
               for perm in Permissions.get_course_perms(course_id)
-              if perm[1] == 3] # course_coord
+              if perm[1] == 3]  # course_coord
     groups = Courses.get_groups(course_id)
     choosegroups = [group
                     for group in Groups.all_groups()

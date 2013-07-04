@@ -84,14 +84,20 @@
 <br><br>
 
 <div class="container main">
-
+{% if cf.enable_local_login %}
   <div class="row">
-    <center>
-      <p><a href="{{ cf.url }}login/local" class="btn btn-primary">Log
-        In</a>
-    </center>
+
+      <p><a href="{{ cf.url }}login/local" class="btn btn-primary">Local Log In</a>
 
   </div>
+    {% endif %}
+{% if cf.enable_webauth_login %}
+  <div class="row">
+
+      <p><a href="{{ cf.url }}login/webauth/submit" class="btn btn-primary">Central Log In</a>
+
+  </div>
+    {% endif %}
   <br/><br/>
   <br/><br/>
   <br/><br/>
