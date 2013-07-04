@@ -303,10 +303,15 @@ def cadmin_exam_results(course_id, exam_id):
     groups = [Groups.Group(g_id=g_id) for g_id in Groups.active_by_course(course_id)]
     results = {}
     uids = set([])
+    totals = {}
     for group in groups:
         results[group.id] = Exams.get_marks(group, exam_id)
         for user_id in results[group.id]:
             uids.add(user_id)
+            if not user_id in totals:
+                totals[user_id] = 0.0
+            for qt, val in results[group.id][user_id].iteritems():
+                totals[user_id] += val['score']
 
     questions = Exams.get_qts_list(exam_id)
     users = {}
@@ -319,7 +324,9 @@ def cadmin_exam_results(course_id, exam_id):
         results=results,
         groups=groups,
         users=users,
-        questions=questions
+        questions=questions,
+        when=datetime.now().strftime("%H:%m, %a %d %b %Y"),
+        totals=totals
     )
 
 

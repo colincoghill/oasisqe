@@ -11,12 +11,16 @@
   </div>
 
   <div class="container-fluid well">
-    <h5>Assessment Results</h5>
+    <h3>{{ exam.title }}</h3>
+  <h4>Results</h4>
+  <p>As at {{ when }}</p>
     <br/>
   {% for group in groups %}
       <h4>{{ group.title }}</h4>
       <table class='table table-condensed datatable'>
+      <thead>
       <tr><th>uname</th><th>Family Name</th><th>Given Name</th><th>ID</th>
+
 
 
        {% for question in questions %}
@@ -28,6 +32,8 @@
                           {% endfor %}
       <th>Total</th>
        </tr>
+      </thead>
+      <tbody>
 
           {% for user_id, result in results[group.id].iteritems() %}
               <tr><td>{{ users[user_id]['uname'] }}</td>
@@ -48,11 +54,13 @@
                       {% endfor %}
                            </td>
                       {% endfor %}
-<td></td>
+<th>{{ totals[user_id] }}</th>
                       </tr>
-          {% endfor %}
 
+          {% endfor %}
+</tbody>
       </table>
+      <br/>
   {% endfor %}
 
   </div>
@@ -61,3 +69,15 @@
 
 
 {% endblock body %}
+{% block js %}
+    <script>
+ $(function () {
+      $(".datatable").dataTable({
+            "bPaginate": false,
+            "bLengthChange": false,
+            "bFilter": false
+              }
+      );
+ });
+     </script>
+{% endblock js %}
