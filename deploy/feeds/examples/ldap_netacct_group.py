@@ -13,7 +13,7 @@ import ldap
 import re
 import ConfigParser
 
-INPUT_ENCODING='iso-8859-1'
+INPUT_ENCODING = 'iso-8859-1'
 
 CONFIG_FILE = "/etc/foe/oasis/ldap_config.ini"
 
@@ -27,10 +27,10 @@ def fetch_upids_in_ldap_group(server, binddn, password, base, groupname):
 
         conn = ldap.initialize(server)
         conn.bind_s(binddn, password)
-        search = conn.search_s(base,ldap.SCOPE_SUBTREE,'(cn=' + groupname + ')',['member'])
+        search = conn.search_s(base, ldap.SCOPE_SUBTREE, '(cn=' + groupname + ')', ['member'])
 
         res = []
-        for group,members in search:
+        for group, members in search:
                 if members:
                         for user in members['member']:
                             res.append(cn_to_username(user))
@@ -41,10 +41,10 @@ def fetch_upids_in_ldap_group(server, binddn, password, base, groupname):
 cp = ConfigParser.ConfigParser()
 cp.read(CONFIG_FILE)
 
-server = cp.get('ldap','server')
+server = cp.get('ldap', 'server')
 binddn = cp.get('ldap', 'binddn')
 password = cp.get('ldap', 'passwd')
-base = cp.get('ldap','gbase')
+base = cp.get('ldap', 'gbase')
 
 groupname = sys.argv[1]
 
