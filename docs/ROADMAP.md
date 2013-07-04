@@ -22,7 +22,6 @@ Focus:   Integration with external auth/enrolment information. User account/clas
 
 Install:
 
- * Enrol in (open) course
  * Better error checking or handling of permissions on log file & cache
 
 Testing:
@@ -54,6 +53,7 @@ Assess:
 
 Other:
  * Way to delete/deactivate an account
+ * Enrol in (open) course
 
 3.9.4 OSS Release
 =================
