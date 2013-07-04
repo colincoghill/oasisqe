@@ -20,17 +20,13 @@ documentation, non-Linux installs, plugins, etc, and how to get other developers
 
 Focus:   Integration with external auth/enrolment information. User account/class management.
 
-
 Install:
- * Configurable login page
- * Use Apache web server for auth
-    - What do we do with default accounts
+
  * Enrol in (open) course
  * Better error checking or handling of permissions on log file & cache
 
 Testing:
  * Test visibility of topics/questions to unenrolled but valid accounts.
- * Check stats are correct when starting from empty db.
 
 Documentation
 
@@ -44,7 +40,7 @@ Documentation
 
 Focus: Assessment
 
-The assessment section has been mostly brought over from the previous system, but a few minor 
+The assessment section has been mostly brought over from the previous system, but a few minor
 bugs still remain and it needs more testing.
 
 Assessment edit:
@@ -65,11 +61,11 @@ Other:
 
 Focus:  Question Editing
 
- * The "numeric question editor" has not yet been brought over from the previous system, 
+ * The "numeric question editor" has not yet been brought over from the previous system,
    and it has a few serious bugs.
 
 Fix and re-enable Numeric Question Editor
- * Integrate with 3.8
+ * Integrate with 3.9
  * Question renaming
  * Large and small numbers
 
