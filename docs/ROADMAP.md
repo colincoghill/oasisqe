@@ -14,11 +14,15 @@ equivalent to the old one. After that (version 4.1+) I want to seriously think a
 documentation, non-Linux installs, plugins, etc, and how to get other developers involved.
 
 
-
-3.9.2 OSS Release
+3.9.3 OSS Release
 =================
+(This will also be the UoA release for Semester Two, 2013)
 
-Focus:   Integration with external auth/enrolment information. User account/class management.
+Focus:   Further integration with external auth/enrolment information. User account/class management.
+
+The assessment section has been mostly brought over from the previous system, but a few minor
+bugs still remain and it needs more testing.
+
 
 Install:
 
@@ -34,14 +38,6 @@ Documentation
  * Basic Question Creation Documentation
 
 
-3.9.3 OSS Release
-=================
-
-Focus: Assessment
-
-The assessment section has been mostly brought over from the previous system, but a few minor
-bugs still remain and it needs more testing.
-
 Assessment edit:
  * start/end times give odd error messages sometimes.
  * Can create assessment with blank question - causes error when it's started
@@ -55,9 +51,9 @@ Other:
  * Way to delete/deactivate an account
  * Enrol in (open) course
 
+
 3.9.4 OSS Release
 =================
-(This will also be the UoA release for Semester Two, 2013)
 
 Focus:  Question Editing
 

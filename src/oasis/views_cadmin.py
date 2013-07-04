@@ -375,13 +375,27 @@ def cadmin_exam_viewmarked(course_id, exam_id, student_uid):
     marktime = Exams.get_mark_time(exam_id, student_uid)
     firstview = Exams.get_student_start_time(exam_id, student_uid)
     submittime = Exams.get_submit_time(exam_id, student_uid)
-    datemarked = General.human_date(marktime)
-    datefirstview = General.human_date(firstview)
-    datesubmit = General.human_date(submittime)
+
+    try:
+        datemarked = General.human_date(marktime)
+    except AttributeError:
+        datemarked = None
+    try:
+        datefirstview = General.human_date(firstview)
+    except AttributeError:
+        datefirstview = None
+    try:
+        datesubmit = General.human_date(submittime)
+    except AttributeError:
+        datesubmit = None
+
     user = Users2.get_user(student_uid)
 
-    taken = submittime-firstview
-    takenmins = (taken.seconds/60)
+    if submittime and firstview:
+        taken = submittime-firstview
+        takenmins = (taken.seconds/60)
+    else:
+        takenmins = None
 
     return render_template(
         "cadmin_markedresult.html",
