@@ -263,8 +263,8 @@ def active_by_course(course_id):
            WHERE "ugroups"."active" = TRUE
              AND "groupcourses"."groupid" = "ugroups"."id"
              AND "groupcourses"."course" = %s
-             AND "ugroups"."period" = "periods"."id"
-             AND "periods"."finish" > NOW();;""",
+             AND "ugroups"."period" = "periods"."id";""",
+#             AND "periods"."finish" > NOW();;""",
         (course_id,))
     groups = {}
     if ret:
