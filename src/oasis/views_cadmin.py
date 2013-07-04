@@ -15,7 +15,7 @@ from flask import render_template, session, request, redirect, \
     abort, url_for, flash
 
 from oasis.lib import OaConfig, Users2, DB, Topics, Permissions, \
-    Exams, Courses, Courses2, Setup, CourseAdmin, Groups
+    Exams, Courses, Courses2, Setup, CourseAdmin, Groups, General, Assess
 
 MYPATH = os.path.dirname(__file__)
 
@@ -330,10 +330,10 @@ def cadmin_exam_results(course_id, exam_id):
     )
 
 
-@app.route("/cadmin/<int:course_id>/editexam/<int:exam_id>")
-@require_course_perm(("examcreate", "coursecoord", "courseadmin"))
-def cadmin_edit_exam(course_id, exam_id):
-    """ Provide a form to edit an assessment """
+@app.route("/cadmin/<int:course_id>/exam/<int:exam_id>/<int:group_id>/export.csv")
+@require_course_perm(("coursecoord", "courseadmin","viewmarks"))
+def cadmin_export_csv(course_id, exam_id, group_id):
+    """ Send the group results as a CSV file """
     course = Courses2.get_course(course_id)
     if not course:
         abort(404)
@@ -357,6 +357,34 @@ def cadmin_edit_exam(course_id, exam_id):
         "exam_edit.html",
         course=course,
         exam=exam
+    )
+
+
+@app.route("/cadmin/<int:course_id>/exam/<int:exam_id>/view/<int:student_uid>")
+@require_course_perm(("coursecoord", "courseadmin", "viewmarks"))
+def cadmin_exam_viewmarked(course_id, exam_id, student_uid):
+    """  Show a student's marked assessment results """
+
+    course = Courses2.get_course(course_id)
+    try:
+        exam = Exams.get_exam_struct(exam_id, course_id)
+    except KeyError:
+        exam = {}
+        abort(404)
+    results, examtotal = Assess.render_own_marked_exam(student_uid, exam_id)
+    datemarked = General.human_date(Exams.get_mark_time(exam_id, student_uid))
+    datesubmit = General.human_date(Exams.get_submit_time(exam_id, student_uid))
+    user = Users2.get_user(student_uid)
+
+    return render_template(
+        "cadmin_markedresult.html",
+        course=course,
+        exam=exam,
+        results=results,
+        examtotal=examtotal,
+        datesubmit=datesubmit,
+        datemarked=datemarked,
+        user=user
     )
 
 

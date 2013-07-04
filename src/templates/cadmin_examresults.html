@@ -1,83 +1,93 @@
 {% extends "page_courseadmin.html" %}
 {% block body %}
 
-  <div class="container-fluid" xmlns="http://www.w3.org/1999/html">
-    <br>
+    <div class="container-fluid" xmlns="http://www.w3.org/1999/html">
+        <br>
 
+        <p>Return to <a href="{{ cf.url }}cadmin/{{ course.id }}/top">Course
+            Admin</a></p>
+
+        <h2>{{ course.name }} ({{ course.title }})</h2>
+    </div>
+
+    <div class="container-fluid well">
+        <h3>{{ exam.title }}</h3>
+        <h4>Results</h4>
+
+        <p>As at {{ when }}</p>
+        <br/>
+        {% for group in groups %}
+            <h4>{{ group.title }}</h4>
+            <a class='btn btn-mini btn-info' href='{{ cf.url }}cadmin/{{course.id }}/exam/{{ exam.id }}/{{ group.id }}/export.csv'>Download</a>
+            <table class='table table-condensed datatable'>
+                <thead>
+                <tr>
+                    <th>uname</th>
+                    <th>Family Name</th>
+                    <th>Given Name</th>
+                    <th>ID</th>
+
+
+
+                    {% for question in questions %}
+                        <th>
+                            {% for qt in question %}
+                                {{ qt['position'] }}
+                            {% endfor %}
+                        </th>
+                    {% endfor %}
+                    <th>Total</th>
+                <th></th>
+                </tr>
+                </thead>
+                <tbody>
+
+                {% for user_id, result in results[group.id].iteritems() %}
+                    <tr>
+                        <td>{{ users[user_id]['uname'] }}</td>
+                        <td>{{ users[user_id]['familyname'] }}</td>
+                        <td>{{ users[user_id]['givenname'] }}</td>
+                        <td>{{ users[user_id]['studentid'] }}</td>
+
+                        {% for question in questions %}
+                            <td>
+                            {% for qt in question %}
+
+                                {% if qt['id'] in result %}
+                                    {{ result[qt['id']]['score'] }}&nbsp;
+                                {% else %}
+                                    -- &nbsp;
+                                {% endif %}
+
+
+                            {% endfor %}
+                            </td>
+                        {% endfor %}
+                        <th>{{ totals[user_id] }}</th>
+                    <th><a class='btn btn-mini' target='_new' href='{{ cf.url }}cadmin/{{ course.id }}/exam/{{ exam.id }}/view/{{ user_id }}'>View</a></th>
+                    </tr>
+
+                {% endfor %}
+                </tbody>
+            </table>
+            <br/>     <br/>
+        {% endfor %}
+
+    </div>
     <p>Return to <a href="{{ cf.url }}cadmin/{{ course.id }}/top">Course
-      Admin</a></p>
-
-    <h2>{{ course.name }} ({{ course.title }})</h2>
-  </div>
-
-  <div class="container-fluid well">
-    <h3>{{ exam.title }}</h3>
-  <h4>Results</h4>
-  <p>As at {{ when }}</p>
-    <br/>
-  {% for group in groups %}
-      <h4>{{ group.title }}</h4>
-      <table class='table table-condensed datatable'>
-      <thead>
-      <tr><th>uname</th><th>Family Name</th><th>Given Name</th><th>ID</th>
-
-
-
-       {% for question in questions %}
-           <th>
-                      {% for qt in question %}
-                          {{ qt['position'] }}
-                          {% endfor %}
-           </th>
-                          {% endfor %}
-      <th>Total</th>
-       </tr>
-      </thead>
-      <tbody>
-
-          {% for user_id, result in results[group.id].iteritems() %}
-              <tr><td>{{ users[user_id]['uname'] }}</td>
-                  <td>{{ users[user_id]['familyname'] }}</td>
-                  <td>{{ users[user_id]['givenname'] }}</td>
-              <td>{{ users[user_id]['studentid'] }}</td>
-
-                  {% for question in questions %}<td>
-                      {% for qt in question %}
-
-                        {% if qt['id'] in result %}
-                  {{ result[qt['id']]['score'] }}&nbsp;
-                            {% else %}
-                            -- &nbsp;
-                      {% endif %}
-
-
-                      {% endfor %}
-                           </td>
-                      {% endfor %}
-<th>{{ totals[user_id] }}</th>
-                      </tr>
-
-          {% endfor %}
-</tbody>
-      </table>
-      <br/>
-  {% endfor %}
-
-  </div>
-  <p>Return to <a href="{{ cf.url }}cadmin/{{ course.id }}/top">Course
-    Admin</a></p>
+        Admin</a></p>
 
 
 {% endblock body %}
 {% block js %}
     <script>
- $(function () {
-      $(".datatable").dataTable({
-            "bPaginate": false,
-            "bLengthChange": false,
-            "bFilter": false
-              }
-      );
- });
-     </script>
+        $(function () {
+            $(".datatable").dataTable({
+                        "bPaginate": false,
+                        "bLengthChange": false,
+                        "bFilter": false
+                    }
+            );
+        });
+    </script>
 {% endblock js %}
