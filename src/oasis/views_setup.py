@@ -9,15 +9,15 @@
 import os
 
 from flask import render_template, session, \
-    request, redirect, url_for, flash
+    request, redirect, url_for, flash, abort
 
-from .lib import Users2, General, Exams, \
+from oasis.lib import Users2, General, Exams, \
     Courses2, Setup
 
 MYPATH = os.path.dirname(__file__)
 
-from .lib.Audit import audit, get_records_by_user
-from .lib.Permissions import check_perm, satisfy_perms, add_perm, delete_perm
+from oasis.lib.Audit import audit, get_records_by_user
+from oasis.lib.Permissions import check_perm, satisfy_perms, add_perm, delete_perm
 
 from oasis import app, authenticated
 
@@ -244,9 +244,9 @@ def setup_change_pass():
     )
 
 
-@app.route("/setup/user/make_admin/<int:new_user>")
+@app.route("/setup/user/make_admin", methods=['POST', ])
 @authenticated
-def setup_user_make_sysadmin(new_user):
+def setup_user_make_sysadmin():
     """ Make them a sysadmin"""
     user_id = session['user_id']
 
@@ -254,15 +254,18 @@ def setup_user_make_sysadmin(new_user):
         flash("You do not have User Administration access.")
         return redirect(url_for('setup_top'))
 
+    new_user = request.form.get('userid', None)
+    if not new_user:
+        abort(400)
     user = Users2.get_user(new_user)
     add_perm(new_user, 0, 1)
     flash("%s is now a system admin on OASIS" % user['uname'])
     return redirect(url_for("setup_usersearch"))
 
 
-@app.route("/setup/user/remove_admin/<int:new_user>")
+@app.route("/setup/user/remove_admin", methods=['POST', ])
 @authenticated
-def setup_user_remove_sysadmin(new_user):
+def setup_user_remove_sysadmin():
     """ Remove sysadmin"""
     user_id = session['user_id']
 
@@ -270,6 +273,9 @@ def setup_user_remove_sysadmin(new_user):
         flash("You do not have User Administration access.")
         return redirect(url_for('setup_top'))
 
+    new_user = request.form.get('userid', None)
+    if not new_user:
+        abort(400)
     user = Users2.get_user(new_user)
     delete_perm(new_user, 0, 1)
     flash("%s is no longer a system admin on OASIS" % user['uname'])

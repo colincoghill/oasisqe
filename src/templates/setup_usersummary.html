@@ -70,10 +70,15 @@
             <h5>Systems Administrator Options</h5>
 
             {% if user_is_admin %}
-        <a class='btn btn-danger' href='{{ cf.url }}setup/user/remove_admin/{{ user.id }}'>Remove Admin</a>
+                <form method='post' action='{{ cf.url }}setup/user/remove_admin'>
+                <input type='hidden' name='userid' value='{{ user.id }}'>
+                 <input type='submit' class='btn btn-danger' name='submit' value='Remove Admin'>
+                </form>
                 {% else %}
-
-                <a class='btn btn-danger' href='{{ cf.url }}setup/user/make_admin/{{ user.id }}'>Make Admin</a>
+                    <form method='post' action='{{ cf.url }}setup/user/make_admin'>
+                    <input type='hidden' name='userid' value='{{ user.id }}'>
+                    <input type='submit' class='btn btn-danger' name='submit' value='Make Admin'>
+                    </form>
                 <p>WARNING: This will give them full control over OASIS, including access to all data stored in it.</p>
 
                 {% endif %}
