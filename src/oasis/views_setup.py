@@ -202,7 +202,7 @@ def setup_usersummary(view_id):
     for course_id in course_ids:
         courses.append(Courses2.get_course(course_id))
 
-    user_is_admin = check_perm(view_id, -1, 'sysadmin')
+    user_is_admin = check_perm(view_id, 0, 'sysadmin')
     return render_template(
         'setup_usersummary.html',
         user=user,
@@ -250,12 +250,11 @@ def setup_user_make_sysadmin(new_user):
     """ Make them a sysadmin"""
     user_id = session['user_id']
 
-    if not check_perm(user_id, -1, "sysadmin"):
+    if not check_perm(user_id, 0, 1):
         flash("You do not have User Administration access.")
         return redirect(url_for('setup_top'))
 
     user = Users2.get_user(new_user)
-    add_perm(new_user, 0, 0)
     add_perm(new_user, 0, 1)
     flash("%s is now a system admin on OASIS" % user['uname'])
     return redirect(url_for("setup_usersearch"))
@@ -267,12 +266,11 @@ def setup_user_remove_sysadmin(new_user):
     """ Remove sysadmin"""
     user_id = session['user_id']
 
-    if not check_perm(user_id, -1, "sysadmin"):
+    if not check_perm(user_id, 0, 1):
         flash("You do not have User Administration access.")
         return redirect(url_for('setup_top'))
 
     user = Users2.get_user(new_user)
-    delete_perm(new_user, 0, 0)
     delete_perm(new_user, 0, 1)
     flash("%s is no longer a system admin on OASIS" % user['uname'])
     return redirect(url_for("setup_usersearch"))
