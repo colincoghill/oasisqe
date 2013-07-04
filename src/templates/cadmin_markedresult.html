@@ -5,12 +5,14 @@
   <H3>{{ exam.title }}</H3>
   <p>{% if user.fullname %}<b>{{ user.fullname }}</b>{% endif %} {% if user.uname %}<b>
     {{ user.uname }}</b>{% endif %}</p>
+    <p>{% if datefirstview %}<b>Started:</b> {{ datefirstview }}{% endif %}</p>
   <p>{% if datesubmit %}<b>Submitted:</b> {{ datesubmit }}{% endif %}</p>
   <p>{% if datemarked %}<b>Marked:</b> {{ datemarked }}{% endif %}</p>
+    <p>{% if taken %}<b>Time Taken:</b> {{ taken }} min{% endif %}</p>
   <div>
     <div class="container-fluid well">
       <h3>Results</h3>
-      <table class="table">
+      <table class="table table-condensed">
         <thead>
         <tr>
           <th></th>

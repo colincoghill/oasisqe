@@ -372,9 +372,16 @@ def cadmin_exam_viewmarked(course_id, exam_id, student_uid):
         exam = {}
         abort(404)
     results, examtotal = Assess.render_own_marked_exam(student_uid, exam_id)
-    datemarked = General.human_date(Exams.get_mark_time(exam_id, student_uid))
-    datesubmit = General.human_date(Exams.get_submit_time(exam_id, student_uid))
+    marktime = Exams.get_mark_time(exam_id, student_uid)
+    firstview = Exams.get_student_start_time(exam_id, student_uid)
+    submittime = Exams.get_submit_time(exam_id, student_uid)
+    datemarked = General.human_date(marktime)
+    datefirstview = General.human_date(firstview)
+    datesubmit = General.human_date(submittime)
     user = Users2.get_user(student_uid)
+
+    taken = submittime-firstview
+    takenmins = (taken.seconds/60)
 
     return render_template(
         "cadmin_markedresult.html",
@@ -384,6 +391,8 @@ def cadmin_exam_viewmarked(course_id, exam_id, student_uid):
         examtotal=examtotal,
         datesubmit=datesubmit,
         datemarked=datemarked,
+        datefirstview=datefirstview,
+        taken=takenmins,
         user=user
     )
 

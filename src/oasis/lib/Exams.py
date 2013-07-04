@@ -520,7 +520,7 @@ def get_marks(group, exam_id):
     results = {}
 
     sql = """
-        SELECT u.id, q.qtemplate, q.score
+        SELECT u.id, q.qtemplate, q.score, q.firstview, q.marktime
         FROM users AS u,
              questions AS q,
              usergroups AS ug
@@ -538,7 +538,9 @@ def get_marks(group, exam_id):
             results[user_id] = {}
         qtemplate = row[1]
         results[user_id][qtemplate] = {
-            'score': row[2]
+            'score': row[2],
+            'firstview': row[3],
+            'marktime': row[4]
         }
 
     return results
