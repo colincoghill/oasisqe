@@ -17,7 +17,7 @@ from .lib import Users2, General, Exams, \
 MYPATH = os.path.dirname(__file__)
 
 from .lib.Audit import audit, get_records_by_user
-from .lib.Permissions import check_perm, satisfy_perms
+from .lib.Permissions import check_perm, satisfy_perms, add_perm, delete_perm
 
 from oasis import app, authenticated
 
@@ -182,6 +182,8 @@ def setup_usersummary(view_id):
         flash("You do not have User Administration access.")
         return redirect(url_for('setup_top'))
 
+    is_sysadmin = check_perm(user_id, -1, 'sysadmin')
+
     user = Users2.get_user(view_id)
     examids = Exams.get_exams_done(view_id)
     exams = []
@@ -199,11 +201,15 @@ def setup_usersummary(view_id):
     courses = []
     for course_id in course_ids:
         courses.append(Courses2.get_course(course_id))
+
+    user_is_admin = check_perm(view_id, -1, 'sysadmin')
     return render_template(
         'setup_usersummary.html',
         user=user,
         exams=exams,
-        courses=courses
+        courses=courses,
+        is_sysadmin=is_sysadmin,
+        user_is_admin=user_is_admin
     )
 
 
@@ -214,21 +220,6 @@ def setup_myprofile():
     user_id = session['user_id']
 
     user = Users2.get_user(user_id)
-#    examids = Exams.getExamsDone(user_id)
-#    exams = []
-#   for examid in examids:
-#        exam = Exams.getExamStruct(examid)
-#        started = OaGeneral.humanDate(exam['start'])
-#        exam['started'] = started
-
-#        if satisfyPerms(user_id, exam['cid'], ("viewmarks", )):
-#           exam['viewable'] = True
-#        else:
-#            exam['viewable'] = False
-
-#        exams.append(exam)
-#    exams.sort(key=lambda x: x['start_epoch'], reverse=True)
-
     course_ids = Users2.get_courses(user_id)
     courses = []
     for course_id in course_ids:
@@ -237,7 +228,6 @@ def setup_myprofile():
         'setup_myprofile.html',
         user=user,
         courses=courses
-        # exams=exams
     )
 
 
@@ -252,6 +242,40 @@ def setup_change_pass():
         'setup_changepassword.html',
         user=user,
     )
+
+
+@app.route("/setup/user/make_admin/<int:new_user>")
+@authenticated
+def setup_user_make_sysadmin(new_user):
+    """ Make them a sysadmin"""
+    user_id = session['user_id']
+
+    if not check_perm(user_id, -1, "sysadmin"):
+        flash("You do not have User Administration access.")
+        return redirect(url_for('setup_top'))
+
+    user = Users2.get_user(new_user)
+    add_perm(new_user, 0, 0)
+    add_perm(new_user, 0, 1)
+    flash("%s is now a system admin on OASIS" % user['uname'])
+    return redirect(url_for("setup_usersearch"))
+
+
+@app.route("/setup/user/remove_admin/<int:new_user>")
+@authenticated
+def setup_user_remove_sysadmin(new_user):
+    """ Remove sysadmin"""
+    user_id = session['user_id']
+
+    if not check_perm(user_id, -1, "sysadmin"):
+        flash("You do not have User Administration access.")
+        return redirect(url_for('setup_top'))
+
+    user = Users2.get_user(new_user)
+    delete_perm(new_user, 0, 0)
+    delete_perm(new_user, 0, 1)
+    flash("%s is no longer a system admin on OASIS" % user['uname'])
+    return redirect(url_for("setup_usersearch"))
 
 
 @app.route("/setup/changepass_submit", methods=["POST", ])

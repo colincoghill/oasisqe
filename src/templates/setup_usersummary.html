@@ -62,6 +62,20 @@
                 {% endfor %}
             </table>
             -->
+    {% if user_is_admin %}
+        <span class='alert alert-info'>This user is a SYSTEM ADMIN on OASIS</span>
+    {% endif %}
+    {% if is_sysadmin %}
+        <div class="container-fluid well sysadminbox">
+            <h5>Systems Administrator Options</h5>
+            {% if user_is_admin %}
+        <a class='btn btn-danger' href='{{ cf.url }}setup/user/remove_admin/{{ user.id }}'>Remove Admin</a>
+                {% else %}
+                <a class='btn btn-danger' href='{{ cf.url }}setup/user/make_admin/{{ user.id }}'>Make Admin</a>
+
+                {% endif %}
+            </div>
+    {% endif %}
     </div>
   </div>
 
