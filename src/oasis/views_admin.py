@@ -47,6 +47,20 @@ def admin_feeds():
         feeds=feeds
     )
 
+@app.route("/admin/sysstats")
+@require_perm('sysadmin')
+def admin_sysstats():
+    """ Present the top level admin page """
+    db_version = DB.get_db_version()
+    db_sizes = DB.get_db_size()
+    return render_template(
+        "admin_sysstats.html",
+        courses=Setup.get_sorted_courselist(),
+        db_version=db_version,
+        db_sizes=db_sizes
+    )
+
+
 
 @app.route("/admin/userfeeds")
 @require_perm('sysadmin')

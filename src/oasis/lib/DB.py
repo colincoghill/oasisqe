@@ -1373,3 +1373,29 @@ def get_db_version():
 
     # No database at all?
     return "unknown"
+
+
+def get_db_size():
+    """ Find out how much space the DB is taking
+        Return as a list of  [  [tablename, size] , ... ]
+    """
+
+    # Query from   http://wiki.postgresql.org/wiki/Disk_Usage
+    sql = """SELECT nspname || '.' || relname AS "relation",
+                    pg_size_pretty(pg_total_relation_size(C.oid)) AS "total_size"
+             FROM pg_class C
+             LEFT JOIN pg_namespace N ON (N.oid = C.relnamespace)
+             WHERE nspname NOT IN ('pg_catalog', 'information_schema')
+               AND C.relkind <> 'i'
+               AND nspname !~ '^pg_toast'
+             ORDER BY pg_total_relation_size(C.oid) DESC
+             LIMIT 10;
+    """
+
+    ret = run_sql(sql)
+    sizes = []
+    for row in ret:
+        sizes.append([row[0], row[1]])
+
+    return sizes
+

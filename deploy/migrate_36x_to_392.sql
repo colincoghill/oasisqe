@@ -19,6 +19,12 @@ SET standard_conforming_strings = on;
 
 BEGIN;
 
+
+
+drop table if exists statsqtpracticehourly;
+drop table if exists statsqtassesshourly;
+drop table if exists marks;
+
 ALTER TABLE courses ADD COLUMN "practice_visibility" character varying DEFAULT 'all';
 ALTER TABLE courses ADD COLUMN "assess_visibility" character varying DEFAULT 'enrol';
 
@@ -173,7 +179,6 @@ CREATE TABLE config (
 );
 INSERT INTO config ("name", "value") VALUES ('dbversion', '3.9.2');
 
-
 CREATE TABLE stats_prac_q_course (
     qtemplate integer NOT NULL,
     "when" timestamp with time zone,
@@ -184,6 +189,7 @@ CREATE TABLE stats_prac_q_course (
     "number" integer NULL,
     "avgscore" float NULL
 );
+
 
 
 COMMIT;

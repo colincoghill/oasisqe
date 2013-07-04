@@ -70,6 +70,8 @@
 {% block body %}
   <br/>
 
+  <P>Return to <B><A HREF='{{ cf.url }}admin/top'>Admin</A></B> menu.</P>
+
   <H2>OASIS Administration</H2>
   <P><B>System level options can be controlled from here:</B></P>
 
@@ -77,55 +79,14 @@
     <div class='row'>
 
       <div class='span5'>
-        <B><A HREF='{{ cf.url }}admin/edit_messages'>Messages</A></B>
+      <h3>Disk Usage</h3>
+      <p>Top 10 tables.</p>
+      <table class='table table-bordered'>
+        {% for table,size in db_sizes %}
+            <tr><th style='text-align: right;'>{{ table }}</th><td>{{ size }}</td></tr>
+          {% endfor %}
+      </table>
 
-        <P>Configure messages to display to the users in various parts
-          of OASIS.</P><br>
-      </div>
-      <div class='span5'>
-
-        <B><A HREF='{{ cf.url }}admin/groups'>Groups</A></B>
-
-        <P>Set up groups of users, optionally linking them to enrolment
-          feeds.</P><br>
-      </div>
-
-    </div>
-    <div class='row'>
-      <div class='span5'>
-
-        <B><A HREF='{{ cf.url }}admin/periods'>Time Periods</A></B>
-
-        <P>Configure enrolment time periods to match your
-          terms/semesters.</P>
-      </div>
-
-
-      <div class='span5'>
-
-        <B><A HREF='{{ cf.url }}admin/feeds'>Group Feeds</A></B>
-
-        <P>Enrolment feed settings, how to match students to
-          courses.</P><br>
-      </div>
-
-      <BR/>
-
-
-
-    </div>
-    <div class='row'>
-  <div class='span5'>
-
-        <B><A HREF='{{ cf.url }}admin/userfeeds'>User Account Feeds</A></B>
-
-        <P>User Accounts. Can contact external systems to look up user account details.</P><br>
-      </div>
-          <div class='span5'>
-
-        <B><A HREF='{{ cf.url }}admin/sysstats'>System Statistics</A></B>
-
-        <P>Monitor how the system is running.</P><br>
       </div>
     </div>
   </div>
@@ -133,7 +94,7 @@
   <div></div>
   <div id='chart' style="height: 120px;"></div>
   <br>
-  <P>or Return to <B><A HREF='{{ cf.url }}setup/top'>Setup</A></B> menu.</P>
+  <P>or Return to <B><A HREF='{{ cf.url }}admin/top'>Admin</A></B> menu.</P>
   <BR/>
 
 {% endblock body %}

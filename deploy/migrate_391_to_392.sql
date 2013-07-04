@@ -16,6 +16,10 @@ SET standard_conforming_strings = on;
 
 BEGIN;
 
+drop table if exists statsqtpracticehourly;
+drop table if exists statsqtassesshourly;
+drop table if exists marks;
+
 ALTER TABLE courses DROP COLUMN "enrol_type";
 ALTER TABLE courses DROP COLUMN "enrol_location";
 ALTER TABLE courses DROP COLUMN "enrol_freq";

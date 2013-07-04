@@ -482,7 +482,6 @@ def login_webauth_submit():
         user_id = Users2.uid_by_uname(username)
 
     user = Users2.get_user(user_id)
-
     session['username'] = username
     session['user_id'] = user_id
     session['user_givenname'] = user['givenname']
