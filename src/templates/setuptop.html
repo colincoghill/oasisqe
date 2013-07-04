@@ -39,9 +39,10 @@
       </div>
     </div>
   </div>
-  <br>
+  <br>  {% if cf.auth_type =="local" %}
   <P>You may also <B><A HREF='{{ cf.url }}logout'>Logout</A></B> to leave
     OASIS.</P>
+    {% endif %}
   <BR/>
 
 

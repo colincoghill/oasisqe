@@ -14,6 +14,14 @@
     <h5>Assessment Results</h5>
 
     <br/>
+  {% for group in groups %}
+      <h4>{{ group.title }}</h4>
+      <table class='table table-condensed'>
+          {% for user_id, result in results[group.id].iteritems() %}
+              <tr><td>{{ user_id }}</td><td>{{ result }}</td></tr>
+          {% endfor %}
+      </table>
+  {% endfor %}
 
   </div>
   <p>Return to <a href="{{ cf.url }}cadmin/{{ course.id }}/top">Course

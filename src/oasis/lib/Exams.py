@@ -496,7 +496,7 @@ def get_exam_struct(exam_id, user_id=None, include_qtemplates=False,
     exam['soon'] = General.is_soon(exam['start'])
     exam['recent'] = General.is_recent(exam['end'])
     exam['active'] = General.is_now(exam['start'], exam['end'])
-    exam['start_epoch'] = int(exam['start'].strftime("%s")) # useful for sorting
+    exam['start_epoch'] = int(exam['start'].strftime("%s"))  # used to sort
     exam['period'] = General.human_dates(exam['start'], exam['end'])
     exam['course'] = course
     exam['start_human'] = exam['start'].strftime("%a %d %b")
@@ -512,3 +512,37 @@ def get_exam_struct(exam_id, user_id=None, include_qtemplates=False,
         exam['can_preview'] = check_perm(user_id, exam['cid'], "exampreview")
 
     return exam
+
+
+def get_marks(group, exam_id):
+    """ Fetch the marks for a given user group.
+    """
+    results = {}
+
+    sql = """
+        SELECT u.id, u.givenname, u.familyname, u.student_id, u.uname, u.email,
+               q.qtemplate, q.score, q.name
+        FROM users AS u,
+             questions AS q,
+             usergroups AS ug
+        WHERE u.id = ug.userid
+          AND ug.groupid = %s
+          AND u.id = q.student
+          AND q.exam = %s;
+    """
+    params = (group.id, exam_id)
+    ret = DB.run_sql(sql, params)
+    results = {}
+    for row in ret:
+        user_id = row[0]
+        if not user_id in results:
+            results[user_id] = {}
+        qtemplate = row[6]
+        results[user_id][qtemplate] = {
+            'user_id': row[0],
+            'uname': row[4],
+            'score': row[7],
+            'qtemplate': qtemplate
+        }
+
+    return results

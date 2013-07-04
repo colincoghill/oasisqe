@@ -300,10 +300,17 @@ def cadmin_exam_results(course_id, exam_id):
     exam['start_minute'] = int(exam['start'].minute)
     exam['end_minute'] = int(exam['end'].minute)
 
+    groups = [Groups.Group(g_id=g_id) for g_id in Groups.active_by_course(course_id)]
+    results = {}
+    for group in groups:
+        results[group.id] = Exams.get_marks(group, exam_id)
+
     return render_template(
         "cadmin_examresults.html",
         course=course,
-        exam=exam
+        exam=exam,
+        results=results,
+        groups=groups
     )
 
 
