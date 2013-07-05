@@ -139,7 +139,7 @@ def is_oasis_db(DB):
         Return "yes", "no", or "empty"
     """
 
-    expect = ['qtvariations', 'users', 'examqtemplates', 'marks', 'qtattach',
+    expect = ['qtvariations', 'users', 'examqtemplates', 'marklog', 'qtattach',
               'questions', 'guesses', 'exams', 'qtemplates']
 
     tables = public_tables(DB)
