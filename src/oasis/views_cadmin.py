@@ -12,10 +12,11 @@ import _strptime  # import should prevent thread import blocking issues
                   # ask Google about:     AttributeError: _strptime
 from logging import log, ERROR
 from flask import render_template, session, request, redirect, \
-    abort, url_for, flash
+    abort, url_for, flash, make_response
 
 from oasis.lib import OaConfig, Users2, DB, Topics, Permissions, \
-    Exams, Courses, Courses2, Setup, CourseAdmin, Groups, General, Assess
+    Exams, Courses, Courses2, Setup, CourseAdmin, Groups, General, Assess, \
+    Spreadsheets
 
 MYPATH = os.path.dirname(__file__)
 
@@ -346,18 +347,13 @@ def cadmin_export_csv(course_id, exam_id, group_id):
         flash("Assessment %s does not belong to this course." % int(exam_id))
         return redirect(url_for('cadmin_top', course_id=course_id))
 
-    exam['start_date'] = int(date_from_py2js(exam['start']))
-    exam['end_date'] = int(date_from_py2js(exam['end']))
-    exam['start_hour'] = int(exam['start'].hour)
-    exam['end_hour'] = int(exam['end'].hour)
-    exam['start_minute'] = int(exam['start'].minute)
-    exam['end_minute'] = int(exam['end'].minute)
+    group = Groups.Group(g_id=group_id)
+    output = Spreadsheets.exam_results_as_spreadsheet(course_id, group, exam_id)
+    response = make_response(output)
+    response.headers.add('Content-Type', "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet; charset=utf-8")
+    response.headers.add('Content-Disposition', 'attachment; filename="OASIS_%s_%s_Results.xlsx"' % (course['title'], exam['title']))
 
-    return render_template(
-        "exam_edit.html",
-        course=course,
-        exam=exam
-    )
+    return response
 
 
 @app.route("/cadmin/<int:course_id>/exam/<int:exam_id>/view/<int:student_uid>")
