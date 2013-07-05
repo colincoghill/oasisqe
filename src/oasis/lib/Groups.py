@@ -264,7 +264,7 @@ def active_by_course(course_id):
              AND "groupcourses"."groupid" = "ugroups"."id"
              AND "groupcourses"."course" = %s
              AND "ugroups"."period" = "periods"."id";""",
-#             AND "periods"."finish" > NOW();;""",
+#            AND "periods"."finish" > NOW();""",
         (course_id,))
     groups = {}
     if ret:
@@ -297,8 +297,8 @@ def enrolment_groups():
            FROM "ugroups", "periods"
            WHERE "ugroups"."gtype" = 2
              AND "ugroups"."active" = TRUE
-             AND "ugroups"."period" = "periods"."id"
-             AND "periods"."finish" > NOW();""")  # gtype 2 =  enrolment
+             AND "ugroups"."period" = "periods"."id";""")
+#             AND "periods"."finish" > NOW();""")  # gtype 2 =  enrolment
     groups = {}
     if ret:
         for row in ret:
