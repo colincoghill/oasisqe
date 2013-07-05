@@ -3,12 +3,9 @@
     Functionality for importing and exporting spreadsheets.
 """
 
-from oasis.lib import Groups, Courses2, Exams, Users2
-
-from openpyxl.reader.excel import load_workbook
+from oasis.lib import Courses2, Exams, Users2
 from openpyxl.writer.excel import save_virtual_workbook
 from openpyxl import Workbook
-from datetime import datetime
 
 
 def exam_results_as_spreadsheet(course_id, group, exam_id):
@@ -32,8 +29,6 @@ def exam_results_as_spreadsheet(course_id, group, exam_id):
     users = {}
     for uid in uids:
         users[uid] = Users2.get_user(uid)
-
-    when = datetime.now().strftime("%H:%m, %a %d %b %Y"),
 
     wb = Workbook()
 
@@ -78,14 +73,5 @@ def exam_results_as_spreadsheet(course_id, group, exam_id):
 
         ws.cell(row=row, column=col).value = totals[user_id]
         row += 1
-  #  ws.cell(row=2,column=3).value = "NCEA4"
-
-  # for q in range(11,56):    # questions
-  #      ws.cell(row=1,column=x).value="%s" % (q,)
-  #      ws.cell(row=3, column=x).value=correct["q%s"%(q,)]
-
-  #  for row in [1,2,3]:
-  #      for col in range(0,121):
-  #          ws.cell(row=row, column=col).style.font.bold=True
 
     return save_virtual_workbook(wb)
