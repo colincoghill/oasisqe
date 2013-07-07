@@ -12,5 +12,6 @@ Installation
    install_debian_7
    upgrade_from_3.6
    upgrade_from_3.9.1
+   upgrade_from_3.9.2
    examples
 
