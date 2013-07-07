@@ -10,7 +10,6 @@ SET standard_conforming_strings = on;
 
 
 
-
 -- Put this into logic:  INSERT INTO users (uname, passwd, givenname, source, confirmed)
 --       VALUES ('admin', '-NOLOGIN-', 'Admin', 'local', TRUE);
 
