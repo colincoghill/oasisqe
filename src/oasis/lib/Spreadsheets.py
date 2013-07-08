@@ -5,7 +5,7 @@
 
 from oasis.lib import Courses2, Exams, Users2
 from openpyxl.writer.excel import save_virtual_workbook
-from openpyxl import Workbook
+from openpyxl.workbook import Workbook
 
 
 def exam_results_as_spreadsheet(course_id, group, exam_id):

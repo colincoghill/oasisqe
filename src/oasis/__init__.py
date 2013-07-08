@@ -213,7 +213,8 @@ def index():
         return redirect(url_for("main_top"))
 
     if OaConfig.default == "landing":
-        return render_template("landing_page.html")
+        mesg_login = DB.get_message("loginmotd")
+        return render_template("landing_page.html", mesg_login=mesg_login)
     if OaConfig.default == "locallogin":
         return redirect(url_for("login_local"))
     if OaConfig.default == "webauth":
