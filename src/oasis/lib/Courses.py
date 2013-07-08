@@ -317,12 +317,14 @@ def get_topics_all(course, archived=2, numq=True):
                            'position': row[2],
                            'visibility': row[3],
                            'archived': row[4]}
+            if info[count]['position'] is None or info[count]['position'] is "None":
+                info[count]['position'] = 0
             if numq:
                 info[count]['numquestions'] = Topics.get_num_qs(int(row[0]))
             count += 1
     else:  # we probably don't have the archived flag in the Db yet
         ret = run_sql(
-            """SELECT topic, title, visibility
+            """SELECT topic, title, position, visibility
                FROM topics
                WHERE course=%s
                ORDER BY position, topic;""", (course,))
@@ -331,7 +333,10 @@ def get_topics_all(course, archived=2, numq=True):
             for row in ret:
                 info[count] = {'id': int(row[0]),
                                'title': row[1],
-                               'visibility': row[2]}
+                               'position': row[2],
+                               'visibility': row[3]}
+                if info[count]['position'] is None or info[count]['position'] is "None":
+                    info[count]['position'] = 0
                 if numq:
                     info[count]['numquestions'] = Topics.get_num_qs(int(row[0]))
                 count += 1
