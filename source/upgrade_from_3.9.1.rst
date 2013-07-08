@@ -143,20 +143,22 @@ It should output some help information::
 
 You can ask it to look at your database and report the status::
 
-   Connecting to database:
-      host:  localhost
-      database:  oasisdb
-      username:  oasisdb
+    Connecting to database:
+    host:  engdbprd02.foe.auckland.ac.nz
+    database:  oasisdb
+    username:  oasisdb
 
     There is already an OASIS database here.
-    Detected DB Version 3.9.1
+    Detected DB Version 3.6
 
-    1 user records
-    0 question templates
-    0 assessments
+    68699 user records
+    3075 question templates
+    219 assessments
+    Contains non-default data.
+    It contains data, please be SURE you have the correct database
+    settings and wish to erase the existing data
+    before using the   --erase-existing   option.
 
-    However it does not contain much data so may be safe to erase:
-        oasisdb init --erase-existing
 
 In this case it's telling us there's a 3.9.1 database.
 

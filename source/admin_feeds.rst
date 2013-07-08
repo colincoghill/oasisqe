@@ -76,12 +76,16 @@ User Account Feeds
 User Account feeds tell OASIS how to find details on users with non-OASIS accounts.
 
 For example when "fjon032" logs in for the first time, OASIS may run the User
-Account Feed scripts and expect one of them to return the user's full name and
-email address::
+Account Feed scripts and expect one of them to return the user's full name,
+email address, and an optional ID. (The ID could be a student ID number or similar)::
 
   ./user_feed_lookup fjon032
   OK
   fjon032,Freddie Jones,f.jones@example.com
+
+  ./user_feed_lookup sdoo1
+  OK
+  sdoo1,Scooby Doo,s.doo@example.com,S10293754
 
 It may periodically re-run these to pick up any changes to the user's details.
 
