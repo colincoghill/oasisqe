@@ -53,7 +53,7 @@ def get_topic(topic_id):
         'position': row[4],
         'archived': row[5]
     }
-    if topic['position'] is None:
+    if topic['position'] is None or topic['position'] is "None":
         topic['position'] = 0
     MC.set(key, json.dumps(topic))
     return topic
@@ -81,7 +81,7 @@ def get_pos(topic_id):
 
 def set_pos(topic_id, pos):
     """Update the position of a topic."""
-    if pos is None:
+    if pos is None or pos is "None":
         pos = 0
     run_sql("""UPDATE topics
                SET position=%s
