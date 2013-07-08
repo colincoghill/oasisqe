@@ -146,13 +146,17 @@ def users_update_from_feed(upids):
                     continue
 
                 line = res[1]
+                studentid = ""
                 try:
-                    (upid, name, email) = line.split(',')
+                    (upid, name, email, studentid) = line.split(',')
 
                 except ValueError:
-                    continue
+                    try:
+                        (upid, name, email) = line.split(',')
+                    except ValueError:
+                        continue
 
-                Users2.create(upid, '', name.split(' ')[0], name.split(' ')[1:], 2, '', email, None, 'feed', '', True)
+                Users2.create(upid, '', name.split(' ')[0], name.split(' ')[1:], 2, studentid, email, None, 'feed', '', True)
                 break
         else:
             log(ERROR, "Error running user feed for existing account %s" % user_id )
