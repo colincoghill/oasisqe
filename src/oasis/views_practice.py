@@ -10,9 +10,9 @@ import os
 
 from flask import render_template, session, request, abort
 from logging import log, ERROR
-from .lib import DB, Practice, Topics, General, Courses2, Setup
+from oasis.lib import DB, Practice, Topics, General, Courses2, Setup, Courses
 MYPATH = os.path.dirname(__file__)
-from .lib.Permissions import check_perm
+from oasis.lib.Permissions import check_perm
 
 from oasis import app, authenticated
 
@@ -42,6 +42,14 @@ def practice_choose_topic(course_id):
     except KeyError:
         topics = []
         abort(404)
+
+    members = None
+    for topic in topics:
+        if topic['visibility'] == 2:  # course only
+            if not members:
+                members = Courses.get_users(course_id)
+            if not user_id in members:
+                topics.remove(topic)
     return render_template(
         "practicecourse.html",
         courses=Setup.get_sorted_courselist(),
@@ -73,6 +81,21 @@ def practice_choose_question(topic_id):
         abort(404)
     topictitle = Topics.get_name(topic_id)
     questions = Practice.get_sorted_questions(course_id, topic_id, user_id)
+
+    thistopic = Topics.get_topic(topic_id)
+    members = []
+    if thistopic['visibility'] == 2:  # course only
+        if not members:
+            members = Courses.get_users(course_id)
+            if not user_id in members:
+                abort(404)
+
+    for topic in topics:
+        if topic['visibility'] == 2:  # course only
+            if not members:
+                members = Courses.get_users(course_id)
+            if not user_id in members:
+                topics.remove(topic)
 
     return render_template(
         "practicetopic.html",

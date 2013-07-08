@@ -28,24 +28,18 @@ Install:
 
  * Better error checking or handling of permissions on log file & cache
 
-Testing:
- * Test visibility of topics/questions to unenrolled but valid accounts.
-
 Documentation
 
  * Basic usage guide
  * Landing page - do a nice welcome/introduction page
  * Basic Question Creation Documentation
 
-
 Assessment edit:
- * start/end times give odd error messages sometimes.
  * Can create assessment with blank question - causes error when it's started
 
 Assess:
  * autosave isn't
  * Make sure assessment timer is good
- * view assessment results!
 
 Other:
  * Way to delete/deactivate an account
