@@ -85,6 +85,7 @@ def template_context():
         'email': OaConfig.email,
         'today': today,
         'auth_type': auth_type,
+        'contact_url': OaConfig.contact_url,
         'feed_path': OaConfig.feed_path,
         'open_registration': OaConfig.open_registration,
         'enable_local_login': OaConfig.enable_local_login,
