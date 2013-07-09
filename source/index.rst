@@ -27,6 +27,7 @@ Chapters:
    administrator
    developer
    installation
+   changelog
 
 
 Indices and tables

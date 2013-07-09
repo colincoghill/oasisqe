@@ -29,7 +29,18 @@ Install
 Configure
 ---------
 
-There are no new configuration options in 3.9.3, it's mostly a bug-fix release.
+There are two new configuration options that can go in /etc/oasisqe.ini. Both are optional::
+
+contact_url:  http://www.example.com/
+
+Will provide a contact URL instead of a contact email address. This is useful for,
+for example, linking to a ticket system::
+
+theme_path: /var/lib/oasisqe/themes/ece
+
+If you copy "landing_page.html" from src/templates to this folder, OASIS will load
+your copy instead of its own. Use this to customize the front landing page so it
+won't be overwritten during the next OASIS upgrade.
 
 
 Migrate Database

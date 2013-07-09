@@ -9,21 +9,21 @@ Install
 
 1. Go to the folder OASIS is installed into::
 
-   cd /opt/oasisqe
+    cd /opt/oasisqe
 
 (or wherever you have it installed)
 
 2. Fetch the 3.9.2 code from the download site::
 
-   wget http://www.oasisqe.com/downloads/oasis3.9_latest.tgz
+    wget http://www.oasisqe.com/downloads/oasis3.9_latest.tgz
 
 3. Move the previous code out of the way::
 
-   mv 3.9 3.9__backup
+    mv 3.9 3.9__backup
 
 4. unpack the newest version::
 
-   tar -zxf oasis3.9_latest.tgz
+    tar -zxf oasis3.9_latest.tgz
 
 
 Configure
@@ -81,6 +81,7 @@ example an Active Directory. A few new configuration options have been added
 
 *enable_local_login*
 *enable_webauth_login*
+
    Allow users to log in using local or webauth login. You can have one or the other, or both enabled.
 
    NOTE: If local login is disabled, the "admin" account will not be able to log in. In this case you could promote an
