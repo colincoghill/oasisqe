@@ -6,7 +6,7 @@
     (except to OASIS database or memcache servers) should come through here.
 """
 
-from oasis.lib import OaConfig, Groups, Feeds, Periods, Users2, UFeeds
+from oasis.lib import OaConfig, Groups, Feeds, Periods, Users2, UFeeds, Users
 from logging import log, ERROR, INFO
 import os
 import subprocess
@@ -82,20 +82,18 @@ def feeds_run_user_script(filename, args=None):
     return output
 
 
-def group_update_from_feed(group_id):
+def group_update_from_feed(group_id, refresh_users=False):
     """ Update group membership from it's feed
         Returns (added, removed, unknown) with usernames of users
     """
-
     group = Groups.Group(g_id=group_id)
     if not group.source == 'feed':
         return
 
     feed = Feeds.Feed(f_id=group.feed)
-    period = Periods.Period(p_id=group.period)
-    scriptrun = ' '.join([feed.script, group.feedargs, period.code])
+    scriptrun = ' '.join([feed.script, group.feedargs])
     try:
-        output = feeds_run_group_script(feed.script, args=[group.feedargs, period.code])
+        output = feeds_run_group_script(feed.script, args=[group.feedargs, ])
     except BaseException, err:
         log(ERROR, "Exception while running group feed '%s': %s" % (scriptrun, err))
         raise
@@ -122,6 +120,11 @@ def group_update_from_feed(group_id):
             group.remove_member(uid)
             removed.append(uname)
 
+    if refresh_users:
+        for uname in group.member_unames():
+            uid = Users2.uid_by_uname(uname)
+            user_update_details_from_feed(uid, uname)
+
     return added, removed, unknown
 
 
@@ -146,14 +149,61 @@ def users_update_from_feed(upids):
                     continue
 
                 line = res[1]
+                studentid = ""
                 try:
-                    (upid, name, email) = line.split(',')
+                    (upid, name, email, studentid) = line.split(',')
 
                 except ValueError:
-                    continue
+                    try:
+                        (upid, name, email) = line.split(',')
+                    except ValueError:
+                        continue
 
-                Users2.create(upid, '', name.split(' ')[0], name.split(' ')[1:], 2, '', email, None, 'feed', '', True)
+                given = name.split(" ")[0]
+                try:
+                    family = " ".join(name.split(" ")[1:])
+                except ValueError:
+                    family = ""
+                Users2.create(upid, '', given, family, 2, studentid, email, None, 'feed', '', True)
                 break
         else:
             log(ERROR, "Error running user feed for existing account %s" % user_id )
     return
+
+
+def user_update_details_from_feed(uid, upid):
+    """ Refresh the user's details from the feed. Maybe their name or ID has changed.
+    """
+    for feed in UFeeds.all_list():
+        try:
+            out = feeds_run_user_script(feed.script, args=[upid, ])
+        except BaseException, err:
+            log(ERROR, "Exception running user feed '%s': %s" % (feed.script, err))
+            continue
+
+        res = out.splitlines()
+        if res[0].startswith("ERROR"):
+            log(ERROR, "Error running user feed '%s': %s" % (feed.script, res))
+            continue
+
+        line = res[1]
+        studentid = ""
+        try:
+            (upid, name, email, studentid) = line.split(',')
+
+        except ValueError:
+            try:
+                (upid, name, email) = line.split(',')
+            except ValueError:
+                continue
+
+        given = name.split(" ")[0]
+        try:
+            family = " ".join(name.split(" ")[1:])
+        except ValueError:
+            family = ""
+
+        Users.set_email(uid, email)
+        Users.set_givenname(uid, given)
+        Users.set_familyname(uid, family)
+        Users.set_studentid(uid, studentid)

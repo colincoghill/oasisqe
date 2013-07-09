@@ -40,12 +40,16 @@ def fetch_userdetails(server, binddn, password, base, username):
 
         searchstr = "(cn=%s)" % username
 
-        fields = ['displayName', 'mail']
+        fields = ['displayName', 'mail', 'UOAid']
         search = conn.search_s(base, ldap.SCOPE_SUBTREE, searchstr, fields)
 
         mail = search[0][1]['mail'][0]
         name = search[0][1]['displayName'][0]
-        return {'username': username, 'email': mail, 'name': name}
+        uoaid = search[0][1]['UOAid'][0]
+        return {'username': username,
+                'email': mail,
+                'name': name,
+                'universityid': uoaid}
 
 
 cp = ConfigParser.ConfigParser()
@@ -71,4 +75,4 @@ for username in userlist:
 
 print "OK"
 for user in users:
-    print "%(username)s,%(name)s,%(email)s" % user
+    print "%(username)s,%(name)s,%(email)s,%(universityid)s" % user

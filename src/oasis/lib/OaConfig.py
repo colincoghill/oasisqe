@@ -26,6 +26,7 @@ parentURL = cp.get("web", "url")
 statichost = cp.get("web", "statichost")
 staticpath = cp.get("web", "staticpath")
 default = cp.get("web", "default")
+theme_path = cp.get("web", "theme_path")
 staticURL = os.path.join(statichost, staticpath)
 homedir = cp.get("app", "homedir")
 secretkey = cp.get("app", "secretkey")
@@ -48,6 +49,9 @@ oasisdbconnectstring = "host=%s port=%s dbname=%s user=%s password='%s'" % \
                        (dbhost, dbport, dbname, dbuname, dbpass)
 
 email = cp.get("web", "email")
+contact_url = cp.get("web", "contact_url", False)
+if len(contact_url) < 3:
+    contact_url = False
 enableMemcache = cp.getboolean("cache", "memcache_enable")
 uniqueKey = cp.get("cache", "cachekey")
 logfile = cp.get("app", "logfile")
