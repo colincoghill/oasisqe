@@ -157,13 +157,13 @@ def save_perms(request, cid, user_id):
             newuid = Users2.uid_by_uname(newuname)
             if newuid:
                 add_perm(newuid, cid, 10)
-            audit(
-                1,
-                user_id,
-                newuid,
-                "CourseAdmin",
-                "%s given '%s' permission by %s" % (newuname, get_perm_short(10), user_id,)
-            )
+                audit(
+                    1,
+                    user_id,
+                    newuid,
+                    "CourseAdmin",
+                    "%s given '%s' permission by %s" % (newuname, get_perm_short(10), user_id,)
+                )
     return
 
 
