@@ -40,7 +40,9 @@ theme_path: /var/lib/oasisqe/themes/ece
 
 If you copy "landing_page.html" from src/templates to this folder, OASIS will load
 your copy instead of its own. Use this to customize the front landing page so it
-won't be overwritten during the next OASIS upgrade.
+won't be overwritten during the next OASIS upgrade. This is the only file that
+is treated this way at the moment. We're still investigating the best way to handle
+"theming/branding" for the future.
 
 
 Migrate Database
