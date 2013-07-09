@@ -164,7 +164,7 @@ def create(uname, passwd, givenname, familyname, acctstatus, studentid,
                        %s, %s, %s, %s, %s);""",
             (uname, passwd, givenname, familyname,
              acctstatus, studentid, email, expiry,
-             source, confirm_code, confirm ))
+             source, confirm_code, confirm))
     incr_version()
     uid = uid_by_uname(uname)
     log(INFO, "User created with uid %d." % uid)
@@ -264,12 +264,14 @@ def verify_confirm_code(code):
 def set_confirm(uid):
     """ The user has confirmed, mark their record."""
     run_sql("""UPDATE "users" SET confirmed='TRUE' WHERE id=%s;""", (uid,))
+    incr_version()
 
 
 def set_confirm_code(uid, code):
     """ Set a new code, possibly for password reset confirmation."""
     run_sql("""UPDATE "users" SET confirmation_code=%s WHERE id=%s;""",
             (code, uid))
+    incr_version()
 
 
 def gen_confirm_code():
@@ -277,6 +279,30 @@ def gen_confirm_code():
     """
 
     return generate_uuid_readable(9)
+
+
+def set_studentid(uid, stid):
+    """ Update student ID."""
+    run_sql("""UPDATE "users" SET student_id=%s WHERE id=%s;""", (stid, uid,))
+    incr_version()
+
+
+def set_givenname(uid, name):
+    """ Update Given Name."""
+    run_sql("""UPDATE "users" SET givenname=%s WHERE id=%s;""", (name, uid,))
+    incr_version()
+
+
+def set_familyname(uid, name):
+    """ Update Family Name."""
+    run_sql("""UPDATE "users" SET familyname=%s WHERE id=%s;""", (name, uid,))
+    incr_version()
+
+
+def set_email(uid, email):
+    """ Update Email."""
+    run_sql("""UPDATE "users" SET email=%s WHERE id=%s;""", (email, uid,))
+    incr_version()
 
 
 # Human readable symbols

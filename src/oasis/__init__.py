@@ -9,7 +9,7 @@
 # We include the views covering logging in/out and account signup and related.
 
 from flask import Flask, session, redirect, url_for, request, \
-    render_template, flash, abort
+    render_template, render_template_string, flash, abort
 import datetime
 import os
 import _strptime  # import should prevent thread import blocking issues
@@ -85,6 +85,7 @@ def template_context():
         'email': OaConfig.email,
         'today': today,
         'auth_type': auth_type,
+        'contact_url': OaConfig.contact_url,
         'feed_path': OaConfig.feed_path,
         'open_registration': OaConfig.open_registration,
         'enable_local_login': OaConfig.enable_local_login,
@@ -214,6 +215,12 @@ def index():
 
     if OaConfig.default == "landing":
         mesg_login = DB.get_message("loginmotd")
+        alt_landing = os.path.join(OaConfig.theme_path, "landing_page.html")
+        if os.path.isfile(alt_landing):
+            tmpf = open(alt_landing)
+            tmpl = tmpf.read()
+            tmpf.close()
+            return render_template_string(tmpl, mesg_login=mesg_login)
         return render_template("landing_page.html", mesg_login=mesg_login)
     if OaConfig.default == "locallogin":
         return redirect(url_for("login_local"))
