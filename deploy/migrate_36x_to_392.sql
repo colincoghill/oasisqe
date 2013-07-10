@@ -31,10 +31,6 @@ ALTER TABLE courses ADD COLUMN "assess_visibility" character varying DEFAULT 'en
 ALTER TABLE exams ADD COLUMN "code" character varying;
 ALTER TABLE exams ADD COLUMN "instant" integer;
 
-ALTER TABLE users ADD COLUMN "email" character varying;
-ALTER TABLE users ADD COLUMN "source" character varying;
-ALTER TABLE users ADD COLUMN "expiry" timestamp with time zone;
-
 ALTER TABLE users ADD COLUMN "confirmed" character varying;
 ALTER TABLE users ADD COLUMN "confirmation_code" character varying;
 ALTER TABLE users ALTER COLUMN "passwd" TYPE character varying;
