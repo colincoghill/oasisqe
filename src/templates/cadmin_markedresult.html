@@ -3,9 +3,13 @@
   <br/>
   <h2>{{ course.name }}({{ course.title }})</h2>
   <H3>{{ exam.title }}</H3>
+    <form method='post' action='{{ cf.url }}cadmin/{{ course.id }}/exam/{{ exam.id }}/unsubmit/{{ user.id }}'>
+        <input type='submit' name='unsubmit' class='btn btn-warning' value='Un-Submit'> (and reset timer)
+    </form>
   <p>{% if user.fullname %}<b>{{ user.fullname }}</b>{% endif %} {% if user.uname %}<b>
     {{ user.uname }}</b>{% endif %}</p>
     <p>{% if datefirstview %}<b>Started:</b> {{ datefirstview }}{% endif %}</p>
+    {% if status == 1 %}
   <p>{% if datesubmit %}<b>Submitted:</b> {{ datesubmit }}{% endif %}</p>
   <p>{% if datemarked %}<b>Marked:</b> {{ datemarked }}{% endif %}</p>
     <p>{% if taken %}<b>Time Taken:</b> {{ taken }} min{% endif %}</p>
@@ -59,11 +63,16 @@
     </div>
     <br/>
   </div>
-  <br/>
+    <br/>
   <div class='container-fluid well'>
     {% for r in results %}
       <h2>Question {{ r.pos }}</h2>
       {{ r.html | safe }}
     {% endfor %}
   </div>
+    {% else %}
+    <div class='container-fluid well'>
+    <h2>In Progress</h2>
+    </div>
+    {% endif %}
 {% endblock body %}
