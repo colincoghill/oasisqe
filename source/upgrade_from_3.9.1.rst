@@ -1,6 +1,6 @@
 ..
 
-Upgrade from OASIS 3.9.1 to 3.9.2
+Upgrade from OASIS 3.9.1 to 3.9.3
 =================================
 
 
@@ -13,9 +13,9 @@ Install
 
 (or wherever you have it installed)
 
-2. Fetch the 3.9.2 code from the download site::
+2. Fetch the 3.9.3 code from the download site::
 
-    wget http://www.oasisqe.com/downloads/oasis3.9_latest.tgz
+    wget http://www.oasisqe.com/downloads/oasis3.9.3.tgz
 
 3. Move the previous code out of the way::
 
@@ -23,7 +23,7 @@ Install
 
 4. unpack the newest version::
 
-    tar -zxf oasis3.9_latest.tgz
+    tar -zxf oasis3.9.3.tgz
 
 
 Configure
@@ -48,6 +48,12 @@ New Options (with defaults)::
     # Allow people to log in using accounts from external systems (via feeds)
     enable_webauth_login: True
 
+    # Present a contact URL instead of email address. (optional)
+    contact_url:  http://www.example.com/
+
+    # Location of template files which will override OASIS own pages so you
+    # can customise the look/branding. Currently only does landing_page.html
+    theme_path: /var/lib/oasisqe/themes/ece
 
     [app]
 
@@ -60,7 +66,7 @@ These are described as follows:
 Authentication
 ^^^^^^^^^^^^^^
 
-OASIS 3.9.2 adds support for authenticating users against external systems, for
+OASIS 3.9.3 adds support for authenticating users against external systems, for
 example an Active Directory. A few new configuration options have been added
 
 *default*
@@ -78,7 +84,6 @@ example an Active Directory. A few new configuration options have been added
        The user will be redirected to a URL that should, if the web server is configured correctly, require them to authenticate using an external system.
 
 
-
 *enable_local_login*
 *enable_webauth_login*
 
@@ -89,6 +94,21 @@ example an Active Directory. A few new configuration options have been added
    open_registration, and do not link to the page. Admin can go directly to it at::
 
       https://HOST/oasis/login/local
+
+
+*contact_url*
+
+    Will provide a contact URL instead of a contact email address. This is useful for,
+    for example, linking to a ticket system.
+
+
+*theme_path*
+
+    If you copy "landing_page.html" from src/templates to this folder, OASIS will load
+    your copy instead of its own. Use this to customize the front landing page so it
+    won't be overwritten during the next OASIS upgrade. This is the only file that
+    is treated this way at the moment. We're still investigating the best way to handle
+    "theming/branding" for the future.
 
 
 Feeds
@@ -127,7 +147,7 @@ It should output some help information::
       -h, --help          show this help message and exit
       --erase-existing    erase any existing data first. DANGEROUS.
       --no-reset-adminpw  don't reset the admin password
-      --oasis-ver=X.Y.Z   work with a specific OASIS version. (default 3.9.2)
+      --oasis-ver=X.Y.Z   work with a specific OASIS version. (default 3.9.3)
       -v, --verbose       verbose output
 
     Commands:
@@ -144,13 +164,15 @@ It should output some help information::
 
 You can ask it to look at your database and report the status::
 
+    ./oasisdb status
+
     Connecting to database:
     host:  engdbprd02.foe.auckland.ac.nz
     database:  oasisdb
     username:  oasisdb
 
     There is already an OASIS database here.
-    Detected DB Version 3.6
+    Detected DB Version 3.9.1
 
     68699 user records
     3075 question templates
@@ -167,17 +189,13 @@ To upgrade it we use the *uprade* option::
 
     ./oasisdb upgrade
     Migrated table structure from 3.9.1 to 3.9.2
-    Admin password reset to:  o8jvKDg2i
-
-It will reset the admin password unless we tell it not to::
-
-    ./oasisdb upgrade --no-reset-adminpw
+    Migrated table structure from 3.9.1 to 3.9.3
 
 
 Done
 ^^^^
 
-If all went well, we should now have an OASIS v3.9.2 installation running. Remember
+If all went well, we should now have an OASIS v3.9.3 installation running. Remember
 to restart Apache::
 
     service apache2 restart
