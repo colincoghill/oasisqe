@@ -66,9 +66,7 @@
 
         <div style='padding-left: 1em;'>
           <input type='text' id='maxscore' name='newmaxscore'
-                 value='
-
-                     {% if qtemplate.scoremax %}{{ qtemplate.scoremax }}{% endif %}'>
+                 value='{% if qtemplate.scoremax %}{{ qtemplate.scoremax }}{% endif %}'>
 
           <p>Maximum Score
             is the maximum number of points the question can score.
