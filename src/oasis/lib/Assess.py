@@ -117,6 +117,11 @@ def render_own_marked_exam(student, exam):
     firstview, examsubmit = student_exam_duration(student, exam)
     results = []
 
+    if not examsubmit:
+        return [{'pos':1,
+                'html': "In Progress",
+                'marking': {}
+        },], False
     examtotal = 0.0
     for question in questions:
         qtemplate = DB.get_q_parent(question)

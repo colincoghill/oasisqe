@@ -9,6 +9,7 @@
 
 import os
 import StringIO
+import datetime
 
 from flask import render_template, session, \
     request, redirect, abort, url_for, flash, \
@@ -41,7 +42,10 @@ def attachment_question(qt_id, version, variation, fname):
     if not mtype:
         abort(404)
 
-    return send_file(fname, mtype)
+    expiry_time = datetime.datetime.utcnow() + datetime.timedelta(10)
+    response = send_file(fname, mtype)
+    response.headers["Expires"] = expiry_time.strftime("%a, %d %b %Y %H:%M:%S GMT")
+    return response
 
 
 @app.route("/att/qtatt/<int:qt_id>/<int:version>/<int:variation>/<fname>")
@@ -58,7 +62,10 @@ def attachment_qtemplate(qt_id, version, variation, fname):
         abort(403)
     if not mtype:
         abort(404)
-    return send_file(filename, mtype)
+    expiry_time = datetime.datetime.utcnow() + datetime.timedelta(10)
+    response = send_file(filename, mtype)
+    response.headers["Expires"] = expiry_time.strftime("%a, %d %b %Y %H:%M:%S GMT")
+    return response
 
 
 @app.route("/logout")
@@ -241,7 +248,7 @@ def qedit_raw_save(topic_id, qt_id):
 
     # They uploaded a new qtemplate.html
     if 'newindex' in request.files:
-        data = request.files['newindex'].stream.getvalue()
+        data = request.files['newindex'].read()
         if len(data) > 1:
             html = data
             DB.create_qt_att(qt_id,
@@ -252,7 +259,7 @@ def qedit_raw_save(topic_id, qt_id):
 
     # They uploaded a new datfile
     if 'newdatfile' in request.files:
-        data = request.files['newdatfile'].stream.getvalue()
+        data = request.files['newdatfile'].read()
         if len(data) > 1:
             DB.create_qt_att(qt_id,
                              "datfile.txt",
@@ -265,7 +272,7 @@ def qedit_raw_save(topic_id, qt_id):
 
                 # They uploaded a new image file
     if 'newimgfile' in request.files:
-        data = request.files['newimgfile'].stream.getvalue()
+        data = request.files['newimgfile'].read()
         if len(data) > 1:
             df = data
             DB.create_qt_att(qt_id, "image.gif", "image/gif", df, version)

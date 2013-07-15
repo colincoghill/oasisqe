@@ -368,6 +368,11 @@ def cadmin_exam_viewmarked(course_id, exam_id, student_uid):
         exam = {}
         abort(404)
     results, examtotal = Assess.render_own_marked_exam(student_uid, exam_id)
+
+    if examtotal is False:
+        status=0
+    else:
+        status=1
     marktime = Exams.get_mark_time(exam_id, student_uid)
     firstview = Exams.get_student_start_time(exam_id, student_uid)
     submittime = Exams.get_submit_time(exam_id, student_uid)
@@ -403,8 +408,31 @@ def cadmin_exam_viewmarked(course_id, exam_id, student_uid):
         datemarked=datemarked,
         datefirstview=datefirstview,
         taken=takenmins,
-        user=user
+        user=user,
+        status=status
     )
+
+
+@app.route("/cadmin/<int:course_id>/exam/<int:exam_id>/unsubmit/<int:student_uid>", methods=['POST',])
+@require_course_perm(("coursecoord", "courseadmin", "viewmarks", "altermarks"))
+def cadmin_exam_unsubmit(course_id, exam_id, student_uid):
+    """ "unsubmit" the student's assessment and reset their timer so they can
+        log back on and have another attempt.
+    """
+    course = Courses2.get_course(course_id)
+    try:
+        exam = Exams.get_exam_struct(exam_id, course_id)
+    except KeyError:
+        exam = {}
+        abort(404)
+    Exams.unsubmit(exam_id, student_uid)
+    user = Users2.get_user(student_uid)
+    flash("""Assessment for %s has been "unsubmitted" and the timer reset.""" % user['uname'])
+    return redirect(url_for("cadmin_exam_viewmarked",
+                            course_id=course_id,
+                            exam_id=exam_id,
+                            student_uid=student_uid
+    ))
 
 
 @app.route("/cadmin/<int:course_id>/editexam/<int:exam_id>")
