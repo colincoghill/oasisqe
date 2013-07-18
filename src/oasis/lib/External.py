@@ -6,11 +6,12 @@
     (except to OASIS database or memcache servers) should come through here.
 """
 
-from oasis.lib import OaConfig, Groups, Feeds, Periods, Users2, UFeeds, Users
+from oasis.lib import OaConfig, Groups, Feeds, DB, Users2, UFeeds, Users
 from logging import log, ERROR, INFO
 import os
 import subprocess
-
+import tempfile
+import json
 
 def feeds_available_group_scripts():
     """ Return a list of file names of available group feed scripts.
@@ -207,3 +208,46 @@ def user_update_details_from_feed(uid, upid):
         Users.set_givenname(uid, given)
         Users.set_familyname(uid, family)
         Users.set_studentid(uid, studentid)
+
+
+
+def qt_to_zip(qt_id, fname="oa_export", suffix="oaq"):
+    """ Take a QTemplate ID and return a binary string containing it as a
+        .oaq file.
+        (a ZIP file in special format)
+    """
+    assert isinstance(qt_id, int)
+
+    qtemplate = DB.get_qtemplate(qt_id)
+    if not qtemplate:
+        return None
+
+    tmpd = tempfile.mkdtemp(prefix="oa")
+    qdir = os.path.join(tmpd, fname)
+    os.mkdir(qdir)
+    testf = open(os.path.join(qdir, "info.json"), "wb")
+    testf.write(json.dumps(qtemplate))
+    testf.close()
+
+    return tmpd
+    #
+    #attachments = DB.get_qt_atts(qt_id)
+    #version = DB.get_qt_version(qt_id)
+    #for name in attachments:
+    #    create_qt_att(newid,
+    #                  name,
+    #                  get_qt_att_mimetype(qt_id, name),
+    #                  get_qt_att(qt_id, name),
+    #                  newversion)
+    #try:
+    #    variations = get_qt_variations(qt_id)
+    #    for variation in variations.keys():
+    #        add_qt_variation(newid,
+    #                         variation,
+    #                         variations[variation],
+    #                         newversion)
+    #except AttributeError, err:
+    #    log(WARN,
+    #        "Copying a qtemplate %s with no variations. '%s'" %
+    #        (qt_id, err))
+    #return newid

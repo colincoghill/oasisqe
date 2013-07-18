@@ -950,3 +950,46 @@ def cadmin_course_add_group(course_id):
     flash("Group %s added" % (group.name,))
     return redirect(url_for('cadmin_config', course_id=course_id))
 
+
+@app.route("/cadmin/<int:course_id>/question_export/<qt_id>")
+@require_course_perm(("questioneditor", 'coursecoord', 'courseadmin'))
+def cadmin_course_question_do_export(course_id, qt_id):
+    """ Export a question. Send it as a .OAQ file.
+    """
+    #TODO: How do we detect or include permissions/licensing/etc ?
+    # Include a license file?
+    raise NotImplementedError
+
+
+@app.route("/cadmin/<int:course_id>/topic_export/<topic_id>")
+@require_course_perm(("questioneditor", 'coursecoord', 'courseadmin'))
+def cadmin_course_topic_export(course_id, topic_id):
+    """ Export a topic full of questions. Ask the user some questions
+        (include hidden, etc) then send to course_topic_do_export.
+    """
+    #TODO: How do we detect or include permissions/licensing/etc ?
+    # Include a license file?
+    raise NotImplementedError
+
+
+@app.route("/cadmin/<int:course_id>/question_import/<qt_id>")
+@require_course_perm(("questioneditor", 'coursecoord', 'courseadmin'))
+def cadmin_course_question_import(course_id, qt_id):
+    """ Import a question. Take an OAQ file, then send to
+        course_question_do_import which will ask some questions.
+    """
+    #TODO: How do we detect or include permissions/licensing/etc ?
+    # Include a license file?
+    raise NotImplementedError
+
+
+@app.route("/cadmin/<int:course_id>/topic_import/<topic_id>")
+@require_course_perm(("questioneditor", 'coursecoord', 'courseadmin'))
+def cadmin_course_topic_import(course_id, topic_id):
+    """ Import a topic full of questions. Direct to course_topic_do_import,
+        which will ask some questions based on the import.
+    """
+    #TODO: How do we detect or include permissions/licensing/etc ?
+    # Include a license file?
+    raise NotImplementedError
+

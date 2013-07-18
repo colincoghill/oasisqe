@@ -1115,20 +1115,6 @@ def add_exam_q(user, exam, question, position):
             (exam, user, position, question))
     touch_user_exam(exam, user)
 
-#
-# def getExamQuestions(user, exam):
-#     """Return an ordered list of questions used in the exam for the student.
-#     """
-#
-#     ret = getFields(
-#         table="examquestions",
-#         fields=("position", "question"),
-#         where="exam='%d' and student='%d'" % (int(exam), int(user)))
-#     if ret:
-#         questions = [int(row['question']) for row in ret]
-#         return questions
-#     return []
-
 
 def get_student_q_practice_num(user_id, qt_id):
     """Return the number of times the given student has practiced the question
