@@ -214,7 +214,7 @@ def user_update_details_from_feed(uid, upid):
 def qt_to_zip(qt_id, fname="oa_export", suffix="oaq"):
     """ Take a QTemplate ID and return a binary string containing it as a
         .oaq file.
-        (a ZIP file in special format)
+        (a tgz file in special format)
     """
     assert isinstance(qt_id, int)
 
