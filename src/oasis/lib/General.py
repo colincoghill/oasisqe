@@ -9,9 +9,7 @@
     Functions needed by several of the Oasis views
 """
 
-import Image
-import ImageDraw
-import ImageFont
+from PIL import Image, ImageDraw, ImageFont
 import re
 import random
 from StringIO import StringIO
