@@ -15,7 +15,9 @@
     flexibility.</p>
   <div class="container-fluid well"
        style='padding:1em; background-color: #fff8f8; border: solid darkred 1px;'>
+  <a href="{{ cf.url }}cadmin/{{ course.id }}/question_export/{{ qtemplate.id}}/oa_export.oaq">Export</a>
     <div>
+
       <form method='post' ENCTYPE='multipart/form-data'
             ACTION='{{ cf.url }}qedit_raw/save/{{ topic.id }}/{{ qtemplate.id }}'>
         <div class='pull-right'><INPUT type='submit'
