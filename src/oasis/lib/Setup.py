@@ -10,7 +10,9 @@
 from flask import flash
 from logging import log, ERROR
 from oasis.lib import DB, Topics, Courses, Courses2
-
+import StringIO
+from oasis.lib import External
+from flask import send_file, abort
 
 def doTopicPageCommands(request, topic_id, user_id):
     """We've been asked to perform some operations on the Topic page.
@@ -104,6 +106,13 @@ def doTopicPageCommands(request, topic_id, user_id):
                     DB.update_qt_pos(qtid, topic_id, -position)
                     title = DB.get_qt_name(qtid)
                     flash("Made '%s' Visible" % title)
+        if target_cmd == "export":
+            data = External.qts_to_zip(qtids, fname="oa_export", suffix="oaq")
+            if not data:
+                abort(401)
+
+            sIO = StringIO.StringIO(data)
+            return 2, send_file(sIO, "application/oasisqe", as_attachment=True, attachment_filename="oa_export.zip")
 
     # Then new questions
     new_title = form.get('new_title', None)
@@ -160,7 +169,7 @@ def doTopicPageCommands(request, topic_id, user_id):
                 log(ERROR,
                     "Unable to create new question (%s) (%s)" %
                     (new_title, new_position))
-    return {'mesg': mesg}
+    return 1, {'mesg': mesg}
 
 
 def get_sorted_courselist(with_stats=False, only_active=True):
