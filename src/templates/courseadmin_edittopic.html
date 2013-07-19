@@ -3,7 +3,7 @@
   <script>
     $("#target_cmd").change(function () {
       var tcmd = $(this).val();
-      if (tcmd == "hide" || tcmd == "show" || tcmd == "--") {
+      if (tcmd == "hide" || tcmd == "show" || tcmd == "export" || tcmd == "--") {
         $("#target_topic").hide();
       } else {
         $("#target_topic").show();
@@ -113,6 +113,7 @@
         <option value="show">Show</option>
         <option value="move">Move To Topic</option>
         <option value="copy">Copy To Topic</option>
+        <option value="export">Export (Download)</option>
       </select>
         <select id="target_topic" name='target_topic' class="hidden">
           <option value="">--</option>
