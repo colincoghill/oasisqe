@@ -212,16 +212,11 @@ def user_update_details_from_feed(uid, upid):
         Users.set_studentid(uid, studentid)
 
 
-def qt_to_zip(qt_id, fname="oa_export", suffix="oaq"):
-    """ Take a QTemplate ID and return a binary string containing it as a
-        .oaq file.
+def qts_to_zip(qt_ids, fname="oa_export", suffix="oaq"):
+    """ Take a list of QTemplate IDs and return a binary string containing
+        them as an .oaq file.
         (a zip file in special format)
     """
-    assert isinstance(qt_id, int)
-
-    qtemplate = DB.get_qtemplate(qt_id)
-    if not qtemplate:
-        return None
 
     tmpd = tempfile.mkdtemp(prefix="oa")
     qdir = os.path.join(tmpd, fname)
@@ -232,33 +227,33 @@ def qt_to_zip(qt_id, fname="oa_export", suffix="oaq"):
             'qt_version': '0.9',
             'url': OaConfig.parentURL
         },
-        'qtemplates':[{
-            qt_id: qtemplate
-        },]
+        'qtemplates':{}
     }
 
     arc = zipfile.ZipFile(os.path.join(tmpd, "%s.%s" % (fname, suffix)),
                           'w',
                           zipfile.ZIP_DEFLATED)
+    for qt_id in qt_ids:
+        qtemplate = DB.get_qtemplate(qt_id)
+        qtdir = os.path.join(qdir, str(qt_id))
+        attachments = DB.get_qt_atts(qt_id)
+        attachments.append('qtemplate.html')
+        attachments.append('datfile.txt')
+        attachments.append('image.gif')
+        os.mkdir(qtdir)
+        os.mkdir(os.path.join(qtdir, "attach"))
+        info["qtemplates"][qt_id] = {'qtemplate': qtemplate}
+        info["qtemplates"][qt_id]["attachments"] = []
 
-    qtdir = os.path.join(qdir, str(qt_id))
-    attachments = DB.get_qt_atts(qt_id)
-    attachments.append('qtemplate.html')
-    attachments.append('datfile.txt')
-    attachments.append('image.gif')
-    os.mkdir(qtdir)
-    os.mkdir(os.path.join(qtdir, "attach"))
-    info["qtemplates"][0][qt_id]["attachments"] = []
-
-    for name in attachments:
-        mtype = DB.get_qt_att_mimetype(qt_id, name)
-        data = DB.get_qt_att(qt_id, name)
-        info["qtemplates"][0][qt_id]["attachments"].append([name, mtype, len(data)])
-        subdir = os.path.join(qtdir, "attach", name)
-        outf = open(subdir, "wb")
-        outf.write(data)
-        outf.close()
-        arc.write(subdir, os.path.join(fname,"%s"%qt_id, "attach", name),zipfile.ZIP_DEFLATED)
+        for name in attachments:
+            mtype = DB.get_qt_att_mimetype(qt_id, name)
+            data = DB.get_qt_att(qt_id, name)
+            info["qtemplates"][qt_id]["attachments"].append([name, mtype, len(data)])
+            subdir = os.path.join(qtdir, "attach", name)
+            outf = open(subdir, "wb")
+            outf.write(data)
+            outf.close()
+            arc.write(subdir, os.path.join(fname,"%s"%qt_id, "attach", name),zipfile.ZIP_DEFLATED)
 
     infof = open(os.path.join(qdir, "info.json"), "wb")
     infof.write(json.dumps(info))

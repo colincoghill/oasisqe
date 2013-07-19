@@ -11,9 +11,9 @@ from datetime import datetime
 import _strptime  # import should prevent thread import blocking issues
                   # ask Google about:     AttributeError: _strptime
 from logging import log, ERROR
-import StringIO
+
 from flask import render_template, session, request, redirect, \
-    abort, url_for, flash, make_response, send_file
+    abort, url_for, flash, make_response
 
 from oasis.lib import OaConfig, Users2, DB, Topics, Permissions, \
     Exams, Courses, Courses2, Setup, CourseAdmin, Groups, General, Assess, \
@@ -23,7 +23,7 @@ MYPATH = os.path.dirname(__file__)
 
 from oasis.lib.Permissions import satisfy_perms, check_perm
 from oasis.lib.General import date_from_py2js
-from oasis.lib import External
+
 
 from oasis import app, require_course_perm, require_perm
 
@@ -886,10 +886,13 @@ def cadmin_topic_save(course_id, topic_id):
         return redirect(url_for('cadmin_top', course_id=course_id))
 
     if "save_changes" in request.form:
-        result = Setup.doTopicPageCommands(request, topic_id, user_id)
-        if result:
+        (what, result) = Setup.doTopicPageCommands(request, topic_id, user_id)
+
+        if what == 1:
             # flash(result['mesg'])
             return redirect(url_for('cadmin_edit_topic', course_id=course_id, topic_id=topic_id))
+        if what == 2:
+            return result
 
     flash("Error saving Topic Information!")
     log(ERROR, "Error saving Topic Information " % repr(request.form))
@@ -951,22 +954,6 @@ def cadmin_course_add_group(course_id):
     group = Groups.Group(group_id)
     flash("Group %s added" % (group.name,))
     return redirect(url_for('cadmin_config', course_id=course_id))
-
-
-@app.route("/cadmin/<int:course_id>/question_export/<int:qt_id>/<fname>")
-@require_course_perm(("questioneditor", 'coursecoord', 'courseadmin'))
-def cadmin_course_question_do_export(course_id, qt_id, fname):
-    """ Export a question. Send it as a .OAQ file.
-    """
-    #TODO: How do we detect or include permissions/licensing/etc ?
-    # Include a license file?
-
-    data = External.qt_to_zip(qt_id, fname=fname)
-    if not data:
-        abort(401)
-
-    sIO = StringIO.StringIO(data)
-    return send_file(sIO, "application/oasisqe", as_attachment=True, attachment_filename="oa_export.zip")
 
 
 @app.route("/cadmin/<int:course_id>/topic_export/<topic_id>")
