@@ -23,6 +23,7 @@ MYPATH = os.path.dirname(__file__)
 
 from oasis.lib.Permissions import satisfy_perms, check_perm
 from oasis.lib.General import date_from_py2js
+from oasis.lib import External
 
 
 from oasis import app, require_course_perm, require_perm
@@ -956,35 +957,25 @@ def cadmin_course_add_group(course_id):
     return redirect(url_for('cadmin_config', course_id=course_id))
 
 
-@app.route("/cadmin/<int:course_id>/topic_export/<topic_id>")
+@app.route("/cadmin/<int:course_id>/questions_import/<topic_id>", methods=['POST',])
 @require_course_perm(("questioneditor", 'coursecoord', 'courseadmin'))
-def cadmin_course_topic_export(course_id, topic_id):
-    """ Export a topic full of questions. Ask the user some questions
-        (include hidden, etc) then send to course_topic_do_export.
+def cadmin_course_questions_import(course_id, topic_id):
+    """ Take an OAQ file and import any questions in it into topic
     """
-    #TODO: How do we detect or include permissions/licensing/etc ?
-    # Include a license file?
-    raise NotImplementedError
 
+    if 'importfile' in request.files:
+        data = request.files['importfile'].read()
+    else:
+        flash("No file uploaded?")
+        return redirect(url_for("cadmin_edit_topic", course_id=course_id, topic_id=topic_id))
 
-@app.route("/cadmin/<int:course_id>/question_import/<qt_id>")
-@require_course_perm(("questioneditor", 'coursecoord', 'courseadmin'))
-def cadmin_course_question_import(course_id, qt_id):
-    """ Import a question. Take an OAQ file, then send to
-        course_question_do_import which will ask some questions.
-    """
-    #TODO: How do we detect or include permissions/licensing/etc ?
-    # Include a license file?
-    raise NotImplementedError
+    num = External.import_qts_from_zip(topic_id, data)
+    if num is False:
+        flash("Invalid OASISQE file? No data recognized.")
+        return redirect(url_for("cadmin_edit_topic", course_id=course_id, topic_id=topic_id))
+    if num is 0:
+        flash("Empty OASISQE file? No questions found.")
+        return redirect(url_for("cadmin_edit_topic", course_id=course_id, topic_id=topic_id))
 
-
-@app.route("/cadmin/<int:course_id>/topic_import/<topic_id>")
-@require_course_perm(("questioneditor", 'coursecoord', 'courseadmin'))
-def cadmin_course_topic_import(course_id, topic_id):
-    """ Import a topic full of questions. Direct to course_topic_do_import,
-        which will ask some questions based on the import.
-    """
-    #TODO: How do we detect or include permissions/licensing/etc ?
-    # Include a license file?
-    raise NotImplementedError
-
+    flash("%s questions imported!" % num)
+    return redirect(url_for("cadmin_edit_topic", course_id=course_id, topic_id=topic_id))

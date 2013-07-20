@@ -266,3 +266,13 @@ def qts_to_zip(qt_ids, fname="oa_export", suffix="oaq"):
     readback.close()
     shutil.rmtree(tmpd)
     return data
+
+
+def import_qts_from_zip(topic_id, data):
+    """ Open the given OAQ file and import any qtemplates found.
+        Return False if it's not valid
+        Return 0 if it's valid but has no qtemplates
+        Return NUM of templates imported.
+    """
+
+    return 0
