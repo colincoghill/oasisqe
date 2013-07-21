@@ -14,6 +14,7 @@ import tempfile
 import json
 import zipfile
 import shutil
+from StringIO import StringIO
 
 def feeds_available_group_scripts():
     """ Return a list of file names of available group feed scripts.
@@ -274,5 +275,25 @@ def import_qts_from_zip(topic_id, data):
         Return 0 if it's valid but has no qtemplates
         Return NUM of templates imported.
     """
+
+    # TODO: How do we protect against malicious uploads?
+    # At the moment they're allowed for reasonably trusted people only,
+    # but they could be tricked into uploading a bad one
+
+    #  unzip to huge size
+
+
+    sdata = StringIO(data)
+    tmpd = tempfile.mkdtemp(prefix="oa")
+    qdir = os.path.join(tmpd, "import")
+    os.mkdir(qdir)
+    with zipfile.ZipFile(sdata, "r") as zfile:
+        files = zfile.namelist()
+        zfile.extractall(qdir)
+        for fname in files:
+            pass
+
+
+
 
     return 0

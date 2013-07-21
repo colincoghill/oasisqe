@@ -969,6 +969,10 @@ def cadmin_course_questions_import(course_id, topic_id):
         flash("No file uploaded?")
         return redirect(url_for("cadmin_edit_topic", course_id=course_id, topic_id=topic_id))
 
+    if len(data) > 52000000:  # approx 50Mb
+        flash("Upload is too large, 50MB Maximum.")
+        return redirect(url_for("cadmin_edit_topic", course_id=course_id, topic_id=topic_id))
+
     num = External.import_qts_from_zip(topic_id, data)
     if num is False:
         flash("Invalid OASISQE file? No data recognized.")
