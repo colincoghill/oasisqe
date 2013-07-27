@@ -254,12 +254,12 @@ def qts_to_zip(qt_ids, fname="oa_export", suffix="oaq"):
             outf = open(subdir, "wb")
             outf.write(data)
             outf.close()
-            arc.write(subdir, os.path.join(fname,"%s"%qt_id, "attach", name),zipfile.ZIP_DEFLATED)
+            arc.write(subdir, os.path.join(fname,"%s"%qt_id, "attach", name), zipfile.ZIP_DEFLATED)
 
     infof = open(os.path.join(qdir, "info.json"), "wb")
     infof.write(json.dumps(info))
     infof.close()
-    arc.write(os.path.join(qdir, "info.json"), os.path.join(fname,"info.json"),zipfile.ZIP_DEFLATED)
+    arc.write(os.path.join(qdir, "info.json"), os.path.join(fname,"info.json"), zipfile.ZIP_DEFLATED)
     arc.close()
 
     readback = open(os.path.join(tmpd, "%s.%s" % (fname, suffix)), "rb")
@@ -280,8 +280,8 @@ def import_qts_from_zip(topic_id, data):
     # At the moment they're allowed for reasonably trusted people only,
     # but they could be tricked into uploading a bad one
 
-    #  unzip to huge size
-
+    # eg.    unzip to huge size
+    # add digital signatures?
 
     sdata = StringIO(data)
     tmpd = tempfile.mkdtemp(prefix="oa")
