@@ -352,4 +352,3 @@ def assess_viewmarked(course_id, exam_id):
         datesubmit=datesubmit,
         datemarked=datemarked
     )
-

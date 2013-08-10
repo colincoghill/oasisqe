@@ -16,6 +16,7 @@ import zipfile
 import shutil
 from StringIO import StringIO
 
+
 def feeds_available_group_scripts():
     """ Return a list of file names of available group feed scripts.
     """
@@ -99,7 +100,7 @@ def group_update_from_feed(group_id, refresh_users=False):
     try:
         output = feeds_run_group_script(feed.script, args=[group.feedargs, ])
     except BaseException, err:
-        log(ERROR, "Exception while running group feed '%s': %s" % (scriptrun, err))
+        log(ERROR, "Exception in group feed '%s': %s" % (scriptrun, err))
         raise
 
     removed = []
@@ -144,12 +145,14 @@ def users_update_from_feed(upids):
                 try:
                     out = feeds_run_user_script(feed.script, args=[upid, ])
                 except BaseException, err:
-                    log(ERROR, "Exception running user feed '%s': %s" % (feed.script, err))
+                    log(ERROR,
+                        "Exception in user feed '%s': %s" % (feed.script, err))
                     continue
 
                 res = out.splitlines()
                 if res[0].startswith("ERROR"):
-                    log(ERROR, "Error running user feed '%s': %s" % (feed.script, res))
+                    log(ERROR,
+                        "Error running user feed '%s': %s" % (feed.script, res))
                     continue
 
                 line = res[1]
@@ -168,26 +171,39 @@ def users_update_from_feed(upids):
                     family = " ".join(name.split(" ")[1:])
                 except ValueError:
                     family = ""
-                Users2.create(upid, '', given, family, 2, studentid, email, None, 'feed', '', True)
+                Users2.create(upid,
+                              '',
+                              given,
+                              family,
+                              2,
+                              studentid,
+                              email,
+                              None,
+                              'feed',
+                              '',
+                              True)
                 break
         else:
-            log(ERROR, "Error running user feed for existing account %s" % user_id )
+            log(ERROR,
+                "Error running user feed for existing account %s" % user_id)
     return
 
 
 def user_update_details_from_feed(uid, upid):
-    """ Refresh the user's details from the feed. Maybe their name or ID has changed.
+    """ Refresh the user's details from feed. Maybe their name or ID changed.
     """
     for feed in UFeeds.all_list():
         try:
             out = feeds_run_user_script(feed.script, args=[upid, ])
         except BaseException, err:
-            log(ERROR, "Exception running user feed '%s': %s" % (feed.script, err))
+            log(ERROR,
+                "Exception running user feed '%s': %s" % (feed.script, err))
             continue
 
         res = out.splitlines()
         if res[0].startswith("ERROR"):
-            log(ERROR, "Error running user feed '%s': %s" % (feed.script, res))
+            log(ERROR,
+                "Error running user feed '%s': %s" % (feed.script, res))
             continue
 
         line = res[1]
@@ -228,7 +244,7 @@ def qts_to_zip(qt_ids, fname="oa_export", suffix="oaq"):
             'qt_version': '0.9',
             'url': OaConfig.parentURL
         },
-        'qtemplates':{}
+        'qtemplates': {}
     }
 
     arc = zipfile.ZipFile(os.path.join(tmpd, "%s.%s" % (fname, suffix)),
@@ -254,12 +270,16 @@ def qts_to_zip(qt_ids, fname="oa_export", suffix="oaq"):
             outf = open(subdir, "wb")
             outf.write(data)
             outf.close()
-            arc.write(subdir, os.path.join(fname,"%s"%qt_id, "attach", name), zipfile.ZIP_DEFLATED)
+            arc.write(subdir,
+                      os.path.join(fname, "%s" % qt_id, "attach", name),
+                      zipfile.ZIP_DEFLATED)
 
     infof = open(os.path.join(qdir, "info.json"), "wb")
     infof.write(json.dumps(info))
     infof.close()
-    arc.write(os.path.join(qdir, "info.json"), os.path.join(fname,"info.json"), zipfile.ZIP_DEFLATED)
+    arc.write(os.path.join(qdir, "info.json"),
+              os.path.join(fname, "info.json"),
+              zipfile.ZIP_DEFLATED)
     arc.close()
 
     readback = open(os.path.join(tmpd, "%s.%s" % (fname, suffix)), "rb")
@@ -292,8 +312,5 @@ def import_qts_from_zip(topic_id, data):
         zfile.extractall(qdir)
         for fname in files:
             pass
-
-
-
 
     return 0
