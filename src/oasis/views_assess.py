@@ -264,7 +264,7 @@ def assess_submit(course_id, exam_id):
     if status < 5:
         marked = Assess.mark_exam(user_id, exam_id)
         if not marked:
-            flash("There was a problem marking the assessment, staff have been notified.")
+            flash("There was a problem marking the assessment,")
 
     if exam["instant"] == 2:
         return redirect(url_for("assess_awaitresults",
@@ -327,6 +327,11 @@ def assess_viewmarked(course_id, exam_id):
             course=course,
             exam=exam
         )
+
+    if exam["instant"] == 2 and not exam['past']:
+        return redirect(url_for("assess_awaitresults",
+                                course_id=course_id,
+                                exam_id=exam_id))
 
     results, examtotal = Assess.render_own_marked_exam(user_id, exam_id)
     datemarked = General.human_date(Exams.get_mark_time(exam_id, user_id))
