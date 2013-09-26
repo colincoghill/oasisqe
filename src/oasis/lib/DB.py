@@ -971,7 +971,7 @@ def copy_qt(qt_id):
     res = run_sql("SELECT owner, title, description, marker, scoremax, status "
                   "FROM qtemplates "
                   "WHERE qtemplate = %s",
-                  qt_id)
+                  (qt_id,))
     if not res:
         raise KeyError("QTemplate %d not found" % qt_id)
     orig = res[0]
