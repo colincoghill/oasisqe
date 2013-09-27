@@ -74,14 +74,14 @@ def doTopicPageCommands(request, topic_id, user_id):
             if target_topic:
                 for qtid in qtids:
                     qt_title = DB.get_qt_name(qtid)
-                    topic_title = Topics.get_name(topic_id)
+                    topic_title = Topics.get_name(target_topic)
                     flash("Moving %s to %s" % (qt_title, topic_title))
                     DB.move_qt_to_topic(qtid, target_topic)
         if target_cmd == 'copy':
             if target_topic:
                 for qtid in qtids:
                     qt_title = DB.get_qt_name(qtid)
-                    topic_title = Topics.get_name(topic_id)
+                    topic_title = Topics.get_name(target_topic)
                     flash("Copying %s to %s" % (qt_title, topic_title))
                     newid = DB.copy_qt_all(qtid)
                     DB.add_qt_to_topic(newid, target_topic)
