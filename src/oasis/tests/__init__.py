@@ -7,6 +7,8 @@ import os
 
 TESTINI = "src/oasis/lib/test.ini"
 
+DB = None
+
 
 # In PROGRESS. Still thinking this through.
 def setup():
