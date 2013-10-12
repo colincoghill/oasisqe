@@ -287,7 +287,7 @@ def gen_q_html(qvars, html):
 
 def gen_q_image(qvars, image):
     """ Draw values onto the image provided. """
-    img = Image.open(StringIO(image)).convert("P", palette=Image.ADAPTIVE)
+    img = Image.open(StringIO(image)).convert("RGBA")
     imgdraw = ImageDraw.Draw(img)
     font = ImageFont.truetype("%s/fonts/Courier_New.ttf" % OaConfig.homedir, 14)
     coords = [int(name[1:])
@@ -300,7 +300,7 @@ def gen_q_image(qvars, image):
         if (xcoord > -1) and (ycoord > -1):
             value = unicode(value, "utf-8")    # convert to unicode
             try:
-                imgdraw.text((int(xcoord), int(ycoord)), value, font=font, fill=0)
+                imgdraw.text((int(xcoord), int(ycoord)), value, font=font, fill="black")
             except UnicodeEncodeError, err:
                 log(WARN,
                     u"Unicode error generating image: %s [%s]." % (err, value))
