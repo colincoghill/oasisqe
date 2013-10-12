@@ -304,7 +304,9 @@ def cadmin_exam_results(course_id, exam_id):
     exam['start_minute'] = int(exam['start'].minute)
     exam['end_minute'] = int(exam['end'].minute)
 
-    groups = [Groups.Group(g_id=g_id) for g_id in Groups.active_by_course(course_id)]
+    groups = [Groups.Group(g_id=g_id)
+              for g_id
+              in Groups.active_by_course(course_id)]
     results = {}
     uids = set([])
     totals = {}
@@ -373,9 +375,9 @@ def cadmin_exam_viewmarked(course_id, exam_id, student_uid):
     results, examtotal = Assess.render_own_marked_exam(student_uid, exam_id)
 
     if examtotal is False:
-        status=0
+        status = 0
     else:
-        status=1
+        status = 1
     marktime = Exams.get_mark_time(exam_id, student_uid)
     firstview = Exams.get_student_start_time(exam_id, student_uid)
     submittime = Exams.get_submit_time(exam_id, student_uid)
@@ -416,7 +418,7 @@ def cadmin_exam_viewmarked(course_id, exam_id, student_uid):
     )
 
 
-@app.route("/cadmin/<int:course_id>/exam/<int:exam_id>/unsubmit/<int:student_uid>", methods=['POST',])
+@app.route("/cadmin/<int:course_id>/exam/<int:exam_id>/unsubmit/<int:student_uid>", methods=['POST', ])
 @require_course_perm(("coursecoord", "courseadmin", "viewmarks", "altermarks"))
 def cadmin_exam_unsubmit(course_id, exam_id, student_uid):
     """ "unsubmit" the student's assessment and reset their timer so they can
@@ -424,18 +426,17 @@ def cadmin_exam_unsubmit(course_id, exam_id, student_uid):
     """
     course = Courses2.get_course(course_id)
     try:
-        exam = Exams.get_exam_struct(exam_id, course_id)
+        exam = Exams.get_exam_struct(exam_id, course.id)
     except KeyError:
         exam = {}
         abort(404)
     Exams.unsubmit(exam_id, student_uid)
     user = Users2.get_user(student_uid)
-    flash("""Assessment for %s has been "unsubmitted" and the timer reset.""" % user['uname'])
+    flash("""Assessment for %s unsubmitted and timer reset.""" % user['uname'])
     return redirect(url_for("cadmin_exam_viewmarked",
-                            course_id=course_id,
-                            exam_id=exam_id,
-                            student_uid=student_uid
-    ))
+                            course_id=course.id,
+                            exam_id=exam['id'],
+                            student_uid=student_uid))
 
 
 @app.route("/cadmin/<int:course_id>/editexam/<int:exam_id>")
@@ -576,7 +577,7 @@ def cadmin_editgroup_member(course_id, group_id):
     # expecting   "remove_UID"
     for cmd in cmds:
         if '_' in cmd:
-            op, uid = cmd.split("_",1)
+            op, uid = cmd.split("_", 1)
             if op == "remove":
                 uid = int(uid)
                 user = Users2.get_user(uid)
@@ -891,13 +892,17 @@ def cadmin_topic_save(course_id, topic_id):
 
         if what == 1:
             # flash(result['mesg'])
-            return redirect(url_for('cadmin_edit_topic', course_id=course_id, topic_id=topic_id))
+            return redirect(url_for('cadmin_edit_topic',
+                                    course_id=course_id,
+                                    topic_id=topic_id))
         if what == 2:
             return result
 
     flash("Error saving Topic Information!")
     log(ERROR, "Error saving Topic Information " % repr(request.form))
-    return redirect(url_for('cadmin_edit_topic', course_id=course_id, topic_id=topic_id))
+    return redirect(url_for('cadmin_edit_topic',
+                            course_id=course_id,
+                            topic_id=topic_id))
 
 
 @app.route("/cadmin/<int:course_id>/perms")
@@ -967,19 +972,29 @@ def cadmin_course_questions_import(course_id, topic_id):
         data = request.files['importfile'].read()
     else:
         flash("No file uploaded?")
-        return redirect(url_for("cadmin_edit_topic", course_id=course_id, topic_id=topic_id))
+        return redirect(url_for("cadmin_edit_topic",
+                                course_id=course_id,
+                                topic_id=topic_id))
 
     if len(data) > 52000000:  # approx 50Mb
         flash("Upload is too large, 50MB Maximum.")
-        return redirect(url_for("cadmin_edit_topic", course_id=course_id, topic_id=topic_id))
+        return redirect(url_for("cadmin_edit_topic",
+                                course_id=course_id,
+                                topic_id=topic_id))
 
     num = External.import_qts_from_zip(topic_id, data)
     if num is False:
         flash("Invalid OASISQE file? No data recognized.")
-        return redirect(url_for("cadmin_edit_topic", course_id=course_id, topic_id=topic_id))
+        return redirect(url_for("cadmin_edit_topic",
+                                course_id=course_id,
+                                topic_id=topic_id))
     if num is 0:
         flash("Empty OASISQE file? No questions found.")
-        return redirect(url_for("cadmin_edit_topic", course_id=course_id, topic_id=topic_id))
+        return redirect(url_for("cadmin_edit_topic",
+                                course_id=course_id,
+                                topic_id=topic_id))
 
     flash("%s questions imported!" % num)
-    return redirect(url_for("cadmin_edit_topic", course_id=course_id, topic_id=topic_id))
+    return redirect(url_for("cadmin_edit_topic",
+                            course_id=course_id,
+                            topic_id=topic_id))

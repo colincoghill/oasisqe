@@ -205,13 +205,17 @@ def qedit_raw_save(topic_id, qt_id):
             or check_perm(user_id, course_id, "questionedit")
             or check_perm(user_id, course_id, "questionsource")):
         flash("You do not have question editor privilege in this course")
-        return redirect(url_for("cadmin_edit_topic",  course_id = course_id,topic_id=topic_id))
+        return redirect(url_for("cadmin_edit_topic",
+                                course_id=course_id,
+                                topic_id=topic_id))
 
     form = request.form
 
     if 'cancel' in form:
         flash("Question editing cancelled, changes not saved.")
-        return redirect(url_for("cadmin_edit_topic", course_id = course_id,topic_id=topic_id))
+        return redirect(url_for("cadmin_edit_topic",
+                                course_id=course_id,
+                                topic_id=topic_id))
 
     version = DB.incr_qt_version(qt_id)
     owner = Users2.get_user(user_id)

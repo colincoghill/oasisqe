@@ -43,6 +43,7 @@ class DbConn(object):
 
     def run_sql(self, sql, params=None, quiet=False):
         """ Execute SQL commands over the connection. """
+        log(ERROR, "DB SQL '%s' (%s)" % (sql, repr(params)))
         try:
             cur = self.conn.cursor()
             if not params:
@@ -51,7 +52,6 @@ class DbConn(object):
                 rec = cur.execute(sql, params)
 
         except BaseException, err:
-            # it's possible that database connection timed out. Try once more.
             if not quiet:
                 log(ERROR, "DB Error (%s) '%s' (%s)" % (err, sql, repr(params)))
                 raise
@@ -59,8 +59,10 @@ class DbConn(object):
 
         if sql.split()[0].upper() in ("SELECT", "SHOW", "DESC", "DESCRIBE"):
             recset = cur.fetchall()
+            cur.close()
             return recset
         else:
+            cur.close()
             return rec
 
     def commit(self):
@@ -95,7 +97,6 @@ class DbPool(object):
         if self.connqueue.qsize() < 3:
             log(INFO, "DB Pool getting low! %d" % self.connqueue.qsize())
         dbc = self.connqueue.get(True)
-        # psycopg2 automatically does a transaction begin for us,
         return dbc
 
     def commit(self, dbc):

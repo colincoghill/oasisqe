@@ -167,4 +167,3 @@ def api_users_typeahead():
     else:
         matches = Users.typeahead(needle)
     return jsonify(result=matches)
-
