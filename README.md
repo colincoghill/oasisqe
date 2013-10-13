@@ -10,6 +10,8 @@ a lot more documentation and testing.
 
 Priority for fourth release is testing, documentation, and integration with other systems.
 
+At the moment we're busy bug-fixing and working on a new database layer (in the dbchange branch)
+
 
 Main web site:  http://www.oasisqe.com/
 
