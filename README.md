@@ -1,3 +1,6 @@
+
+[Current development focus is in the dbchange branch]
+
 oasisqe
 =======
 
