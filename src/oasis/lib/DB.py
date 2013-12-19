@@ -411,7 +411,7 @@ def get_qt_atts(qt_id, version=1000000000):
                   "AND version <= %s GROUP BY name ORDER BY name;",
                   (qt_id, version))
     if ret:
-        attachments = [att[0] for att in ret if att[0] not in att and att[0]]
+        attachments = [att[0] for att in ret]
         return attachments
     return []
 
