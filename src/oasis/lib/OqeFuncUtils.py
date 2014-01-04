@@ -97,7 +97,7 @@ def comp_bool_eqs(eq1str, eq2str, varlist):
         boolvals = inc_bool_val_list(boolvals)
 
     for i in range(2 ** numvars):
-        if not (  (anslist1[i] and anslist2[i])
+        if not ((anslist1[i] and anslist2[i])
             or (not anslist1[i]) and (not anslist2[i])):
             return 0
     return 1

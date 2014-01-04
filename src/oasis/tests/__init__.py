@@ -21,7 +21,7 @@ def setup():
 
     """
 
-    f = open(TESTINI,"w")
+    f = open(TESTINI, "w")
     f.write(test_config)
     f.close()
     global DB

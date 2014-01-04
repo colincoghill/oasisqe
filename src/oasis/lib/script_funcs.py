@@ -25,7 +25,7 @@ def withinTolerance(guess, correct, tolerance):
         lower = None
         upper = None
 
-    if upper < lower :
+    if upper < lower:
         tmp = lower
         lower = upper
         upper = tmp

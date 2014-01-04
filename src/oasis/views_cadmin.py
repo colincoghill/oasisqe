@@ -337,7 +337,7 @@ def cadmin_exam_results(course_id, exam_id):
 
 
 @app.route("/cadmin/<int:course_id>/exam/<int:exam_id>/<int:group_id>/export.csv")
-@require_course_perm(("coursecoord", "courseadmin","viewmarks"))
+@require_course_perm(("coursecoord", "courseadmin", "viewmarks"))
 def cadmin_export_csv(course_id, exam_id, group_id):
     """ Send the group results as a CSV file """
     course = Courses2.get_course(course_id)
@@ -962,7 +962,7 @@ def cadmin_course_add_group(course_id):
     return redirect(url_for('cadmin_config', course_id=course_id))
 
 
-@app.route("/cadmin/<int:course_id>/questions_import/<topic_id>", methods=['POST',])
+@app.route("/cadmin/<int:course_id>/questions_import/<topic_id>", methods=['POST', ])
 @require_course_perm(("questioneditor", 'coursecoord', 'courseadmin'))
 def cadmin_course_questions_import(course_id, topic_id):
     """ Take an OAQ file and import any questions in it into topic

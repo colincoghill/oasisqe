@@ -83,7 +83,7 @@ def do_show(DB, options, args):
     """ User has done     oasisdb show something
     """
     if len(args) <= 1:
-        args=['show', 'help']
+        args = ['show', 'help']
 
     if args[1] == "courses":
         return do_list_courses(DB, options, args)

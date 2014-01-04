@@ -792,7 +792,7 @@ def create_q(qt_id, name, student, status, variation, version, exam):
     conn = dbpool.begin()
     conn.run_sql("""INSERT INTO questions (qtemplate, name, student, status, variation, version, exam)
                VALUES (%s, %s, %s, %s, %s, %s, %s);""",
-                 (qt_id, name, student, status, variation, version, exam ))
+                 (qt_id, name, student, status, variation, version, exam))
     res = conn.run_sql("SELECT currval('questions_question_seq')")
     dbpool.commit(conn)
     if not res:

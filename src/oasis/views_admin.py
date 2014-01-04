@@ -47,6 +47,7 @@ def admin_feeds():
         feeds=feeds
     )
 
+
 @app.route("/admin/sysstats")
 @require_perm('sysadmin')
 def admin_sysstats():
@@ -59,7 +60,6 @@ def admin_sysstats():
         db_version=db_version,
         db_sizes=db_sizes
     )
-
 
 
 @app.route("/admin/userfeeds")
@@ -241,6 +241,7 @@ def admin_add_feed():
         scripts=scripts
     )
 
+
 @app.route("/admin/add_userfeed")
 @require_perm('sysadmin')
 def admin_add_userfeed():
@@ -255,6 +256,7 @@ def admin_add_userfeed():
         feed={'id': 0},
         scripts=scripts
     )
+
 
 @app.route("/admin/edit_userfeed/<int:feed_id>")
 @require_perm('sysadmin')
@@ -477,8 +479,8 @@ def admin_edit_user_feed_submit(feed_id):
     feed.comments = comments
     feed.freq = freq
     feed.active = active
-    feed.priority=priority
-    feed.regex=regex
+    feed.priority = priority
+    feed.regex = regex
 
     if name == "":
         flash("Can't Save: Name must be supplied")

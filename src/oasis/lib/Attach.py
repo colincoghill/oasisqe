@@ -9,6 +9,7 @@
 
 from oasis.lib import DB
 
+
 def is_restricted(fname):
     """ Is the filename restricted
         - not to be downloaded by non question editors?

@@ -14,6 +14,7 @@ import StringIO
 from oasis.lib import External
 from flask import send_file, abort
 
+
 def doTopicPageCommands(request, topic_id, user_id):
     """We've been asked to perform some operations on the Topic page.
 
@@ -177,7 +178,7 @@ def get_sorted_courselist(with_stats=False, only_active=True):
          [  ('example101', { coursedict }),  ('sorted302', { coursedict } )  ]
     """
 
-    courses = Courses2.get_course_dict(only_active = only_active)
+    courses = Courses2.get_course_dict(only_active=only_active)
 
     inorder = []
     for cid, course in courses.iteritems():

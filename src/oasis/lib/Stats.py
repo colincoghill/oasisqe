@@ -29,7 +29,7 @@ def prac_q_count(year, month, day, hour, qtemplate):
                  AND qtemplate=%s;"""
     params = (hour, month, day, year, qtemplate)
     res = DB.run_sql(sql, params)
-    if not res or len(res)==0:
+    if not res or len(res) == 0:
         return False
     return int(res[0][0])
 
@@ -150,7 +150,7 @@ def daily_prac_q_count(start_time, end_time, qt_id):
                 data.append(("%04d-%02d-%02d" % (start_time.year, start_time.month, start_time.day), 0))
             first = False
 
-        dt = datetime.strptime("%04d-%02d-%02d" %(int(row[0]), int(row[1]), int(row[2])), "%Y-%m-%d")
+        dt = datetime.strptime("%04d-%02d-%02d" % (int(row[0]), int(row[1]), int(row[2])), "%Y-%m-%d")
         data.append((dt.strftime("%Y-%m-%d"), int(row[3])))
 
     if len(res) >= 1 and not data[-1][0] == "%04d-%02d-%02d" % (end_time.year, end_time.month, end_time.day):
@@ -216,8 +216,7 @@ def daily_prac_load(start_time, end_time):
             first = False
         dt = datetime.strptime("%04d-%02d-%02d" % (int(row[0]), int(row[1]), int(row[2])), "%Y-%m-%d")
         data.append((dt.strftime("%Y-%m-%d"), row[3]))
-    if len(res) >= 1 \
-        and not data[-1][0] == "%04d-%02d-%02d" % (end_time.year, end_time.month, end_time.day):
+    if len(res) >= 1 and not data[-1][0] == "%04d-%02d-%02d" % (end_time.year, end_time.month, end_time.day):
 
         data.append(("%04d-%02d-%02d" % (end_time.year, end_time.month, end_time.day), 0))
     return data

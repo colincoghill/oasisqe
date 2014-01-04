@@ -716,8 +716,8 @@ def mark_q_script(qvars, script, answer):
         script_funcs.q_log(qid,
                            "error",
                            "__marker.py",
-                           "Falling back to standard marker: __marker.py: %s" %(
-            traceback.format_exception(etype, value, tb)[-2:]))
+                           "Falling back to standard marker __marker.py: %s" % (
+                               traceback.format_exception(etype, value, tb)[-2:]))
     try:
         qid = qvars['OaQID']
     except KeyError:

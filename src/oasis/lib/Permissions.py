@@ -21,7 +21,7 @@ def check_perm(user_id, group_id, perm):
     """ Check to see if the user has the permission on the given course. """
     permission = 0
     if not isinstance(perm, int):  # we have a string name so look it up
-        if PERMS.has_key(perm):
+        if perm in PERMS:
             permission = PERMS[perm]
     key = "permission-%s-super" % user_id
     obj = MC.get(key)

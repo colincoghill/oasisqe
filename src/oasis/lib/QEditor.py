@@ -41,7 +41,7 @@ def parseDatline(datline):
                 try:
                     (a, b) = v.split("=")
                 except (ValueError, AttributeError):
-                    log(INFO, "Bad line: '%s'" % v )
+                    log(INFO, "Bad line: '%s'" % v)
                     continue
                 #                try:
                 #                    QVars[a] = float(b)

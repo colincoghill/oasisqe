@@ -51,7 +51,6 @@ def get_user(user_id):
     return USERS[user_id]
 
 
-
 uid_by_uname = Users.uid_by_uname
 verify_pass = Users.verify_password
 create = Users.create

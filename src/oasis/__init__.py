@@ -483,7 +483,7 @@ def login_webauth_submit():
     username = request.environ['REMOTE_USER']
 
     if '@' in username:
-        username = username.split('@')[0] #  TODO: this is for UofA, how do we make it more general?
+        username = username.split('@')[0]  #  TODO: this is for UofA, how do we make it more general?
     user_id = Users2.uid_by_uname(username)
     if not user_id:
         Users2.create(username, '', '', '', 1, '', '', None, 'unknown', '', True)
