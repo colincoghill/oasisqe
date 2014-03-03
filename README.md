@@ -1,5 +1,4 @@
-
-[Current development focus is in the dbchange branch]
+[Current development focus is in the dbchange-minimal branch]
 
 oasisqe
 =======
