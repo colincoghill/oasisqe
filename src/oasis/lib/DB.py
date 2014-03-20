@@ -1006,7 +1006,7 @@ def create_qt(owner, title, desc, marker, scoremax, status):
     assert isinstance(title, str) or isinstance(title, unicode)
     assert isinstance(desc, str) or isinstance(desc, unicode)
     assert isinstance(marker, int)
-    assert isinstance(scoremax, float)
+    assert isinstance(scoremax, float) or scoremax is None
     assert isinstance(status, int)
     conn = dbpool.begin()
     conn.run_sql("INSERT INTO qtemplates (owner, title, description, marker, scoremax, status, version) "
