@@ -331,3 +331,54 @@ def qedit_raw_attach(qt_id, fname):
         mtype = "text/plain"
     sio = StringIO.StringIO(data)
     return send_file(sio, mtype, as_attachment=True, attachment_filename=fname)
+
+
+@app.route("/qedit_oqe/edit/<int:topic_id>/<int:qt_id>")
+@authenticated
+def qedit_oqe_edit(topic_id, qt_id):
+    """ Present a question editor so they can edit the question template.
+        Main page of editor
+    """
+    user_id = session['user_id']
+
+    course_id = Topics.get_course_id(topic_id)
+
+    if not (check_perm(user_id, course_id, "courseadmin")
+            or check_perm(user_id, course_id, "courseadmin")
+            or check_perm(user_id, course_id, "questionedit")
+            or check_perm(user_id, course_id, "questionsource")):
+        flash("You do not have question editor privilege in this course")
+        return redirect(url_for("cadmin_edit_topic",
+                                course_id=course_id, topic_id=topic_id))
+
+    course = Courses2.get_course(course_id)
+    topic = Topics.get_topic(topic_id)
+    qtemplate = DB.get_qtemplate(qt_id)
+    try:
+        html = DB.get_qt_att(qt_id, "qtemplate.html")
+    except KeyError:
+        try:
+            html = DB.get_qt_att(qt_id, "__qtemplate.html")
+        except KeyError:
+            html = "[question html goes here]"
+
+    qtemplate['html'] = html
+    attachnames = DB.get_qt_atts(qt_id, version=qtemplate['version'])
+    attachments = [
+        {
+            'name': name,
+            'mimetype': DB.get_qt_att_mimetype(qt_id, name)
+        } for name in attachnames
+        if not name in ['qtemplate.html', 'image.gif', 'datfile.txt',
+                        '__datfile.txt', '__qtemplate.html']
+    ]
+
+    return render_template(
+        "courseadmin_oqe_edit.html",
+        course=course,
+        topic=topic,
+        html=html,
+        attachments=attachments,
+        attachnames=attachnames,
+        qtemplate=qtemplate
+    )
