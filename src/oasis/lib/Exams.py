@@ -10,15 +10,15 @@
 import time
 import json
 import datetime
-import _strptime  # import should prevent thread import blocking issues
-                  # ask Google about:     AttributeError: _strptime
+
 from logging import log, INFO, ERROR
 
 from .DB import run_sql, dbpool, MC
 from .OaTypes import todatetime
 import Courses2
 from .Permissions import check_perm
-import DB, General
+import DB
+import General
 
 
 def save_score(exam_id, student, examtotal):
@@ -31,7 +31,7 @@ def save_score(exam_id, student, examtotal):
     run_sql("""INSERT INTO marklog (eventtime, exam, student, marker, operation, value)
                  VALUES (NOW(), %s, %s, 1, 'Submitted', %s);""",
             (exam_id, student, "%.1f" % examtotal))
-    touchUserExam(exam_id, student)
+    touchuserexam(exam_id, student)
 
 
 def set_duration(exam_id, duration):
@@ -168,7 +168,7 @@ def set_user_status(student, exam, status):
     newstatus = get_user_status(student, exam)
     if not newstatus == status:
         log(ERROR, "Failed to set new status:  setUserStatus(%s, %s, %s)" % (student, exam, status))
-    touchUserExam(exam, student)
+    touchuserexam(exam, student)
 
 
 def create_user_exam(student, exam):
@@ -291,7 +291,7 @@ def set_submit_time(student, exam, submittime=None):
         run_sql("""UPDATE userexams SET submittime=%s WHERE exam=%s AND student=%s;""", (submittime, exam, student))
     else:
         run_sql("""UPDATE userexams SET submittime=NOW() WHERE exam=%s AND student=%s;""", (exam, student))
-    touchUserExam(exam, student)
+    touchuserexam(exam, student)
 
 
 # FIXME: watch for memcache issues.
@@ -301,7 +301,7 @@ def resetEndTime(exam, user):
     assert isinstance(user, int)
     run_sql("DELETE FROM examtimers WHERE exam=%s AND userid=%s;", (exam, user))
     log(INFO, "Exam %s timer reset for user %s" % (exam, user))
-    touchUserExam(exam, user)
+    touchuserexam(exam, user)
 
 
 def reset_submit_time(exam, user):
@@ -314,10 +314,10 @@ def reset_submit_time(exam, user):
     params = (exam, user)
     run_sql(sql, params)
     log(INFO, "Exam %s submit time reset for user %s" % (exam, user))
-    touchUserExam(exam, user)
+    touchuserexam(exam, user)
 
 
-def touchUserExam(exam, user):
+def touchuserexam(exam, user):
     """ Update the lastchange field on a user exam so other places can tell that
         something changed. This should probably be done any time one of the
         following changes:
@@ -337,7 +337,7 @@ def reset_mark(exam, user):
     assert isinstance(user, int)
     run_sql("DELETE FROM marklog WHERE exam=%s AND student=%s;", (exam, user))
     log(INFO, "Exam %s mark reset for user %s" % (exam, user))
-    touchUserExam(exam, user)
+    touchuserexam(exam, user)
 
 
 def get_qts(exam):
@@ -407,7 +407,7 @@ def unsubmit(exam, student):
     resetEndTime(exam, student)
     reset_submit_time(exam, student)
     set_user_status(student, exam, 1)
-    touchUserExam(exam, student)
+    touchuserexam(exam, student)
 
 
 def set_mark_status(exam, status):
@@ -517,8 +517,6 @@ def get_exam_struct(exam_id, user_id=None, include_qtemplates=False,
 def get_marks(group, exam_id):
     """ Fetch the marks for a given user group.
     """
-    results = {}
-
     sql = """
         SELECT u.id, q.qtemplate, q.score, q.firstview, q.marktime
         FROM users AS u,

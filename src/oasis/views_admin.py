@@ -10,8 +10,6 @@
 
 import os
 from datetime import datetime
-import _strptime  # import should prevent thread import blocking issues
-                  # ask Google about:     AttributeError: _strptime
 
 from flask import render_template, \
     request, redirect, abort, url_for, flash

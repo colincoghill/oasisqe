@@ -310,7 +310,7 @@ def import_qts_from_zip(topic_id, data):
     with zipfile.ZipFile(sdata, "r") as zfile:
         files = zfile.namelist()
         zfile.extractall(qdir)
-        for fname in files:
+        for _ in files:
             pass
 
     return 0

@@ -60,7 +60,7 @@ def mark_q(user_id, qtid, request):
         parts.sort()
         total = 0.0
         for part in parts:
-            if marks.has_key('M%d' % (part,)):
+            if ('M%d' % part) in marks:
                 total += float(marks['M%d' % (part,)])
 
     return out

@@ -135,7 +135,7 @@ def assess_assessmentpage(course_id, exam_id, page):
     status = Exams.get_user_status(user_id, exam_id)
     if status == 1:  # if it's not started, mark it as started
         Exams.set_user_status(user_id, exam_id, 2)
-        Exams.touchUserExam(exam_id, user_id)
+        Exams.touchuserexam(exam_id, user_id)
 
     form = request.form
     for field in form.keys():
@@ -156,7 +156,7 @@ def assess_assessmentpage(course_id, exam_id, page):
         else:
             pass
 
-    Exams.touchUserExam(exam_id, user_id)
+    Exams.touchuserexam(exam_id, user_id)
 
     if "submit" in form:
         return redirect(url_for("assess_submit",

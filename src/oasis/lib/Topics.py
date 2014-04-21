@@ -20,8 +20,7 @@ def create(course_id, name, vis, pos=1):
         "db/Topics/create(%s, %s, %s, %s)" % (course_id, name, vis, pos))
     conn = dbpool.begin()
     conn.run_sql("""INSERT INTO topics (course, title, visibility, position)
-                    VALUES (%s, %s, %s, %s);""",
-                    (course_id, name, vis, pos))
+        VALUES (%s, %s, %s, %s);""", (course_id, name, vis, pos))
     res = conn.run_sql("SELECT currval('topics_topic_seq');")
     dbpool.commit(conn)
     if res:

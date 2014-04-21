@@ -13,8 +13,6 @@
 import psycopg2
 import cPickle
 import datetime
-import _strptime  # import should prevent thread import blocking issues
-                  # ask Google about:     AttributeError: _strptime
 import json
 
 from logging import log, INFO, WARN, ERROR
@@ -30,7 +28,7 @@ import Pool
 dbpool = Pool.DbPool(OaConfig.oasisdbconnectstring, 3)
 
 # Cache stuff on local drives to save our poor database
-fileCache = Pool.fileCache(OaConfig.cachedir)
+fileCache = Pool.FileCache(OaConfig.cachedir)
 
 from Pool import MCPool
 
@@ -497,7 +495,7 @@ def get_q_att_fname(qt_id, name, variation, version=1000000000):
     if version == 1000000000:
         version = get_qt_version(qt_id)
     key = "questionattach/%d/%s/%d/%d" % (qt_id, name, variation, version)
-    (filename, found) = fileCache.getFilename(key)
+    (filename, found) = fileCache.get_filename(key)
     if not found:
         ret = run_sql("""SELECT qtemplate, data
                             FROM qattach
@@ -509,7 +507,7 @@ def get_q_att_fname(qt_id, name, variation, version=1000000000):
         if ret:
             data = str(ret[0][1])
             fileCache.set(key, data)
-            (filename, found) = fileCache.getFilename(key)
+            (filename, found) = fileCache.get_filename(key)
             if found:
                 return filename
         fileCache.set(key, False)
@@ -554,7 +552,7 @@ def get_qt_att_fname(qt_id, name, version=1000000000):
     if version == 1000000000:
         version = get_qt_version(qt_id)
     key = "qtemplateattach/%d/%s/%d" % (qt_id, name, version)
-    (filename, found) = fileCache.getFilename(key)
+    (filename, found) = fileCache.get_filename(key)
     if (not found) or version == 1000000000:
         ret = run_sql("""SELECT data
                          FROM qtattach
@@ -570,7 +568,7 @@ def get_qt_att_fname(qt_id, name, version=1000000000):
         if ret:
             data = str(ret[0][0])
             fileCache.set(key, data)
-            (filename, found) = fileCache.getFilename(key)
+            (filename, found) = fileCache.get_filename(key)
             if found:
                 return filename
         fileCache.set(key, False)
@@ -1025,24 +1023,24 @@ def _serialize_courseexaminfo(info):
     """ Serialize the structure for, eg. cache.
         The dates, especially, need work before JSON
     """
-    FMT = '%Y-%m-%d %H:%M:%S'
+    fmt = '%Y-%m-%d %H:%M:%S'
     safe = {}
     for k, exam in info.iteritems():
         safe[k] = exam
-        safe[k]['start'] = exam['start'].strftime(FMT)
-        safe[k]['end'] = exam['end'].strftime(FMT)
+        safe[k]['start'] = exam['start'].strftime(fmt)
+        safe[k]['end'] = exam['end'].strftime(fmt)
     return json.dumps(safe)
 
 
 def _deserialize_courseexaminfo(obj):
     """ Deserialize a serialized exam info structure."""
-    FMT = '%Y-%m-%d %H:%M:%S'
+    fmt = '%Y-%m-%d %H:%M:%S'
     safe = json.loads(obj)
     info = {}
     for k, exam in safe.iteritems():
         info[k] = exam
-        info[k]['start'] = datetime.datetime.strptime(exam['start'], FMT)
-        info[k]['end'] = datetime.datetime.strptime(exam['end'], FMT)
+        info[k]['start'] = datetime.datetime.strptime(exam['start'], fmt)
+        info[k]['end'] = datetime.datetime.strptime(exam['end'], fmt)
     return info
 
 

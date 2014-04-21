@@ -14,7 +14,7 @@ from Audit import audit
 # wrap all the functions that need it as an argument.
 
 
-def withinTolerance(guess, correct, tolerance):
+def within_tolerance(guess, correct, tolerance):
     """ Is the guess within tolerance % of the correct answer?
     """
 

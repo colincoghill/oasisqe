@@ -106,7 +106,7 @@ class DbPool(object):
         self.connqueue.put(dbc)
 
 
-class fileCache(object):
+class FileCache(object):
     """Cache data in local files """
 
     def __init__(self, cachedir):
@@ -145,7 +145,7 @@ class fileCache(object):
             return False
         return True
 
-    def getFilename(self, key):
+    def get_filename(self, key):
         """ return the full path to the on-disk file """
         try:
             fptr = open(os.path.join(self.cachedir, key, "DATA"), "r")

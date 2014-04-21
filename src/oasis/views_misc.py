@@ -329,5 +329,5 @@ def qedit_raw_attach(qt_id, fname):
         mtype = "text/plain"
     if mtype == "text/html":
         mtype = "text/plain"
-    sIO = StringIO.StringIO(data)
-    return send_file(sIO, mtype, as_attachment=True, attachment_filename=fname)
+    sio = StringIO.StringIO(data)
+    return send_file(sio, mtype, as_attachment=True, attachment_filename=fname)

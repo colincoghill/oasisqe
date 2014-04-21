@@ -18,8 +18,6 @@ import sys
 import traceback
 import datetime
 import time
-import _strptime  # import should prevent thread import blocking issues
-                  # ask Google about:     AttributeError: _strptime
 import jinja2
 
 from logging import log, INFO, WARN, ERROR
@@ -551,25 +549,25 @@ re_expo = re.compile(
     r"^ *((?:[+-]? *[0-9]+(?:[\.,][0-9]*)?)|(?:[+-]? *[\.,][0-9]+)) *[xX\*] *10 *\^ *(?:([+-]? *[0-9]+)|\( *([+-]? *[0-9]+) *\)) *$")
 
 
-def parseExpo(S):
+def parseexpo(scifmt):
     """ Work out the exponent and mantisse of a number in  1.232e1231 syntax
-    :param S:
+    :param scifmt:
     :return:
     """
-    resu = re_expo.search(S)
+    resu = re_expo.search(scifmt)
     if not resu:
-        return S, None
+        return scifmt, None
     parts = [part for part in resu.groups() if part]
     if len(parts) != 2:
-        return S, None
+        return scifmt, None
     mantisse = parts[0].replace(" ", "").replace(",", ".")
     expo = parts[1].replace(" ", "")
-    newS = mantisse + "e" + expo
+    news = mantisse + "e" + expo
     try:
-        f = float(newS)
+        f = float(news)
     except (TypeError, ValueError):
         f = None
-    return newS, f
+    return news, f
 
 
 def mark_q_standard(qvars, answers):
@@ -615,7 +613,7 @@ def mark_q_standard(qvars, answers):
             gtype = "float"
         except (KeyError, ValueError, TypeError):  # Guess not
             try:  # How about exponential?
-                (st, flt) = parseExpo(guess)
+                (st, flt) = parseexpo(guess)
                 if flt:
                     guess = flt
                     gtype = "float"
@@ -633,7 +631,7 @@ def mark_q_standard(qvars, answers):
             except (ValueError, TypeError):  # Guess not
                 pass
         if gtype == "float":
-            if script_funcs.withinTolerance(guess, correct, tolerance):
+            if script_funcs.within_tolerance(guess, correct, tolerance):
                 marks["M%s" % (part,)] = 1.0
                 marks["C%s" % (part,)] = "Correct"
             else:
@@ -665,7 +663,7 @@ def mark_q_script(qvars, script, answer):
              if re.search("^A([0-9]+)$", var) > 0]
     # Set up the functions scripts can call
     qvars["__builtins__"] = {'MyFuncs': OqeSmartmarkFuncs,
-                             'withinTolerance': script_funcs.withinTolerance,
+                             'withinTolerance': script_funcs.within_tolerance,
                              'math': math,
                              'round': round,
                              'float': float,
@@ -691,7 +689,7 @@ def mark_q_script(qvars, script, answer):
                 qvars['G%d' % part] = float(guess)
             except (KeyError, ValueError, TypeError):
                 try:  # How about exponential?
-                    (st, flt) = parseExpo(guess)
+                    (st, flt) = parseexpo(guess)
                     if flt:
                         qvars['G%d' % part] = flt
                     else:    # Occasionally people use , instead of .
@@ -767,7 +765,7 @@ def render_mark_results_standard(qid, marks):
         out += u"<TR><TD>%d</TD><TD>%s</TD><TD>%s</TD><TD>%g%%</TD><TD>%.1f</TD><TD>%s</TD></TR>" % (
             part, htmlesc(marks['G%d' % part]), marks['A%d' % part], marks['T%d' % part],
             marks['M%d' % (part,)], marks['C%d' % (part,)])
-        if marks.has_key('M%d' % (part,)):
+        if ('M%d' % part) in marks:
             total += float(marks['M%d' % (part,)])
     out += u"<tr><th>&nbsp;</th><th>&nbsp;</th><th>&nbsp;</th><th>&nbsp;</th><TH>Total:</th><td>%s</td></tr>" % total
     if 'C0' in marks:
@@ -786,10 +784,10 @@ def render_mark_results_script(qtid, qid, marks, script):
     version = DB.get_q_version(qid)
     variation = DB.get_q_variation(qid)
     qvars = DB.get_qt_variation(qtid, variation, version)
-    questionHTML = render_q_html(qid, readonly=True)
+    questionhtml = render_q_html(qid, readonly=True)
     reshtml = ""
     qvars["__builtins__"] = {'MyFuncs': OqeSmartmarkFuncs,
-                             'withinTolerance': script_funcs.withinTolerance,
+                             'withinTolerance': script_funcs.within_tolerance,
                              'math': math,
                              'round': round,
                              'float': float,
@@ -799,7 +797,7 @@ def render_mark_results_script(qtid, qid, marks, script):
                              'None': None,
                              'True': True,
                              'False': False,
-                             'questionHTML': questionHTML,
+                             'questionHTML': questionhtml,
                              'int': int,
                              'resultsHTML': reshtml}
     qvars['markeroutput'] = marks
@@ -870,10 +868,10 @@ def render_mark_results(qid, marks):
     qtid = DB.get_q_parent(qid)
     renderscript = DB.get_qt_att(qtid, "__results.py")
     if not renderscript:
-        resultsHTML = render_mark_results_standard(qid, marks)
+        resultshtml = render_mark_results_standard(qid, marks)
     else:
-        resultsHTML = render_mark_results_script(qtid, qid, marks, renderscript)
-    return resultsHTML
+        resultshtml = render_mark_results_script(qtid, qid, marks, renderscript)
+    return resultshtml
 
 
 def mark_q(qid, answers):
@@ -991,9 +989,9 @@ def get_exam_q(exam, page, user_id):
 def get_exam_qs(student, exam):
     """ Get the list of exam questions the user has been assigned.
         generate blank ones if needed. """
-    numQTemplates = Exams.get_num_questions(exam)
+    numqtemplates = Exams.get_num_questions(exam)
     questions = []
-    for position in range(1, numQTemplates + 1):
+    for position in range(1, numqtemplates + 1):
         question = get_exam_q(exam, position, student)
         if not question:
             question = int(gen_exam_q(exam, position, student))
@@ -1087,6 +1085,7 @@ def human_date(date):
         return date.strftime("%b %d, %I:%M%P")
 
     return date.strftime("%Y %b %d, %I:%M%P")
+
 
 def date_from_py2js(when):
     """ Convert date from Python datetime object to Javascript friendly

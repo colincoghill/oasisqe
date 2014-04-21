@@ -20,13 +20,13 @@ def mark_exam(user_id, exam_id):
     """ Submit the assessment and mark it.
         Returns True if it went well, or False if a problem.
     """
-    numQuestions = Exams.get_num_questions(exam_id)
+    numquestions = Exams.get_num_questions(exam_id)
     status = Exams.get_user_status(user_id, exam_id)
     log(INFO,
         "Marking assessment %s for %s, status is %s" %
         (exam_id, user_id, status))
     examtotal = 0.0
-    for position in range(1, numQuestions + 1):
+    for position in range(1, numquestions + 1):
         q_id = General.get_exam_q(exam_id, position, user_id)
         answers = DB.get_q_guesses(q_id)
         # There's a small chance they got here without ever seeing a question,
@@ -62,7 +62,7 @@ def mark_exam(user_id, exam_id):
     Exams.set_user_status(user_id, exam_id, 5)
     Exams.set_submit_time(user_id, exam_id)
     Exams.save_score(exam_id, user_id, examtotal)
-    Exams.touchUserExam(exam_id, user_id)
+    Exams.touchuserexam(exam_id, user_id)
 
     log(INFO,
         "user %s scored %s total on exam %s" %

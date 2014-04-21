@@ -88,8 +88,7 @@ def get_user_record(user_id):
                     'email': ret[0][6],
                     'expiry': ret[0][7],
                     'source': ret[0][8],
-                    'confirmed': ret[0][9]
-        }
+                    'confirmed': ret[0][9]}
         if ret[0][9] is True \
             or ret[0][9] == "true" \
             or ret[0][9] == "TRUE" \

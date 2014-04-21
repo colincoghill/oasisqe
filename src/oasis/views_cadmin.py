@@ -8,8 +8,6 @@
 
 import os
 from datetime import datetime
-import _strptime  # import should prevent thread import blocking issues
-                  # ask Google about:     AttributeError: _strptime
 from logging import log, ERROR
 
 from flask import render_template, session, request, redirect, \
@@ -354,9 +352,11 @@ def cadmin_export_csv(course_id, exam_id, group_id):
 
     group = Groups.Group(g_id=group_id)
     output = Spreadsheets.exam_results_as_spreadsheet(course_id, group, exam_id)
+    ctitle = course.title
+    etitle = exam.title
     response = make_response(output)
     response.headers.add('Content-Type', "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet; charset=utf-8")
-    response.headers.add('Content-Disposition', 'attachment; filename="OASIS_%s_%s_Results.xlsx"' % (course['title'], exam['title']))
+    response.headers.add('Content-Disposition', 'attachment; filename="OASIS_%s_%s_Results.xlsx"' % (ctitle, etitle))
 
     return response
 

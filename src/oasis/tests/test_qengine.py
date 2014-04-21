@@ -8,8 +8,6 @@
 # code from all over the place :)
 
 import datetime
-import _strptime  # import should prevent thread import blocking issues
-                  # ask Google about:     AttributeError: _strptime
 
 from oasis.lib import General
 

@@ -11,8 +11,6 @@ from oasis.lib import Topics, Groups
 from oasis.lib.DB import run_sql, dbpool, MC
 from logging import log, ERROR
 import datetime
-import _strptime  # import should prevent thread import blocking issues
-                  # ask Google about:     AttributeError: _strptime
 
 # WARNING: name and title are stored in the database as: title, description
 
