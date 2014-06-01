@@ -1094,3 +1094,14 @@ def date_from_py2js(when):
 
     return int(time.mktime(when.timetuple())) * 1000
 
+
+def sanitize_username(uname):
+    """ Take a user provided username and "normalize it" (take out spaces, quotes, etc).
+        This is not a security measure, it's more for interoperability with, eg. command
+        line tools.
+    """
+
+    uname = uname.replace("'", "")
+    uname = uname.replace('"', "")
+    uname = uname.replace(" ", "")
+    return uname

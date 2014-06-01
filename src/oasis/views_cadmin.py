@@ -20,7 +20,7 @@ from oasis.lib import OaConfig, Users2, DB, Topics, Permissions, \
 MYPATH = os.path.dirname(__file__)
 
 from oasis.lib.Permissions import satisfy_perms, check_perm
-from oasis.lib.General import date_from_py2js
+from oasis.lib.General import date_from_py2js, sanitize_username
 from oasis.lib import External
 
 
@@ -537,8 +537,7 @@ def cadmin_editgroup_addperson(course_id, group_id):
     if not "uname" in request.form:
         abort(400)
 
-    new_uname = request.form['uname']
-    # TODO: Sanitize username
+    new_uname = sanitize_username(request.form['uname'])
     try:
         new_uid = Users2.uid_by_uname(new_uname)
     except KeyError:
@@ -596,7 +595,7 @@ def cadmin_editgroup_member(course_id, group_id):
 @require_course_perm(("courseadmin", "coursecoord"))
 def cadmin_assign_coord(course_id):
     """ Set someone as course coordinator
-"""
+    """
     course = Courses2.get_course(course_id)
     if not course:
         abort(404)
@@ -604,8 +603,7 @@ def cadmin_assign_coord(course_id):
     if not "coord" in request.form:
         abort(400)
 
-    new_uname = request.form['coord']
-    # TODO: Sanitize username
+    new_uname = sanitize_username(request.form['coord'])
     try:
         new_uid = Users2.uid_by_uname(new_uname)
     except KeyError:

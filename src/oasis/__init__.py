@@ -25,6 +25,7 @@ from email.mime.text import MIMEText
 from oasis.lib import OaConfig, Users2, Users, DB
 from oasis.lib.Audit import audit
 from oasis.lib.Permissions import satisfy_perms
+from oasis.lib.General import sanitize_username
 
 app = Flask(__name__,
             template_folder=os.path.join(OaConfig.homedir, "templates"),
@@ -414,7 +415,7 @@ def login_signup_submit():
     confirm = form['confirm']
     email = form['email']
 
-    # TODO: Sanitize username
+    username = sanitize_username(username)
     if username == "" or password == "" or confirm == "" or email == "":
         flash("Please fill in all fields")
         return redirect(url_for("login_signup"))
