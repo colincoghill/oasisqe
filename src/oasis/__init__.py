@@ -248,7 +248,7 @@ def login_local_submit():
         flash("Incorrect name or password.")
         return redirect(url_for("login_local"))
 
-    username = request.form['username']
+    username = sanitize_username(request.form['username'])
     password = request.form['password']
 
     user_id = Users2.verify_pass(username, password)
@@ -306,7 +306,7 @@ def login_forgot_pass_submit():
         flash("Password reset cancelled.")
         return redirect(url_for("login_local"))
 
-    username = request.form.get('username', None)
+    username = sanitize_username(request.form.get('username', None))
 
     if username == "admin":
         flash("""The admin account cannot do an email password reset,
@@ -410,12 +410,11 @@ def login_signup_submit():
         flash("Please fill in all fields")
         return redirect(url_for("login_signup"))
 
-    username = form['username']
+    username = sanitize_username(form['username'])
     password = form['password']
     confirm = form['confirm']
     email = form['email']
 
-    username = sanitize_username(username)
     if username == "" or password == "" or confirm == "" or email == "":
         flash("Please fill in all fields")
         return redirect(url_for("login_signup"))
@@ -483,8 +482,8 @@ def login_webauth_submit():
 
     username = request.environ['REMOTE_USER']
 
-    if '@' in username:
-        username = username.split('@')[0]  #  TODO: this is for UofA, how do we make it more general?
+    if '@' in username and OaConfig.webauth_ignore_domain:
+        username = username.split('@')[0]
     user_id = Users2.uid_by_uname(username)
     if not user_id:
         Users2.create(username, '', '', '', 1, '', '', None, 'unknown', '', True)

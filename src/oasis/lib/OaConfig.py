@@ -60,4 +60,5 @@ feed_path = cp.get("app", "feed_path")
 open_registration = cp.getboolean("web", "open_registration")
 enable_local_login = cp.getboolean("web", "enable_local_login")
 enable_webauth_login = cp.getboolean("web", "enable_webauth_login")
+webauth_ignore_domain = cp.getboolean("web", "webauth_ignore_domain")
 
