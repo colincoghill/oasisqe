@@ -71,3 +71,58 @@ def get_records_by_user(uid, start=None, end=None, limit=100, offset=0):
                 entry['message'] = row[6]
             results.append(entry)
     return results
+
+
+def get_records_by_object(obj_id, start=None, end=None, limit=100, offset=0):
+    """ Return audit records created for (or on behalf of) the object.
+        If start is provided, only searches for records after start.
+        If end is also provided, only searches between start and end.
+        start and end should be datetime or None
+        obj_id should be the objects id
+        limit is the maximum number of rows returned, offset is starting
+        from result n
+    """
+    #TODO: Testing!
+    obj_id = int(obj_id)
+    if end:
+        sql = """SELECT "id", "instigator", "module", "longmesg",
+                        "time", "object", "message"
+                FROM audit
+                WHERE ("object" = %s)
+                  AND "time" > %s
+                  AND "time" < %s
+                ORDER BY "time" DESC
+                LIMIT %s OFFSET %s;"""
+        params = (obj_id,  start, end, limit, offset)
+    elif start:
+        sql = """SELECT "id", "instigator", "module", "longmesg",
+                        "time", "object", "message"
+                FROM audit
+                WHERE ("object" = %s or "instigator" = %s)
+                  AND "time" > %s
+                ORDER BY "time" DESC
+                LIMIT %s OFFSET %s;"""
+        params = (obj_id, obj_id, start, limit, offset)
+    else:
+        sql = """SELECT "id", "instigator", "module", "longmesg",
+                        "time", "object", "message"
+                FROM audit
+                WHERE ("object" = %s)
+                ORDER BY "time" DESC
+                LIMIT %s OFFSET %s;"""
+        params = (obj_id, limit, offset)
+
+    ret = run_sql(sql, params)
+    results = []
+    if ret:
+        for row in ret:
+            entry = {'id': row[0],
+                     'instigator': row[1],
+                     'module': row[2],
+                     'message': row[3],
+                     'time': row[4],
+                     'object': row[5]}
+            if not row[3]:
+                entry['message'] = row[6]
+            results.append(entry)
+    return results

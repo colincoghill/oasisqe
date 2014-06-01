@@ -270,7 +270,7 @@ def qedit_raw_save(topic_id, qt_id):
                              "text/plain",
                              data,
                              version)
-            qvars = QEditor.parseDatfile(data)
+            qvars = QEditor.parse_datfile(data)
             for row in range(0, len(qvars)):
                 DB.add_qt_variation(qt_id, row + 1, qvars[row], version)
 

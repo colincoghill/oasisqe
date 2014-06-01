@@ -6,18 +6,22 @@
 """Provides a question editing interface to the user."""
 
 from logging import log, INFO
+from oasis.lib import DB
+from oasis.lib import Audit
+
+import re
 
 
-def parseDatfile(datfile):
+def parse_datfile(datfile):
     """Convert the given datfile into a list of dictionaries of variables."""
     varbs = []
     for line in datfile.split('\n')[1:]:
         if len(line) > 2:
-            varbs.append(parseDatline(line))
+            varbs.append(parse_datline(line))
     return varbs
 
 
-def parseDatline(datline):
+def parse_datline(datline):
     """Convert the given datline into a dictionary of variables. """
     qvars = {}
     varstring = "OAV=1"
@@ -91,53 +95,47 @@ def parseDatline(datline):
     return qvars
 
 
-# def showQTLog(topic, qtid):
-#     """Show the most recent log errors for the given qtid.
-#     """
-#
-#     versionre = re.compile(r'version=(\d+),')
-#     variationre = re.compile(r'variation=(\d+),')
-#     priorityre = re.compile(r'priority=([^,]+),')
-#     facilityre = re.compile(r'facility=([^,]+),')
-#     messagere = re.compile(r'message=(.+)$', re.MULTILINE)
-#
-#     out = ""
-#     name = OaDB.getQTemplateName(qtid)
-#     out += "<h2>Log Entries for %s, topic %s</h2>" % (name, topic)
-#     out += "<p><i>These can be created from within __marker.py or __results.py by calling "
-#     out += "log(priority, mesg), for example:</i> "
-#     out += "<pre>log('error','User entered a value we can't parse.')</pre></p>"
-#     out += "<p><i>Typical priorities might be 'error', 'info', 'noise'</i></p>"
-#     out += "<table style='border: solid 1px black;' border='1'><tr><th>Time</th><th>Ver</th>"
-#     out += "<th>Variation</th><th>Pri</th><th>Fac</th><th>Message</th></tr>"
-#     entries = Audit.getRecordsByObject(qtid, 3, limit=100, offset = 0)
-#     for entry in entries:
-#         try:
-#             version = versionre.findall(entry['message'])[0]
-#         except (IndexError, TypeError):
-#             version ='.'
-#
-#         try:
-#             variation = variationre.findall(entry['message'])[0]
-#         except (IndexError, TypeError):
-#             variation ='.'
-#
-#         try:
-#             priority = priorityre.findall(entry['message'])[0]
-#         except (IndexError, TypeError):
-#             priority ='.'
-#
-#         try:
-#             facility = facilityre.findall(entry['message'])[0]
-#         except (IndexError, TypeError):
-#             facility ='.'
-#         try:
-#             message = messagere.findall(entry['message'])[0]
-#         except (IndexError, TypeError):
-#             message ='.'
-#
-#         out += "<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>" % (entry['time'].strftime("%Y/%b/%d %H:%M:%S"), version, variation, priority, facility, message)
-#
-#     out += "</table>"
-#     return out
+def qtlog_as_html(topic, qtid):
+    """Show the most recent log errors for the given qtid.
+    """
+    versionre = re.compile(r'version=(\d+),')
+    variationre = re.compile(r'variation=(\d+),')
+    priorityre = re.compile(r'priority=([^,]+),')
+    facilityre = re.compile(r'facility=([^,]+),')
+    messagere = re.compile(r'message=(.+)$', re.MULTILINE)
+
+    out = ""
+    name = DB.get_qt_name(qtid)
+    out += "<h2>Log Entries for %s, topic %s</h2>" % (name, topic)
+    out += "<p><i>These can be created from within __marker.py or __results.py by calling "
+    out += "log(priority, mesg), for example:</i> "
+    out += "<pre>log('error','User entered a value we can't parse.')</pre></p>"
+    out += "<p><i>Typical priorities might be 'error', 'info', 'noise'</i></p>"
+    out += "<table style='border: solid 1px black;' border='1'><tr><th>Time</th><th>Ver</th>"
+    out += "<th>Variation</th><th>Pri</th><th>Fac</th><th>Message</th></tr>"
+    entries = Audit.get_records_by_object(qtid, 3, limit=100, offset=0)
+    for entry in entries:
+        try:
+            version = versionre.findall(entry['message'])[0]
+        except (IndexError, TypeError):
+            version = '.'
+        try:
+            variation = variationre.findall(entry['message'])[0]
+        except (IndexError, TypeError):
+            variation = '.'
+        try:
+            priority = priorityre.findall(entry['message'])[0]
+        except (IndexError, TypeError):
+            priority = '.'
+        try:
+            facility = facilityre.findall(entry['message'])[0]
+        except (IndexError, TypeError):
+            facility = '.'
+        try:
+            message = messagere.findall(entry['message'])[0]
+        except (IndexError, TypeError):
+            message = '.'
+        out += "<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>" % (entry['time'].strftime("%Y/%b/%d %H:%M:%S"), version, variation, priority, facility, message)
+    out += "</table>"
+    return out
 
