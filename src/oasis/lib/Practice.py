@@ -220,7 +220,7 @@ def mark_q(user_id, topic_id, q_id, request):
     parts.sort()
     total = 0.0
     for part in parts:
-        if marks.has_key('M%d' % (part,)):
+        if 'M%d' % (part,) in marks:
             total += float(marks['M%d' % (part,)])
     DB.update_q_score(q_id, total)    # 3 = marked
     DB.set_q_status(q_id, 2)

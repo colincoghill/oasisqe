@@ -367,7 +367,7 @@ def handle_multi_v(html, answer, qvars):
         for param in paramlist:
             pcount += 1
             pt = 'abcdefghijklmnopqrstuvwxyz'[pcount - 1]
-            if qvars.has_key(param):
+            if param in qvars:
                 pout += ["<tr><th>%s)</th><td>" % pt, ]
                 pout += "<INPUT class='auto_save' TYPE='radio' NAME='ANS_%d' VALUE='%d' Oa_CHK_%d_%d>" % (
                     answer, pcount, answer, pcount)
