@@ -587,7 +587,7 @@ def admin_course(course_id):
     groups = Courses.get_groups(course_id)
     choosegroups = [group
                     for g_id, group in Groups.enrolment_groups().iteritems()
-                    if not g_id in groups]
+                    if g_id not in groups]
     return render_template(
         "cadmin_course.html",
         course=course,

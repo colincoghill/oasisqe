@@ -85,7 +85,7 @@ def get_course_list(only_active=True, sortedby="name"):
 def get_topics(cid, archived=2):
     """ Return a dict of all topics in the course. """
     reload_if_needed()
-    if not "topics" in COURSES[cid]:
+    if "topics" not in COURSES[cid]:
         COURSES[cid]['topics'] = Courses.get_topics_all(cid, archived, True)
     return COURSES[cid]['topics']
 
@@ -95,7 +95,7 @@ def get_topics_list(course_id, archived=2):
     """
 
     reload_if_needed()
-    if not "topics" in COURSES[course_id]:
+    if "topics" not in COURSES[course_id]:
         COURSES[course_id]['topics'] = Courses.get_topics_all(course_id, archived, True)
     topics = COURSES[course_id]['topics']
     tlist = [topics[tid] for tid in topics]
@@ -107,7 +107,7 @@ def get_course(course_id):
     """
 
     reload_if_needed()
-    if not course_id in COURSES:
+    if course_id not in COURSES:
         load_courses()
     return COURSES[course_id]
 

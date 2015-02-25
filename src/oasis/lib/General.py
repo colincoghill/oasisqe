@@ -176,12 +176,12 @@ def gen_q_from_var(qt_id, student, exam, position, version, variation):
     """ Generate a question given a specific variation. """
     qvars = None
     q_id = DB.create_q(qt_id,
-                      DB.get_qt_name(qt_id),
-                      student,
-                      1,
-                      variation,
-                      version,
-                      exam)
+                       DB.get_qt_name(qt_id),
+                       student,
+                       1,
+                       variation,
+                       version,
+                       exam)
     try:
         q_id = int(q_id)
         assert (q_id > 0)
@@ -692,8 +692,9 @@ def mark_q_script(qvars, script, answer):
                     (st, flt) = parseexpo(guess)
                     if flt:
                         qvars['G%d' % part] = flt
-                    else:    # Occasionally people use , instead of .
-                             # which is ok in Europe.
+                    else:
+                        # Occasionally people use , instead of .
+                        # which is ok in Europe.
                         guess = guess.replace(",", ".")
                         flt = float(guess)
                         qvars['G%d' % part] = flt
@@ -972,7 +973,7 @@ def get_exam_q(exam, page, user_id):
         Generate it if there isn't one already.
     """
     qid = DB.get_exam_q_by_pos_student(exam, page, user_id)
-    if not qid is False:
+    if qid is not False:
         return int(qid)
     qid = int(gen_exam_q(exam, page, user_id))
     try:

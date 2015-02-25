@@ -121,7 +121,7 @@ def render_own_marked_exam(student, exam):
         return [{'pos': 1,
                 'html': "In Progress",
                 'marking': {}
-        }, ], False
+                }, ], False
     examtotal = 0.0
     for question in questions:
         qtemplate = DB.get_q_parent(question)

@@ -140,8 +140,9 @@ def daily_prac_q_count(start_time, end_time, qt_id):
     data = []
     first = True
     for row in res:
-        if first:  # if the data doesn't start with a value,
-                   # set a 0 entry so graphs scale correctly
+        if first:
+            # if the data doesn't start with a value,
+            # set a 0 entry so graphs scale correctly
             if not (int(row[1]) == start_time.month
                     and int(row[2]) == start_time.day
                     and int(row[0] == start_time.year)):
@@ -205,8 +206,9 @@ def daily_prac_load(start_time, end_time):
     data = []
     first = True
     for row in res:
-        if first:  # if the data doesn't start with any values, set a 0 entry,
-                   # so graphs scale correctly
+        if first:
+            # if the data doesn't start with any values, set a 0 entry,
+            # so graphs scale correctly
             if not (int(row[1]) == start_time.month
                     and int(row[2]) == start_time.day
                     and int(row[0] == start_time.year)):

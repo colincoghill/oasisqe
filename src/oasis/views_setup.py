@@ -290,7 +290,7 @@ def setup_change_pass_submit():
 
     user = Users2.get_user(user_id)
 
-    if not "newpass" in request.form or not "confirm" in request.form:
+    if "newpass" not in request.form or "confirm" not in request.form:
         flash("Please provide your new password")
         return redirect(url_for("setup_change_pass"))
 

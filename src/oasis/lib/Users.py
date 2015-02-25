@@ -25,7 +25,7 @@ def get_version():
     """
     key = "userstable-version"
     obj = MC.get(key)
-    if not obj is None:
+    if obj is not None:
         return int(obj)
 
     ret = run_sql("SELECT last_value FROM users_version_seq;")
@@ -174,7 +174,7 @@ def uid_by_uname(uname):
     """ Lookup the users internal ID number given their login name. """
     key = "user-%s-unametouid" % (uname,)
     obj = MC.get(key)
-    if not obj is None:
+    if obj is not None:
         return obj
     ret = run_sql("""SELECT id FROM "users" WHERE uname=%s;""", (uname,))
     if ret:

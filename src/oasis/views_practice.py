@@ -48,7 +48,7 @@ def practice_choose_topic(course_id):
         if topic['visibility'] == 2:  # course only
             if not members:
                 members = Courses.get_users(course_id)
-            if not user_id in members:
+            if user_id not in members:
                 topics.remove(topic)
     return render_template(
         "practicecourse.html",
@@ -87,14 +87,14 @@ def practice_choose_question(topic_id):
     if thistopic['visibility'] == 2:  # course only
         if not members:
             members = Courses.get_users(course_id)
-            if not user_id in members:
+            if user_id not in members:
                 abort(404)
 
     for topic in topics:
         if topic['visibility'] == 2:  # course only
             if not members:
                 members = Courses.get_users(course_id)
-            if not user_id in members:
+            if user_id not in members:
                 topics.remove(topic)
 
     return render_template(

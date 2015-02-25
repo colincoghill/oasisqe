@@ -71,7 +71,7 @@ def get_active(course_id):
     assert isinstance(course_id, int)
     key = "course-%s-active" % course_id
     obj = MC.get(key)
-    if not obj is None:
+    if obj is not None:
         return obj
     ret = run_sql("SELECT active FROM courses WHERE course=%s;", (course_id,))
     if ret:

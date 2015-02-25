@@ -13,7 +13,7 @@ from flask import Flask, session, redirect, url_for, request, \
 import datetime
 import os
 import _strptime  # import should prevent thread import blocking issues
-                  # ask Google about:     AttributeError: _strptime
+# ask Google about:     AttributeError: _strptime
 import logging
 from logging import log, INFO, ERROR
 from logging.handlers import SMTPHandler, RotatingFileHandler
@@ -243,7 +243,7 @@ def login_local_submit():
     """ They've entered some credentials on the local login screen.
         Check them, then set up the session or redirect back with an error.
     """
-    if not 'username' in request.form or not 'password' in request.form:
+    if 'username' not in request.form or 'password' not in request.form:
         log(INFO, "Failed Login")
         flash("Incorrect name or password.")
         return redirect(url_for("login_local"))
@@ -425,7 +425,7 @@ def login_signup_submit():
 
     # basic checks in case they entered their street address or something
     # a fuller check is too hard or prone to failure
-    if not "@" in email or not "." in email:
+    if "@" not in email or "." not in email:
         flash("Email address doesn't appear to be valid")
         return redirect(url_for("login_signup"))
 
@@ -476,7 +476,7 @@ def login_webauth_submit():
         If we haven't seen them before, check with our user account feed(s)
         to see if we can find them.
     """
-    if not 'REMOTE_USER' in request.environ:
+    if 'REMOTE_USER' not in request.environ:
         log(ERROR, "REMOTE_USER not provided by web server and 'webauth' is being attempted.")
         return redirect(url_for("login_webauth_error"))
 

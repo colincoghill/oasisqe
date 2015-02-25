@@ -45,7 +45,7 @@ def get_user(user_id):
     """
 
     reload_users()
-    if not user_id in USERS:
+    if user_id not in USERS:
         USERS[user_id] = Users.get_user_record(user_id)
 
     return USERS[user_id]

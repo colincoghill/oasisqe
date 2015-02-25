@@ -532,7 +532,7 @@ def get_marks(group, exam_id):
     results = {}
     for row in ret:
         user_id = row[0]
-        if not user_id in results:
+        if user_id not in results:
             results[user_id] = {}
         qtemplate = row[1]
         results[user_id][qtemplate] = {

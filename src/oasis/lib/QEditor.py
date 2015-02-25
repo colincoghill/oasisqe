@@ -76,8 +76,8 @@ def parse_datline(datline):
             tolerance = 1.0
             qvars["A%d" % (i + 1,)] = float(corrects[i])
         except (TypeError, ValueError):
-        # Presumably it's not a straight number
-        # See if it has a tolerance attached
+            # Presumably it's not a straight number
+            # See if it has a tolerance attached
             try:
                 (correct, tolerance) = corrects[i].split(":", 2)
                 correct = float(correct)

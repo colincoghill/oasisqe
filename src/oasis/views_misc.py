@@ -100,7 +100,7 @@ def logout_and_flush():
         copy. Next time they access a page their credentials will be
         invalid so they'll have to re-login.
     """
-    if not "logout" in session:
+    if "logout" not in session:
         # first hit, reject them
         session['logout'] = 1
         abort(401)
@@ -180,7 +180,7 @@ def qedit_raw_edit(topic_id, qt_id):
             'name': name,
             'mimetype': DB.get_qt_att_mimetype(qt_id, name)
         } for name in attachnames
-        if not name in ['qtemplate.html', 'image.gif', 'datfile.txt',
+        if name not in ['qtemplate.html', 'image.gif', 'datfile.txt',
                         '__datfile.txt', '__qtemplate.html']
     ]
     return render_template(
@@ -302,8 +302,9 @@ def qedit_raw_save(topic_id, qt_id):
             newname = form['newattachmentname']
     if 'newattachment' in request.files:
         fptr = request.files['newattachment']
-        if not newname:  # If they haven't supplied a filename we use
-                         # the name of the file they uploaded.
+        if not newname:
+            # If they haven't supplied a filename we use
+            # the name of the file they uploaded.
             # TODO: Security check? We don't create disk files with this name
             newname = fptr.filename
         data = fptr.read()
@@ -369,7 +370,7 @@ def qedit_oqe_edit(topic_id, qt_id):
             'name': name,
             'mimetype': DB.get_qt_att_mimetype(qt_id, name)
         } for name in attachnames
-        if not name in ['qtemplate.html', 'image.gif', 'datfile.txt',
+        if name not in ['qtemplate.html', 'image.gif', 'datfile.txt',
                         '__datfile.txt', '__qtemplate.html']
     ]
 

@@ -91,11 +91,11 @@ def save_perms(request, cid, user_id):
     for perm in permlist:
         u = Users2.get_user(perm[0])
         uname = u['uname']
-        if not uname in users:
+        if uname not in users:
             users[uname] = {}
         users[uname]['fullname'] = u['fullname']
 
-        if not uname in perms:
+        if uname not in perms:
             perms[uname] = []
         perms[uname].append(int(perm[1]))
 
@@ -108,7 +108,7 @@ def save_perms(request, cid, user_id):
             uname = field.split('_')[1]
             perm = int(field.split('_')[2])
 
-            if not uname in newperms:
+            if uname not in newperms:
                 newperms[uname] = []
             newperms[uname].append(perm)
 
@@ -116,7 +116,7 @@ def save_perms(request, cid, user_id):
             uid = Users2.uid_by_uname(uname)
             for perm in [2, 5, 10, 14, 11, 8, 9, 15]:
                 if uname in newperms and perm in newperms[uname]:
-                    if not perm in perms[uname]:
+                    if perm not in perms[uname]:
                         add_perm(uid, cid, perm)
                         audit(
                             1,
@@ -138,7 +138,7 @@ def save_perms(request, cid, user_id):
 
         for uname in newperms:
             uid = Users2.uid_by_uname(uname)
-            if not uname in perms:
+            if uname not in perms:
                 # We've added a user
                 for perm in [2, 5, 10, 14, 11, 8, 9, 15]:
                     if perm in newperms[uname]:

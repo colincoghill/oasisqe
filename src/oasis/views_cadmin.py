@@ -49,7 +49,7 @@ def cadmin_top(course_id):
     groups = Courses.get_groups(course_id)
     choosegroups = [group
                     for group in Groups.all_groups()
-                    if not group.id in groups]
+                    if group.id not in groups]
     return render_template(
         "courseadmin_top.html",
         course=course,
@@ -77,7 +77,7 @@ def cadmin_config(course_id):
     groups = Courses.get_groups(course_id)
     choosegroups = [group
                     for group in Groups.all_groups()
-                    if not group.id in groups]
+                    if group.id not in groups]
     return render_template(
         "courseadmin_config.html",
         course=course,
@@ -190,14 +190,14 @@ def cadmin_add_course_save():
         flash("Course creation cancelled")
         return redirect(url_for("setup_courses"))
 
-    if not 'save_changes' in form:
+    if 'save_changes' not in form:
         abort(400)
 
-    if not 'name' in form:
+    if 'name' not in form:
         flash("You must give the course a name!")
         return redirect(url_for("cadmin_add_course"))
 
-    if not 'title' in form:
+    if 'title' not in form:
         flash("You must give the course a title!")
         return redirect(url_for("cadmin_add_course"))
 
@@ -312,7 +312,7 @@ def cadmin_exam_results(course_id, exam_id):
         results[group.id] = Exams.get_marks(group, exam_id)
         for user_id in results[group.id]:
             uids.add(user_id)
-            if not user_id in totals:
+            if user_id not in totals:
                 totals[user_id] = 0.0
             for qt, val in results[group.id][user_id].iteritems():
                 totals[user_id] += val['score']
@@ -534,7 +534,7 @@ def cadmin_editgroup_addperson(course_id, group_id):
     if not group:
         abort(404)
 
-    if not "uname" in request.form:
+    if "uname" not in request.form:
         abort(400)
 
     new_uname = sanitize_username(request.form['uname'])
@@ -600,7 +600,7 @@ def cadmin_assign_coord(course_id):
     if not course:
         abort(404)
 
-    if not "coord" in request.form:
+    if "coord" not in request.form:
         abort(400)
 
     new_uname = sanitize_username(request.form['coord'])
@@ -912,7 +912,7 @@ def cadmin_permissions(course_id):
     permlist = Permissions.get_course_perms(course_id)
     perms = {}
     for uid, pid in permlist:  # (uid, permission)
-        if not uid in perms:
+        if uid not in perms:
             user = Users2.get_user(uid)
             perms[uid] = {
                 'uname': user['uname'],

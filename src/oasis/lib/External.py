@@ -115,12 +115,12 @@ def group_update_from_feed(group_id, refresh_users=False):
             log(INFO, "Group feed contained unknown user account %s" % uname)
             unknown.append(uname)
             continue
-        if not uname in old_members:
+        if uname not in old_members:
             group.add_member(uid)
             added.append(uname)
 
     for uname in old_members:
-        if not uname in new_members:
+        if uname not in new_members:
             uid = Users2.uid_by_uname(uname)
             group.remove_member(uid)
             removed.append(uname)

@@ -334,7 +334,7 @@ def get_qt_maxscore(qt_id):
     assert isinstance(qt_id, int)
     key = "qtemplate-%d-maxscore" % (qt_id,)
     obj = MC.get(key)
-    if not obj is None:  # 0 or [] or "" could be legit
+    if obj is not None:  # 0 or [] or "" could be legit
         return obj
     ret = run_sql("""SELECT scoremax
                      FROM qtemplates
@@ -374,7 +374,7 @@ def get_qt_name(qt_id):
     assert isinstance(qt_id, int)
     key = "qtemplate-%d-name" % qt_id
     obj = MC.get(key)
-    if not obj is None:
+    if obj is not None:
         return obj
     ret = run_sql("SELECT title FROM qtemplates WHERE qtemplate=%s;", (qt_id,))
     if ret:
@@ -885,7 +885,7 @@ def update_qt_pos(qt_id, topic_id, position):
              WHERE topic=%s
              AND qtemplate=%s;"""
     params = (position, topic_id, qt_id)
-    if not previous is False:
+    if previous is not False:
         run_sql(sql, params)
     else:
         add_qt_to_topic(qt_id, topic_id, position)

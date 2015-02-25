@@ -20,7 +20,7 @@ def exam_results_as_spreadsheet(course_id, group, exam_id):
     results = Exams.get_marks(group, exam_id)
     for user_id in results:
         uids.add(user_id)
-        if not user_id in totals:
+        if user_id not in totals:
             totals[user_id] = 0.0
         for qt, val in results[user_id].iteritems():
             totals[user_id] += val['score']
