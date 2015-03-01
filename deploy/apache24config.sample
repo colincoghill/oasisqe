@@ -1,3 +1,7 @@
+# Config file for Apache 2.4
+
+
+
     WSGIDaemonProcess oasis user=oasisqe group=www-data processes=5 threads=5 python-path=/opt/oasisqe/3.9/src
 
     WSGIScriptAlias /oasis /opt/oasisqe/3.9/src/oasis.wsgi
@@ -7,8 +11,7 @@
         WSGIProcessGroup oasis
         WSGIApplicationGroup %{GLOBAL}
 
-        Order deny,allow
-        Allow from all
+        Require all granted
     </Directory>
 
     Alias /oasis/static /opt/oasisqe/3.9/src/static
