@@ -38,9 +38,9 @@ MC = MCPool('127.0.0.1:11211', 3)
 
 def run_sql(sql, params=None, quiet=False):
     """ Execute SQL commands using the dbpool"""
-    conn = dbpool.begin()
+    conn = dbpool.start()
     res = conn.run_sql(sql, params, quiet=quiet)
-    dbpool.commit(conn)
+    dbpool.finish(conn)
     return res
 
 
@@ -787,12 +787,9 @@ def create_q(qt_id, name, student, status, variation, version, exam):
     assert isinstance(variation, int)
     assert isinstance(version, int)
     assert isinstance(exam, int)
-    conn = dbpool.begin()
-    conn.run_sql("""INSERT INTO questions (qtemplate, name, student, status, variation, version, exam)
-               VALUES (%s, %s, %s, %s, %s, %s, %s);""",
-                 (qt_id, name, student, status, variation, version, exam))
-    res = conn.run_sql("SELECT currval('questions_question_seq')")
-    dbpool.commit(conn)
+    res = run_sql("""INSERT INTO questions (qtemplate, name, student, status, variation, version, exam)
+                                 VALUES (%s, %s, %s, %s, %s, %s, %s) RETURNING question;""",
+                                        (qt_id, name, student, status, variation, version, exam))
     if not res:
         log(ERROR,
             "CreateQuestion(%d, %s, %d, %s, %d, %d, %d) may have failed." % (
@@ -1006,12 +1003,9 @@ def create_qt(owner, title, desc, marker, scoremax, status):
     assert isinstance(marker, int)
     assert isinstance(scoremax, float) or scoremax is None
     assert isinstance(status, int)
-    conn = dbpool.begin()
-    conn.run_sql("INSERT INTO qtemplates (owner, title, description, marker, scoremax, status, version) "
-                 "VALUES (%s, %s, %s, %s, %s, %s, 2);",
-                 (owner, title, desc, marker, scoremax, status))
-    res = conn.run_sql("SELECT currval('qtemplates_qtemplate_seq')")
-    dbpool.commit(conn)
+    res = run_sql("INSERT INTO qtemplates (owner, title, description, marker, scoremax, status, version) "
+                  "VALUES (%s, %s, %s, %s, %s, %s, 2) RETURNING qtemplate;",
+                  (owner, title, desc, marker, scoremax, status))
     if res:
         return int(res[0][0])
     log(ERROR,

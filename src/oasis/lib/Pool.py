@@ -18,7 +18,7 @@ import os
 import OaConfig
 
 import psycopg2
-from psycopg2.extensions import ISOLATION_LEVEL_SERIALIZABLE
+from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 import memcache
 from logging import log, INFO, WARNING, ERROR
 
@@ -36,7 +36,7 @@ class DbConn(object):
 
         self.connectstring = connectstring
         self.conn = psycopg2.connect(connectstring)
-        self.conn.set_isolation_level(ISOLATION_LEVEL_SERIALIZABLE)
+        self.conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
         log(INFO, "DB Encoding is %s" % self.conn.encoding)
         if not self.conn:
             log(INFO, "DB relogin failed!")
@@ -57,7 +57,8 @@ class DbConn(object):
                 raise
             return None
 
-        if sql.split()[0].upper() in ("SELECT", "SHOW", "DESC", "DESCRIBE"):
+        if (sql.split()[0].upper() in ("SELECT", "SHOW", "DESC", "DESCRIBE") or
+              "RETURNING" in sql.upper()):
             recset = cur.fetchall()
             cur.close()
             return recset
@@ -65,24 +66,20 @@ class DbConn(object):
             cur.close()
             return rec
 
-    def commit(self):
-        """End the current transaction """
-        self.conn.commit()
-
 
 class DbPool(object):
     """ Manage a pool of DbConn.
-        users should grab a database connection with begin(), run sql
+        users should grab a database connection with start(), run sql
         commands with run_sql() and then release it back to the pool with
-        commit(). This also signifies one transaction.
+        finish(). 
         Will initialise the pool with the given number of parallel connections.
 
         example:
 
         dbpool = DbPool("dbname=oasis user=oasisuser",10)
-        dbc = dbpool.begin()
+        dbc = dbpool.start()
         dbc.run_sql("SELECT * FROM users WHERE user=%s;", userid)
-        dbpool.commit(dbc)
+        dbpool.finish(dbc)
     """
 
     def __init__(self, connectstring, size):
@@ -90,7 +87,7 @@ class DbPool(object):
         for _ in range(0, size):
             self.connqueue.put(DbConn(connectstring))
 
-    def begin(self):
+    def start(self):
         """Fetch a db connection from the pool (will block until one becomes
            available), and begin a transaction on it.
         """
@@ -99,10 +96,9 @@ class DbPool(object):
         dbc = self.connqueue.get(True)
         return dbc
 
-    def commit(self, dbc):
-        """Commit the transaction and put the db connection back in the pool."""
-        dbc.commit()
-        # TODO: Check to see if there were any errors before putting it back
+    def finish(self, dbc):
+        """Put the db connection back in the pool."""
+        # TODO: check for errors and reset connection if any
         self.connqueue.put(dbc)
 
 

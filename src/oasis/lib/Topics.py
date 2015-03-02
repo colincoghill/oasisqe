@@ -8,7 +8,7 @@
 """
 import json
 
-from .DB import dbpool, run_sql, MC
+from .DB import run_sql, MC
 from logging import log, ERROR, INFO
 
 
@@ -18,11 +18,8 @@ def create(course_id, name, vis, pos=1):
     MC.delete(key)
     log(INFO,
         "db/Topics/create(%s, %s, %s, %s)" % (course_id, name, vis, pos))
-    conn = dbpool.begin()
-    conn.run_sql("""INSERT INTO topics (course, title, visibility, position)
-        VALUES (%s, %s, %s, %s);""", (course_id, name, vis, pos))
-    res = conn.run_sql("SELECT currval('topics_topic_seq');")
-    dbpool.commit(conn)
+    res = run_sql("""INSERT INTO topics (course, title, visibility, position)
+        VALUES (%s, %s, %s, %s) RETURNING topic;""", (course_id, name, vis, pos))
     if res:
         return res[0][0]
     log(ERROR,

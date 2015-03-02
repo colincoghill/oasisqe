@@ -13,7 +13,7 @@ import datetime
 
 from logging import log, INFO, ERROR
 
-from .DB import run_sql, dbpool, MC
+from .DB import run_sql, MC
 from .OaTypes import todatetime
 import Courses2
 from .Permissions import check_perm
@@ -203,17 +203,14 @@ def create(course, owner, title, examtype, duration, start, end,
         or isinstance(code, unicode) \
         or code is None
     assert isinstance(instant, int)
-    conn = dbpool.begin()
     sql = """INSERT INTO exams (title, owner, type, start, "end", description,
                                 course, duration, code, instant)
-                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"""
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING exam;"""
     params = (title, owner, examtype, start, end, instructions,
               course, duration, code, instant)
     log(INFO,
         "Create Exam on course %s: [%s][%s]" % (course, sql, params))
-    conn.run_sql(sql, params)
-    res = conn.run_sql("SELECT currval('exams_exam_seq')")
-    dbpool.commit(conn)
+    res = run_sql(sql, params)
     if res:
         return int(res[0][0])
     log(ERROR, "Create exam FAILED on course %s: [%s][%s]" % (course, sql, params))

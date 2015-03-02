@@ -7,8 +7,7 @@
     Handle course related operations.
 """
 from oasis.lib import Topics, Groups
-
-from oasis.lib.DB import run_sql, dbpool, MC
+from oasis.lib.DB import run_sql, MC
 from logging import log, ERROR
 import datetime
 
@@ -238,12 +237,9 @@ def get_course(course_id):
 
 def create(name, description, owner, coursetype):
     """ Add a course to the database."""
-    conn = dbpool.begin()
-    conn.run_sql("""INSERT INTO courses (title, description, owner, type)
-                    VALUES (%s, %s, %s, %s);""",
+    res = run_sql("""INSERT INTO courses (title, description, owner, type)
+                    VALUES (%s, %s, %s, %s) RETURNING course;""",
                     (name, description, owner, coursetype))
-    res = conn.run_sql("SELECT currval('courses_course_seq')")
-    dbpool.commit(conn)
     incr_version()
     key = "courses-active"
     MC.delete(key)
