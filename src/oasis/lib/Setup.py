@@ -15,7 +15,7 @@ from oasis.lib import External
 from flask import send_file, abort
 
 
-def doTopicPageCommands(request, topic_id, user_id):
+def do_topic_page_commands(request, topic_id, user_id):
     """We've been asked to perform some operations on the Topic page.
 
         Expecting form fields:
@@ -112,8 +112,8 @@ def doTopicPageCommands(request, topic_id, user_id):
             if not data:
                 abort(401)
 
-            sIO = StringIO.StringIO(data)
-            return 2, send_file(sIO, "application/oasisqe", as_attachment=True, attachment_filename="oa_export.zip")
+            sio = StringIO.StringIO(data)
+            return 2, send_file(sio, "application/oasisqe", as_attachment=True, attachment_filename="oa_export.zip")
 
     # Then new questions
     new_title = form.get('new_title', None)

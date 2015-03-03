@@ -292,7 +292,7 @@ def set_submit_time(student, exam, submittime=None):
 
 
 # FIXME: watch for memcache issues.
-def resetEndTime(exam, user):
+def reset_end_time(exam, user):
     """ Reset the Exam timer for the student. This should let them resit the exam. """
     assert isinstance(exam, int)
     assert isinstance(user, int)
@@ -401,7 +401,7 @@ def unsubmit(exam, student):
     assert isinstance(exam, int)
     assert isinstance(student, int)
     reset_mark(exam, student)
-    resetEndTime(exam, student)
+    reset_end_time(exam, student)
     reset_submit_time(exam, student)
     set_user_status(student, exam, 1)
     touchuserexam(exam, student)
@@ -421,12 +421,12 @@ def _serialize_examstruct(exam):
         The dates, especially, need work before JSON
     """
     assert isinstance(exam, dict)
-    FMT = '%Y-%m-%d %H:%M:%S'
+    date_fmt = '%Y-%m-%d %H:%M:%S'
     assert isinstance(exam['start'], datetime.datetime)
     assert isinstance(exam['end'], datetime.datetime)
     safe = exam.copy()
-    safe['start'] = exam['start'].strftime(FMT)
-    safe['end'] = exam['end'].strftime(FMT)
+    safe['start'] = exam['start'].strftime(date_fmt)
+    safe['end'] = exam['end'].strftime(date_fmt)
 
     return json.dumps(safe)
 
@@ -434,10 +434,10 @@ def _serialize_examstruct(exam):
 def _deserialize_examstruct(obj):
     """ Deserialize a serialized exam structure. """
     assert isinstance(obj, str) or isinstance(obj, unicode)
-    FMT = '%Y-%m-%d %H:%M:%S'
+    date_fmt = '%Y-%m-%d %H:%M:%S'
     exam = json.loads(obj)
-    exam['start'] = datetime.datetime.strptime(exam['start'], FMT)
-    exam['end'] = datetime.datetime.strptime(exam['end'], FMT)
+    exam['start'] = datetime.datetime.strptime(exam['start'], date_fmt)
+    exam['end'] = datetime.datetime.strptime(exam['end'], date_fmt)
 
     assert isinstance(exam['start'], datetime.datetime)
     assert isinstance(exam['end'], datetime.datetime)

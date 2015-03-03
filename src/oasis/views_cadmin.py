@@ -886,7 +886,7 @@ def cadmin_topic_save(course_id, topic_id):
         return redirect(url_for('cadmin_top', course_id=course_id))
 
     if "save_changes" in request.form:
-        (what, result) = Setup.doTopicPageCommands(request, topic_id, user_id)
+        (what, result) = Setup.do_topic_page_commands(request, topic_id, user_id)
 
         if what == 1:
             # flash(result['mesg'])
@@ -980,7 +980,7 @@ def cadmin_course_questions_import(course_id, topic_id):
                                 course_id=course_id,
                                 topic_id=topic_id))
 
-    num = External.import_qts_from_zip(topic_id, data)
+    num = External.import_qts_from_zip(data)
     if num is False:
         flash("Invalid OASISQE file? No data recognized.")
         return redirect(url_for("cadmin_edit_topic",

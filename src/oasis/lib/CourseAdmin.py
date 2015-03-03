@@ -60,7 +60,7 @@ def do_topic_update(course, request):
 def get_perm_short(pid):
     """ Return a short human readable name for the permission."""
 
-    pNames = {
+    pnames = {
         1: "Super User",
         2: "User Administrator",
         5: "Question Editor",
@@ -76,8 +76,8 @@ def get_perm_short(pid):
         20: "View Survey Results"
     }
 
-    if pid in pNames:
-        return pNames[pid]
+    if pid in pnames:
+        return pnames[pid]
     return None
 
 
@@ -201,7 +201,7 @@ def exam_edit_submit(request, user_id, cid, exam_id):
         v = request.form.getlist(k)
         if k.startswith("question_"):
             _, q, p = k.split("_")
-            if not q in qns:
+            if q not in qns:
                 qns[q] = []
             if not v[0] == '---':
                 qns[q].append(int(v[0]))

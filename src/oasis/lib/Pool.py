@@ -43,7 +43,7 @@ class DbConn(object):
 
     def run_sql(self, sql, params=None, quiet=False):
         """ Execute SQL commands over the connection. """
-        log(ERROR, "DB SQL '%s' (%s)" % (sql, repr(params)))
+#        log(ERROR, "DB SQL '%s' (%s)" % (sql, repr(params)))
         try:
             cur = self.conn.cursor()
             if not params:

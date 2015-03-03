@@ -705,7 +705,7 @@ def get_qt_variation(qt_id, variation, version=1000000000):
                           FROM qtvariations
                           WHERE qtemplate=%s
                             AND version <= %s);""",
-                     (qt_id, variation, qt_id, version))
+                  (qt_id, variation, qt_id, version))
     if not res:
         log(WARN,
             "Request for unknown qt variation. (%d, %d, %d)" %

@@ -18,31 +18,31 @@ sys.path.append(os.path.join(APPDIR, "src"))
 # WARNING: We do imports later, after we've checked some things.
 
 
-def public_tables(DB):
+def public_tables(db):
     """ Return a list of names of all tables in schema ("public" is default)
     """
 
-    ret = DB.run_sql("SELECT * FROM pg_stat_user_tables;")
+    ret = db.run_sql("SELECT * FROM pg_stat_user_tables;")
     tables = [row[2] for row in ret]
     return tables
 
 
-def num_records(DB, table_name):
+def num_records(db, table_name):
     """ How many rows are in the given table.
     """
-    ret = DB.run_sql('SELECT count(*) FROM "%s";' % table_name)
+    ret = db.run_sql('SELECT count(*) FROM "%s";' % table_name)
     num = int(ret[0][0])
     return num
 
 
-def do_list_courses(DB, options, args):
+def do_list_courses(db):
     """ Print a list of courses in the database.
     """
     # Use direct database access, partly this could be used for testing
     # OASIS own DB logic so we don't want to rely on that.
 
     # Remember we may have to check version
-    ret = DB.run_sql("SELECT course, title, description FROM courses;")
+    ret = db.run_sql("SELECT course, title, description FROM courses;")
     courses = [{'id': row[0], 'name': row[1], 'title': row[2]}
                for row
                in ret]
@@ -53,14 +53,14 @@ def do_list_courses(DB, options, args):
         print "There are no courses in the database."
 
 
-def do_list_users(DB, options, args):
+def do_list_users(db):
     """ Print a list of courses in the database.
     """
     # Use direct database access, partly this could be used for testing
     # OASIS own DB logic so we don't want to rely on that.
 
     # Remember we may have to check version
-    ret = DB.run_sql("SELECT id, uname, givenname, familyname, email, confirmed FROM users;")
+    ret = db.run_sql("SELECT id, uname, givenname, familyname, email, confirmed FROM users;")
     users = [{'id': row[0],
               'uname': row[1],
               'givenname': row[2],
@@ -79,16 +79,16 @@ def do_list_users(DB, options, args):
         print "There are no users in the database."
 
 
-def do_show(DB, options, args):
+def do_show(db, c_args):
     """ User has done     oasisdb show something
     """
-    if len(args) <= 1:
-        args = ['show', 'help']
+    if len(c_args) <= 1:
+        c_args = ['show', 'help']
 
-    if args[1] == "courses":
-        return do_list_courses(DB, options, args)
-    elif args[1] == "users":
-        return do_list_users(DB, options, args)
+    if c_args[1] == "courses":
+        return do_list_courses(db)
+    elif c_args[1] == "users":
+        return do_list_users(db)
 
     print "Usage:  oasisdb show <item>"
     print
@@ -97,25 +97,25 @@ def do_show(DB, options, args):
     print "   users        List all users in the database"
 
 
-def check_safe(DB):
+def check_safe(db):
     """ Is it safe to do dangerous stuff to the database? Mainly tries to
         figure out if there is real data in it.
     """
     # If there are only 2 or fewer user accounts and questions, assume it's
     # ok.
 
-    what = is_oasis_db(DB)
+    what = is_oasis_db(db)
     if what == "no":
         return False
 
     if what == "empty":
         return True
 
-    users = num_records(DB, "users")
+    users = num_records(db, "users")
     print '%s user records' % users
-    qtemplates = num_records(DB, "qtemplates")
+    qtemplates = num_records(db, "qtemplates")
     print '%s question templates' % qtemplates
-    exams = num_records(DB, "exams")
+    exams = num_records(db, "exams")
     print '%s assessments' % exams
 
     if users > 2:
@@ -133,7 +133,7 @@ def check_safe(DB):
     return True
 
 
-def is_oasis_db(DB):
+def is_oasis_db(db):
     """ Is this likely an OASIS database? Look at the table names to see
         if we have the more specific ones.
         Return "yes", "no", or "empty"
@@ -142,7 +142,7 @@ def is_oasis_db(DB):
     expect = ['qtvariations', 'users', 'examqtemplates', 'marklog', 'qtattach',
               'questions', 'guesses', 'exams', 'qtemplates']
 
-    tables = public_tables(DB)
+    tables = public_tables(db)
 
     if len(tables) == 0:
         return "empty"
@@ -153,7 +153,7 @@ def is_oasis_db(DB):
     return "no"
 
 
-def calc_stats(DB):
+def calc_stats():
     """ Run stats generation over the whole database.
     """
     print "Calculating Statistics"
@@ -161,98 +161,98 @@ def calc_stats(DB):
     Stats.do_initial_stats_update()
 
 
-def upgrade_3_6_to_3_9_3(DB):
+def upgrade_3_6_to_3_9_3(db):
     """ Given a 3.6 database, upgrade it to 3.9.3
     """
     with open(os.path.join(APPDIR, "deploy", "migrate_36x_to_392.sql")) as f:
         sql = f.read()
 
-    DB.run_sql(sql)
+    db.run_sql(sql)
     print "Migrated table structure from 3.6 to 3.9.2"
-    calc_stats(DB)
+    calc_stats()
     with open(os.path.join(APPDIR, "deploy", "migrate_392_to_393.sql")) as f:
         sql = f.read()
-    DB.run_sql(sql)
+    db.run_sql(sql)
     print "Migrated table structure from 3.9.2 to 3.9.3"
     if not options.noresetadmin:
-        generate_admin_passwd(DB)  # 3.6 passwords were in a slightly less secure format
+        generate_admin_passwd(db)  # 3.6 passwords were in a slightly less secure format
 
 
-def upgrade_3_9_1_to_3_9_3(DB):
+def upgrade_3_9_1_to_3_9_3(db):
     """ Given a 3.9.1 database, upgrade it to 3.9.2.
     """
     with open(os.path.join(APPDIR, "deploy", "migrate_391_to_392.sql")) as f:
         sql = f.read()
 
-    DB.run_sql(sql)
+    db.run_sql(sql)
     print "Migrated table structure from 3.9.1 to 3.9.2"
 
     with open(os.path.join(APPDIR, "deploy", "migrate_392_to_393.sql")) as f:
         sql = f.read()
-    DB.run_sql(sql)
+    db.run_sql(sql)
     print "Migrated table structure from 3.9.2 to 3.9.3"
 
 
-def upgrade_3_9_2_to_3_9_3(DB):
+def upgrade_3_9_2_to_3_9_3(db):
     """ Given a 3.9.2 database, upgrade it to 3.9.3.
     """
     with open(os.path.join(APPDIR, "deploy", "migrate_392_to_393.sql")) as f:
         sql = f.read()
 
-    DB.run_sql(sql)
+    db.run_sql(sql)
     print "Migrated table structure from 3.9.2 to 3.9.3"
 
 
-def clean_install_3_6(DB):
+def clean_install_3_6(db):
     """ Install a fresh blank v3.6 schema.
     """
 
     with open(os.path.join(APPDIR, "deploy", "emptyschema_36x.sql")) as f:
         sql = f.read()
 
-    DB.run_sql(sql)
+    db.run_sql(sql)
     print "Installed v3.6.x table structure."
 
 
-def clean_install_3_9_1(DB):
+def clean_install_3_9_1(db):
     """ Install a fresh blank v3.9.1 schema.
     """
 
     with open(os.path.join(APPDIR, "deploy", "emptyschema_391.sql")) as f:
         sql = f.read()
 
-    DB.run_sql(sql)
+    db.run_sql(sql)
     print "Installed v3.9.1 table structure."
 
 
-def clean_install_3_9_2(DB):
+def clean_install_3_9_2(db):
     """ Install a fresh blank v3.9.2 schema.
     """
 
     with open(os.path.join(APPDIR, "deploy", "emptyschema_392.sql")) as f:
         sql = f.read()
 
-    DB.run_sql(sql)
+    db.run_sql(sql)
     print "Installed v3.9.2 table structure."
 
 
-def clean_install_3_9_3(DB):
+def clean_install_3_9_3(db):
     """ Install a fresh blank v3.9.3 schema.
     """
 
     with open(os.path.join(APPDIR, "deploy", "emptyschema_393.sql")) as f:
         sql = f.read()
 
-    DB.run_sql(sql)
+    db.run_sql(sql)
     print "Installed v3.9.3 table structure."
 
 
-def generate_admin_passwd(DB):
+def generate_admin_passwd(db):
     """ Generate a new random password for the admin account.
     """
     from oasis.lib import Users, OaConfig, Users2, Permissions
 
-    ver = DB.get_db_version()
+    ver = db.get_db_version()
 
     passwd = Users.gen_confirm_code()
 
@@ -267,7 +267,7 @@ def generate_admin_passwd(DB):
                         1, '', '', NULL,
                         'local');
                 """
-            DB.run_sql(sql)
+            db.run_sql(sql)
             uid = Users.uid_by_uname('admin')
         else:
             uid = Users.create(
@@ -296,32 +296,32 @@ def cmd_options():
     """
     usage = "%prog [--help] [--version] [command ...]"
     version = "%prog 3.9.3"
-    parser = OptionParser(usage=usage,
-                          version=version,
-                          description=descr)
+    oparser = OptionParser(usage=usage,
+                           version=version,
+                           description=descr)
 
-    parser.add_option("--erase-existing",
-                      dest='eraseall',
-                      default=False,
-                      action='store_true',
-                      help='erase any existing data first. DANGEROUS.')
-    parser.add_option("--no-reset-adminpw",
-                      dest="noresetadmin",
-                      default=False,
-                      action='store_true',
-                      help="don't reset the admin password")
-    parser.add_option("--oasis-ver",
-                      dest='oaver',
-                      metavar="X.Y.Z",
-                      default='3.9.3',
-                      help='work with a specific OASIS version. (default 3.9.3)')
-    parser.add_option("-v", "--verbose",
-                      dest='verbose',
-                      default=False,
-                      action='store_true',
-                      help='verbose output')
-    (options, args) = parser.parse_args()
-    return parser, options, args
+    oparser.add_option("--erase-existing",
+                       dest='eraseall',
+                       default=False,
+                       action='store_true',
+                       help='erase any existing data first. DANGEROUS.')
+    oparser.add_option("--no-reset-adminpw",
+                       dest="noresetadmin",
+                       default=False,
+                       action='store_true',
+                       help="don't reset the admin password")
+    oparser.add_option("--oasis-ver",
+                       dest='oaver',
+                       metavar="X.Y.Z",
+                       default='3.9.3',
+                       help='work with a specific OASIS version. (default 3.9.3)')
+    oparser.add_option("-v", "--verbose",
+                       dest='verbose',
+                       default=False,
+                       action='store_true',
+                       help='verbose output')
+    (p_opts, p_args) = oparser.parse_args()
+    return oparser, p_opts, p_args
 
 
 def show_help():
@@ -342,16 +342,16 @@ Commands:
 """
 
 
-def erase_existing(DB):
+def erase_existing(db):
     """ Remove the existing tables. DANGEROUS
     """
     with open(os.path.join(APPDIR, "deploy", "eraseexisting.sql")) as f:
         sql = f.read()
     print "Removing existing tables."
-    DB.run_sql(sql)
+    db.run_sql(sql)
 
 
-def do_status(DB, options, args):
+def do_status(db):
     """ Show some status information
     """
 
@@ -363,7 +363,7 @@ def do_status(DB, options, args):
     print "  username: ", OaConfig.dbuname
     print
 
-    what = is_oasis_db(DB)
+    what = is_oasis_db(db)
     if what == "empty":
         print "Empty database detected."
         print ""
@@ -376,10 +376,10 @@ def do_status(DB, options, args):
         sys.exit()
 
     print "There is already an OASIS database here."
-    ver = DB.get_db_version()
+    ver = db.get_db_version()
     print "Detected DB Version", ver
     print
-    safe = check_safe(DB)
+    safe = check_safe(db)
     if safe:
         print
         print "However it does not contain much data so may be safe to erase:"
@@ -392,34 +392,34 @@ def do_status(DB, options, args):
     sys.exit()
 
 
-def do_init(DB, options):
+def do_init(db, c_opts):
     """ Check the database looks fairly safe to mess with then, if so, setup
         our tables.
     """
 
-    what = is_oasis_db(DB)
+    what = is_oasis_db(db)
     if what == "empty":
         print "Empty database detected, installing a clean setup:"
         print ""
 
-        if options.oaver == '3.6':
-            erase_existing(DB)  # might be some dregs, like sequences or views
-            clean_install_3_6(DB)
-        elif options.oaver == '3.9.1':
-            erase_existing(DB)  # might be some dregs, like sequences or views
-            clean_install_3_9_1(DB)
-        elif options.oaver == '3.9.2':
-            erase_existing(DB)  # might be some dregs, like sequences or views
-            clean_install_3_9_2(DB)
-        elif options.oaver == '3.9.3':
-            erase_existing(DB)  # might be some dregs, like sequences or views
-            clean_install_3_9_3(DB)
+        if c_opts.oaver == '3.6':
+            erase_existing(db)  # might be some dregs, like sequences or views
+            clean_install_3_6(db)
+        elif c_opts.oaver == '3.9.1':
+            erase_existing(db)  # might be some dregs, like sequences or views
+            clean_install_3_9_1(db)
+        elif c_opts.oaver == '3.9.2':
+            erase_existing(db)  # might be some dregs, like sequences or views
+            clean_install_3_9_2(db)
+        elif c_opts.oaver == '3.9.3':
+            erase_existing(db)  # might be some dregs, like sequences or views
+            clean_install_3_9_3(db)
         else:
-            print "Unknown database version (%s)" % (options.oaver,)
+            print "Unknown database version (%s)" % (c_opts.oaver,)
             print "Available options:    3.6   3.9.1   3.9.2   3.9.3"
             sys.exit()
-        if not options.noresetadmin:
-            generate_admin_passwd(DB)
+        if not c_opts.noresetadmin:
+            generate_admin_passwd(db)
         print "Remember to restart OASIS if it's currently running."
         print "On Linux you can use:      sudo service apache2 restart"
         sys.exit()
@@ -430,29 +430,29 @@ def do_init(DB, options):
         sys.exit()
 
     print "There is already an OASIS database here."
-    ver = DB.get_db_version()
+    ver = db.get_db_version()
     print "Detected DB Version", ver
     print
-    safe = check_safe(DB)
-    if options.eraseall:
-        if options.oaver == '3.6':
-            erase_existing(DB)  # might be some dregs, like sequences or views
-            clean_install_3_6(DB)
-        elif options.oaver == '3.9.1':
-            erase_existing(DB)  # might be some dregs, like sequences or views
-            clean_install_3_9_1(DB)
-        elif options.oaver == '3.9.2':
-            erase_existing(DB)  # might be some dregs, like sequences or views
-            clean_install_3_9_2(DB)
-        elif options.oaver == '3.9.3':
-            erase_existing(DB)  # might be some dregs, like sequences or views
-            clean_install_3_9_3(DB)
+    safe = check_safe(db)
+    if c_opts.eraseall:
+        if c_opts.oaver == '3.6':
+            erase_existing(db)  # might be some dregs, like sequences or views
+            clean_install_3_6(db)
+        elif c_opts.oaver == '3.9.1':
+            erase_existing(db)  # might be some dregs, like sequences or views
+            clean_install_3_9_1(db)
+        elif c_opts.oaver == '3.9.2':
+            erase_existing(db)  # might be some dregs, like sequences or views
+            clean_install_3_9_2(db)
+        elif c_opts.oaver == '3.9.3':
+            erase_existing(db)  # might be some dregs, like sequences or views
+            clean_install_3_9_3(db)
         else:
-            print "Unknown database version (%s)" % (options.oaver,)
+            print "Unknown database version (%s)" % (c_opts.oaver,)
             print "Available options:   3.6   3.9.1     3.9.2    3.9.3"
             sys.exit()
-        if not options.noresetadmin:
-            generate_admin_passwd(DB)
+        if not c_opts.noresetadmin:
+            generate_admin_passwd(db)
         print "Remember to restart OASIS if it's currently running."
         print "On Linux you can use:      sudo service apache2 restart"
         sys.exit()
@@ -469,19 +469,19 @@ def do_init(DB, options):
     sys.exit()
 
 
-def do_upgrade(DB, options):
+def do_upgrade(db):
     """ Upgade the databse from an older version of OASIS.
     """
 
-    dbver = DB.get_db_version()
+    dbver = db.get_db_version()
     if dbver == "3.6":
-        upgrade_3_6_to_3_9_3(DB)
+        upgrade_3_6_to_3_9_3(db)
         sys.exit()
     if dbver == "3.9.1":
-        upgrade_3_9_1_to_3_9_3(DB)
+        upgrade_3_9_1_to_3_9_3(db)
         sys.exit()
     if dbver == "3.9.2":
-        upgrade_3_9_2_to_3_9_3(DB)
+        upgrade_3_9_2_to_3_9_3(db)
         sys.exit()
     if dbver == "3.9.3":
         print "Your database is already the latest version (3.9.3)"
@@ -489,7 +489,7 @@ def do_upgrade(DB, options):
     return
 
 
-def do_help(DB, options, args):
+def do_help():
     """ Display more help about a command
     """
     print " Not Implemented"
@@ -506,27 +506,27 @@ if __name__ == "__main__":
     from oasis.lib import DB
 
     if args[0] == 'help':
-        do_help(DB, options=options, args=args)
+        do_help()
         sys.exit()
 
     if args[0] == 'init':
-        do_init(DB, options=options)
+        do_init(DB, c_opts=options)
         sys.exit()
 
     if args[0] == 'upgrade':
-        do_upgrade(DB, options=options)
+        do_upgrade(DB)
         sys.exit()
 
     if args[0] == 'show':
-        do_show(DB, options, args)
+        do_show(DB, c_args=args)
         sys.exit()
 
     if args[0] == 'calcstats':
-        calc_stats(DB)
+        calc_stats()
         sys.exit()
 
     if args[0] == 'status':
-        do_status(DB, options, args)
+        do_status(DB)
         sys.exit()
 
     if args[0] == 'resetpw':

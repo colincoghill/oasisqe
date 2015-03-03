@@ -82,7 +82,6 @@ def get_records_by_object(obj_id, start=None, end=None, limit=100, offset=0):
         limit is the maximum number of rows returned, offset is starting
         from result n
     """
-    #TODO: Testing!
     obj_id = int(obj_id)
     if end:
         sql = """SELECT "id", "instigator", "module", "longmesg",
