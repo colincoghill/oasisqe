@@ -1,0 +1,17 @@
+---
+- hosts: all
+  sudo: yes
+  tasks:
+    - name: ensure ntpd is at the latest version
+      apt: pkg=ntp state=latest
+      notify:
+      - restart ntpd
+    - name: apache
+      apt: pkg=apache2 state=latest
+      notify:
+      - restart apache2
+  handlers:
+    - name: restart ntp
+      service: name=ntp state=restarted
+    - name: restart apache2
+      service: name=apache2 state=restarted
