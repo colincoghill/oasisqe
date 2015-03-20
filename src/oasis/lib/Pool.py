@@ -58,7 +58,7 @@ class DbConn(object):
             return None
 
         if (sql.split()[0].upper() in ("SELECT", "SHOW", "DESC", "DESCRIBE") or
-              "RETURNING" in sql.upper()):
+                    "RETURNING" in sql.upper()):
             recset = cur.fetchall()
             cur.close()
             return recset

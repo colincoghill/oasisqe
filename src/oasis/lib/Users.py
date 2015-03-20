@@ -90,10 +90,10 @@ def get_user_record(user_id):
                     'source': ret[0][8],
                     'confirmed': ret[0][9]}
         if ret[0][9] is True \
-            or ret[0][9] == "true" \
-            or ret[0][9] == "TRUE" \
-            or ret[0][9] == "" \
-            or ret[0][9] is None:
+                or ret[0][9] == "true" \
+                or ret[0][9] == "TRUE" \
+                or ret[0][9] == "" \
+                or ret[0][9] is None:
 
             user_rec['confirmed'] = True
         else:

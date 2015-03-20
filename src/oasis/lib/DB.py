@@ -192,7 +192,7 @@ def save_guess(q_id, part, value):
     assert isinstance(part, int)
     assert isinstance(value, unicode)
     # noinspection PyComparisonWithNone
-    if not value is None:  # "" is legit
+    if value is not None:  # "" is legit
         run_sql("""INSERT INTO guesses (question, created, part, guess)
                    VALUES (%s, NOW(), %s, %s);""", (q_id, part, value))
 
@@ -774,7 +774,7 @@ def create_qt_att(qt_id, name, mimetype, data, version):
     safedata = psycopg2.Binary(data)
     run_sql("""INSERT INTO qtattach (qtemplate, mimetype, name, data, version)
                VALUES (%s, %s, %s, %s, %s);""",
-               (qt_id, mimetype, name, safedata, version))
+            (qt_id, mimetype, name, safedata, version))
     return None
 
 
@@ -789,7 +789,7 @@ def create_q(qt_id, name, student, status, variation, version, exam):
     assert isinstance(exam, int)
     res = run_sql("""INSERT INTO questions (qtemplate, name, student, status, variation, version, exam)
                                  VALUES (%s, %s, %s, %s, %s, %s, %s) RETURNING question;""",
-                                        (qt_id, name, student, status, variation, version, exam))
+                  (qt_id, name, student, status, variation, version, exam))
     if not res:
         log(ERROR,
             "CreateQuestion(%d, %s, %d, %s, %d, %d, %d) may have failed." % (

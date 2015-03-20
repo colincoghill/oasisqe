@@ -186,14 +186,14 @@ def get_course_by_name(name):
     if ret:
         row = ret[0]
         course = {
-                'id': int(row[0]),
-                'name': row[1],
-                'title': row[2],
-                'owner': row[3],
-                'active': row[4],
-                'type': row[5],
-                'practice_visibility': row[6],
-                'assess_visibility': row[7]
+            'id': int(row[0]),
+            'name': row[1],
+            'title': row[2],
+            'owner': row[3],
+            'active': row[4],
+            'type': row[5],
+            'practice_visibility': row[6],
+            'assess_visibility': row[7]
         }
 
         if not course['practice_visibility']:
@@ -217,14 +217,14 @@ def get_course(course_id):
     if ret:
         row = ret[0]
         course = {
-                'id': int(row[0]),
-                'name': row[1],
-                'title': row[2],
-                'owner': row[3],
-                'active': row[4],
-                'type': row[5],
-                'practice_visibility': row[6],
-                'assess_visibility': row[7]
+            'id': int(row[0]),
+            'name': row[1],
+            'title': row[2],
+            'owner': row[3],
+            'active': row[4],
+            'type': row[5],
+            'practice_visibility': row[6],
+            'assess_visibility': row[7]
         }
 
         if not course['practice_visibility']:
@@ -238,8 +238,8 @@ def get_course(course_id):
 def create(name, description, owner, coursetype):
     """ Add a course to the database."""
     res = run_sql("""INSERT INTO courses (title, description, owner, type)
-                    VALUES (%s, %s, %s, %s) RETURNING course;""",
-                    (name, description, owner, coursetype))
+                     VALUES (%s, %s, %s, %s) RETURNING course;""",
+                  (name, description, owner, coursetype))
     incr_version()
     key = "courses-active"
     MC.delete(key)

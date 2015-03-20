@@ -852,9 +852,9 @@ def render_mark_results_script(qtid, qid, marks, script):
             reshtml = reshtml.replace("$OaQID$", "%d/" % qid)
             return reshtml
     script_funcs.q_log(qid,
-                      "error",
-                      "__results.py",
-                      "'resultsHTML' not set, using standard renderer.")
+                       "error",
+                       "__results.py",
+                       "'resultsHTML' not set, using standard renderer.")
     return render_mark_results_standard(qid, marks)
 
 

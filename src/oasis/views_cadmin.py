@@ -776,7 +776,7 @@ def cadmin_edit_topic(course_id, topic_id):
     all_courses = [crse
                    for crse in all_courses
                    if satisfy_perms(user_id, int(crse['id']),
-                                   ("questionedit", "courseadmin",
+                                    ("questionedit", "courseadmin",
                                     "sysadmin"))]
     all_courses.sort(lambda f, s: cmp(f['name'], s['name']))
 
@@ -851,8 +851,7 @@ def cadmin_view_topic(course_id, topic_id):
     all_courses = [crse
                    for crse in all_courses
                    if satisfy_perms(user_id, int(crse['id']),
-                                   ("questionedit", "courseadmin",
-                                    "sysadmin"))]
+                                    ("questionedit", "courseadmin","sysadmin"))]
     all_courses.sort(lambda f, s: cmp(f['name'], s['name']))
 
     all_course_topics = []
