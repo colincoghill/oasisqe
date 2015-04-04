@@ -78,6 +78,8 @@ def do_topic_page_commands(request, topic_id, user_id):
                     topic_title = Topics.get_name(target_topic)
                     flash("Moving %s to %s" % (qt_title, topic_title))
                     DB.move_qt_to_topic(qtid, target_topic)
+                    Topics.flush_num_qs(topic_id)
+                    Topics.flush_num_qs(target_topic)
         if target_cmd == 'copy':
             if target_topic:
                 for qtid in qtids:
@@ -86,6 +88,7 @@ def do_topic_page_commands(request, topic_id, user_id):
                     flash("Copying %s to %s" % (qt_title, topic_title))
                     newid = DB.copy_qt_all(qtid)
                     DB.add_qt_to_topic(newid, target_topic)
+                    Topics.flush_num_qs(target_topic)
 
         if target_cmd == 'hide':
             for qtid in qtids:
@@ -94,6 +97,7 @@ def do_topic_page_commands(request, topic_id, user_id):
                     DB.update_qt_pos(qtid, topic_id, -position)
                     title = DB.get_qt_name(qtid)
                     flash("Made '%s' Hidden" % title)
+                    Topics.flush_num_qs(topic_id)
 
         if target_cmd == 'show':
             for qtid in qtids:
@@ -101,10 +105,12 @@ def do_topic_page_commands(request, topic_id, user_id):
                 if position == 0:  # If hidden, make it visible
                     newpos = DB.get_qt_max_pos_in_topic(topic_id)
                     DB.update_qt_pos(qtid, topic_id, newpos + 1)
+                    Topics.flush_num_qs(topic_id)
                     title = DB.get_qt_name(qtid)
                     flash("Made '%s' Visible" % title)
                 if position < 0:  # If hidden, make it visible
                     DB.update_qt_pos(qtid, topic_id, -position)
+                    Topics.flush_num_qs(topic_id)
                     title = DB.get_qt_name(qtid)
                     flash("Made '%s' Visible" % title)
         if target_cmd == "export":
@@ -170,6 +176,8 @@ def do_topic_page_commands(request, topic_id, user_id):
                 log(ERROR,
                     "Unable to create new question (%s) (%s)" %
                     (new_title, new_position))
+    Topics.flush_num_qs(topic_id)
+
     return 1, {'mesg': mesg}
 
 

@@ -107,6 +107,13 @@ def set_vis(topic_id, vis):
     MC.delete(key)
 
 
+def flush_num_qs(topic_id):
+    """The number of questions in a topic may have changed so flush the cache.
+    """
+    key = "topic-%s-numquestions" % topic_id
+    MC.delete(key)
+
+
 def get_num_qs(topic_id):
     """Tell us how many questions are in the given topic."""
     key = "topic-%s-numquestions" % topic_id
