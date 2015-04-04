@@ -326,7 +326,7 @@ def get_qt_version(qt_id):
                      WHERE qtemplate=%s;""", (qt_id,))
     if ret:
         return int(ret[0][0])
-    log(WARN, "Request for unknown question template %s." % qt_id)
+    raise KeyError("Question Template version %s not found" % qt_id)
 
 
 def get_qt_maxscore(qt_id):
@@ -346,7 +346,7 @@ def get_qt_maxscore(qt_id):
             scoremax = 0.0
         MC.set(key, scoremax)
         return scoremax
-    log(WARN, "Request for unknown question template %s." % qt_id)
+    raise KeyError("Question Template maxscore %s not found" % qt_id)
 
 
 def get_qt_marker(qt_id):
@@ -523,6 +523,11 @@ def get_q_att(qt_id, name, variation, version=1000000000):
     assert isinstance(name, str) or isinstance(name, unicode)
     if version == 1000000000:
         version = get_qt_version(qt_id)
+    if not version or not qt_id:
+        log(WARN,
+            "Request for unknown qt version. get_qt_att(%s, %s, %s, %s)" %
+            (qt_id, name, variation, version))
+        return None
     key = "questionattach/%d/%s/%d/%d" % (qt_id, name, variation, version)
     (value, found) = fileCache.get(key)
     if not found:
@@ -708,7 +713,7 @@ def get_qt_variation(qt_id, variation, version=1000000000):
                   (qt_id, variation, qt_id, version))
     if not res:
         log(WARN,
-            "Request for unknown qt variation. (%d, %d, %d)" %
+            "Request for unknown qt variation. (%s, %s, %s)" %
             (qt_id, variation, version))
         return None
     result = None

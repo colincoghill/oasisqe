@@ -91,7 +91,10 @@ def get_sorted_qlist_wstats(course_id, topic_id, user_id=None):
                  if question['position'] > 0]
     questions.sort(cmp_question_position)
     for question in questions:
-        question['maxscore'] = DB.get_qt_maxscore(question['qtid'])
+        try:
+            question['maxscore'] = DB.get_qt_maxscore(question['qtid'])
+        except KeyError:
+            question['maxscore'] = 0
 
         stats_1 = DB.get_student_q_practice_stats(user_id, question['qtid'], 3)
         if stats_1:  # Last practices
