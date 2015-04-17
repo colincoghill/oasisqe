@@ -182,7 +182,7 @@ def practice_do_question(topic_id, qt_id):
 
     try:
         q_id = Practice.get_practice_q(qt_id, user_id)
-    except (ValueError, TypeError), err:
+    except (ValueError, TypeError) as err:
         log(ERROR,
             "ERROR 1001  (%s,%s) %s" % (qt_id, user_id, err))
         return render_template(

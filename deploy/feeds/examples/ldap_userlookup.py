@@ -68,7 +68,7 @@ for username in userlist:
     try:
         user = fetch_userdetails(server, binddn, password, base, username)
         users.append(user)
-    except Exception, err:
+    except Exception as err:
         print "ERROR"
         print err
         sys.exit()

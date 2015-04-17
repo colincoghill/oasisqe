@@ -99,7 +99,7 @@ def group_update_from_feed(group_id, refresh_users=False):
     scriptrun = ' '.join([feed.script, group.feedargs])
     try:
         output = feeds_run_group_script(feed.script, args=[group.feedargs, ])
-    except BaseException, err:
+    except BaseException as err:
         log(ERROR, "Exception in group feed '%s': %s" % (scriptrun, err))
         raise
 
@@ -144,7 +144,7 @@ def users_update_from_feed(upids):
 
                 try:
                     out = feeds_run_user_script(feed.script, args=[upid, ])
-                except BaseException, err:
+                except BaseException as err:
                     log(ERROR,
                         "Exception in user feed '%s': %s" % (feed.script, err))
                     continue
@@ -195,7 +195,7 @@ def user_update_details_from_feed(uid, upid):
     for feed in UFeeds.all_list():
         try:
             out = feeds_run_user_script(feed.script, args=[upid, ])
-        except BaseException, err:
+        except BaseException as err:
             log(ERROR,
                 "Exception running user feed '%s': %s" % (feed.script, err))
             continue

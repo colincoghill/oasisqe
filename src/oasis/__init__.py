@@ -48,14 +48,14 @@ app.debug = False
 if not app.debug:  # Log info or higher
     try:
         FH = RotatingFileHandler(filename=OaConfig.logfile)
-        FH.setLevel(logging.INFO)
+        FH.setLevel(logging.DEBUG)
         FH.setFormatter(logging.Formatter(
             "%(asctime)s %(levelname)s: %(message)s | %(pathname)s:%(lineno)d"
         ))
         app.logger.addHandler(FH)
         logging.log(logging.INFO,
                     "File logger starting up")
-    except IOError, err:  # Probably a permission denied or folder not exist
+    except IOError as err:  # Probably a permission denied or folder not exist
         logging.log(logging.ERROR,
                     """Unable to open log file: %s""" % err)
 
@@ -278,7 +278,8 @@ def login_local_submit():
         del session['redirect']
         return redirect(target)
     log(INFO, "Successful Login for %s" % username)
-    return redirect(url_for("main_top"))
+    return redirect(url_for("main_top"
+                            ""))
 
 
 @app.route("/login/signup")

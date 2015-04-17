@@ -109,7 +109,7 @@ def set_password(user_id, clearpass):
     params = (hashed, user_id)
     try:
         run_sql(sql, params)
-    except IOError, err:
+    except IOError as err:
         log(ERROR, "Error settings password for user %s - %s" % (user_id, err))
         raise
     return True
@@ -316,5 +316,5 @@ def generate_uuid_readable(length=9):
     valid = "23456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
     # 57^n possibilities - about 6 million billion options for n=9.
     # Hopefully pretty good.
-    return "".join([random.choice(valid) for _ in xrange(length)])
+    return "".join([random.choice(valid) for _ in range(length)])
 

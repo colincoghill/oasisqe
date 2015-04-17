@@ -599,4 +599,3 @@ def create_config(course_id, coursetemplate, period_id):
         _create_config_standard(course_id, period_id)
     elif coursetemplate == "large":
         _create_config_large(course_id, period_id)
-

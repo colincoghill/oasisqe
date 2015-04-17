@@ -50,7 +50,7 @@ groupname = sys.argv[1]
 
 try:
     upids = fetch_upids_in_ldap_group(server, binddn, password, base, groupname)
-except Exception, err:
+except Exception as err:
     print "ERROR"
     print err
     sys.exit()

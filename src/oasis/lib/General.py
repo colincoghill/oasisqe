@@ -299,7 +299,7 @@ def gen_q_image(qvars, image):
             value = unicode(value, "utf-8")    # convert to unicode
             try:
                 imgdraw.text((int(xcoord), int(ycoord)), value, font=font, fill="black")
-            except UnicodeEncodeError, err:
+            except UnicodeEncodeError as err:
                 log(WARN,
                     u"Unicode error generating image: %s [%s]." % (err, value))
     data = StringIO("")
@@ -484,7 +484,7 @@ def render_q_html(q_id, readonly=False):
         try:
             out = unicode(DB.get_q_att(qt_id, "qtemplate.html", variation, version),
                           "latin-1")
-        except UnicodeDecodeError, err:
+        except UnicodeDecodeError as err:
             log(ERROR,
                 "unicode error decoding qtemplate for q_id %s: %s" % (q_id, err))
             raise

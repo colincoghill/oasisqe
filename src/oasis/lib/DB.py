@@ -443,7 +443,7 @@ def get_q_att_mimetype(qt_id, name, variation, version=1000000000):
                 # not finding one is no big deal.
             return False
         return value
-    except BaseException, err:
+    except BaseException as err:
         log(WARN,
             "%s args=(%s,%s,%s,%s)" % (err, qt_id, name, variation, version))
     return False
@@ -647,7 +647,7 @@ def get_qtemplate_topic_pos(qt_id, topic_id):
     assert isinstance(qt_id, int)
     key = "topic-%d-qtemplate-%d-position" % (topic_id, qt_id)
     obj = MC.get(key)
-    if not obj is None:
+    if obj is not None:
         return int(obj)
     ret = run_sql("""SELECT position
                      FROM questiontopics
@@ -741,7 +741,7 @@ def get_qt_num_variations(qt_id, version=1000000000):
                   (qt_id, qt_id, int(version)))
     try:
         num = int(ret[0][0])
-    except BaseException, err:
+    except BaseException as err:
         log(WARN,
             "No Variation found for qtid=%d, version=%d: %s" %
             (qt_id, version, err))
@@ -956,7 +956,7 @@ def copy_qt_all(qt_id):
                              variation,
                              variations[variation],
                              newversion)
-    except AttributeError, err:
+    except AttributeError as err:
         log(WARN,
             "Copying a qtemplate %s with no variations. '%s'" %
             (qt_id, err))

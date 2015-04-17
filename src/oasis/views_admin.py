@@ -176,7 +176,7 @@ def admin_edit_group_submit(g_id):
             group.active = True
 
             group.save()
-        except KeyError, err:  # Probably a duplicate or something
+        except KeyError as err:  # Probably a duplicate or something
             error = "Can't Save: %s" % err
 
     if error:
@@ -214,7 +214,7 @@ def admin_edit_feed(feed_id):
         return abort(404)
     try:
         scripts = External.feeds_available_group_scripts()
-    except OSError, err:
+    except OSError as err:
         flash(err)
         scripts = []
     return render_template(
@@ -246,7 +246,7 @@ def admin_add_userfeed():
     """ Present page to add a user feed to the system """
     try:
         scripts = External.feeds_available_user_scripts()
-    except OSError, err:
+    except OSError as err:
         flash(err)
         scripts = []
     return render_template(
@@ -266,7 +266,7 @@ def admin_edit_userfeed(feed_id):
         return abort(404)
     try:
         scripts = External.feeds_available_user_scripts()
-    except OSError, err:
+    except OSError as err:
         flash(err)
         scripts = []
     return render_template(
@@ -317,7 +317,7 @@ def group_test_feed_output(group_id):
     scriptrun = ' '.join([feed.script, group.feedargs, period.code])
     try:
         output = External.feeds_run_group_script(feed.script, args=[group.feedargs, period.code])
-    except BaseException, err:
+    except BaseException as err:
         error = err
 
     return render_template(
@@ -347,7 +347,7 @@ def admin_group_update_from_feed(group_id):
         abort(401)
     try:
         (added, removed, unknown) = External.group_update_from_feed(group_id)
-    except BaseException, err:
+    except BaseException as err:
         error = err
 
     members = group.member_unames()
@@ -422,7 +422,7 @@ def admin_edit_group_feed_submit(feed_id):
 
     try:
         feed.save()
-    except ValueError, err:  # Probably a duplicate or something
+    except ValueError as err:  # Probably a duplicate or something
         flash("Can't Save: %s" % err)
         return render_template(
             "admin_edit_group_feed.html",
@@ -488,7 +488,7 @@ def admin_edit_user_feed_submit(feed_id):
         )
     try:
         feed.save()
-    except ValueError, err:  # Probably a duplicate or something
+    except ValueError as err:  # Probably a duplicate or something
         flash("Can't Save: %s" % err)
         return render_template(
             "admin_edit_user_feed.html",
@@ -563,7 +563,7 @@ def admin_edit_period_submit(p_id):
 
     try:
         period.save()
-    except ValueError, err:  # Probably a duplicate or something
+    except ValueError as err:  # Probably a duplicate or something
         error = "Can't Save: %s" % err
 
     if error:

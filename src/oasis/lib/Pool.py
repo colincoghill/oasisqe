@@ -51,14 +51,14 @@ class DbConn(object):
             else:
                 rec = cur.execute(sql, params)
 
-        except BaseException, err:
+        except BaseException as err:
             if not quiet:
                 log(ERROR, "DB Error (%s) '%s' (%s)" % (err, sql, repr(params)))
                 raise
             return None
 
-        if (sql.split()[0].upper() in ("SELECT", "SHOW", "DESC", "DESCRIBE") or
-                    "RETURNING" in sql.upper()):
+        if (sql.split()[0].upper() in ("SELECT", "SHOW", "DESC", "DESCRIBE")
+                or "RETURNING" in sql.upper()):
             recset = cur.fetchall()
             cur.close()
             return recset
@@ -110,7 +110,7 @@ class FileCache(object):
         if not os.access(cachedir, os.W_OK):
             try:
                 os.makedirs(cachedir)
-            except BaseException, err:
+            except BaseException as err:
                 log(INFO,
                     "Can't create file cache in %s (%s)" % (cachedir, err))
         self.cachedir = cachedir
@@ -135,7 +135,7 @@ class FileCache(object):
             fptr = open(os.path.join(self.cachedir, key, "DATA"), "wb")
             fptr.write(value)
             fptr.close()
-        except IOError, err:
+        except IOError as err:
             log(ERROR,
                 "File Cache Error. (%s)" % err)
             return False
@@ -162,7 +162,7 @@ class FileCache(object):
             if len(data) == 0:
                 log(ERROR, "file Cache EMPTY retreival. (key=%s)" % (key,))
                 data = False
-        except IOError, err:
+        except IOError as err:
             # it's possible that something went wrong
             log(ERROR, "file Cache ERROR. (key=%s, exception=%s)" % (key, err))
             return False, False
@@ -212,7 +212,7 @@ class MCConn(object):
                 res = self.conn.set(key, value)
             log(INFO,
                 "OaPool:MCConn:set(%s, %s, %s)" % (key, value, expiry))
-        except BaseException, err:
+        except BaseException as err:
             # it's possible that something went wrong
             log(ERROR, "Memcache Error. (%s)" % err)
             return False
@@ -226,7 +226,7 @@ class MCConn(object):
         try:
             res = self.conn.get(key)
 
-        except BaseException, err:
+        except BaseException as err:
             # it's possible that something went wrong
             log(ERROR,
                 "Memcache Error. (%s)" % err)
@@ -241,7 +241,7 @@ class MCConn(object):
         try:
             res = self.conn.delete(key)
 
-        except IOError, err:
+        except IOError as err:
             # it's possible that something went wrong
             log(ERROR,
                 "Memcache Error. (%s)" % err)
@@ -297,7 +297,4 @@ class MCPool(object):
         res = dbc.delete(key)
         self.connqueue.put(dbc)
         return res
-
-
-
 
