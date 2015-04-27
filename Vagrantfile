@@ -10,6 +10,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.network :forwarded_port, guest: 80, host: 8080
   config.vm.network :private_network, ip: "192.168.35.2"
   # config.vm.network :public_network
-  config.vm.synced_folder "src", "/opt/oasisqe/3.9"
+  config.vm.synced_folder ".", "/opt/oasisqe/3.9"
   config.vm.provision "shell", path: "deploy/dev/provision_oasisdev.sh"
 end
