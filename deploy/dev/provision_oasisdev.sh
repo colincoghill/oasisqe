@@ -46,3 +46,10 @@ a2ensite oasisqe
 
 service apache2 reload
 
+echo
+echo 
+echo OASISQE deployed to http://localhost:8080/oasis
+echo
+echo ************************************
+/opt/oasisqe/3.9/bin/reset_admin_password
+echo ************************************
