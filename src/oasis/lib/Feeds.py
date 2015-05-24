@@ -170,4 +170,3 @@ def active_daily():
         feeds.append(Feed(f_id=feed_id))
 
     return feeds
-

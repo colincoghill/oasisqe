@@ -138,4 +138,3 @@ def qtlog_as_html(topic, qtid):
         out += "<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>" % (entry['time'].strftime("%Y/%b/%d %H:%M:%S"), version, variation, priority, facility, message)
     out += "</table>"
     return out
-

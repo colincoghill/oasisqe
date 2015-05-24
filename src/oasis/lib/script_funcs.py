@@ -74,4 +74,3 @@ def q_log(qid, priority, facility, mesg):
     qtid = DB.get_q_parent(qid)
     owner = DB.get_qt_owner(qtid)
     audit(3, owner, qtid, "qlogger", "version=%s,variation=%s,priority=%s,facility=%s,message=%s" % (version, variation, priority, facility, mesg))
-

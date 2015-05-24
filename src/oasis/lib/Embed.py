@@ -64,6 +64,3 @@ def mark_q(user_id, qtid, request):
                 total += float(marks['M%d' % (part,)])
 
     return out
-
-
-

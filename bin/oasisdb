@@ -292,8 +292,7 @@ def cmd_options():
     """ Parse any command line options
     """
 
-    descr = """OASIS Database Tool. It requires an already configured OASIS setup, and can be used to initialize or upgrade an OASIS database.
-    """
+    descr = """OASIS Database Tool. Requires a configured OASIS setup, and can be used to initialize/upgrade the OASIS database."""
     usage = "%prog [--help] [--version] [command ...]"
     version = "%prog 3.9.3"
     oparser = OptionParser(usage=usage,
@@ -535,5 +534,3 @@ if __name__ == "__main__":
         sys.exit()
 
     show_help()
-
-

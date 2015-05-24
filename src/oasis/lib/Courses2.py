@@ -110,4 +110,3 @@ def get_course(course_id):
     if course_id not in COURSES:
         load_courses()
     return COURSES[course_id]
-

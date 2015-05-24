@@ -181,6 +181,3 @@ def test_date_ops():
     assert General.is_between(a, c, b) is True
     assert General.is_between(a, b, c) is True
     assert General.is_between(a, c, d) is False
-
-
-

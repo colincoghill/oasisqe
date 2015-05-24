@@ -1381,4 +1381,3 @@ def get_db_size():
         sizes.append([row[0], row[1]])
 
     return sizes
-

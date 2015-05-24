@@ -261,4 +261,3 @@ def get_create_exam_q_list(course):
         topic_id = topics[num]['id']
         topics[num]['questions'] = _get_q_list_sorted(topic_id)
     return topics
-

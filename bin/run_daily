@@ -35,5 +35,3 @@ refresh_group_feeds()
 
 print "Running daily stats update."
 Stats.do_daily_stats_update()
-
-

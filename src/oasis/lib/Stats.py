@@ -242,6 +242,3 @@ def do_initial_stats_update():
     now = datetime.now()
     st = datetime(1990, 1, 1)
     populate_prac_q_count(start=st, end=now)
-
-
-

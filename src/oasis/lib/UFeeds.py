@@ -192,4 +192,3 @@ def active_daily():
         feeds.append(UFeed(f_id=feed_id))
 
     return feeds
-

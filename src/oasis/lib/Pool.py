@@ -297,4 +297,3 @@ class MCPool(object):
         res = dbc.delete(key)
         self.connqueue.put(dbc)
         return res
-

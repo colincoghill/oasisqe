@@ -317,4 +317,3 @@ def generate_uuid_readable(length=9):
     # 57^n possibilities - about 6 million billion options for n=9.
     # Hopefully pretty good.
     return "".join([random.choice(valid) for _ in range(length)])
-

@@ -48,4 +48,3 @@ def exam_available_q_list(course):
         topic_id = topics[num]['id']
         topics[num]['questions'] = get_q_list(topic_id)
     return topics
-
