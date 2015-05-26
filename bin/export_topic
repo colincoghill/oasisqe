@@ -15,16 +15,44 @@ import os
 APPDIR = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), "src")
 sys.path.append(APPDIR)
 
-from oasis.lib import Users, OaConfig, Users2, External
+from oasis.lib import Users, OaConfig, Topics, External
 
 
-if len(sys.argv) < 2:
+if len(sys.argv) < 3:
     print "Usage: "
     print "    export_topic <TOPIC_ID> <filename.zip>"
     sys.exit(1)
 
+
 uid = Users.uid_by_uname('admin')
 
-# find topic
-# if not exist error
-# if not given, create
+tid = int(sys.argv[1])
+try:
+    topic = Topics.get_topic(tid)
+except KeyError, err:
+    print "Unable to find topic %s" % tid
+    sys.exit(1)
+
+fname = sys.argv[2]
+
+print "Topic %s found: %s" % (tid, topic['title'])
+
+qtids = Topics.get_qts(tid)
+
+if len(qtids) < 1:
+    print "Topic contains no questions."
+    sys.exit(1)
+
+print "Topic contains %s questions." % len(qtids)
+
+for qt in qtids:
+    print "Question: %s" % repr(qt)
+
+
+data = External.qts_to_zip(qtids, fname, suffix="oaq")
+
+f = open(fname, mode='w')
+f.write(data)
+f.close()
+
+print "%s created." % fname

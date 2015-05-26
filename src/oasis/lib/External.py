@@ -233,6 +233,7 @@ def qts_to_zip(qt_ids, fname="oa_export", suffix="oaq"):
         (a zip file in special format)
     """
 
+    fname = os.path.basename(fname)
     tmpd = tempfile.mkdtemp(prefix="oa")
     qdir = os.path.join(tmpd, fname)
     os.mkdir(qdir)
