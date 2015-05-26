@@ -18,18 +18,11 @@ apt-get install ${APTOPTS} apache2 libapache2-mod-wsgi memcached
 apt-get install ${APTOPTS} python-bcrypt python-decorator python-flask python-imaging python-jinja2
 apt-get install ${APTOPTS} python-memcache python-psycopg2 python-openpyxl
 apt-get install ${APTOPTS} postgresql postgresql-client
+apt-get install ${APTOPTS} postfix
 
 adduser --disabled-login --disabled-password --gecos OASIS oasisqe
 
 DBPASS=`uuidgen`
-
-su postgres -c "psql postgres <<EOF
-  create user oasisqe;
-  alter user oasisqe with password '${DBPASS}';
-EOF"
-
-su postgres  -c "createdb -O oasisqe oasisqe"
-su oasisqe -c "psql -Uoasisqe -W oasisqe -f /opt/oasisqe/3.9/deploy/emptyschema_394.sql"
 
 mkdir -p /var/cache/oasisqe/v3.9
 chown oasisqe /var/cache/oasisqe
@@ -44,6 +37,14 @@ sed -i "s/pass: SECRET/pass: ${DBPASS}/g" /etc/oasisqe.ini
 sed -i "s/statichost: http:\/\/localhost/statichost: http:\/\/localhost:8080/g" /etc/oasisqe.ini
 sed -i "s/url: http:\/\/localhost\/oasis/url: http:\/\/localhost:8080\/oasis/g" /etc/oasisqe.ini
 
+su postgres -c "psql postgres <<EOF
+  create user oasisqe;
+  alter user oasisqe with password '${DBPASS}';
+EOF"
+
+su postgres  -c "createdb -O oasisqe oasisqe"
+su oasisqe -c "/opt/oasisqe/3.9/bin/oasisdb init"
+
 cp /opt/oasisqe/3.9/deploy/apache24config.sample /etc/apache2/sites-available/oasisqe.conf
 a2ensite oasisqe
 
@@ -54,5 +55,5 @@ echo
 echo OASISQE deployed to http://localhost:8080/oasis
 echo
 echo ********************************************
-/opt/oasisqe/3.9/bin/reset_admin_password devtest
+su oasisqe -c "/opt/oasisqe/3.9/bin/reset_admin_password devtest"
 echo ********************************************
