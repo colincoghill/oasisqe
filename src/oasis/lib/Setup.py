@@ -116,12 +116,15 @@ def do_topic_page_commands(request, topic_id, user_id):
                     title = DB.get_qt_name(qtid)
                     flash("Made '%s' Visible" % title)
         if target_cmd == "export":
-            data = External.qts_to_zip(qtids, fname="oa_export", suffix="oaq")
-            if not data:
-                abort(401)
+            if len(qtids) < 1:
+                flash("No questions selected to export")
+            else:
+                data = External.qts_to_zip(qtids, fname="oa_export", suffix="oaq")
+                if not data:
+                    abort(401)
 
-            sio = StringIO.StringIO(data)
-            return 2, send_file(sio, "application/oasisqe", as_attachment=True, attachment_filename="oa_export.zip")
+                sio = StringIO.StringIO(data)
+                return 2, send_file(sio, "application/oasisqe", as_attachment=True, attachment_filename="oa_export.zip")
 
     # Then new questions
     new_title = form.get('new_title', None)
