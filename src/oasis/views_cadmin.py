@@ -11,7 +11,7 @@ from datetime import datetime
 
 from flask import render_template, session, request, redirect, \
     abort, url_for, flash, make_response
-
+from logging import getLogger
 from oasis.lib import OaConfig, Users2, DB, Topics, Permissions, \
     Exams, Courses, Courses2, Setup, CourseAdmin, Groups, General, Assess, \
     Spreadsheets
@@ -25,7 +25,7 @@ from oasis.lib import External
 
 from oasis import app, require_course_perm, require_perm
 
-L = app.logger
+L = getLogger("oasisqe")
 
 @app.route("/cadmin/<int:course_id>/top")
 @require_course_perm(("questionedit", "viewmarks",

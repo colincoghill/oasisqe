@@ -22,7 +22,7 @@ import OaConfig
 import Pool
 from logging import getLogger
 
-L = getLogger("oasisqe.DB")
+L = getLogger("oasisqe")
 
 
 # 3 connections. Lets us keep going if one is slow but
@@ -760,6 +760,9 @@ def create_q_att(qt_id, variation, name, mimetype, data, version):
     assert isinstance(mimetype, str) or isinstance(mimetype, unicode)
     assert isinstance(data, str) or isinstance(data, unicode)
     assert isinstance(version, int)
+    if not name and not data:
+        L.warn("Refusing to create empty attachment for question %s" % qt_id)
+        return
     safedata = psycopg2.Binary(data)
     run_sql("""INSERT INTO qattach (qtemplate, variation, mimetype, name, data, version)
                VALUES (%s, %s, %s, %s, %s, %s);""",

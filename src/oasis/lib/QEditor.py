@@ -10,7 +10,7 @@ from oasis.lib import Audit
 from logging import getLogger
 import re
 
-L = getLogger("oasisqe.QEditor")
+L = getLogger("oasisqe")
 
 def parse_datfile(datfile):
     """Convert the given datfile into a list of dictionaries of variables."""

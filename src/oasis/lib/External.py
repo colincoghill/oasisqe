@@ -252,17 +252,26 @@ def qts_to_zip(qt_ids, fname="oa_export", suffix="oaq"):
         qtemplate = DB.get_qtemplate(qt_id)
         qtdir = os.path.join(qdir, str(qt_id))
         attachments = DB.get_qt_atts(qt_id)
-        attachments.append('qtemplate.html')
-        attachments.append('datfile.txt')
-        attachments.append('image.gif')
+        if not 'qtemplate.html' in attachments:
+            attachments.append('qtemplate.html')
+        if not 'datfile.txt' in attachments:
+            attachments.append('datfile.txt')
+        if not 'image.gif' in attachments:
+            attachments.append('image.gif')
         os.mkdir(qtdir)
         os.mkdir(os.path.join(qtdir, "attach"))
         info["qtemplates"][qt_id] = {'qtemplate': qtemplate}
         info["qtemplates"][qt_id]["attachments"] = []
 
         for name in attachments:
+            if not name:
+                name='UNKNOWN'
             mtype = DB.get_qt_att_mimetype(qt_id, name)
+            if not mtype:
+                mtype = ""
             data = DB.get_qt_att(qt_id, name)
+            if not data:
+                data = ""
             info["qtemplates"][qt_id]["attachments"].append([name, mtype, len(data)])
             subdir = os.path.join(qtdir, "attach", name)
             outf = open(subdir, "wb")
