@@ -8,8 +8,6 @@
     and to take some pressure off the database layer.
 """
 
-from logging import log, INFO
-
 # Todo: this may misbehave when we're running parallel web servers.
 # Maybe make it expire automatically
 # every 10 mins or something. Or throw it all out and use flask-caching
@@ -20,6 +18,9 @@ from logging import log, INFO
 # version will be bumped when any of the following changes:
 # course name, title, active, usersincourse, examsincourse, topicsincourse
 from oasis.lib import Courses
+from logging import getLogger
+
+L = getLogger("oasisqe.Courses")
 
 COURSES_VERSION = -1
 
@@ -29,7 +30,7 @@ COURSES = {}
 def load_courses():
     """Read the list of courses into memory """
     global COURSES
-    log(INFO, "Courses fetched from database.")
+    L.info("Courses fetched from database.")
     COURSES = Courses.get_courses_dict()
 
 

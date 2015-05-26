@@ -14,7 +14,6 @@ import datetime
 from flask import render_template, session, \
     request, redirect, abort, url_for, flash, \
     send_file, Response
-from logging import log, INFO
 
 from .lib import Users2, DB, Topics, \
     Courses2, Attach, QEditor
@@ -26,6 +25,7 @@ from .lib.Permissions import check_perm
 
 from oasis import app, authenticated
 
+L = app.logger
 
 # Does its own auth because it may be used in embedded questions
 @app.route("/att/qatt/<int:qt_id>/<int:version>/<int:variation>/<fname>")
@@ -310,7 +310,7 @@ def qedit_raw_save(topic_id, qt_id):
         data = fptr.read()
         mtype = fptr.content_type
         DB.create_qt_att(qt_id, newname, mtype, data, version)
-        log(INFO, "File '%s' uploaded by %s" % (newname, session['username']))
+        L.info("File '%s' uploaded by %s" % (newname, session['username']))
 
     flash("Question changes saved")
     return redirect(url_for("qedit_raw_edit", topic_id=topic_id, qt_id=qt_id))

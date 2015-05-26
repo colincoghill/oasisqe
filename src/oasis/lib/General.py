@@ -20,11 +20,12 @@ import datetime
 import time
 import jinja2
 
-from logging import log, INFO, WARN, ERROR
 from oasis.lib.OaExceptions import OaMarkerError
 from . import Courses, Exams
 from oasis.lib import OaConfig, DB, Topics, script_funcs, OqeSmartmarkFuncs
+from logging import getLogger
 
+L = getLogger("oasisqe.General")
 
 def htmlesc(text):
     """ HTML escape the text. """
@@ -141,13 +142,11 @@ def gen_exam_q(exam, position, student):
     """
     qtemplates = DB.get_exam_qts_in_pos(exam, position)
     if not qtemplates:
-        log(WARN,
-            "DB.get_exam_qts_in_pos(%s,%s) returned a non list." %
+        L.warn("DB.get_exam_qts_in_pos(%s,%s) returned a non list." %
             (exam, position))
         return False
     if len(qtemplates) < 1:
-        log(WARN,
-            "DB.get_exam_qts_in_pos(%s,%s) returned an empty list." %
+        L.warn("DB.get_exam_qts_in_pos(%s,%s) returned an empty list." %
             (exam, position))
         return False
     whichqtemplate = random.randint(1, len(qtemplates))
@@ -167,7 +166,7 @@ def gen_q(qtid, student=0, exam=0, position=0):
     if numvars > 0:
         variation = random.randint(1, numvars)
     else:
-        log(WARN, "No question variations (qtid=%d)" % qtid)
+        L.warn("No question variations (qtid=%d)" % qtid)
         return False
     return gen_q_from_var(qtid, student, exam, position, version, variation)
 
@@ -186,7 +185,7 @@ def gen_q_from_var(qt_id, student, exam, position, version, variation):
         q_id = int(q_id)
         assert (q_id > 0)
     except (ValueError, TypeError, AssertionError):
-        log(ERROR, "OaDB.createQuestion(%s,...) FAILED" % qt_id)
+        L.error("OaDB.createQuestion(%s,...) FAILED" % qt_id)
     imageexists = DB.get_q_att_mimetype(qt_id, "image.gif", variation, version)
     if not imageexists:
         if not qvars:
@@ -212,7 +211,7 @@ def gen_q_from_var(qt_id, student, exam, position, version, variation):
         if html:
             qvars['Oasis_qid'] = q_id
             newhtml = gen_q_html(qvars, html)
-            log(INFO, "generating new qattach qtemplate.html for %s" % q_id)
+            L.info("generating new qattach qtemplate.html for %s" % q_id)
             DB.create_q_att(qt_id,
                             variation,
                             "qtemplate.html",
@@ -223,7 +222,7 @@ def gen_q_from_var(qt_id, student, exam, position, version, variation):
         q_id = int(q_id)
         assert (q_id > 0)
     except (ValueError, TypeError, AssertionError):
-        log(ERROR, "generateQuestionFromVar(%s,%s), can't find qid %s? " %
+        L.error("generateQuestionFromVar(%s,%s), can't find qid %s? " %
                    (qt_id, student, q_id))
     if exam >= 1:
         DB.add_exam_q(student, exam, q_id, position)
@@ -300,8 +299,7 @@ def gen_q_image(qvars, image):
             try:
                 imgdraw.text((int(xcoord), int(ycoord)), value, font=font, fill="black")
             except UnicodeEncodeError as err:
-                log(WARN,
-                    u"Unicode error generating image: %s [%s]." % (err, value))
+                L.warn(u"Unicode error generating image: %s [%s]." % (err, value))
     data = StringIO("")
     img.save(data, "GIF")
     return data.getvalue()
@@ -462,21 +460,18 @@ def render_q_html(q_id, readonly=False):
         q_id = int(q_id)
         assert q_id > 0
     except (ValueError, TypeError, AssertionError):
-        log(WARN,
-            "renderQuestionHTML(%s,%s) called with bad qid?" % (q_id, readonly))
+        L.warn("renderQuestionHTML(%s,%s) called with bad qid?" % (q_id, readonly))
     qt_id = DB.get_q_parent(q_id)
     try:
         qt_id = int(qt_id)
         assert qt_id > 0
     except (ValueError, TypeError, AssertionError):
-        log(WARN,
-            "renderQuestionHTML(%s,%s), getparent failed? " % (q_id, readonly))
+        L.warn("renderQuestionHTML(%s,%s), getparent failed? " % (q_id, readonly))
     variation = DB.get_q_variation(q_id)
     version = DB.get_q_version(q_id)
     data = DB.get_q_att(qt_id, "qtemplate.html", variation, version)
     if not data:
-        log(WARN,
-            "Unable to retrieve qtemplate for q_id: %s" % q_id)
+        L.warn("Unable to retrieve qtemplate for q_id: %s" % q_id)
         return "QuestionError"
     try:
         out = unicode(data, "utf-8")
@@ -485,8 +480,7 @@ def render_q_html(q_id, readonly=False):
             out = unicode(DB.get_q_att(qt_id, "qtemplate.html", variation, version),
                           "latin-1")
         except UnicodeDecodeError as err:
-            log(ERROR,
-                "unicode error decoding qtemplate for q_id %s: %s" % (q_id, err))
+            L.error("unicode error decoding qtemplate for q_id %s: %s" % (q_id, err))
             raise
     out = out.replace("This question is not verified yet, please report any error!", "")
 
@@ -575,7 +569,7 @@ def mark_q_standard(qvars, answers):
         if numerical answer is within tolerance% of the answer, it gets 1 mark.
     """
     if not qvars:
-        log(WARN, "error: No qvars provided!")
+        L.warn("error: No qvars provided!")
         qvars = {}
     parts = [var[1:]
              for var in qvars.keys()
@@ -585,7 +579,7 @@ def mark_q_standard(qvars, answers):
         try:
             guess = answers["G%s" % (part,)]
         except KeyError:
-            log(INFO, "null guess %s" % part)
+            L.info("null guess %s" % part)
             guess = "None"
         # noinspection PyComparisonWithNone
         if guess == None:   # If it's 0 we want to leave it alone
@@ -887,8 +881,7 @@ def mark_q(qid, answers):
     qvars = DB.get_qt_variation(qtid, variation, version)
     if not qvars:
         qvars = {}
-        log(WARN,
-            "markQuestion(%s, %s) unable to retrieve variables." %
+        L.warn("markQuestion(%s, %s) unable to retrieve variables." %
             (qid, answers))
     qvars['OaQID'] = int(qid)
     marktype = DB.get_qt_marker(qtid)
@@ -899,11 +892,9 @@ def mark_q(qid, answers):
         markerscript = DB.get_qt_att(qtid, "__marker.py")
         if not markerscript:
             markerscript = DB.get_qt_att(qtid, "marker.py")
-            log(INFO,
-                "'marker.py' should now be called '__marker.py' (qtid=%s)" % qtid)
+            L.info("'marker.py' should now be called '__marker.py' (qtid=%s)" % qtid)
         if not markerscript:
-            log(INFO,
-                "Unable to retrieve marker script for smart marker question (qtid=%s)!" % qtid)
+            L.info("Unable to retrieve marker script for smart marker question (qtid=%s)!" % qtid)
             marks = mark_q_standard(qvars, answers)
         else:
             marks = mark_q_script(qvars, markerscript, answers)
@@ -980,8 +971,7 @@ def get_exam_q(exam, page, user_id):
         qid = int(qid)
         assert qid > 0
     except (ValueError, TypeError, AssertionError):
-        log(WARN,
-            "generateExamQuestion(%s,%s, %s) Failed (returned %s)" %
+        L.warn("generateExamQuestion(%s,%s, %s) Failed (returned %s)" %
             (exam, page, user_id, qid))
     DB.set_q_viewtime(qid)
     return qid
@@ -1011,8 +1001,7 @@ def remark_exam(exam, student):
         try:
             marks = mark_q(question, answers)
         except OaMarkerError:
-            log(WARN,
-                "Marker Error, question %d while re-marking exam %s for student %s!" % (question, exam, student))
+            L.warn("Marker Error, question %d while re-marking exam %s for student %s!" % (question, exam, student))
             marks = {}
         parts = [int(var[1:]) for var in marks.keys() if re.search("^A([0-9]+)$", var) > 0]
         parts.sort()

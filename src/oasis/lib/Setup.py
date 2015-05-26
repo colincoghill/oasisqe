@@ -8,11 +8,13 @@
 """
 
 from flask import flash
-from logging import log, ERROR
 from oasis.lib import DB, Topics, Courses, Courses2
 import StringIO
 from oasis.lib import External
 from flask import send_file, abort
+from logging import getLogger
+
+L = getLogger("oasisqe.Setup")
 
 
 def do_topic_page_commands(request, topic_id, user_id):
@@ -173,8 +175,7 @@ def do_topic_page_commands(request, topic_id, user_id):
                                      1)
             else:
                 mesg.append("Error creating new question, id %s" % newid)
-                log(ERROR,
-                    "Unable to create new question (%s) (%s)" %
+                L.error("Unable to create new question (%s) (%s)" %
                     (new_title, new_position))
     Topics.flush_num_qs(topic_id)
 

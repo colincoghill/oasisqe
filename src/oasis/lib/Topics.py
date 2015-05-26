@@ -7,23 +7,22 @@
     Handle topic related operations.
 """
 import json
-
+from logging import getLogger
 from .DB import run_sql, MC
-from logging import log, ERROR, INFO
+
+L = getLogger("oasisqe.Topics")
 
 
 def create(course_id, name, vis, pos=1):
     """Add a topic to the database."""
     key = "course-%s-topics" % course_id
     MC.delete(key)
-    log(INFO,
-        "db/Topics/create(%s, %s, %s, %s)" % (course_id, name, vis, pos))
+    L.info("db/Topics/create(%s, %s, %s, %s)" % (course_id, name, vis, pos))
     res = run_sql("""INSERT INTO topics (course, title, visibility, position)
         VALUES (%s, %s, %s, %s) RETURNING topic;""", (course_id, name, vis, pos))
     if res:
         return res[0][0]
-    log(ERROR,
-        "Topic create error (%s, %s, %s, %s)" % (course_id, name, vis, pos))
+    L.error("Topic create error (%s, %s, %s, %s)" % (course_id, name, vis, pos))
     return 0
 
 

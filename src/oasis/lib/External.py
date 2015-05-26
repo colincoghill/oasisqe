@@ -7,7 +7,6 @@
 """
 
 from oasis.lib import OaConfig, Groups, Feeds, DB, Users2, UFeeds, Users
-from logging import log, ERROR, INFO
 import os
 import subprocess
 import tempfile
@@ -15,6 +14,10 @@ import json
 import zipfile
 import shutil
 from StringIO import StringIO
+
+from logging import getLogger
+
+L = getLogger("oasisqe.External")
 
 
 def feeds_available_group_scripts():
@@ -100,7 +103,7 @@ def group_update_from_feed(group_id, refresh_users=False):
     try:
         output = feeds_run_group_script(feed.script, args=[group.feedargs, ])
     except BaseException as err:
-        log(ERROR, "Exception in group feed '%s': %s" % (scriptrun, err))
+        L.error("Exception in group feed '%s': %s" % (scriptrun, err))
         raise
 
     removed = []
@@ -112,7 +115,7 @@ def group_update_from_feed(group_id, refresh_users=False):
         uid = Users2.uid_by_uname(uname)
         if not uid:
             users_update_from_feed([uname, ])
-            log(INFO, "Group feed contained unknown user account %s" % uname)
+            L.info("Group feed contained unknown user account %s" % uname)
             unknown.append(uname)
             continue
         if uname not in old_members:
@@ -145,14 +148,12 @@ def users_update_from_feed(upids):
                 try:
                     out = feeds_run_user_script(feed.script, args=[upid, ])
                 except BaseException as err:
-                    log(ERROR,
-                        "Exception in user feed '%s': %s" % (feed.script, err))
+                    L.error("Exception in user feed '%s': %s" % (feed.script, err))
                     continue
 
                 res = out.splitlines()
                 if res[0].startswith("ERROR"):
-                    log(ERROR,
-                        "Error running user feed '%s': %s" % (feed.script, res))
+                    L.error("Error running user feed '%s': %s" % (feed.script, res))
                     continue
 
                 line = res[1]
@@ -184,8 +185,7 @@ def users_update_from_feed(upids):
                               True)
                 break
         else:
-            log(ERROR,
-                "Error running user feed for existing account %s" % user_id)
+            L.error("Error running user feed for existing account %s" % user_id)
     return
 
 
@@ -196,14 +196,12 @@ def user_update_details_from_feed(uid, upid):
         try:
             out = feeds_run_user_script(feed.script, args=[upid, ])
         except BaseException as err:
-            log(ERROR,
-                "Exception running user feed '%s': %s" % (feed.script, err))
+            L.error("Exception running user feed '%s': %s" % (feed.script, err))
             continue
 
         res = out.splitlines()
         if res[0].startswith("ERROR"):
-            log(ERROR,
-                "Error running user feed '%s': %s" % (feed.script, res))
+            L.error("Error running user feed '%s': %s" % (feed.script, res))
             continue
 
         line = res[1]

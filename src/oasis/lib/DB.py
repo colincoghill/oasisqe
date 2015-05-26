@@ -15,13 +15,15 @@ import cPickle
 import datetime
 import json
 
-from logging import log, INFO, WARN, ERROR
-
 IntegrityError = psycopg2.IntegrityError
 
 # Global dbpool
 import OaConfig
 import Pool
+from logging import getLogger
+
+L = getLogger("oasisqe.DB")
+
 
 # 3 connections. Lets us keep going if one is slow but
 # doesn't overload the server if there're a lot of us
@@ -43,6 +45,13 @@ def run_sql(sql, params=None, quiet=False):
     dbpool.finish(conn)
     return res
 
+
+def set_logger(logger):
+    """ Set the logger used by the DB Layer
+    """
+
+    global L
+    L = logger
 
 def set_q_viewtime(question):
     """ Record that the question has been viewed.
@@ -145,7 +154,7 @@ def update_q_score(q_id, score):
     try:
         sc = float(score)
     except (TypeError, ValueError):
-        log(ERROR, "Unable to cast score to float!? '%s'" % score)
+        L.error("Unable to cast score to float!? '%s'" % score)
         return
     run_sql("""UPDATE questions SET score=%s WHERE question=%s;""",
             ("%.1f" % sc, q_id))
@@ -182,7 +191,7 @@ def get_q_parent(q_id):
     ret = run_sql("SELECT qtemplate FROM questions WHERE question=%s;", (q_id,))
     if ret:
         return int(ret[0][0])
-    log(ERROR, "No parent found for question %s!" % q_id)
+    L.error("No parent found for question %s!" % q_id)
     return None
 
 
@@ -355,7 +364,7 @@ def get_qt_marker(qt_id):
     ret = run_sql("SELECT marker FROM qtemplates WHERE qtemplate=%s;", (qt_id,))
     if ret:
         return int(ret[0][0])
-    log(WARN, "Request for unknown question template %s." % qt_id)
+    L.warn("Request for unknown question template %s." % qt_id)
 
 
 def get_qt_owner(qt_id):
@@ -366,7 +375,7 @@ def get_qt_owner(qt_id):
     ret = run_sql("SELECT owner FROM qtemplates WHERE qtemplate=%s;", (qt_id,))
     if ret:
         return ret[0][0]
-    log(WARN, "Request for unknown question template %s." % qt_id)
+    L.warn("Request for unknown question template %s." % qt_id)
 
 
 def get_qt_name(qt_id):
@@ -380,7 +389,7 @@ def get_qt_name(qt_id):
     if ret:
         MC.set(key, ret[0][0], expiry=360)  # 6 minutes
         return ret[0][0]
-    log(WARN, "Request for unknown question template %s." % qt_id)
+    L.warn("Request for unknown question template %s." % qt_id)
 
 
 def get_qt_embedid(qt_id):
@@ -394,7 +403,7 @@ def get_qt_embedid(qt_id):
         if not embed_id:
             embed_id = ""
         return embed_id
-    log(WARN, "Request for unknown question template %s." % qt_id)
+    L.warn("Request for unknown question template %s." % qt_id)
 
 
 def get_qt_atts(qt_id, version=1000000000):
@@ -444,8 +453,7 @@ def get_q_att_mimetype(qt_id, name, variation, version=1000000000):
             return False
         return value
     except BaseException as err:
-        log(WARN,
-            "%s args=(%s,%s,%s,%s)" % (err, qt_id, name, variation, version))
+        L.warn("%s args=(%s,%s,%s,%s)" % (err, qt_id, name, variation, version))
     return False
 
 
@@ -524,8 +532,7 @@ def get_q_att(qt_id, name, variation, version=1000000000):
     if version == 1000000000:
         version = get_qt_version(qt_id)
     if not version or not qt_id:
-        log(WARN,
-            "Request for unknown qt version. get_qt_att(%s, %s, %s, %s)" %
+        L.warn("Request for unknown qt version. get_qt_att(%s, %s, %s, %s)" %
             (qt_id, name, variation, version))
         return None
     key = "questionattach/%d/%s/%d/%d" % (qt_id, name, variation, version)
@@ -685,8 +692,7 @@ def get_qt_variations(qt_id, version=1000000000):
                           WHERE qtemplate=%s
                             AND version <= %s)""", (qt_id, qt_id, version))
     if not res:
-        log(WARN,
-            "No Variation found for qtid=%d, version=%d" % (qt_id, version))
+        L.warn("No Variation found for qtid=%d, version=%d" % (qt_id, version))
         return []
     for row in res:
         result = str(row[1])
@@ -712,8 +718,7 @@ def get_qt_variation(qt_id, variation, version=1000000000):
                             AND version <= %s);""",
                   (qt_id, variation, qt_id, version))
     if not res:
-        log(WARN,
-            "Request for unknown qt variation. (%s, %s, %s)" %
+        L.warn("Request for unknown qt variation. (%s, %s, %s)" %
             (qt_id, variation, version))
         return None
     result = None
@@ -722,8 +727,7 @@ def get_qt_variation(qt_id, variation, version=1000000000):
         result = str(res[0][0])
         data = cPickle.loads(result)
     except TypeError:
-        log(WARN,
-            "Type error trying to cpickle.loads(%s) for (%s, %s, %s)" %
+        L.warn("Type error trying to cpickle.loads(%s) for (%s, %s, %s)" %
             (type(result), qt_id, variation, version))
     return data
 
@@ -742,8 +746,7 @@ def get_qt_num_variations(qt_id, version=1000000000):
     try:
         num = int(ret[0][0])
     except BaseException as err:
-        log(WARN,
-            "No Variation found for qtid=%d, version=%d: %s" %
+        L.warn("No Variation found for qtid=%d, version=%d: %s" %
             (qt_id, version, err))
         return 0
     return num
@@ -796,8 +799,7 @@ def create_q(qt_id, name, student, status, variation, version, exam):
                                  VALUES (%s, %s, %s, %s, %s, %s, %s) RETURNING question;""",
                   (qt_id, name, student, status, variation, version, exam))
     if not res:
-        log(ERROR,
-            "CreateQuestion(%d, %s, %d, %s, %d, %d, %d) may have failed." % (
+        L.error("CreateQuestion(%d, %s, %d, %s, %d, %d, %d) may have failed." % (
                 qt_id, name, student, status, variation, version, exam))
         return None
     return res[0][0]
@@ -957,8 +959,7 @@ def copy_qt_all(qt_id):
                              variations[variation],
                              newversion)
     except AttributeError as err:
-        log(WARN,
-            "Copying a qtemplate %s with no variations. '%s'" %
+        L.warn("Copying a qtemplate %s with no variations. '%s'" %
             (qt_id, err))
     return newid
 
@@ -1013,8 +1014,7 @@ def create_qt(owner, title, desc, marker, scoremax, status):
                   (owner, title, desc, marker, scoremax, status))
     if res:
         return int(res[0][0])
-    log(ERROR,
-        "create_qt error (%d, %s, %s, %d, %s, %s)" %
+    L.error("create_qt error (%d, %s, %s, %d, %s, %s)" %
         (owner, title, desc, marker, scoremax, status))
 
 
@@ -1277,11 +1277,11 @@ def set_message(name, message):
     if ret and len(ret) and int(ret[0][0]) >= 1:
         run_sql("UPDATE messages SET message=%s WHERE name=%s;",
                 (message, name))
-        log(INFO, "Message %s updated to %s." % (name, message))
+        L.info("Message %s updated to %s." % (name, message))
     else:
         run_sql("INSERT INTO messages (name, message) VALUES (%s, %s);",
                 (name, message))
-        log(INFO, "Message %s inserted as %s." % (name, message))
+        L.info("Message %s inserted as %s." % (name, message))
 
 
 def get_message(name):

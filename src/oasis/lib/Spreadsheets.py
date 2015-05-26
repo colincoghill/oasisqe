@@ -7,6 +7,9 @@ from oasis.lib import Courses2, Exams, Users2
 from openpyxl.writer.excel import save_virtual_workbook
 from openpyxl.workbook import Workbook
 
+from logging import getLogger
+
+L = getLogger("oasisqe.Spreadsheets")
 
 def exam_results_as_spreadsheet(course_id, group, exam_id):
     """ Export the assessment results as a XLSX spreadsheet """

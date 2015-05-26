@@ -9,9 +9,10 @@
 import re
 
 from oasis.lib.OaExceptions import OaMarkerError
-from logging import log, INFO, ERROR, WARN
 from oasis.lib import DB, General, Exams, Courses
+from logging import getLogger
 
+L = getLogger("oasisqe.Assess")
 
 DATEFORMAT = "%d %b %H:%M"
 
@@ -22,9 +23,7 @@ def mark_exam(user_id, exam_id):
     """
     numquestions = Exams.get_num_questions(exam_id)
     status = Exams.get_user_status(user_id, exam_id)
-    log(INFO,
-        "Marking assessment %s for %s, status is %s" %
-        (exam_id, user_id, status))
+    L.info("Marking assessment %s for %s, status is %s" % (exam_id, user_id, status))
     examtotal = 0.0
     for position in range(1, numquestions + 1):
         q_id = General.get_exam_q(exam_id, position, user_id)
@@ -39,9 +38,8 @@ def mark_exam(user_id, exam_id):
             DB.set_q_status(q_id, 3)    # 3 = marked
             DB.set_q_marktime(q_id)
         except OaMarkerError:
-            log(WARN,
-                "Marker Error in question %s, exam %s, student %s!" %
-                (q_id, exam_id, user_id))
+            L.warn("Marker Error in question %s, exam %s, student %s!" %
+                   (q_id, exam_id, user_id))
             return False
         parts = [int(var[1:])
                  for var in marks.keys()
@@ -64,9 +62,8 @@ def mark_exam(user_id, exam_id):
     Exams.save_score(exam_id, user_id, examtotal)
     Exams.touchuserexam(exam_id, user_id)
 
-    log(INFO,
-        "user %s scored %s total on exam %s" %
-        (user_id, examtotal, exam_id))
+    L.info( "user %s scored %s total on exam %s" %
+            (user_id, examtotal, exam_id))
     return True
 
 
@@ -171,8 +168,7 @@ def get_exam_list_sorted(user_id, prev_years=False):
             exams += [Exams.get_exam_struct(e, user_id)
                       for e in Courses.get_exams(cid, prev_years=prev_years)]
         except KeyError, err:
-            log(ERROR,
-                "Failed fetching exam list for user %s: %s" %
+            L.error("Failed fetching exam list for user %s: %s" %
                 (user_id, err))
     exams.sort(key=lambda y: y['start_epoch'], reverse=True)
     return exams

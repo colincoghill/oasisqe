@@ -11,14 +11,15 @@ import time
 import json
 import datetime
 
-from logging import log, INFO, ERROR
-
 from .DB import run_sql, MC
 from .OaTypes import todatetime
 import Courses2
 from .Permissions import check_perm
 import DB
 import General
+from logging import getLogger
+
+L = getLogger("oasisqe.Exams")
 
 
 def save_score(exam_id, student, examtotal):
@@ -152,7 +153,7 @@ def get_user_status(student, exam):
     res = run_sql("""SELECT status FROM userexams WHERE exam=%s AND student=%s;""", (exam, student))
     if res:
         return int(res[0][0])
-    log(ERROR, "Unable to get user %s status for exam %s! " % (student, exam))
+    L.error("Unable to get user %s status for exam %s! " % (student, exam))
     return -1
 
 
@@ -167,7 +168,7 @@ def set_user_status(student, exam, status):
     run_sql("""UPDATE userexams SET status=%s WHERE exam=%s AND student=%s;""", (status, exam, student))
     newstatus = get_user_status(student, exam)
     if not newstatus == status:
-        log(ERROR, "Failed to set new status:  setUserStatus(%s, %s, %s)" % (student, exam, status))
+        L.error("Failed to set new status:  setUserStatus(%s, %s, %s)" % (student, exam, status))
     touchuserexam(exam, student)
 
 
@@ -208,12 +209,11 @@ def create(course, owner, title, examtype, duration, start, end,
                         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING exam;"""
     params = (title, owner, examtype, start, end, instructions,
               course, duration, code, instant)
-    log(INFO,
-        "Create Exam on course %s: [%s][%s]" % (course, sql, params))
+    L.info("Create Exam on course %s: [%s][%s]" % (course, sql, params))
     res = run_sql(sql, params)
     if res:
         return int(res[0][0])
-    log(ERROR, "Create exam FAILED on course %s: [%s][%s]" % (course, sql, params))
+    L.error("Create exam FAILED on course %s: [%s][%s]" % (course, sql, params))
     return 0
 
 
@@ -265,7 +265,7 @@ def get_num_questions(exam_id):
     ret = run_sql("""SELECT position FROM examqtemplates WHERE exam=%s GROUP BY position;""", (exam_id,))
     if ret:
         return len(ret)
-    log(ERROR, "Request for unknown exam %s" % exam_id)
+    L.error("Request for unknown exam %s" % exam_id)
     return 0
 
 
@@ -297,7 +297,7 @@ def reset_end_time(exam, user):
     assert isinstance(exam, int)
     assert isinstance(user, int)
     run_sql("DELETE FROM examtimers WHERE exam=%s AND userid=%s;", (exam, user))
-    log(INFO, "Exam %s timer reset for user %s" % (exam, user))
+    L.info("Exam %s timer reset for user %s" % (exam, user))
     touchuserexam(exam, user)
 
 
@@ -310,7 +310,7 @@ def reset_submit_time(exam, user):
     sql = "UPDATE userexams SET submittime = NULL WHERE exam=%s AND student=%s;"
     params = (exam, user)
     run_sql(sql, params)
-    log(INFO, "Exam %s submit time reset for user %s" % (exam, user))
+    L.info("Exam %s submit time reset for user %s" % (exam, user))
     touchuserexam(exam, user)
 
 
@@ -333,7 +333,7 @@ def reset_mark(exam, user):
     assert isinstance(exam, int)
     assert isinstance(user, int)
     run_sql("DELETE FROM marklog WHERE exam=%s AND student=%s;", (exam, user))
-    log(INFO, "Exam %s mark reset for user %s" % (exam, user))
+    L.info("Exam %s mark reset for user %s" % (exam, user))
     touchuserexam(exam, user)
 
 
@@ -343,7 +343,7 @@ def get_qts(exam):
     ret = run_sql("""SELECT position, qtemplate FROM examqtemplates WHERE exam=%s ORDER BY position;""", (exam,))
     if ret:
         return [int(row[1]) for row in ret]
-    log(ERROR, "Request for unknown exam %s or exam has no qtemplates." % exam)
+    L.error("Request for unknown exam %s or exam has no qtemplates." % exam)
     return []
 
 

@@ -10,12 +10,12 @@
 import hashlib
 import json
 import random
-
+from logging import getLogger
 import bcrypt
 
 from oasis.lib.DB import run_sql, MC
-from logging import log, WARN, ERROR, INFO
 
+L = getLogger("oasisqe.Users")
 
 def get_version():
     """ Fetch the current version of the user table.
@@ -32,7 +32,7 @@ def get_version():
     if ret:
         MC.set(key, int(ret[0][0]))
         return int(ret[0][0])
-    log(ERROR, "Error fetching version.")
+    L.error("Error fetching version.")
     return -1
 
 
@@ -45,7 +45,7 @@ def incr_version():
     if ret:
         MC.set(key, int(ret[0][0]))
         return int(ret[0][0])
-    log(ERROR, "Error incrementing version.")
+    L.error("Error incrementing version.")
     return -1
 
 
@@ -110,7 +110,7 @@ def set_password(user_id, clearpass):
     try:
         run_sql(sql, params)
     except IOError as err:
-        log(ERROR, "Error settings password for user %s - %s" % (user_id, err))
+        L.error("Error settings password for user %s - %s" % (user_id, err))
         raise
     return True
 
@@ -128,7 +128,7 @@ def verify_password(uname, clearpass):
     try:
         user_id = int(ret[0][0])
     except IOError:
-        log(ERROR, "Error fetching user record %s" % uname)
+        L.error("Error fetching user record %s" % uname)
         raise
     stored_pw = ret[0][1]
     if len(stored_pw) > 40:  # it's not MD5
@@ -144,7 +144,7 @@ def verify_password(uname, clearpass):
     if stored_pw == md5hashed:
         # Ok, now we need to upgrade them to something more secure
         set_password(user_id, clearpass)
-        log(INFO, "Upgrading MD5 password to bcrypt for %s" % uname)
+        L.info("Upgrading MD5 password to bcrypt for %s" % uname)
         return user_id
     return False
 
@@ -153,7 +153,7 @@ def create(uname, passwd, givenname, familyname, acctstatus, studentid,
            email=None, expiry=None, source="local",
            confirm_code=None, confirm=True):
     """ Add a user to the database. """
-    log(INFO, "Users.py:create(%s)" % uname)
+    L.info("Users.py:create(%s)" % uname)
     if not confirm_code:
         confirm_code = ""
     run_sql("""INSERT INTO users (uname, passwd, givenname, familyname,
@@ -166,7 +166,7 @@ def create(uname, passwd, givenname, familyname, acctstatus, studentid,
              source, confirm_code, confirm))
     incr_version()
     uid = uid_by_uname(uname)
-    log(INFO, "User created with uid %d." % uid)
+    L.info("User created with uid %d." % uid)
     return uid
 
 
@@ -228,7 +228,7 @@ def get_groups(user):
     if ret:
         groups = [int(row[0]) for row in ret]
         return groups
-    log(WARN, "Request for unknown user or user in no groups.")
+    L.warn("Request for unknown user or user in no groups.")
     return []
 
 

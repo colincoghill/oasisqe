@@ -12,52 +12,56 @@ from flask import Flask, session, redirect, url_for, request, \
     render_template, render_template_string, flash, abort
 import datetime
 import os
+
 import _strptime  # import should prevent thread import blocking issues
 # ask Google about:     AttributeError: _strptime
+
+from oasis.lib import OaConfig
 import logging
-from logging import log, INFO, ERROR
 from logging.handlers import SMTPHandler, RotatingFileHandler
-from functools import wraps
-import smtplib
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
 
-from oasis.lib import OaConfig, Users2, Users, DB
-from oasis.lib.Audit import audit
-from oasis.lib.Permissions import satisfy_perms
-from oasis.lib.General import sanitize_username
+L = logging.getLogger("oasisqe")
 
-app = Flask(__name__,
-            template_folder=os.path.join(OaConfig.homedir, "templates"),
-            static_folder=os.path.join(OaConfig.homedir, "static"),
-            static_url_path=os.path.join(os.path.sep, OaConfig.staticpath, "static"))
-app.secret_key = OaConfig.secretkey
-app.config['MAX_CONTENT_LENGTH'] = 8 * 1024 * 1024  # 8MB max file size upload
-
-# Email error messages to admins ?
 if OaConfig.email_admins:
     MH = SMTPHandler(OaConfig.smtp_server,
                      OaConfig.email,
                      OaConfig.email_admins,
                      'OASIS Internal Server Error')
     MH.setLevel(logging.ERROR)
-    app.logger.addHandler(MH)
+    L.addHandler(MH)
 
-app.debug = False
+FH = RotatingFileHandler(filename=OaConfig.logfile)
+FH.setLevel(logging.DEBUG)
+FH.setFormatter(logging.Formatter(
+    "%(asctime)s %(levelname)s: %(message)s | %(pathname)s:%(lineno)d"
+))
 
-if not app.debug:  # Log info or higher
-    try:
-        FH = RotatingFileHandler(filename=OaConfig.logfile)
-        FH.setLevel(logging.DEBUG)
-        FH.setFormatter(logging.Formatter(
-            "%(asctime)s %(levelname)s: %(message)s | %(pathname)s:%(lineno)d"
-        ))
-        app.logger.addHandler(FH)
-        logging.log(logging.INFO,
-                    "File logger starting up")
-    except IOError as err:  # Probably a permission denied or folder not exist
-        logging.log(logging.ERROR,
-                    """Unable to open log file: %s""" % err)
+L.addHandler(FH)
+L.setLevel(logging.DEBUG)
+
+from functools import wraps
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+
+from oasis.lib import Users2, Users, DB
+from oasis.lib.Audit import audit
+from oasis.lib.Permissions import satisfy_perms
+from oasis.lib.General import sanitize_username
+
+
+try:
+    L.info("File logger starting up")
+except IOError as err:  # Probably a permission denied or folder not exist
+    L.error("Unable to open log file: %s""" % err)
+
+
+app = Flask("oasisqe",
+            template_folder=os.path.join(OaConfig.homedir, "templates"),
+            static_folder=os.path.join(OaConfig.homedir, "static"),
+            static_url_path=os.path.join(os.path.sep, OaConfig.staticpath, "static"))
+app.secret_key = OaConfig.secretkey
+app.config['MAX_CONTENT_LENGTH'] = 8 * 1024 * 1024  # 8MB max file size upload
 
 
 @app.context_processor
@@ -244,7 +248,7 @@ def login_local_submit():
         Check them, then set up the session or redirect back with an error.
     """
     if 'username' not in request.form or 'password' not in request.form:
-        log(INFO, "Failed Login")
+        L.info("Failed Login")
         flash("Incorrect name or password.")
         return redirect(url_for("login_local"))
 
@@ -253,7 +257,7 @@ def login_local_submit():
 
     user_id = Users2.verify_pass(username, password)
     if not user_id:
-        log(INFO, "Failed Login for %s" % username)
+        L.info("Failed Login for %s" % username)
         flash("Incorrect name or password.")
         return redirect(url_for("login_local"))
 
@@ -273,11 +277,11 @@ def login_local_submit():
           "%s successfully logged in locally" % (session['username'],))
 
     if 'redirect' in session:
-        log(INFO, "Following redirect for %s" % username)
+        L.info("Following redirect for %s" % username)
         target = OaConfig.parentURL + session['redirect']
         del session['redirect']
         return redirect(target)
-    log(INFO, "Successful Login for %s" % username)
+    L.info("Successful Login for %s" % username)
     return redirect(url_for("main_top"
                             ""))
 
@@ -478,7 +482,7 @@ def login_webauth_submit():
         to see if we can find them.
     """
     if 'REMOTE_USER' not in request.environ:
-        log(ERROR, "REMOTE_USER not provided by web server and 'webauth' is being attempted.")
+        L.error("REMOTE_USER not provided by web server and 'webauth' is being attempted.")
         return redirect(url_for("login_webauth_error"))
 
     username = request.environ['REMOTE_USER']

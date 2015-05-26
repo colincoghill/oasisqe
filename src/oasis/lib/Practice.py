@@ -7,12 +7,14 @@
 """
 
 import re
-from logging import log, WARN
 from oasis.lib import General
 
 from oasis.lib.Permissions import check_perm
 from oasis.lib.OaExceptions import OaMarkerError
 from . import OaConfig, DB, Pool, Topics
+from logging import getLogger
+
+L = getLogger("oasisqe.Practice")
 
 fileCache = Pool.FileCache(OaConfig.cachedir)
 
@@ -24,7 +26,7 @@ def get_practice_q(qt_id, user_id):
         qt_id = int(qt_id)
         assert qt_id > 0
     except (ValueError, TypeError, AssertionError):
-        log(WARN, "Called with bad qtid %s?" % qt_id)
+        L.warn("Called with bad qtid %s?" % qt_id)
     qid = DB.get_q_by_qt_student(qt_id, user_id)
     if qid is not False:
         return int(qid)
@@ -32,8 +34,7 @@ def get_practice_q(qt_id, user_id):
     try:
         qid = int(qid)
     except (ValueError, TypeError):
-        log(WARN,
-            "generateQuestion(%s,%s) Fail: returned %s" % (qt_id, user_id, qid))
+        L.warn("generateQuestion(%s,%s) Fail: returned %s" % (qt_id, user_id, qid))
     else:
         DB.set_q_viewtime(qid)
     return qid
@@ -204,16 +205,14 @@ def mark_q(user_id, topic_id, q_id, request):
                 answers["G%d" % part] = value
                 DB.save_guess(newqid, part, value)
             else:
-                log(WARN,
-                    "received guess for wrong question? (%d,%d,%d,%s)" %
+                L.warn("received guess for wrong question? (%d,%d,%d,%s)" %
                     (user_id, topic_id, q_id, request.form))
     try:
         marks = General.mark_q(q_id, answers)
         DB.set_q_status(q_id, 3)    # 3 = marked
         DB.set_q_marktime(q_id)
     except OaMarkerError:
-        log(WARN,
-            "Marker Error - (%d, %d, %d, %s)" %
+        L.warn("Marker Error - (%d, %d, %d, %s)" %
             (user_id, topic_id, q_id, request.form))
         marks = {}
     q_body = General.render_mark_results(q_id, marks)

@@ -9,13 +9,14 @@
 import os
 
 from flask import render_template, session, request, abort
-from logging import log, ERROR
+
 from oasis.lib import DB, Practice, Topics, General, Courses2, Setup, Courses
 MYPATH = os.path.dirname(__file__)
 from oasis.lib.Permissions import check_perm
 
 from oasis import app, authenticated
 
+L = app.logger
 
 @app.route("/practice/top")
 @authenticated
@@ -183,8 +184,7 @@ def practice_do_question(topic_id, qt_id):
     try:
         q_id = Practice.get_practice_q(qt_id, user_id)
     except (ValueError, TypeError) as err:
-        log(ERROR,
-            "ERROR 1001  (%s,%s) %s" % (qt_id, user_id, err))
+        L.error("ERROR 1001  (%s,%s) %s" % (qt_id, user_id, err))
         return render_template(
             "practicequestionerror.html",
             mesg="Error generating question.",

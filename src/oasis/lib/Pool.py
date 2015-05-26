@@ -16,18 +16,17 @@
 import Queue
 import os
 import OaConfig
-
+from logging import getLogger
 import psycopg2
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 import memcache
-from logging import log, INFO, WARNING, ERROR
 
 try:
     uniqueKey = OaConfig.uniqueKey
 except AttributeError:
     uniqueKey = OaConfig.parentURL
-log(INFO, "Unique key set to '%s'." % uniqueKey,)
 
+L = getLogger("oasisqe")
 
 class DbConn(object):
     """Manage a single database connection."""
@@ -37,9 +36,9 @@ class DbConn(object):
         self.connectstring = connectstring
         self.conn = psycopg2.connect(connectstring)
         self.conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
-        log(INFO, "DB Encoding is %s" % self.conn.encoding)
+        L.info("DB Encoding is %s" % self.conn.encoding)
         if not self.conn:
-            log(INFO, "DB relogin failed!")
+            L.warn("DB relogin failed!")
 
     def run_sql(self, sql, params=None, quiet=False):
         """ Execute SQL commands over the connection. """
@@ -53,7 +52,7 @@ class DbConn(object):
 
         except BaseException as err:
             if not quiet:
-                log(ERROR, "DB Error (%s) '%s' (%s)" % (err, sql, repr(params)))
+                L.error("DB Error (%s) '%s' (%s)" % (err, sql, repr(params)))
                 raise
             return None
 
@@ -92,7 +91,7 @@ class DbPool(object):
            available), and begin a transaction on it.
         """
         if self.connqueue.qsize() < 3:
-            log(INFO, "DB Pool getting low! %d" % self.connqueue.qsize())
+            L.info("DB Pool getting low! %d" % self.connqueue.qsize())
         dbc = self.connqueue.get(True)
         return dbc
 
@@ -111,8 +110,7 @@ class FileCache(object):
             try:
                 os.makedirs(cachedir)
             except BaseException as err:
-                log(INFO,
-                    "Can't create file cache in %s (%s)" % (cachedir, err))
+                L.warn("Can't create file cache in %s (%s)" % (cachedir, err))
         self.cachedir = cachedir
 
     def set(self, key, value):
@@ -129,15 +127,13 @@ class FileCache(object):
             try:
                 os.makedirs(os.path.join(self.cachedir, key))
             except IOError:
-                log(ERROR,
-                    "Can't create cache in %s/%s" % (self.cachedir, key))
+                L.error("Can't create cache in %s/%s" % (self.cachedir, key))
         try:
             fptr = open(os.path.join(self.cachedir, key, "DATA"), "wb")
             fptr.write(value)
             fptr.close()
         except IOError as err:
-            log(ERROR,
-                "File Cache Error. (%s)" % err)
+            L.error("File Cache Error. (%s)" % err)
             return False
         return True
 
@@ -160,11 +156,11 @@ class FileCache(object):
             data = fptr.read()
             fptr.close()
             if len(data) == 0:
-                log(ERROR, "file Cache EMPTY retreival. (key=%s)" % (key,))
+                L.error("file Cache EMPTY retreival. (key=%s)" % (key,))
                 data = False
         except IOError as err:
             # it's possible that something went wrong
-            log(ERROR, "file Cache ERROR. (key=%s, exception=%s)" % (key, err))
+            L.error("file Cache ERROR. (key=%s, exception=%s)" % (key, err))
             return False, False
         return data, True
 
@@ -175,7 +171,7 @@ class FakeMCConn(object):
     """
 
     def __init__(self, connectstring):
-        log(INFO, "Starting dummy memcached interface.")
+        L.info("Starting dummy memcached interface.")
 
     def set(self, key, value, expiry=None):
         """Pretend to store item. """
@@ -198,8 +194,7 @@ class MCConn(object):
 
         self.conn = memcache.Client([connectstring], debug=0)
         if not self.conn:
-            log(ERROR,
-                "Memcache login failed!")
+            L.error("Memcache login failed!")
 
     def set(self, key, value, expiry=None):
         """ store item. """
@@ -210,11 +205,10 @@ class MCConn(object):
                 res = self.conn.set(key, value, expiry)
             else:
                 res = self.conn.set(key, value)
-            log(INFO,
-                "OaPool:MCConn:set(%s, %s, %s)" % (key, value, expiry))
+            L.info("OaPool:MCConn:set(%s, %s, %s)" % (key, value, expiry))
         except BaseException as err:
             # it's possible that something went wrong
-            log(ERROR, "Memcache Error. (%s)" % err)
+            L.error("Memcache Error. (%s)" % err)
             return False
 
         return res
@@ -228,8 +222,7 @@ class MCConn(object):
 
         except BaseException as err:
             # it's possible that something went wrong
-            log(ERROR,
-                "Memcache Error. (%s)" % err)
+            L.error("Memcache Error. (%s)" % err)
             return False
 
         return res
@@ -243,8 +236,7 @@ class MCConn(object):
 
         except IOError as err:
             # it's possible that something went wrong
-            log(ERROR,
-                "Memcache Error. (%s)" % err)
+            self.L.error("Memcache Error. (%s)" % err)
             return False
 
         return res
@@ -277,8 +269,7 @@ class MCPool(object):
     def get(self, key):
         """Get an item from the cache. """
         if self.connqueue.qsize() < 3:
-            log(WARNING,
-                "Memcache Pool getting low! %d" % self.connqueue.qsize())
+            L.warn("Memcache Pool getting low! %d" % self.connqueue.qsize())
         dbc = self.connqueue.get(True)
         res = dbc.get(key)
         self.connqueue.put(dbc)

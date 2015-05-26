@@ -19,7 +19,8 @@ from oasis.lib import Courses, Courses2, Setup, Periods, Feeds, External, UFeeds
 MYPATH = os.path.dirname(__file__)
 from .lib import DB, Groups
 from oasis import app, require_perm
-# from logging import log, INFO
+
+L = app.logger
 
 
 @app.route("/admin/top")

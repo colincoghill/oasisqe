@@ -8,9 +8,11 @@
 """
 
 from ..lib.DB import run_sql, IntegrityError
-from logging import log, ERROR
+from logging import getLogger
 import datetime
 
+
+L = getLogger("oasisqe.Periods")
 
 class Period(object):
     """ A time period is relatively simple, mainly just name and
@@ -203,8 +205,7 @@ def all_list():
     sql = """SELECT id, finish FROM periods order by finish;"""
     ret = run_sql(sql)
     if not ret:
-        log(ERROR,
-            'No time periods in Database? This should never happen.')
+        L.error('No time periods in Database? This should never happen.')
         return []
 
     periods = []

@@ -17,10 +17,12 @@
 
 import re
 
-from logging import log, INFO
 from oasis.lib.OaExceptions import OaMarkerError
 from oasis.lib import DB, General
 
+from logging import getLogger
+
+L = getLogger("oasisqe.Embed")
 
 def mark_q(user_id, qtid, request):
     """Mark the question and show a page containing marking results."""
@@ -48,8 +50,7 @@ def mark_q(user_id, qtid, request):
             DB.set_q_status(qid, 3)    # 3 = marked
             DB.set_q_marktime(qid)
         except OaMarkerError:
-            log(INFO,
-                "getMarkQuestionPage(%d, %d, %s) Marker ERROR" %
+            L.info("getMarkQuestionPage(%d, %d, %s) Marker ERROR" %
                 (user_id, qtid, request.form))
             marks = {}
 

@@ -5,12 +5,12 @@
 
 """Provides a question editing interface to the user."""
 
-from logging import log, INFO
 from oasis.lib import DB
 from oasis.lib import Audit
-
+from logging import getLogger
 import re
 
+L = getLogger("oasisqe.QEditor")
 
 def parse_datfile(datfile):
     """Convert the given datfile into a list of dictionaries of variables."""
@@ -45,7 +45,7 @@ def parse_datline(datline):
                 try:
                     (a, b) = v.split("=")
                 except (ValueError, AttributeError):
-                    log(INFO, "Bad line: '%s'" % v)
+                    L.info("Bad line: '%s'" % v)
                     continue
                 #                try:
                 #                    QVars[a] = float(b)

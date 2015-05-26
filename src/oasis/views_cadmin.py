@@ -8,7 +8,6 @@
 
 import os
 from datetime import datetime
-from logging import log, ERROR
 
 from flask import render_template, session, request, redirect, \
     abort, url_for, flash, make_response
@@ -26,6 +25,7 @@ from oasis.lib import External
 
 from oasis import app, require_course_perm, require_perm
 
+L = app.logger
 
 @app.route("/cadmin/<int:course_id>/top")
 @require_course_perm(("questionedit", "viewmarks",
@@ -896,7 +896,7 @@ def cadmin_topic_save(course_id, topic_id):
             return result
 
     flash("Error saving Topic Information!")
-    log(ERROR, "Error saving Topic Information " % repr(request.form))
+    L.error( "Error saving Topic Information " % repr(request.form))
     return redirect(url_for('cadmin_edit_topic',
                             course_id=course_id,
                             topic_id=topic_id))

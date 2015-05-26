@@ -8,8 +8,10 @@
 """
 from oasis.lib import Topics, Groups
 from oasis.lib.DB import run_sql, MC
-from logging import log, ERROR
 import datetime
+from logging import getLogger
+
+L = getLogger("oasisqe.Courses")
 
 # WARNING: name and title are stored in the database as: title, description
 
@@ -28,7 +30,7 @@ def get_version():
     if ret:
         MC.set(key, int(ret[0][0]))
         return int(ret[0][0])
-    log(ERROR, "Error fetching Courses version.")
+    L.error("Error fetching Courses version.")
     return -1
 
 
@@ -40,7 +42,7 @@ def incr_version():
     if ret:
         MC.set(key, int(ret[0][0]))
         return int(ret[0][0])
-    log(ERROR, "Error incrementing Courses version.")
+    L.error("Error incrementing Courses version.")
     return -1
 
 
@@ -76,7 +78,7 @@ def get_active(course_id):
     if ret:
         MC.set(key, ret[0][0])
         return ret[0][0]
-    log(ERROR, "Request for active flag of unknown course %s." % course_id)
+    L.error("Request for active flag of unknown course %s." % course_id)
     return None
 
 
@@ -247,8 +249,7 @@ def create(name, description, owner, coursetype):
     MC.delete(key)
     if res:
         return int(res[0][0])
-    log(ERROR,
-        "create('%s','%s',%d,%d) Fail" % (name, description, owner, coursetype))
+    L.error("create('%s','%s',%d,%d) Fail" % (name, description, owner, coursetype))
     return 0
 
 

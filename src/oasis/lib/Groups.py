@@ -14,8 +14,10 @@
 
 from oasis.lib import Periods
 from oasis.lib.DB import run_sql, IntegrityError
-# from logging import log, WARN, INFO
 
+from logging import getLogger
+
+L = getLogger("oasisqe.Groups")
 
 class Group(object):
     """ Look after groups of users.

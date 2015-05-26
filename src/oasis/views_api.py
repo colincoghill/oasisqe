@@ -12,7 +12,6 @@ import datetime
 
 
 from flask import session, abort, jsonify, request
-# from logging import log, ERROR, INFO
 from oasis.lib import Exams, API, Stats
 
 MYPATH = os.path.dirname(__file__)
@@ -22,6 +21,7 @@ from oasis.lib import Users
 
 from oasis import app, authenticated, require_perm
 
+L = app.logger
 
 @app.route("/api/exam/<int:course_id>/<int:exam_id>/qtemplates")
 @authenticated
