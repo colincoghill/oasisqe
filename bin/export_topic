@@ -1,0 +1,30 @@
+#!/usr/bin/python2.7
+# -*- coding: utf-8 -*-
+
+""" Given a topic ID, export the questions in that topic to a zip file
+
+    export_topic TOPIC_ID questions.zip
+"""
+
+import sys
+import os
+
+# we should be SOMETHING/bin/export_topic, find APPDIR
+# and add "SOMETHING/src" to our path
+
+APPDIR = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), "src")
+sys.path.append(APPDIR)
+
+from oasis.lib import Users, OaConfig, Users2, External
+
+
+if len(sys.argv) < 2:
+    print "Usage: "
+    print "    export_topic <TOPIC_ID> <filename.zip>"
+    sys.exit(1)
+
+uid = Users.uid_by_uname('admin')
+
+# find topic
+# if not exist error
+# if not given, create

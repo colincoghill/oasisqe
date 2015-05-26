@@ -1,0 +1,32 @@
+#!/usr/bin/python2.7
+# -*- coding: utf-8 -*-
+
+""" Given an oa_export.zip file, import the contained questions into a topic.
+    If topic not given, create/find a course "Testing", topic "Testing" and
+    import to that.
+
+    import_topic test_questions.zip TOPIC_ID
+"""
+
+import sys
+import os
+
+# we should be SOMETHING/bin/import_topic, find APPDIR
+# and add "SOMETHING/src" to our path
+
+APPDIR = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), "src")
+sys.path.append(APPDIR)
+
+from oasis.lib import Users, OaConfig, Users2, External
+
+
+if len(sys.argv) < 2:
+    print "Usage: "
+    print "    import_topic <filename.zip> [TOPIC_ID]"
+    sys.exit(1)
+
+uid = Users.uid_by_uname('admin')
+
+# find topic
+# if not exist error
+# if not given, create
