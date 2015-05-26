@@ -56,12 +56,31 @@ except IOError as err:  # Probably a permission denied or folder not exist
     L.error("Unable to open log file: %s""" % err)
 
 
-app = Flask("oasisqe",
+app = Flask(__name__,
             template_folder=os.path.join(OaConfig.homedir, "templates"),
             static_folder=os.path.join(OaConfig.homedir, "static"),
             static_url_path=os.path.join(os.path.sep, OaConfig.staticpath, "static"))
 app.secret_key = OaConfig.secretkey
 app.config['MAX_CONTENT_LENGTH'] = 8 * 1024 * 1024  # 8MB max file size upload
+
+if OaConfig.email_admins:
+    MH = SMTPHandler(OaConfig.smtp_server,
+                     OaConfig.email,
+                     OaConfig.email_admins,
+                     'OASIS Internal Server Error')
+    MH.setLevel(logging.ERROR)
+    app.logger.addHandler(MH)
+
+FH = RotatingFileHandler(filename=OaConfig.logfile)
+FH.setLevel(logging.DEBUG)
+FH.setFormatter(logging.Formatter(
+    "%(asctime)s %(levelname)s: %(message)s | %(pathname)s:%(lineno)d"
+))
+
+app.debug = True
+app.logger.addHandler(FH)
+app.logger.setLevel(logging.DEBUG)
+
 
 
 @app.context_processor

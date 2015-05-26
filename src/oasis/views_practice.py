@@ -13,10 +13,10 @@ from flask import render_template, session, request, abort
 from oasis.lib import DB, Practice, Topics, General, Courses2, Setup, Courses
 MYPATH = os.path.dirname(__file__)
 from oasis.lib.Permissions import check_perm
-
+from logging import getLogger
 from oasis import app, authenticated
 
-L = app.logger
+L = getLogger("oasisqe")
 
 @app.route("/practice/top")
 @authenticated
@@ -198,6 +198,7 @@ def practice_do_question(topic_id, qt_id):
         )
 
     if not q_id > 0:
+        L.error("ERROR 1002  (%s,%s) Question not generated" % (qt_id, user_id))
         return render_template(
             "practicequestionerror.html",
             mesg="Error generating question.",
