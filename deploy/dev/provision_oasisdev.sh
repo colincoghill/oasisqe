@@ -33,7 +33,7 @@ su oasisqe -c "psql -Uoasisqe -W oasisqe -f /opt/oasisqe/3.9/deploy/emptyschema_
 
 mkdir -p /var/cache/oasisqe/v3.9
 chown oasisqe /var/cache/oasisqe
-chown oasisqe /var/cache/v3.9
+chown oasisqe /var/cache/oasisqe/v3.9
 mkdir -p /var/log/oasisqe
 chown oasisqe /var/log/oasisqe
 touch /var/log/oasisqe/main.log
