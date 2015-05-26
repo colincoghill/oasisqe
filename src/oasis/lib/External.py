@@ -227,6 +227,7 @@ def user_update_details_from_feed(uid, upid):
         Users.set_studentid(uid, studentid)
 
 
+# need to make a version that export a whole topic, with position info
 def qts_to_zip(qt_ids, fname="oa_export", suffix="oaq"):
     """ Take a list of QTemplate IDs and return a binary string containing
         them as an .oaq file.
