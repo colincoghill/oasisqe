@@ -33,8 +33,11 @@ su oasisqe -c "psql -Uoasisqe -W oasisqe -f /opt/oasisqe/3.9/deploy/emptyschema_
 
 mkdir -p /var/cache/oasisqe/v3.9
 chown oasisqe /var/cache/oasisqe
+chown oasisqe /var/cache/v3.9
 mkdir -p /var/log/oasisqe
 chown oasisqe /var/log/oasisqe
+touch /var/log/oasisqe/main.log
+chown oasisqe /var/log/oasisqe/main.log
 
 cp /opt/oasisqe/3.9/deploy/sampleconfig.ini /etc/oasisqe.ini
 sed -i "s/pass: SECRET/pass: ${DBPASS}/g" /etc/oasisqe.ini

@@ -111,6 +111,8 @@ class FileCache(object):
                 os.makedirs(cachedir)
             except BaseException as err:
                 L.warn("Can't create file cache in %s (%s)" % (cachedir, err))
+            if not os.access(cachedir, os.W_OK):
+                L.warn("Can't write to cache dir '%s' please check permissions.")
         self.cachedir = cachedir
 
     def set(self, key, value):
