@@ -17,7 +17,7 @@ from oasis.lib.DB import run_sql, IntegrityError
 
 from logging import getLogger
 
-L = getLogger("oasisqe.Groups")
+L = getLogger("oasisqe")
 
 class Group(object):
     """ Look after groups of users.

@@ -14,7 +14,7 @@ from oasis.lib.OaExceptions import OaMarkerError
 from . import OaConfig, DB, Pool, Topics
 from logging import getLogger
 
-L = getLogger("oasisqe.Practice")
+L = getLogger("oasisqe")
 
 fileCache = Pool.FileCache(OaConfig.cachedir)
 

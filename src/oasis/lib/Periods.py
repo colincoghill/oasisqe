@@ -12,7 +12,7 @@ from logging import getLogger
 import datetime
 
 
-L = getLogger("oasisqe.Periods")
+L = getLogger("oasisqe")
 
 class Period(object):
     """ A time period is relatively simple, mainly just name and

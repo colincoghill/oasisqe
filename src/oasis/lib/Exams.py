@@ -19,7 +19,7 @@ import DB
 import General
 from logging import getLogger
 
-L = getLogger("oasisqe.Exams")
+L = getLogger("oasisqe")
 
 
 def save_score(exam_id, student, examtotal):

@@ -25,7 +25,7 @@ from . import Courses, Exams
 from oasis.lib import OaConfig, DB, Topics, script_funcs, OqeSmartmarkFuncs
 from logging import getLogger
 
-L = getLogger("oasisqe.General")
+L = getLogger("oasisqe")
 
 def htmlesc(text):
     """ HTML escape the text. """

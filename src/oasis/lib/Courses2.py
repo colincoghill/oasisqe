@@ -20,7 +20,7 @@
 from oasis.lib import Courses
 from logging import getLogger
 
-L = getLogger("oasisqe.Courses")
+L = getLogger("oasisqe")
 
 COURSES_VERSION = -1
 

@@ -14,13 +14,14 @@ from datetime import datetime
 from flask import render_template, \
     request, redirect, abort, url_for, flash
 
+from logging import getLogger
 from oasis.lib import Courses, Courses2, Setup, Periods, Feeds, External, UFeeds
 
 MYPATH = os.path.dirname(__file__)
 from .lib import DB, Groups
 from oasis import app, require_perm
 
-L = app.logger
+L = getLogger("oasisqe")
 
 
 @app.route("/admin/top")

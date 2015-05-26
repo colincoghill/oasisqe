@@ -11,7 +11,7 @@ from oasis.lib.DB import run_sql, MC
 import datetime
 from logging import getLogger
 
-L = getLogger("oasisqe.Courses")
+L = getLogger("oasisqe")
 
 # WARNING: name and title are stored in the database as: title, description
 

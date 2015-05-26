@@ -12,7 +12,7 @@ from oasis.lib.OaExceptions import OaMarkerError
 from oasis.lib import DB, General, Exams, Courses
 from logging import getLogger
 
-L = getLogger("oasisqe.Assess")
+L = getLogger("oasisqe")
 
 DATEFORMAT = "%d %b %H:%M"
 

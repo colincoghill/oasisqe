@@ -17,7 +17,7 @@ from StringIO import StringIO
 
 from logging import getLogger
 
-L = getLogger("oasisqe.External")
+L = getLogger("oasisqe")
 
 
 def feeds_available_group_scripts():

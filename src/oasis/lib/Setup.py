@@ -14,7 +14,7 @@ from oasis.lib import External
 from flask import send_file, abort
 from logging import getLogger
 
-L = getLogger("oasisqe.Setup")
+L = getLogger("oasisqe")
 
 
 def do_topic_page_commands(request, topic_id, user_id):

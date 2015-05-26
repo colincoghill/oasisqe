@@ -18,10 +18,11 @@ MYPATH = os.path.dirname(__file__)
 
 from oasis.lib.Permissions import satisfy_perms
 from oasis.lib import Users
+from logging import getLogger
 
 from oasis import app, authenticated, require_perm
 
-L = app.logger
+L = getLogger("oasisqe")
 
 @app.route("/api/exam/<int:course_id>/<int:exam_id>/qtemplates")
 @authenticated

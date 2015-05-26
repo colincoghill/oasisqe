@@ -9,7 +9,7 @@ from openpyxl.workbook import Workbook
 
 from logging import getLogger
 
-L = getLogger("oasisqe.Spreadsheets")
+L = getLogger("oasisqe")
 
 def exam_results_as_spreadsheet(course_id, group, exam_id):
     """ Export the assessment results as a XLSX spreadsheet """

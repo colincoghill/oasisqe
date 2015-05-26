@@ -10,7 +10,7 @@ import json
 from logging import getLogger
 from .DB import run_sql, MC
 
-L = getLogger("oasisqe.Topics")
+L = getLogger("oasisqe")
 
 
 def create(course_id, name, vis, pos=1):
