@@ -1,0 +1,56 @@
+#!/usr/bin/python2.7
+# -*- coding: utf-8 -*-
+
+""" Create a topic for testing.
+    Will also create a course to put it in.
+    Returns the topic ID of the topic
+
+    create_test_topic  <coursename> <topicname>
+
+    eg.    create_test_topic TEST101 Imports
+"""
+
+import sys
+import os
+
+APPDIR = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), "src")
+
+sys.path.append(APPDIR)
+
+from oasis.lib import OaConfig, Topics, Users, Courses
+
+
+def createTopic(course, topicname):
+    """ Create or return the topic.
+    """
+
+    topic = Topics.create(course['id'], topicname, 3, 1)
+    Courses.incr_version()
+    print "Topic %s created" % topic
+
+
+def createCourse(coursename):
+    """ Find or create the course. Returns course dict.
+    """
+    course = Courses.get_course_by_name(coursename)
+    if course:
+        print "Course %(name)s found: %(id)s" % course
+    else:
+        course = Courses.create(coursename, "Testing", Users.uid_by_uname('admin'), 1)
+        coursetemplate = 'casual'
+        courserepeat = 'eternal'
+        Courses.create_config(course['id'], coursetemplate, int(courserepeat))
+        print "Course created: %(id)" % course
+    return course
+
+
+if len(sys.argv) < 3:
+    print "Usage: "
+    print "    create_test_topic <coursename> <topicname>"
+    sys.exit(1)
+
+coursename = sys.argv[1]
+topicname = sys.argv[2]
+
+course = createCourse(coursename)
+topic = createTopic(course, topicname)
