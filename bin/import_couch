@@ -1,0 +1,53 @@
+#!/usr/bin/python2.7
+# -*- coding: utf-8 -*-
+
+""" Import ancient OASIS CouchDB database into a topic. Unless you have
+    the version of OASIS that used CouchDB, you don't need this.
+"""
+
+import sys
+import os
+import json
+
+APPDIR = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), "src")
+
+sys.path.append(APPDIR)
+
+from oasis.lib import OaConfig, Topics, External
+
+
+def getTopic(tid):
+    """ Return the topic id or exit the program
+    """
+    try:
+        topic = Topics.get_topic(tid)
+    except KeyError, err:
+        print "Unable to find topic %s" % tid
+        sys.exit(1)
+    print "Topic %s found: %s" % (tid, topic['title'])
+
+
+
+if len(sys.argv) < 3:
+    print "Usage: "
+    print "    import_couch <topicid> <filename>"
+    sys.exit(1)
+
+
+uid = Users.uid_by_uname('admin')
+
+topic = getTopic(sys.argv[1])
+
+fname = sys.argv[2]
+
+data = open(fname).read()
+
+raw = json.loads(data)
+print "%s bytes loaded" % (len(data))
+
+couch = raw['docs']
+print "%s entries" % len(couch)
+
+for e in couch:
+    if e['_id'].startswith("oasishs/qtemplate/"):
+        print e
