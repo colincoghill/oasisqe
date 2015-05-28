@@ -23,6 +23,7 @@ The assessment section has been mostly brought over from the previous system, bu
 bugs still remain and it needs more testing.
 
  * Database Transaction Error bugfix
+ * Security Fixes
  * Remove all known "Internal Server Error" pages.
  * Better error checking or handling of permissions on log file & cache
  * Question import/export
