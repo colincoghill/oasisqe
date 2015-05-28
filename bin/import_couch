@@ -45,6 +45,15 @@ def process_qtemplate(qt):
     else:
         topics[topicname].append(title)
 
+def createTopic(course, topicname):
+    """ Create or return the topic.
+    """
+
+    topic = Topics.create(course['id'], topicname, 3, 1)
+    Courses.incr_version()
+    print "Topic %s (%s) created" % (topic, topicname)
+
+
 if len(sys.argv) < 3:
     print "Usage: "
     print "    import_couch <coursename> <filename>"
@@ -68,8 +77,7 @@ for e in data['docs']:
     if e['_id'].startswith("oasishs/qtemplate/"):
         process_qtemplate(e)
 
-for topic in topics.keys():
-    print topic
-    print "------------------"
-    for qt in topics[topic]:
+for topicname in topics.keys():
+    tid = createTopic(course, topicname)
+    for qt in topics[topicname]:
         print "* ", qt
