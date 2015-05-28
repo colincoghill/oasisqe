@@ -36,11 +36,15 @@ def createCourse(coursename):
     if course:
         print "Course %(name)s found: %(id)s" % course
     else:
-        course = Courses.create(coursename, "Testing", Users.uid_by_uname('admin'), 1)
+        cid = Courses.create(coursename, "Testing", Users.uid_by_uname('admin'), 1)
+        course = Courses.get_course(cid)
         coursetemplate = 'casual'
-        courserepeat = 'eternal'
-        Courses.create_config(course['id'], coursetemplate, int(courserepeat))
-        print "Course created: %(id)" % course
+        courserepeat = 1  # indefinite 
+        Courses.create_config(cid, coursetemplate, courserepeat)
+        if not course:
+            print "Failed to create course %s. Unexpected." % coursename
+            sys.exit(0)
+        print "Course created: %(id)s" % course
     return course
 
 

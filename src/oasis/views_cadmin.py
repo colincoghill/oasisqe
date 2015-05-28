@@ -204,7 +204,7 @@ def cadmin_add_course_save():
     name = form.get('name', '')
     title = form.get('title', '')
     coursetemplate = form.get('coursetemplate', 'casual')
-    courserepeat = form.get('courserepeat', 'eternal')
+    courserepeat = form.get('courserepeat', 1)
 
     course = {
         'name': name,
