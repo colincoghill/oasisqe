@@ -27,11 +27,30 @@ def getCourse(coursename):
     print "Course %s found: %s" % (course, course['title'])
     return course
 
+
+def process_qtemplate(qt):
+    """
+
+    """
+    parent = qt['parent']
+    title = qt['v3_title']
+    position = qt['v3_position']
+
+    if parent.startswith("0"):
+        parent = parent[2:]
+    topicname = ' '.join(parent.split("/"))
+    topicname = topicname.strip()
+    if not topicname in topics:
+        topics[topicname] = []
+    else:
+        topics[topicname].append(title)
+
 if len(sys.argv) < 3:
     print "Usage: "
     print "    import_couch <coursename> <filename>"
     sys.exit(1)
 
+topics = {}
 
 uid = Users.uid_by_uname('admin')
 
@@ -47,5 +66,10 @@ print data.keys()
 
 for e in data['docs']:
     if e['_id'].startswith("oasishs/qtemplate/"):
-        print e['parent'],": ", e['v3_title']
+        process_qtemplate(e)
 
+for topic in topics.keys():
+    print topic
+    print "------------------"
+    for qt in topics[topic]:
+        print "* ", qt
