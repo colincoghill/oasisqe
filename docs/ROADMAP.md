@@ -22,52 +22,43 @@ Focus:   Further integration with external auth/enrolment information.
 The assessment section has been mostly brought over from the previous system, but a few minor
 bugs still remain and it needs more testing.
 
-Install:
-
+ * Database Transaction Error bugfix
+ * Remove all known "Internal Server Error" pages.
  * Better error checking or handling of permissions on log file & cache
-
-Fix and re-enable Numeric Question Editor
-
- * The "numeric question editor" has not yet been brought over from the previous system,
-   and it has a few serious bugs.
- * Integrate with 3.9
- * Question renaming
- * Large and small numbers
-
-Documentation
-
-* Credits, Stephane's number stuff. Davy's editor. Nilroy's theme.
-* Support Web site
-* Basic usage guide
-* Basic Question Creation Documentation
-
-Assess:
- * autosave isn't
- * Make sure assessment timer is good
- * Assessment question weighting
-
-Other:
- * Way to delete/deactivate an account
- * Enrol in (open) course
  * Question import/export
+ * Example Questions
+ * Roll in functionality of "OASIS HS". Make sure we can replace that system.
+ 
+ * Developer setup. 
+ * Load testing setup.
 
 
 3.9.5 OSS Release
 =================
 
- * Roll in functionality of "OASIS HS". Make sure we can replace that system.
+ * Simple Question Editor (Multichoice + basic features, easy to use)
+ * Basic Question Creation Documentation
+ * Way to delete/deactivate an account
+ * Enrol in (open) course
+ * Support Web site
  * Tidy up caching/performance, make sure we're load balancer/cache ready
+ 
+Assess:
+ * autosave isn't
+ * Make sure assessment timer is good
+ * Assessment question weighting
+
+
 
 3.9.6 OSS Release
 =================
 
 Focus: Loose ends
 
- * Permissions for groups as well as individuals
- * Example Questions
- * Simple multi-choice Question Editor
+ * Permissions for groups as well as individuals 
  * Check and enable "How am I doing?" Practice section
-
+ * Flesh out the Question Editor.
+ * Credits, Stephane's number stuff. Davy's editor. Nilroy's theme.
 
 
 4.0  OSS Release
