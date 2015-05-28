@@ -12,6 +12,7 @@ from flask import Flask, session, redirect, url_for, request, \
     render_template, render_template_string, flash, abort
 import datetime
 import os
+import sys
 
 import _strptime  # import should prevent thread import blocking issues
 # ask Google about:     AttributeError: _strptime
@@ -22,6 +23,7 @@ from logging.handlers import SMTPHandler, RotatingFileHandler
 
 L = logging.getLogger("oasisqe")
 
+# Log config is doubled up. this is the OASIS logger config:
 if OaConfig.email_admins:
     MH = SMTPHandler(OaConfig.smtp_server,
                      OaConfig.email,
@@ -30,7 +32,14 @@ if OaConfig.email_admins:
     MH.setLevel(logging.ERROR)
     L.addHandler(MH)
 
-FH = RotatingFileHandler(filename=OaConfig.logfile)
+# Try and find somewhere to send our log entries, even if primary location is broken.
+lf = OaConfig.logfile
+if not os.access(lf,os.W_OK):
+    lf = lf + os.environ['LOGNAME']
+if not os.access(lf, os.W_OK):
+    lf = "/tmp/oasisqe.log"
+
+FH = RotatingFileHandler(filename=lf)
 FH.setLevel(logging.DEBUG)
 FH.setFormatter(logging.Formatter(
     "%(asctime)s %(levelname)s: %(message)s | %(pathname)s:%(lineno)d"
@@ -63,6 +72,8 @@ app = Flask(__name__,
 app.secret_key = OaConfig.secretkey
 app.config['MAX_CONTENT_LENGTH'] = 8 * 1024 * 1024  # 8MB max file size upload
 
+
+# Log config is doubled up. this is the Flask logger config:
 if OaConfig.email_admins:
     MH = SMTPHandler(OaConfig.smtp_server,
                      OaConfig.email,
@@ -71,7 +82,14 @@ if OaConfig.email_admins:
     MH.setLevel(logging.ERROR)
     app.logger.addHandler(MH)
 
-FH = RotatingFileHandler(filename=OaConfig.logfile)
+# Try and find somewhere to send our log entries, even if primary location is broken.
+lf = OaConfig.logfile
+if not os.access(lf,os.W_OK):
+    lf = lf + os.environ['LOGNAME']
+if not os.access(lf, os.W_OK):
+    lf = "/tmp/oasisqe.log"
+
+FH = RotatingFileHandler(filename=lf)
 FH.setLevel(logging.DEBUG)
 FH.setFormatter(logging.Formatter(
     "%(asctime)s %(levelname)s: %(message)s | %(pathname)s:%(lineno)d"
