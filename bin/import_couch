@@ -13,7 +13,7 @@ APPDIR = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__)
 
 sys.path.append(APPDIR)
 
-from oasis.lib import OaConfig, Topics, External, Users, Courses
+from oasis.lib import OaConfig, Topics, External, Users, Courses, DB
 
 
 def getCourse(coursename):
@@ -34,7 +34,7 @@ def process_qtemplate(qt):
     """
     parent = qt['parent']
     title = qt['v3_title']
-    position = qt['v3_position']
+    position = qt['position']
 
     if parent.startswith("0"):
         parent = parent[2:]
@@ -43,16 +43,25 @@ def process_qtemplate(qt):
     if not topicname in topics:
         topics[topicname] = []
     else:
-        topics[topicname].append(title)
+        topics[topicname].append({'title': title,
+                                  'position': position})
 
 def createTopic(course, topicname):
     """ Create or return the topic.
     """
-
     topic = Topics.create(course['id'], topicname, 3, 1)
     Courses.incr_version()
     print "Topic %s (%s) created" % (topic, topicname)
+    return topic
 
+def createQuestion(topicid, title, position, owner=1):
+    """ Create a question entry and put it in the topic
+        Return the question id
+    """
+    newid = DB.create_qt(owner, title, "", 0, 0.0, 1)
+    DB.update_qt_pos(newid, topicid, position)
+    Topics.flush_num_qs(topicid)
+   
 
 if len(sys.argv) < 3:
     print "Usage: "
@@ -80,4 +89,4 @@ for e in data['docs']:
 for topicname in topics.keys():
     tid = createTopic(course, topicname)
     for qt in topics[topicname]:
-        print "* ", qt
+        createQuestion(tid, qt['title'], qt['position'], uid)
