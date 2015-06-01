@@ -17,7 +17,6 @@ sys.path.append(APPDIR)
 
 from oasis.lib import Users, OaConfig, Topics, External
 
-
 if len(sys.argv) < 3:
     print "Usage: "
     print "    export_topic <TOPIC_ID> <filename>"
@@ -37,19 +36,8 @@ fname = sys.argv[2]
 
 print "Topic %s found: %s" % (tid, topic['title'])
 
-qtids = Topics.get_qts(tid)
-
-if len(qtids) < 1:
-    print "Topic contains no questions."
-    sys.exit(1)
-
-print "Topic contains %s questions." % len(qtids)
-
-for qt in qtids:
-    print "Question: %s" % repr(qt)
-
 base,suffix = os.path.splitext(fname)
-data = External.qts_to_zip(qtids, base, suffix=suffix)
+data = External.topic_to_zip(tid, base, suffix=suffix)
 
 f = open("%s" % fname, mode='w')
 f.write(data)
