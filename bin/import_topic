@@ -25,8 +25,13 @@ if len(sys.argv) < 2:
     print "    import_topic <filename.zip> [TOPIC_ID]"
     sys.exit(1)
 
+filename = sys.args[1]
+topicid = int(sys.args[2])
 uid = Users.uid_by_uname('admin')
 
 # find topic
 # if not exist error
 # if not given, create
+
+data = open(filename).read()
+import_qts_from_zip(data)

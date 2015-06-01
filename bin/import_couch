@@ -24,7 +24,6 @@ def getCourse(coursename):
     except KeyError, err:
         print "Unable to find course %s" % coursename
         sys.exit(1)
-    print "Course %s found: %s" % (course, course['title'])
     return course
 
 
@@ -40,11 +39,19 @@ def process_qtemplate(qt):
         parent = parent[2:]
     topicname = ' '.join(parent.split("/"))
     topicname = topicname.strip()
+
+    atts = qt['_attachments']
+    for a in atts:
+        print repr(a)
+
+    sys.exit(0)
+
     if not topicname in topics:
         topics[topicname] = []
     else:
         topics[topicname].append({'title': title,
                                   'position': position})
+    print repr(qt)
 
 def createTopic(course, topicname):
     """ Create or return the topic.
@@ -78,9 +85,22 @@ fname = sys.argv[2]
 
 data = json.load(open(fname))
 
-print len(data)
+types = {}
+for e in data['docs']:
+    parts = e['_id'].split("/")
+#    if len(parts) > 1:
+#       types[parts[1]] = "1"
+    if u'doc_type' in e:
+       dt = e[u'doc_type']
+       if dt not in [u"Audit", u"QTemplate", u"QInstance", u"Topic"]:
+           print e
 
-print data.keys()
+
+sys.exit()
+
+
+
+
 
 for e in data['docs']:
     if e['_id'].startswith("oasishs/qtemplate/"):
