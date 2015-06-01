@@ -6,7 +6,7 @@
     (except to OASIS database or memcache servers) should come through here.
 """
 
-from oasis.lib import OaConfig, Groups, Feeds, DB, Users2, UFeeds, Users
+from oasis.lib import OaConfig, Groups, Feeds, DB, Users2, UFeeds, Users, Topics
 import os
 import subprocess
 import tempfile
@@ -227,8 +227,22 @@ def user_update_details_from_feed(uid, upid):
         Users.set_studentid(uid, studentid)
 
 
+def topic_to_zip(topic_id, fname='oa_export', suffix='oaq'):
+    """
+    :param topic_id: ID of the topic to export
+    :param fname: filename to create
+    :param suffix: suffix
+    :return: binary string containing ZIPped data
+    """
+
+    topic = Topics.get_topic(topic_id)
+    qts = Topics.get_qts(topic_id)
+
+    return qts_to_zip(qts, fname=fname, suffix=suffix, extra_info={'topic': topic})
+
+
 # need to make a version that export a whole topic, with position info
-def qts_to_zip(qt_ids, fname="oa_export", suffix="oaq"):
+def qts_to_zip(qt_ids, fname="oa_export", suffix="oaq", extra_info = None):
     """ Take a list of QTemplate IDs and return a binary string containing
         them as an .oaq file.
         (a zip file in special format)
@@ -244,7 +258,8 @@ def qts_to_zip(qt_ids, fname="oa_export", suffix="oaq"):
             'qt_version': '0.9',
             'url': OaConfig.parentURL
         },
-        'qtemplates': {}
+        'qtemplates': {},
+        'extra': extra_info
     }
 
     arc = zipfile.ZipFile(os.path.join(tmpd, "%s.%s" % (fname, suffix)),
@@ -319,7 +334,7 @@ def import_qts_from_zip(data):
     with zipfile.ZipFile(sdata, "r") as zfile:
         files = zfile.namelist()
         zfile.extractall(qdir)
-        for _ in files:
-            pass
+        for f in files:
+            print repr(f)
 
     return 0
