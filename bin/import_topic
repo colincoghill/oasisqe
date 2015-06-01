@@ -17,21 +17,29 @@ import os
 APPDIR = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), "src")
 sys.path.append(APPDIR)
 
-from oasis.lib import Users, OaConfig, Users2, External
+from oasis.lib import Users, OaConfig, Users2, External, DB, Topics
 
+
+def createQuestion(topicid, title, position, owner=1):
+    """ Create a question entry and put it in the topic
+        Return the question id
+    """
+    newid = DB.create_qt(owner, title, "", 0, 0.0, 1)
+    DB.update_qt_pos(newid, topicid, position)
+    Topics.flush_num_qs(topicid)
+   
 
 if len(sys.argv) < 2:
     print "Usage: "
     print "    import_topic <filename.zip> [TOPIC_ID]"
     sys.exit(1)
 
-filename = sys.args[1]
-topicid = int(sys.args[2])
+filename = sys.argv[1]
+topicid = int(sys.argv[2])
 uid = Users.uid_by_uname('admin')
 
-# find topic
-# if not exist error
-# if not given, create
+topic = Topics.get_topic(topicid)
 
 data = open(filename).read()
-import_qts_from_zip(data)
+External.import_qts_from_zip(data, topicid = topicid)
+

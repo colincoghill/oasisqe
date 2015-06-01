@@ -313,7 +313,7 @@ def qts_to_zip(qt_ids, fname="oa_export", suffix="oaq", extra_info = None):
     return data
 
 
-def import_qts_from_zip(data):
+def import_qts_from_zip(data, topicid):
     """ Open the given OAQ file and import any qtemplates found.
         Return False if it's not valid
         Return 0 if it's valid but has no qtemplates
@@ -321,7 +321,7 @@ def import_qts_from_zip(data):
     """
 
     # TODO: How do we protect against malicious uploads?
-    # At the moment they're allowed for reasonably trusted people only,
+    # At the moment they're allowed for trusted people only,
     # but they could be tricked into uploading a bad one
 
     # eg.    unzip to huge size
@@ -334,7 +334,11 @@ def import_qts_from_zip(data):
     with zipfile.ZipFile(sdata, "r") as zfile:
         files = zfile.namelist()
         zfile.extractall(qdir)
-        for f in files:
-            print repr(f)
+        data = open("%s/oa_export/info.json"%qdir, "r").read()
+        info = json.loads(data)
+        print "%s questions found" % (len(info['qtemplates']))
+        for qtid in info['qtemplates'].keys():
+            qtemplate = info['qtemplates'][qtid]['qtemplate']
+            print "%s" % qtemplate['title']
 
     return 0
