@@ -26,7 +26,7 @@ bugs still remain and it needs more testing.
  * Security Fixes
  * Remove all known "Internal Server Error" pages.
  * Better error checking or handling of permissions on log file & cache
- * Question import/export
+ * Basic Question import/export (for testing/dev purposes, not for end users yet)
  * Example Questions
  * Roll in functionality of "OASIS HS". Make sure we can replace that system.
  
