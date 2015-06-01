@@ -665,6 +665,24 @@ def get_qtemplate_topic_pos(qt_id, topic_id):
     return False
 
 
+def get_qtemplates_in_topic_position(topic_id, position):
+    """ Fetch a list of question template IDs in a given position in the topic. """
+    assert isinstance(topic_id, int)
+    assert isinstance(position, int)
+    key = "topic-%d-qtemplates-position-%d" % (topic_id, position)
+    obj = MC.get(key)
+    if obj is not None:
+        return obj
+    ret = run_sql("""SELECT qtemplate
+                     FROM questiontopics
+                     WHERE position=%s AND topic=%s;""", (position, topic_id))
+    if ret:
+        qtemplates = [row[0] for row in ret]
+        MC.set(key, qtemplates, 120)  # remember for 2 minutes
+        return qtemplates
+    return []
+
+
 def get_qt_max_pos_in_topic(topic_id):
     """ Fetch the maximum position of a question template in a topic."""
     assert isinstance(topic_id, int)
@@ -881,6 +899,8 @@ def update_qt_pos(qt_id, topic_id, position):
     assert isinstance(position, int)
     assert isinstance(topic_id, int)
     previous = get_qtemplate_topic_pos(qt_id, topic_id)
+    key = "topic-%d-qtemplates-position-%d" % (topic_id, qt_id)
+    MC.delete(key)
     key = "topic-%d-qtemplate-%d-position" % (topic_id, qt_id)
     MC.delete(key)
     key = "topic-%d-numquestions" % topic_id
@@ -904,9 +924,9 @@ def move_qt_to_topic(qt_id, topic_id):
     assert isinstance(topic_id, int)
     key = "topic-%d-numquestions" % topic_id
     MC.delete(key)
-    key = "topic-%d-qtemplates" % topic_id
+    key = "topic-%d-qtemplates-position-%d" % (topic_id, qt_id)
     MC.delete(key)
-    key = "topic-%d-qtemplate-%d-position" % (topic_id, qt_id)
+    key = "topic-%d-qtemplates" % topic_id
     MC.delete(key)
 
     sql = "SELECT topic FROM questiontopics WHERE qtemplate=%s"
@@ -933,6 +953,8 @@ def add_qt_to_topic(qt_id, topic_id, position=0):
     run_sql("INSERT INTO questiontopics (qtemplate, topic, position) "
             "VALUES (%s, %s, %s)", (qt_id, topic_id, position))
     key = "topic-%d-numquestions" % topic_id
+    MC.delete(key)
+    key = "topic-%d-qtemplates-position-%d" % (topic_id, position)
     MC.delete(key)
     key = "topic-%d-qtemplates" % topic_id
     MC.delete(key)

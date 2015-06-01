@@ -9,14 +9,16 @@
           <a name='topic_{{ topic_id }}'
              href='{{ cf.url }}practice/subcategory/{{ topic_id }}'>{{ topictitle }} </a>
         </li>
+        {% set prev = -1 %}
         {% for question in questions %}
 
-          {% if question.position >= 1 %}
+          {% if question.position >= 1 and not question.position == prev %}
 
             <li>
               <a name='question_{{ question.name }}'
-                 href='{{ cf.url }}practice/question/{{ topic_id }}/{{ question.qtid }}'>{{ question.name }}</a>
+                 href='{{ cf.url }}practice/question/{{ topic_id }}/{{ question.position }}'>{{ question.name }}</a>
             </li>
+          {% set prev = question.position %}
           {% endif %}
 
         {% endfor %}

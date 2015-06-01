@@ -14,6 +14,7 @@ from oasis.lib import DB, Practice, Topics, General, Courses2, Setup, Courses
 MYPATH = os.path.dirname(__file__)
 from oasis.lib.Permissions import check_perm
 from logging import getLogger
+import random
 from oasis import app, authenticated
 
 L = getLogger("oasisqe")
@@ -137,10 +138,10 @@ def practice_choose_question_stats(topic_id):
     )
 
 
-@app.route("/practice/question/<int:topic_id>/<int:qt_id>",
+@app.route("/practice/question/<int:topic_id>/<int:position>",
            methods=['POST', 'GET'])
 @authenticated
-def practice_do_question(topic_id, qt_id):
+def practice_do_question(topic_id, position):
     """ Show them a question and allow them to fill in some answers """
     user_id = session['user_id']
     try:
@@ -159,10 +160,14 @@ def practice_do_question(topic_id, qt_id):
     except KeyError:
         abort(404)
     try:
-        qtemplate = DB.get_qtemplate(qt_id)
+        choices = DB.get_qtemplates_in_topic_position(topic_id, position)
     except KeyError:
-        qtemplate = None
+        choices = None
         abort(404)
+
+    qt_id = random.choice(choices)
+    qtemplate = DB.get_qtemplate(qt_id)
+
     questions = Practice.get_sorted_questions(course_id, topic_id, user_id)
     q_title = qtemplate['title']
     q_pos = DB.get_qtemplate_topic_pos(qt_id, topic_id)
@@ -194,7 +199,7 @@ def practice_do_question(topic_id, qt_id):
             course=course,
             q_title=q_title,
             questions=questions,
-            q_pos="?",
+            q_pos=q_pos,
         )
 
     if not q_id > 0:
@@ -208,7 +213,7 @@ def practice_do_question(topic_id, qt_id):
             course=course,
             q_title=q_title,
             questions=questions,
-            q_pos="?",
+            q_pos=q_pos,
         )
 
     q_body = General.render_q_html(q_id)

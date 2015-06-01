@@ -119,18 +119,22 @@ def get_num_qs(topic_id):
     obj = MC.get(key)
     if obj:
         return int(obj)
-    sql = """SELECT count(topic)
+    sql = """SELECT position
             FROM questiontopics
             WHERE topic=%s
-             AND position > 0;
+             AND position > 0
+            ORDER BY position;
             """
     params = (topic_id,)
     try:
         res = run_sql(sql, params)
-        if not res:
-            num = 0
-        else:
-            num = int(res[0][0])
+        num = 0
+        if res:
+            prev = -1
+            for row in res:
+               if int(row[0]) != prev:
+                   num += 1
+                   prev = int(row[0])
         MC.set(key, num, 180)  # 3 minute cache
         return num
     except LookupError:

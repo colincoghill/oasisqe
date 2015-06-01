@@ -5,7 +5,7 @@
   <h3>{{ q_pos }} : {{ q_title }}</h3>
 
   <form method="post"
-        action="{{ cf.url }}practice/question/{{ topic_id }}/{{ qt_id }}">
+        action="{{ cf.url }}practice/question/{{ topic_id }}/{{ q_pos }}">
     {{ mesg }}
     <input name="marknow" value="Try Refresh" type="submit">
   </form>
@@ -24,19 +24,21 @@
            href='{{ cf.url }}practice/subcategory/{{ topic_id }}'>{{ topictitle }} </a>
       </Th>
     </TR>
+    {% set prev = -1 %}
     {% for question in questions %}
       <tr>
         {% if question.position < 1 %}
           <td>
             <a name='question_{{ question.name }}'
-               href='{{ cf.url }}practice/question/{{ topic_id }}/{{ question.qtid }}'>{{ question.name }}</a>
+               href='{{ cf.url }}practice/question/{{ topic_id }}/{{ question.position }}'>{{ question.name }}</a>
             <span style='color: red;'><sub>(hidden)</sub></span>
           </td>
-        {% else %}
+        {% elif question.position != prev %}
           <td>
             <a name='question_{{ question.name }}'
-               href='{{ cf.url }}practice/question/{{ topic_id }}/{{ question.qtid }}'>{{ question.name }}</a>
+               href='{{ cf.url }}practice/question/{{ topic_id }}/{{ question.position }}'>{{ question.name }}</a>
           </td>
+          {% set prev = question.position %}
         {% endif %}
       </tr>
     {% endfor %}

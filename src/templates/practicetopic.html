@@ -34,12 +34,13 @@
 
         {% if questions %}
           <ul class='nav nav-list'>
+          {% set prev = -1 %}
           {% for question in questions %}
             <li>
-              {% if question.position >= 1 %}
+              {% if question.position >= 1 and question.position != prev %}
                 <a name='question_{{ question.name }}'
-                   href='{{ cf.url }}practice/question/{{ topic_id }}/{{ question.qtid }}'>{{ question.name }}</a>
-
+                   href='{{ cf.url }}practice/question/{{ topic_id }}/{{ question.position }}'>{{ question.name }}</a>
+              {% set prev = question.position %}
               {% endif %}
             </li>
           {% endfor %}
