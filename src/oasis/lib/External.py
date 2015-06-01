@@ -6,7 +6,7 @@
     (except to OASIS database or memcache servers) should come through here.
 """
 
-from oasis.lib import OaConfig, Groups, Feeds, DB, Users2, UFeeds, Users, Topics
+from oasis.lib import OaConfig, Groups, Feeds, DB, Users2, UFeeds, Users, Topics, QEditor
 import os
 import subprocess
 import tempfile
@@ -322,7 +322,7 @@ def import_qts_from_zip(data, topicid):
 
     # TODO: How do we protect against malicious uploads?
     # At the moment they're allowed for trusted people only,
-    # but they could be tricked into uploading a bad one
+    # but we'll eventually want this in the UI for end users.
 
     # eg.    unzip to huge size
     # add digital signatures?
@@ -337,8 +337,25 @@ def import_qts_from_zip(data, topicid):
         data = open("%s/oa_export/info.json"%qdir, "r").read()
         info = json.loads(data)
         print "%s questions found" % (len(info['qtemplates']))
+        position = 1
         for qtid in info['qtemplates'].keys():
             qtemplate = info['qtemplates'][qtid]['qtemplate']
             print "%s" % qtemplate['title']
+            newid = DB.create_qt(1, qtemplate['title'], qtemplate['description'],qtemplate['marker'], qtemplate['scoremax'], qtemplate['status'])
+            DB.update_qt_pos(newid, topicid, position)
+            position += 1
+            attachments = info['qtemplates'][qtid]['attachments']
 
+            print "%s attachments" % len(attachments)
+            for att in attachments:
+                (att_name, att_type, att_size) = att
+                data = open("%s/oa_export/%s/attach/%s" % (qdir, qtemplate['id'], att_name)).read()
+                DB.create_qt_att(newid, att_name, att_type, data, 1)
+                if att_name == "datfile.txt" or att_name == "datfile.dat" or att_name == "datfile" or att_name == "_datfile" or att_name == "__datfile":
+                    qvars = QEditor.parse_datfile(data)
+                    print "generating variations..."
+                    for row in range(0, len(qvars)):
+                        DB.add_qt_variation(newid, row + 1, qvars[row], 1)
+
+    Topics.flush_num_qs(topicid)
     return 0
