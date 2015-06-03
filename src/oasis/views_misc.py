@@ -314,9 +314,7 @@ def qedit_raw_save(topic_id, qt_id):
         data = fptr.read()
         mtype = fptr.content_type
 
-        if len(data) < 1 and newname == 'NONAME':
-            flash("Ignoring empty file upload with no name")
-        else:
+        if len(data) >= 1 and newname == 'NONAME':
             DB.create_qt_att(qt_id, newname, mtype, data, version)
             L.info("File '%s' uploaded by %s" % (newname, session['username']))
 
