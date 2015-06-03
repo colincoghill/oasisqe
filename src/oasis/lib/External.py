@@ -249,9 +249,7 @@ def qts_to_zip(qt_ids, fname="oa_export", suffix="oaq", extra_info = None):
     """
 
     fname = os.path.basename(fname)
-    tmpd = tempfile.mkdtemp(prefix="oa")
-    qdir = os.path.join(tmpd, fname)
-    os.mkdir(qdir)
+    qdir = tempfile.mkdtemp(prefix="oa")
     info = {
         'oasis': {
             'oa_version': "3.9.4",
@@ -262,7 +260,7 @@ def qts_to_zip(qt_ids, fname="oa_export", suffix="oaq", extra_info = None):
         'extra': extra_info
     }
 
-    arc = zipfile.ZipFile(os.path.join(tmpd, "%s.%s" % (fname, suffix)),
+    arc = zipfile.ZipFile(os.path.join(qdir, "oasisqe.zip"),
                           'w',
                           zipfile.ZIP_DEFLATED)
     for qt_id in qt_ids:
@@ -295,21 +293,21 @@ def qts_to_zip(qt_ids, fname="oa_export", suffix="oaq", extra_info = None):
             outf.write(data)
             outf.close()
             arc.write(subdir,
-                      os.path.join(fname, "%s" % qt_id, "attach", name),
+                      os.path.join("%s" % qt_id, "attach", name),
                       zipfile.ZIP_DEFLATED)
 
     infof = open(os.path.join(qdir, "info.json"), "wb")
     infof.write(json.dumps(info))
     infof.close()
     arc.write(os.path.join(qdir, "info.json"),
-              os.path.join(fname, "info.json"),
+              os.path.join("info.json"),
               zipfile.ZIP_DEFLATED)
     arc.close()
 
-    readback = open(os.path.join(tmpd, "%s.%s" % (fname, suffix)), "rb")
+    readback = open(os.path.join(qdir, "oasisqe.zip"), "rb")
     data = readback.read()
     readback.close()
-    shutil.rmtree(tmpd)
+    shutil.rmtree(qdir)
     return data
 
 
@@ -329,12 +327,12 @@ def import_qts_from_zip(data, topicid):
 
     sdata = StringIO(data)
     tmpd = tempfile.mkdtemp(prefix="oa")
-    qdir = os.path.join(tmpd, "import")
+    qdir = os.path.join(tmpd, "oasisqe")
     os.mkdir(qdir)
     with zipfile.ZipFile(sdata, "r") as zfile:
         files = zfile.namelist()
         zfile.extractall(qdir)
-        data = open("%s/oa_export/info.json"%qdir, "r").read()
+        data = open("%s/info.json"%qdir, "r").read()
         info = json.loads(data)
         print "%s questions found" % (len(info['qtemplates']))
         position = 1
@@ -349,7 +347,7 @@ def import_qts_from_zip(data, topicid):
             print "%s attachments" % len(attachments)
             for att in attachments:
                 (att_name, att_type, att_size) = att
-                data = open("%s/oa_export/%s/attach/%s" % (qdir, qtemplate['id'], att_name)).read()
+                data = open("%s/%s/attach/%s" % (qdir, qtemplate['id'], att_name)).read()
                 DB.create_qt_att(newid, att_name, att_type, data, 1)
                 if att_name == "datfile.txt" or att_name == "datfile.dat" or att_name == "datfile" or att_name == "_datfile" or att_name == "__datfile":
                     qvars = QEditor.parse_datfile(data)
