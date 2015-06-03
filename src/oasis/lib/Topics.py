@@ -78,6 +78,11 @@ def set_pos(topic_id, pos):
     """Update the position of a topic."""
     if pos is None or pos is "None":
         pos = 0
+    try:
+        pos = int(pos)
+    except ValueError:
+        L.warn("Topic->set_pos(%s, %s): Not a valid position, ignoring." % (topic_id, pos))
+        return
     run_sql("""UPDATE topics
                SET position=%s
                WHERE topic=%s;""", (pos, topic_id))
