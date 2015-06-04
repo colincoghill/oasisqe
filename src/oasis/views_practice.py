@@ -165,7 +165,21 @@ def practice_do_question(topic_id, position):
         choices = None
         abort(404)
 
-    qt_id = random.choice(choices)
+    if len(choices) == 1:
+        qt_id = choices[1]
+    elif len(choices) > 1:
+        L.debug("Practice choosing random from: %s" % repr(choices))
+        qt_id = random.choice(choices)
+    else:
+        L.warn("Access to non existent practice topic %s question %s" % (topic_id, position))
+        return render_template(
+            "practicequestionerror.html",
+            mesg="Error accessing question.",
+            topic_id=topic_id,
+            course=course,
+            q_pos=position
+        )
+
     qtemplate = DB.get_qtemplate(qt_id)
 
     questions = Practice.get_sorted_questions(course_id, topic_id, user_id)
