@@ -166,7 +166,7 @@ def practice_do_question(topic_id, position):
         abort(404)
 
     if len(choices) == 1:
-        qt_id = choices[1]
+        qt_id = choices[0]
     elif len(choices) > 1:
         L.debug("Practice choosing random from: %s" % repr(choices))
         qt_id = random.choice(choices)
