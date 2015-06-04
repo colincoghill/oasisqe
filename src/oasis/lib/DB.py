@@ -27,7 +27,7 @@ L = getLogger("oasisqe")
 
 # 3 connections. Lets us keep going if one is slow but
 # doesn't overload the server if there're a lot of us
-dbpool = Pool.DbPool(OaConfig.oasisdbconnectstring, 3)
+dbpool = Pool.DbPool(OaConfig.oasisdbconnectstring, 9)
 
 # Cache stuff on local drives to save our poor database
 fileCache = Pool.FileCache(OaConfig.cachedir)
@@ -35,7 +35,7 @@ fileCache = Pool.FileCache(OaConfig.cachedir)
 from Pool import MCPool
 
 # Get a pool of memcache connections to use
-MC = MCPool('127.0.0.1:11211', 3)
+MC = MCPool('127.0.0.1:11211', 9)
 
 
 def run_sql(sql, params=None, quiet=False):
