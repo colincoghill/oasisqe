@@ -3,19 +3,17 @@
 
 
 # Script to look at the OASIS database and make any fixes or
-# upgrades if needed. Will prompt before doing anything dangerous.
+# upgrades if needed. Will prompt before doing anything too dangerous.
 
 import os
 import sys
 from optparse import OptionParser
 
-# we should be SOMETHING/bin/reset_admin_password, find APPDIR
+# we should be SOMETHING/bin/oasisdb, find APPDIR
 # and add "SOMETHING/src" to our path
 APPDIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 sys.path.append(os.path.join(APPDIR, "src"))
 
-
-# WARNING: We do imports later, after we've checked some things.
 
 
 def public_tables(db):

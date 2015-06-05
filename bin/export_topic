@@ -15,7 +15,7 @@ import os
 APPDIR = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), "src")
 sys.path.append(APPDIR)
 
-from oasis.lib import Users, OaConfig, Topics, External
+from oasis.lib import Users, Topics, External
 
 if len(sys.argv) < 3:
     print "Usage: "

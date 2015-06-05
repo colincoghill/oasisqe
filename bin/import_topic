@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 
 """ Given an oa_export.zip file, import the contained questions into a topic.
-    If topic not given, create/find a course "Testing", topic "Testing" and
-    import to that.
 
     import_topic test_questions.zip TOPIC_ID
 """
@@ -17,7 +15,7 @@ import os
 APPDIR = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), "src")
 sys.path.append(APPDIR)
 
-from oasis.lib import Users, OaConfig, Users2, External, DB, Topics
+from oasis.lib import Users, External, DB, Topics
 
 
 def createQuestion(topicid, title, position, owner=1):

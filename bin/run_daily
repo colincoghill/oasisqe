@@ -4,7 +4,7 @@
 import sys
 import os
 
-# we should be SOMETHING/bin/reset_admin_password, find APPDIR
+# we should be SOMETHING/bin/run_daily, find APPDIR
 # and add "SOMETHING/src" to our path
 
 APPDIR = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), "src")

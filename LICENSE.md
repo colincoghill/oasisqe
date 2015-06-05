@@ -20,7 +20,7 @@ contact us if you disagree.
    Licensed under the Apache License v2.0
    http://www.apache.org/licenses/LICENSE-2.0
 
- jQuery JavaScript Library v1.8.3
+ jQuery JavaScript Library v1.10.1
 
    http://jquery.com/
 
