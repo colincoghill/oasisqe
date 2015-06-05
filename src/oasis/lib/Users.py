@@ -104,7 +104,7 @@ def get_user_record(user_id):
 
 def set_password(user_id, clearpass):
     """ Updates a users password. """
-    hashed = bcrypt.hashpw(clearpass, bcrypt.gensalt())
+    hashed = bcrypt.hashpw(clearpass, bcrypt.gensalt(log_rounds=10))
     sql = """UPDATE "users" SET "passwd"=%s WHERE "id"=%s;"""
     params = (hashed, user_id)
     try:
