@@ -27,10 +27,10 @@ def practice_topic(l):
     l.client.get("/oasis/practice/subcategory/1")
 
 def practice_question(l):
-    l.client.get("/oasis/practice/question/1/1")
+    l.client.get("/oasis/practice/question/14/1")
 
 def practice_answer(l):
-    l.client.post("/oasis/practice/markquestion/1/12", {"Q_12_ANS_1":'6'})
+    l.client.post("/oasis/practice/markquestion/14/11", {"Q_11_ANS_1":'6'})
 
 def setup_top(l):
     l.client.get("/oasis/setup/top")
