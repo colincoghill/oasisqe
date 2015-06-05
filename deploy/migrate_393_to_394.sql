@@ -15,6 +15,6 @@ SET standard_conforming_strings = on;
 
 BEGIN;
 
-update config SET "value" = '3.9.3' WHERE "name" = 'dbversion';
+update config SET "value" = '3.9.4' WHERE "name" = 'dbversion';
 
 COMMIT;

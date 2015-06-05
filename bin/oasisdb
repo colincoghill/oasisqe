@@ -161,7 +161,7 @@ def calc_stats():
     Stats.do_initial_stats_update()
 
 
-def upgrade_3_6_to_3_9_3(db):
+def upgrade_3_6_to_3_9_4(db):
     """ Given a 3.6 database, upgrade it to 3.9.3
     """
     with open(os.path.join(APPDIR, "deploy", "migrate_36x_to_392.sql")) as f:
@@ -169,21 +169,28 @@ def upgrade_3_6_to_3_9_3(db):
 
     db.run_sql(sql)
     print "Migrated table structure from 3.6 to 3.9.2"
+
     calc_stats()
+
     with open(os.path.join(APPDIR, "deploy", "migrate_392_to_393.sql")) as f:
         sql = f.read()
     db.run_sql(sql)
     print "Migrated table structure from 3.9.2 to 3.9.3"
+
+    with open(os.path.join(APPDIR, "deploy", "migrate_393_to_394.sql")) as f:
+        sql = f.read()
+    db.run_sql(sql)
+    print "Migrated table structure from 3.9.3 to 3.9.4"
+
     if not options.noresetadmin:
         generate_admin_passwd(db)  # 3.6 passwords were in a slightly less secure format
 
 
-def upgrade_3_9_1_to_3_9_3(db):
-    """ Given a 3.9.1 database, upgrade it to 3.9.2.
+def upgrade_3_9_1_to_3_9_4(db):
+    """ Given a 3.9.1 database, upgrade it to 3.9.4.
     """
     with open(os.path.join(APPDIR, "deploy", "migrate_391_to_392.sql")) as f:
         sql = f.read()
-
     db.run_sql(sql)
     print "Migrated table structure from 3.9.1 to 3.9.2"
 
@@ -192,15 +199,33 @@ def upgrade_3_9_1_to_3_9_3(db):
     db.run_sql(sql)
     print "Migrated table structure from 3.9.2 to 3.9.3"
 
+    with open(os.path.join(APPDIR, "deploy", "migrate_393_to_394.sql")) as f:
+        sql = f.read()
+    db.run_sql(sql)
+    print "Migrated table structure from 3.9.3 to 3.9.4"
 
-def upgrade_3_9_2_to_3_9_3(db):
-    """ Given a 3.9.2 database, upgrade it to 3.9.3.
+
+def upgrade_3_9_2_to_3_9_4(db):
+    """ Given a 3.9.2 database, upgrade it to 3.9.4.
     """
     with open(os.path.join(APPDIR, "deploy", "migrate_392_to_393.sql")) as f:
         sql = f.read()
-
     db.run_sql(sql)
     print "Migrated table structure from 3.9.2 to 3.9.3"
+
+    with open(os.path.join(APPDIR, "deploy", "migrate_393_to_394.sql")) as f:
+        sql = f.read()
+    db.run_sql(sql)
+    print "Migrated table structure from 3.9.3 to 3.9.4"
+
+
+def upgrade_3_9_3_to_3_9_4(db):
+    """ Given a 3.9.3 database, upgrade it to 3.9.4.
+    """
+    with open(os.path.join(APPDIR, "deploy", "migrate_393_to_394.sql")) as f:
+        sql = f.read()
+    db.run_sql(sql)
+    print "Migrated table structure from 3.9.3 to 3.9.4"
 
 
 def clean_install_3_6(db):
@@ -245,6 +270,17 @@ def clean_install_3_9_3(db):
 
     db.run_sql(sql)
     print "Installed v3.9.3 table structure."
+
+
+def clean_install_3_9_4(db):
+    """ Install a fresh blank v3.9.4 schema.
+    """
+
+    with open(os.path.join(APPDIR, "deploy", "emptyschema_394.sql")) as f:
+        sql = f.read()
+
+    db.run_sql(sql)
+    print "Installed v3.9.4 table structure."
 
 
 def generate_admin_passwd(db):
@@ -294,7 +330,7 @@ def cmd_options():
 
     descr = """OASIS Database Tool. Requires a configured OASIS setup, and can be used to initialize/upgrade the OASIS database."""
     usage = "%prog [--help] [--version] [command ...]"
-    version = "%prog 3.9.3"
+    version = "%prog 3.9.4"
     oparser = OptionParser(usage=usage,
                            version=version,
                            description=descr)
@@ -312,7 +348,7 @@ def cmd_options():
     oparser.add_option("--oasis-ver",
                        dest='oaver',
                        metavar="X.Y.Z",
-                       default='3.9.3',
+                       default='3.9.4',
                        help='work with a specific OASIS version. (default 3.9.3)')
     oparser.add_option("-v", "--verbose",
                        dest='verbose',
@@ -413,9 +449,12 @@ def do_init(db, c_opts):
         elif c_opts.oaver == '3.9.3':
             erase_existing(db)  # might be some dregs, like sequences or views
             clean_install_3_9_3(db)
+        elif c_opts.oaver == '3.9.4':
+            erase_existing(db)  # might be some dregs, like sequences or views
+            clean_install_3_9_4(db)
         else:
             print "Unknown database version (%s)" % (c_opts.oaver,)
-            print "Available options:    3.6   3.9.1   3.9.2   3.9.3"
+            print "Available options:    3.6   3.9.1   3.9.2   3.9.3    3.9.4"
             sys.exit()
         if not c_opts.noresetadmin:
             generate_admin_passwd(db)
@@ -446,9 +485,12 @@ def do_init(db, c_opts):
         elif c_opts.oaver == '3.9.3':
             erase_existing(db)  # might be some dregs, like sequences or views
             clean_install_3_9_3(db)
+        elif c_opts.oaver == '3.9.4':
+            erase_existing(db)  # might be some dregs, like sequences or views
+            clean_install_3_9_3(db)
         else:
             print "Unknown database version (%s)" % (c_opts.oaver,)
-            print "Available options:   3.6   3.9.1     3.9.2    3.9.3"
+            print "Available options:   3.6   3.9.1     3.9.2    3.9.3      3.9.4"
             sys.exit()
         if not c_opts.noresetadmin:
             generate_admin_passwd(db)
@@ -474,16 +516,19 @@ def do_upgrade(db):
 
     dbver = db.get_db_version()
     if dbver == "3.6":
-        upgrade_3_6_to_3_9_3(db)
+        upgrade_3_6_to_3_9_4(db)
         sys.exit()
     if dbver == "3.9.1":
-        upgrade_3_9_1_to_3_9_3(db)
+        upgrade_3_9_1_to_3_9_4(db)
         sys.exit()
     if dbver == "3.9.2":
-        upgrade_3_9_2_to_3_9_3(db)
+        upgrade_3_9_2_to_3_9_4(db)
         sys.exit()
     if dbver == "3.9.3":
-        print "Your database is already the latest version (3.9.3)"
+        upgrade_3_9_3_to_3_9_4(db)
+        sys.exit()
+    if dbver == "3.9.4":
+        print "Your database is already the latest version (3.9.4)"
         sys.exit()
     return
 
