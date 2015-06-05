@@ -11,9 +11,10 @@ OASIS has been developed to run on Ubuntu Linux. It should work on similar UNIX 
 
 It uses the PostgreSQL database. This is a free, high quality, database server. From http://www.postgresql.org/
 
-* Ubuntu Linux 12.04
+
+* Ubuntu Linux 12.04 (or newer)
 * PostgreSQL 9.0 (or newer)
-* Python 2.6 or 2.7
+* Python 2.6 or 2.7 (not 3.x yet)
 
 
 

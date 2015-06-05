@@ -28,7 +28,7 @@ bugs still remain and it needs more testing.
  * Better error checking or handling of permissions on log file & cache
  * Basic Question import/export (for testing/dev purposes, not for end users yet)
  * Example Questions
- * Roll in functionality of "OASIS HS". Make sure we can replace that system.
+
  
  * Developer setup. 
  * Load testing setup.
@@ -37,10 +37,12 @@ bugs still remain and it needs more testing.
 3.9.5 OSS Release
 =================
 
+ * Roll in functionality of "OASIS HS". Make sure we can replace that system.
  * Simple Question Editor (Multichoice + basic features, easy to use)
- * Basic Question Creation Documentation
+ * Basic Question Creation Documentation (2004 manual is good, but get it on web and update)
  * Way to delete/deactivate an account
  * Enrol in (open) course
+ * Facebook Authentication (and Google, Twitter, etc?)
  * Support Web site
  * Tidy up caching/performance, make sure we're load balancer/cache ready
  
@@ -48,7 +50,6 @@ Assess:
  * autosave isn't
  * Make sure assessment timer is good
  * Assessment question weighting
-
 
 
 3.9.6 OSS Release

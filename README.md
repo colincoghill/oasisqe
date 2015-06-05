@@ -51,7 +51,7 @@ The plan is to release this code as a series of OSS releases, as I get enough fe
 system active to be useful to other people.
 
 This code has been developed mostly under the auspices of The University of Auckland, and is used
-successfully by us. The University does not, however, otherwise endorse it or commit to any support
+successfully by them. The University does not, however, otherwise endorse it or commit to any support
 of other users.
 
 Feel free to download the software, as it is, and try it out. If you find it useful, use it!

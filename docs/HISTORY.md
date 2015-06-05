@@ -2,7 +2,7 @@
 OASIS
 -----
 
-Notes from the main programmer. 26 May 2013.
+Notes from the main programmer. 26 May 2015.
 
 
 Back in 1997, at the University of Auckland, my then boss, Professor John Boys, came to me with an idea for a web based
@@ -53,5 +53,6 @@ features - assessment, external authentication, etc - until it is functionally e
 that has worked so well for our Faculty. This will be OASIS v4.
 
 Then I can start doing the more exciting stuff again and add new features for v4.1 and into the future!
+
 
 - Colin
