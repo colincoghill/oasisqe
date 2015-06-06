@@ -426,7 +426,7 @@ def cadmin_exam_unsubmit(course_id, exam_id, student_uid):
     """
     course = Courses2.get_course(course_id)
     try:
-        exam = Exams.get_exam_struct(exam_id, course.id)
+        exam = Exams.get_exam_struct(exam_id, course_id)
     except KeyError:
         exam = {}
         abort(404)
@@ -434,7 +434,7 @@ def cadmin_exam_unsubmit(course_id, exam_id, student_uid):
     user = Users2.get_user(student_uid)
     flash("""Assessment for %s unsubmitted and timer reset.""" % user['uname'])
     return redirect(url_for("cadmin_exam_viewmarked",
-                            course_id=course.id,
+                            course_id=course_id,
                             exam_id=exam['id'],
                             student_uid=student_uid))
 
