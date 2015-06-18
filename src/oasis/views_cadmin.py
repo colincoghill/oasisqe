@@ -424,7 +424,7 @@ def cadmin_exam_unsubmit(course_id, exam_id, student_uid):
     """ "unsubmit" the student's assessment and reset their timer so they can
         log back on and have another attempt.
     """
-    course = Courses2.get_course(course_id)
+
     try:
         exam = Exams.get_exam_struct(exam_id, course_id)
     except KeyError:

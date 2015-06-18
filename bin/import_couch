@@ -13,7 +13,7 @@ APPDIR = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__)
 
 sys.path.append(APPDIR)
 
-from oasis.lib import OaConfig, Topics, External, Users, Courses, DB
+from oasis.lib import Topics, Users, Courses, DB
 
 
 def getCourse(coursename):
@@ -46,12 +46,13 @@ def process_qtemplate(qt):
 
     sys.exit(0)
 
-    if not topicname in topics:
+    if topicname not in topics:
         topics[topicname] = []
     else:
         topics[topicname].append({'title': title,
                                   'position': position})
     print repr(qt)
+
 
 def createTopic(course, topicname):
     """ Create or return the topic.
@@ -60,6 +61,7 @@ def createTopic(course, topicname):
     Courses.incr_version()
     print "Topic %s (%s) created" % (topic, topicname)
     return topic
+
 
 def createQuestion(topicid, title, position, owner=1):
     """ Create a question entry and put it in the topic
@@ -91,15 +93,12 @@ for e in data['docs']:
 #    if len(parts) > 1:
 #       types[parts[1]] = "1"
     if u'doc_type' in e:
-       dt = e[u'doc_type']
-       if dt not in [u"Audit", u"QTemplate", u"QInstance", u"Topic"]:
-           print e
+        dt = e[u'doc_type']
+        if dt not in [u"Audit", u"QTemplate", u"QInstance", u"Topic"]:
+            print e
 
 
 sys.exit()
-
-
-
 
 
 for e in data['docs']:

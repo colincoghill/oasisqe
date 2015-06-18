@@ -17,19 +17,19 @@ APPDIR = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__)
 
 sys.path.append(APPDIR)
 
-from oasis.lib import OaConfig, Topics, Users, Courses
+from oasis.lib import Topics, Users, Courses
 
 
-def createTopic(course, topicname):
+def create_topic(course, topicname):
     """ Create or return the topic.
     """
 
     topic = Topics.create(course['id'], topicname, 3, 1)
     Courses.incr_version()
-    print "Topic %s created" % topic
+    return topic
 
 
-def createCourse(coursename):
+def create_course(coursename):
     """ Find or create the course. Returns course dict.
     """
     course = Courses.get_course_by_name(coursename)
@@ -56,5 +56,6 @@ if len(sys.argv) < 3:
 coursename = sys.argv[1]
 topicname = sys.argv[2]
 
-course = createCourse(coursename)
-topic = createTopic(course, topicname)
+course = create_course(coursename)
+topic = create_topic(course, topicname)
+print "Topic %s created" % topic

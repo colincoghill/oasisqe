@@ -15,7 +15,6 @@ APPDIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 sys.path.append(os.path.join(APPDIR, "src"))
 
 
-
 def public_tables(db):
     """ Return a list of names of all tables in schema ("public" is default)
     """
@@ -326,7 +325,8 @@ def cmd_options():
     """ Parse any command line options
     """
 
-    descr = """OASIS Database Tool. Requires a configured OASIS setup, and can be used to initialize/upgrade the OASIS database."""
+    descr = """OASIS Database Tool. Requires a configured OASIS setup,
+    and can be used to initialize/upgrade the OASIS database."""
     usage = "%prog [--help] [--version] [command ...]"
     version = "%prog 3.9.4"
     oparser = OptionParser(usage=usage,

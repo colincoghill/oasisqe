@@ -28,6 +28,7 @@ except AttributeError:
 
 L = getLogger("oasisqe")
 
+
 class DbConn(object):
     """Manage a single database connection."""
 
@@ -239,7 +240,7 @@ class MCConn(object):
 
         except IOError as err:
             # it's possible that something went wrong
-            self.L.error("Memcache Error. (%s)" % err)
+            L.error("Memcache Error. (%s)" % err)
             return False
 
         return res

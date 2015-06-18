@@ -53,6 +53,7 @@ def set_logger(logger):
     global L
     L = logger
 
+
 def set_q_viewtime(question):
     """ Record that the question has been viewed.
         Not a good idea to call multiple times since it's

@@ -238,11 +238,11 @@ def topic_to_zip(topic_id, fname='oa_export', suffix='oaq'):
     topic = Topics.get_topic(topic_id)
     qts = Topics.get_qts(topic_id)
 
-    return qts_to_zip(qts, fname=fname, suffix=suffix, extra_info={'topic': topic})
+    return qts_to_zip(qts, fname=fname, extra_info={'topic': topic})
 
 
 # need to make a version that export a whole topic, with position info
-def qts_to_zip(qt_ids, fname="oa_export", suffix="oaq", extra_info = None):
+def qts_to_zip(qt_ids, fname="oa_export", extra_info = None):
     """ Take a list of QTemplate IDs and return a binary string containing
         them as an .oaq file.
         (a zip file in special format)
@@ -330,7 +330,7 @@ def import_qts_from_zip(data, topicid):
     qdir = os.path.join(tmpd, "oasisqe")
     os.mkdir(qdir)
     with zipfile.ZipFile(sdata, "r") as zfile:
-        files = zfile.namelist()
+
         zfile.extractall(qdir)
         data = open("%s/info.json"%qdir, "r").read()
         info = json.loads(data)

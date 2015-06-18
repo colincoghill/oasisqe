@@ -10,7 +10,7 @@ import DB
 from Audit import audit
 
 
-# We dont want the scripts playing with their questionID (qid) so we have to
+# We don't want the scripts playing with their questionID (qid) so we have to
 # wrap all the functions that need it as an argument.
 
 
