@@ -23,13 +23,15 @@ from logging.handlers import SMTPHandler, RotatingFileHandler
 
 L = logging.getLogger("oasisqe")
 
+# Todo: log config is a mess. Tidy this all up.
+
 # Log config is doubled up. this is the OASIS logger config:
 if OaConfig.email_admins:
     MH = SMTPHandler(OaConfig.smtp_server,
                      OaConfig.email,
                      OaConfig.email_admins,
                      'OASIS Internal Server Error')
-    MH.setLevel(logging.ERROR)
+    MH.setLevel(logging.CRITICAL)
     L.addHandler(MH)
 
 # Try and find somewhere to send our log entries, even if primary location is broken.
@@ -40,13 +42,13 @@ if not os.access(lf, os.W_OK):
     lf = "/tmp/oasisqe.log"
 
 FH = RotatingFileHandler(filename=lf)
-FH.setLevel(logging.DEBUG)
+FH.setLevel(OaConfig.loglevel)
 FH.setFormatter(logging.Formatter(
     "%(asctime)s %(levelname)s: %(message)s | %(pathname)s:%(lineno)d"
 ))
 
 L.addHandler(FH)
-L.setLevel(logging.DEBUG)
+L.setLevel(OaConfig.loglevel)
 
 from functools import wraps
 import smtplib
@@ -57,7 +59,6 @@ from oasis.lib import Users2, Users, DB
 from oasis.lib.Audit import audit
 from oasis.lib.Permissions import satisfy_perms
 from oasis.lib.General import sanitize_username
-
 
 try:
     L.info("File logger starting up")
@@ -79,7 +80,7 @@ if OaConfig.email_admins:
                      OaConfig.email,
                      OaConfig.email_admins,
                      'OASIS Internal Server Error')
-    MH.setLevel(logging.ERROR)
+    MH.setLevel(logging.CRITICAL)
     app.logger.addHandler(MH)
 
 # Try and find somewhere to send our log entries, even if primary location is broken.
@@ -90,15 +91,14 @@ if not os.access(lf, os.W_OK):
     lf = "/tmp/oasisqe.log"
 
 FH = RotatingFileHandler(filename=lf)
-FH.setLevel(logging.DEBUG)
+FH.setLevel(OaConfig.loglevel)
 FH.setFormatter(logging.Formatter(
     "%(asctime)s %(levelname)s: %(message)s | %(pathname)s:%(lineno)d"
 ))
 
 app.debug = True
 app.logger.addHandler(FH)
-app.logger.setLevel(logging.DEBUG)
-
+app.logger.setLevel(OaConfig.loglevel)
 
 
 @app.context_processor
