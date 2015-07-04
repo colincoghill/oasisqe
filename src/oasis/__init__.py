@@ -18,12 +18,13 @@ import _strptime  # import should prevent thread import blocking issues
 # ask Google about:     AttributeError: _strptime
 
 from oasis.lib import OaConfig
+import uuid
 import logging
 from logging.handlers import SMTPHandler, RotatingFileHandler
 
 L = logging.getLogger("oasisqe")
 
-# Todo: log config is a mess. Tidy this all up.
+# Todo: logging is a mess. Tidy this all up.
 
 # Log config is doubled up. this is the OASIS logger config:
 if OaConfig.email_admins:
@@ -37,11 +38,14 @@ if OaConfig.email_admins:
 # Try and find somewhere to send our log entries, even if primary location is broken.
 lf = OaConfig.logfile
 if not os.access(lf,os.W_OK):
-    lf = lf + os.environ['LOGNAME']
+    if 'LOGNAME' in os.environ:
+        lf = lf + os.environ['LOGNAME']
+    else:
+        lf = lf + "-2"
 if not os.access(lf, os.W_OK):
-    lf = "/tmp/oasisqe.log"
+    lf = "/tmp/oasisqe-%s.log" % uuid.uuid4()
 
-FH = RotatingFileHandler(filename=lf)
+FH = RotatingFileHandler(filename=lf+"app")
 FH.setLevel(OaConfig.loglevel)
 FH.setFormatter(logging.Formatter(
     "%(asctime)s %(levelname)s: %(message)s | %(pathname)s:%(lineno)d"
@@ -83,14 +87,7 @@ if OaConfig.email_admins:
     MH.setLevel(logging.CRITICAL)
     app.logger.addHandler(MH)
 
-# Try and find somewhere to send our log entries, even if primary location is broken.
-lf = OaConfig.logfile
-if not os.access(lf,os.W_OK):
-    lf = lf + os.environ['LOGNAME']
-if not os.access(lf, os.W_OK):
-    lf = "/tmp/oasisqe.log"
-
-FH = RotatingFileHandler(filename=lf)
+FH = RotatingFileHandler(filename=lf+"flask")
 FH.setLevel(OaConfig.loglevel)
 FH.setFormatter(logging.Formatter(
     "%(asctime)s %(levelname)s: %(message)s | %(pathname)s:%(lineno)d"

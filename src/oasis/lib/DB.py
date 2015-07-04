@@ -40,6 +40,7 @@ MC = MCPool('127.0.0.1:11211', 9)
 
 def run_sql(sql, params=None, quiet=False):
     """ Execute SQL commands using the dbpool"""
+    L.warn("SQL: %s ;(%s)", sql, params)
     conn = dbpool.start()
     res = conn.run_sql(sql, params, quiet=quiet)
     dbpool.finish(conn)
@@ -670,16 +671,12 @@ def get_qtemplates_in_topic_position(topic_id, position):
     """ Fetch a list of question template IDs in a given position in the topic. """
     assert isinstance(topic_id, int)
     assert isinstance(position, int)
-#    key = "topic-%d-qtemplates-position-%d" % (topic_id, position)
-#    obj = MC.get(key)
-#    if obj is not None:
-#        return obj
+
     ret = run_sql("""SELECT qtemplate
                      FROM questiontopics
                      WHERE position=%s AND topic=%s;""", (position, topic_id))
     if ret:
         qtemplates = [row[0] for row in ret]
-#        MC.set(key, qtemplates, 10)  # remember for 10 seconds
         return qtemplates
     return []
 
