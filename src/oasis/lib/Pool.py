@@ -159,7 +159,7 @@ class FileCache(object):
             data = fptr.read()
             fptr.close()
             if len(data) == 0:
-                if not key.contains("/image.gif"):  # many questions don't have one
+                if not "/image.gif" in key:  # many questions don't have one
                     L.error("file Cache EMPTY retrieval. (key=%s)" % (key,))
                 data = False
         except IOError as err:
