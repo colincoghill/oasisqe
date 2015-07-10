@@ -62,7 +62,7 @@ _ll = cp.getint("app", "loglevel")
 if not ( 1 <= _ll <= 5 ):
     loglevel = logging.ERROR
 else:
-    loglevel = [logging.FATAL, logging.CRITICAL, logging.ERROR, logging.WARN, logging.INFO][_ll]
+    loglevel = [logging.FATAL, logging.CRITICAL, logging.ERROR, logging.WARN, logging.INFO][_ll - 1]
 
 profile_log = cp.get("app", "profile_log")
 feed_path = cp.get("app", "feed_path")

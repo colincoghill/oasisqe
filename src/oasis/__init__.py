@@ -18,15 +18,23 @@ import _strptime  # import should prevent thread import blocking issues
 # ask Google about:     AttributeError: _strptime
 
 from oasis.lib import OaConfig
-import uuid
 import logging
 from logging.handlers import SMTPHandler, RotatingFileHandler
 
+
+app = Flask(__name__,
+            template_folder=os.path.join(OaConfig.homedir, "templates"),
+            static_folder=os.path.join(OaConfig.homedir, "static"),
+            static_url_path=os.path.join(os.path.sep, OaConfig.staticpath, "static"))
+app.secret_key = OaConfig.secretkey
+app.config['MAX_CONTENT_LENGTH'] = 8 * 1024 * 1024  # 8MB max file size upload
+
+# Flask initializes logging lazily and removes existing handlers when it does so,
+# so we need to make sure it initializes here, before we add our own (in imports too!)
+app.logger.fatal("Flask starting up")
+
 L = logging.getLogger("oasisqe")
 
-# Todo: logging is a mess. Tidy this all up.
-
-# Log config is doubled up. this is the OASIS logger config:
 if OaConfig.email_admins:
     MH = SMTPHandler(OaConfig.smtp_server,
                      OaConfig.email,
@@ -37,15 +45,10 @@ if OaConfig.email_admins:
 
 # Try and find somewhere to send our log entries, even if primary location is broken.
 lf = OaConfig.logfile
-if not os.access(lf,os.W_OK):
-    if 'LOGNAME' in os.environ:
-        lf = lf + os.environ['LOGNAME']
-    else:
-        lf = lf + "-2"
 if not os.access(lf, os.W_OK):
-    lf = "/tmp/oasisqe-%s.log" % uuid.uuid4()
+    app.logger.fatal("Unable to write to log file %s" % lf)
 
-FH = RotatingFileHandler(filename=lf+"app")
+FH = RotatingFileHandler(filename=lf)
 FH.setLevel(OaConfig.loglevel)
 FH.setFormatter(logging.Formatter(
     "%(asctime)s %(levelname)s: %(message)s | %(pathname)s:%(lineno)d"
@@ -53,6 +56,7 @@ FH.setFormatter(logging.Formatter(
 
 L.addHandler(FH)
 L.setLevel(OaConfig.loglevel)
+L.info("File logger starting up")
 
 from functools import wraps
 import smtplib
@@ -63,39 +67,6 @@ from oasis.lib import Users2, Users, DB
 from oasis.lib.Audit import audit
 from oasis.lib.Permissions import satisfy_perms
 from oasis.lib.General import sanitize_username
-
-try:
-    L.info("File logger starting up")
-except IOError as err:  # Probably a permission denied or folder not exist
-    L.error("Unable to open log file: %s""" % err)
-
-
-app = Flask(__name__,
-            template_folder=os.path.join(OaConfig.homedir, "templates"),
-            static_folder=os.path.join(OaConfig.homedir, "static"),
-            static_url_path=os.path.join(os.path.sep, OaConfig.staticpath, "static"))
-app.secret_key = OaConfig.secretkey
-app.config['MAX_CONTENT_LENGTH'] = 8 * 1024 * 1024  # 8MB max file size upload
-
-
-# Log config is doubled up. this is the Flask logger config:
-if OaConfig.email_admins:
-    MH = SMTPHandler(OaConfig.smtp_server,
-                     OaConfig.email,
-                     OaConfig.email_admins,
-                     'OASIS Internal Server Error')
-    MH.setLevel(logging.CRITICAL)
-    app.logger.addHandler(MH)
-
-FH = RotatingFileHandler(filename=lf+"flask")
-FH.setLevel(OaConfig.loglevel)
-FH.setFormatter(logging.Formatter(
-    "%(asctime)s %(levelname)s: %(message)s | %(pathname)s:%(lineno)d"
-))
-
-app.debug = True
-app.logger.addHandler(FH)
-app.logger.setLevel(OaConfig.loglevel)
 
 
 @app.context_processor
