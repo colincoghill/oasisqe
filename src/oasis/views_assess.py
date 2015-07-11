@@ -16,7 +16,7 @@ import logging
 from flask import render_template, session, \
     request, redirect, abort, url_for, flash
 
-from .lib import DB, General, Exams, Courses2, Assess
+from .lib import DB, General, Exams, Courses2, Assess, Audit
 
 MYPATH = os.path.dirname(__file__)
 
@@ -183,6 +183,8 @@ def assess_assessmentpage(course_id, exam_id, page):
     q_id = General.get_exam_q(exam_id, page, user_id)
     if not q_id:
         L.critical("Unable to find exam question for page %s of exam %s for user %s" % (exam_id, page, user_id))
+        Audit.audit(3, user_id, q_id, "General", "Failed to find page %s for %s, exam %s" % (page, user_id, exam_id))
+
         return redirect(url_for("assess_startexam",
                                 course_id=course_id,
                                 exam_id=exam_id))

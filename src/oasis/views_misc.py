@@ -145,6 +145,22 @@ def qedit_redirect(course_id, topic_id, qt_id):
                             topic_id=topic_id))
 
 
+@app.route("/qedit_raw/qtlog/<int:topic_id>/<int:qt_id>")
+@authenticated
+def qedit_qtlog(topic_id, qt_id):
+    """ Show a table of all recent error messages affecting that question.
+    """
+
+    errors = QEditor.qtlog_as_html(topic_id, qt_id)
+    course_id = Topics.get_course_id(topic_id)
+    course = Courses2.get_course(course_id)
+
+    return render_template("qtlog_errors.html",
+                           course = course,
+                           topic_id=topic_id,
+                           html=errors)
+
+
 @app.route("/qedit_raw/edit/<int:topic_id>/<int:qt_id>")
 @authenticated
 def qedit_raw_edit(topic_id, qt_id):

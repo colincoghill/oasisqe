@@ -113,7 +113,7 @@ def qtlog_as_html(topic, qtid):
     out += "<p><i>Typical priorities might be 'error', 'info', 'noise'</i></p>"
     out += "<table style='border: solid 1px black;' border='1'><tr><th>Time</th><th>Ver</th>"
     out += "<th>Variation</th><th>Pri</th><th>Fac</th><th>Message</th></tr>"
-    entries = Audit.get_records_by_object(qtid, 3, limit=100, offset=0)
+    entries = Audit.get_records_by_object(qtid, limit=100, offset=0)
     for entry in entries:
         try:
             version = versionre.findall(entry['message'])[0]

@@ -22,7 +22,7 @@ import jinja2
 
 from oasis.lib.OaExceptions import OaMarkerError
 from . import Courses, Exams
-from oasis.lib import OaConfig, DB, Topics, script_funcs, OqeSmartmarkFuncs
+from oasis.lib import OaConfig, DB, Topics, script_funcs, OqeSmartmarkFuncs, Audit
 from logging import getLogger
 
 L = getLogger("oasisqe")
@@ -167,8 +167,13 @@ def gen_q(qtid, student=0, exam=0, position=0):
         variation = random.randint(1, numvars)
     else:
         L.warn("No question variations (qtid=%d)" % qtid)
+        Audit.audit(3, student, qtid, "General", "Failed to generate question %s for %s, exam %s" % (qtid, student, exam))
+
         return False
-    return gen_q_from_var(qtid, student, exam, position, version, variation)
+    q_id = gen_q_from_var(qtid, student, exam, position, version, variation)
+    if not q_id:
+        Audit.audit(3, student, qtid, "General", "Failed to generate instance of %s for %s, exam %s" % (qtid, student, exam))
+    return q_id
 
 
 def gen_q_from_var(qt_id, student, exam, position, version, variation):
