@@ -22,7 +22,7 @@ import OaConfig
 import Pool
 from logging import getLogger
 
-L = getLogger("oasisqe")
+L = getLogger("oasisqe.db")
 
 
 # 3 connections. Lets us keep going if one is slow but

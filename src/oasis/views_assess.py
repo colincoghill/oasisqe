@@ -11,6 +11,7 @@
 import os
 import re
 import time
+import logging
 
 from flask import render_template, session, \
     request, redirect, abort, url_for, flash
@@ -23,6 +24,7 @@ from .lib.Permissions import check_perm
 
 from oasis import app, authenticated
 
+L = logging.getLogger("oasisqe")
 
 @app.route("/assess/top")
 @authenticated
@@ -179,6 +181,11 @@ def assess_assessmentpage(course_id, exam_id, page):
         page = int(goto.split(' ', 2)[1])
 
     q_id = General.get_exam_q(exam_id, page, user_id)
+    if not q_id:
+        L.critical("Unable to find exam question for page %s of exam %s for user %s" % (exam_id, page, user_id))
+        return redirect(url_for("assess_startexam",
+                                course_id=course_id,
+                                exam_id=exam_id))
     timeleft = Exams.get_end_time(exam_id, user_id) - time.time()
     exam = Exams.get_exam_struct(exam_id, course_id)
 
@@ -265,6 +272,9 @@ def assess_submit(course_id, exam_id):
         marked = Assess.mark_exam(user_id, exam_id)
         if not marked:
             flash("There was a problem marking the assessment,")
+            return redirect(url_for("assess_awaitresults",
+                                course_id=course_id,
+                                exam_id=exam_id))
 
     if exam["instant"] == 2:
         return redirect(url_for("assess_awaitresults",

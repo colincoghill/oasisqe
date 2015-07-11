@@ -25,8 +25,14 @@ def mark_exam(user_id, exam_id):
     status = Exams.get_user_status(user_id, exam_id)
     L.info("Marking assessment %s for %s, status is %s" % (exam_id, user_id, status))
     examtotal = 0.0
+    errors = 0
     for position in range(1, numquestions + 1):
         q_id = General.get_exam_q(exam_id, position, user_id)
+        if not q_id:
+            L.critical("Unable to retrieve exam question page %s, exam %s, for user %s" % (position, exam_id, user_id
+                                                                                        ))
+            errors += 1
+            continue
         answers = DB.get_q_guesses(q_id)
         # There's a small chance they got here without ever seeing a question,
         # make sure it exists.
@@ -56,12 +62,14 @@ def mark_exam(user_id, exam_id):
             total += mark
             DB.update_q_score(q_id, total)
         examtotal += total
+    if not errors:
+        Exams.set_user_status(user_id, exam_id, 5)
+        Exams.set_submit_time(user_id, exam_id)
+        Exams.save_score(exam_id, user_id, examtotal)
+        Exams.touchuserexam(exam_id, user_id)
 
-    Exams.set_user_status(user_id, exam_id, 5)
-    Exams.set_submit_time(user_id, exam_id)
-    Exams.save_score(exam_id, user_id, examtotal)
-    Exams.touchuserexam(exam_id, user_id)
-
+    if errors:
+        return False
     L.info( "user %s scored %s total on exam %s" %
             (user_id, examtotal, exam_id))
     return True

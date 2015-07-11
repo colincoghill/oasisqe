@@ -973,7 +973,9 @@ def get_exam_q(exam, page, user_id):
     except (ValueError, TypeError, AssertionError):
         L.warn("generateExamQuestion(%s,%s, %s) Failed (returned %s)" %
             (exam, page, user_id, qid))
-    DB.set_q_viewtime(qid)
+        qid=None
+    if qid:
+        DB.set_q_viewtime(qid)
     return qid
 
 
