@@ -26,7 +26,9 @@ from .lib.Permissions import check_perm
 
 from oasis import app, authenticated
 
+
 L = getLogger("oasisqe")
+
 
 # Does its own auth because it may be used in embedded questions
 @app.route("/att/qatt/<int:qt_id>/<int:version>/<int:variation>/<fname>")

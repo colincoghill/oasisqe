@@ -31,7 +31,7 @@
 
     {% if exam.code and exam.locked %}
 
-      <center>
+      <div style="text-align: center;">
         <div class='alert'>
           <p>This assessment is locked with a code, please enter the
             code to unlock it:</p>
@@ -43,18 +43,18 @@
                    NAME='unlock' VALUE='UNLOCK'/>
           </form>
         </div>
-      </center>
+      </div>
 
     {% else %}
       <p>Please press the START button to begin.</p>
       <br/>
-      <center>
+      <div style="text-align: center;">
         <form class='startbutton' method='POST'
               action='{{ cf.url }}assess/assessmentpage/{{ course.id }}/{{ exam.id }}/1'>
           <INPUT class='btn btn-primary' TYPE='submit' NAME='START'
                  VALUE='START'/>
         </form>
-      </center>
+      </div>
     {% endif %}
 
   </div>

@@ -534,8 +534,7 @@ def get_q_att(qt_id, name, variation, version=1000000000):
     if version == 1000000000:
         version = get_qt_version(qt_id)
     if not version or not qt_id:
-        L.warn("Request for unknown qt version. get_qt_att(%s, %s, %s, %s)" %
-            (qt_id, name, variation, version))
+        L.warn("Request for unknown qt version. get_qt_att(%s, %s, %s, %s)" % (qt_id, name, variation, version))
         return None
     key = "questionattach/%d/%s/%d/%d" % (qt_id, name, variation, version)
     (value, found) = fileCache.get(key)
@@ -982,8 +981,7 @@ def copy_qt_all(qt_id):
                              variations[variation],
                              newversion)
     except AttributeError as err:
-        L.warn("Copying a qtemplate %s with no variations. '%s'" %
-            (qt_id, err))
+        L.warn("Copying a qtemplate %s with no variations. '%s'" % (qt_id, err))
     return newid
 
 
@@ -1037,8 +1035,7 @@ def create_qt(owner, title, desc, marker, scoremax, status):
                   (owner, title, desc, marker, scoremax, status))
     if res:
         return int(res[0][0])
-    L.error("create_qt error (%d, %s, %s, %d, %s, %s)" %
-        (owner, title, desc, marker, scoremax, status))
+    L.error("create_qt error (%d, %s, %s, %d, %s, %s)" % (owner, title, desc, marker, scoremax, status))
 
 
 def _serialize_courseexaminfo(info):

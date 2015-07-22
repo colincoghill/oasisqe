@@ -119,7 +119,7 @@ def do_topic_page_commands(request, topic_id, user_id):
             if len(qtids) < 1:
                 flash("No questions selected to export")
             else:
-                data = External.qts_to_zip(qtids, fname="oa_export")
+                data = External.qts_to_zip(qtids)
                 if not data:
                     abort(401)
 
@@ -137,14 +137,14 @@ def do_topic_page_commands(request, topic_id, user_id):
                 new_position = 0
             new_qtype = form.get('new_qtype', 'raw')
             try:
-                new_maxscore = float(form.get('new_maxscore', 0))
+                new_max_score = float(form.get('new_maxscore', 0))
             except ValueError:
-                new_maxscore = 0
+                new_max_score = 0
             newid = DB.create_qt(user_id,
                                  new_title,
                                  "No Description",
                                  1,
-                                 new_maxscore,
+                                 new_max_score,
                                  0)
             if newid:
                 mesg.append("Created new question, id %s" % newid)

@@ -888,8 +888,7 @@ def mark_q(qid, answers):
     qvars = DB.get_qt_variation(qtid, variation, version)
     if not qvars:
         qvars = {}
-        L.warn("markQuestion(%s, %s) unable to retrieve variables." %
-            (qid, answers))
+        L.warn("markQuestion(%s, %s) unable to retrieve variables." % (qid, answers))
     qvars['OaQID'] = int(qid)
     marktype = DB.get_qt_marker(qtid)
     if marktype == 1:    # standard
@@ -978,8 +977,7 @@ def get_exam_q(exam, page, user_id):
         qid = int(qid)
         assert qid > 0
     except (ValueError, TypeError, AssertionError):
-        L.warn("generateExamQuestion(%s,%s, %s) Failed (returned %s)" %
-            (exam, page, user_id, qid))
+        L.warn("generateExamQuestion(%s,%s, %s) Failed (returned %s)" % (exam, page, user_id, qid))
         qid = None
     if qid:
         DB.set_q_viewtime(qid)
