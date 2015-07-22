@@ -22,7 +22,9 @@ from logging import getLogger
 
 from oasis import app, authenticated, require_perm
 
+
 L = getLogger("oasisqe")
+
 
 @app.route("/api/exam/<int:course_id>/<int:exam_id>/qtemplates")
 @authenticated

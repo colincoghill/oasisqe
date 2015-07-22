@@ -70,8 +70,8 @@ def mark_exam(user_id, exam_id):
 
     if errors:
         return False
-    L.info( "user %s scored %s total on exam %s" %
-            (user_id, examtotal, exam_id))
+    L.info("user %s scored %s total on exam %s" %
+           (user_id, examtotal, exam_id))
     return True
 
 
@@ -177,6 +177,6 @@ def get_exam_list_sorted(user_id, prev_years=False):
                       for e in Courses.get_exams(cid, prev_years=prev_years)]
         except KeyError, err:
             L.error("Failed fetching exam list for user %s: %s" %
-                (user_id, err))
+                    (user_id, err))
     exams.sort(key=lambda y: y['start_epoch'], reverse=True)
     return exams

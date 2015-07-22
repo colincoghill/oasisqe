@@ -12,7 +12,9 @@ from oasis.lib.Audit import audit
 from oasis.lib import Users2, DB, Topics, General, Exams, Courses
 from logging import getLogger
 
+
 L = getLogger("oasisqe")
+
 
 def do_topic_update(course, request):
     """Read the submitted form and make relevant changes to Topic information

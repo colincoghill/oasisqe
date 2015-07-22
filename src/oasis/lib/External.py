@@ -227,28 +227,25 @@ def user_update_details_from_feed(uid, upid):
         Users.set_studentid(uid, studentid)
 
 
-def topic_to_zip(topic_id, fname='oa_export', suffix='oaq'):
+def topic_to_zip(topic_id):
     """
     :param topic_id: ID of the topic to export
-    :param fname: filename to create
-    :param suffix: suffix
     :return: binary string containing ZIPped data
     """
 
     topic = Topics.get_topic(topic_id)
     qts = Topics.get_qts(topic_id)
 
-    return qts_to_zip(qts, fname=fname, extra_info={'topic': topic})
+    return qts_to_zip(qts, extra_info={'topic': topic})
 
 
 # need to make a version that export a whole topic, with position info
-def qts_to_zip(qt_ids, fname="oa_export", extra_info = None):
+def qts_to_zip(qt_ids, extra_info=None):
     """ Take a list of QTemplate IDs and return a binary string containing
         them as an .oaq file.
         (a zip file in special format)
     """
 
-    fname = os.path.basename(fname)
     qdir = tempfile.mkdtemp(prefix="oa")
     info = {
         'oasis': {
@@ -267,11 +264,11 @@ def qts_to_zip(qt_ids, fname="oa_export", extra_info = None):
         qtemplate = DB.get_qtemplate(qt_id)
         qtdir = os.path.join(qdir, str(qt_id))
         attachments = DB.get_qt_atts(qt_id)
-        if not 'qtemplate.html' in attachments:
+        if 'qtemplate.html' not in attachments:
             attachments.append('qtemplate.html')
-        if not 'datfile.txt' in attachments:
+        if 'datfile.txt' not in attachments:
             attachments.append('datfile.txt')
-        if not 'image.gif' in attachments:
+        if 'image.gif' not in attachments:
             attachments.append('image.gif')
         os.mkdir(qtdir)
         os.mkdir(os.path.join(qtdir, "attach"))
@@ -280,7 +277,7 @@ def qts_to_zip(qt_ids, fname="oa_export", extra_info = None):
 
         for name in attachments:
             if not name:
-                name='UNKNOWN'
+                name = 'UNKNOWN'
             mtype = DB.get_qt_att_mimetype(qt_id, name)
             if not mtype:
                 mtype = ""
@@ -332,14 +329,19 @@ def import_qts_from_zip(data, topicid):
     with zipfile.ZipFile(sdata, "r") as zfile:
 
         zfile.extractall(qdir)
-        data = open("%s/info.json"%qdir, "r").read()
+        data = open("%s/info.json" % qdir, "r").read()
         info = json.loads(data)
         print "%s questions found" % (len(info['qtemplates']))
         position = 1
         for qtid in info['qtemplates'].keys():
             qtemplate = info['qtemplates'][qtid]['qtemplate']
             print "%s" % qtemplate['title']
-            newid = DB.create_qt(1, qtemplate['title'], qtemplate['description'],qtemplate['marker'], qtemplate['scoremax'], qtemplate['status'])
+            newid = DB.create_qt(1,
+                                 qtemplate['title'],
+                                 qtemplate['description'],
+                                 qtemplate['marker'],
+                                 qtemplate['scoremax'],
+                                 qtemplate['status'])
             DB.update_qt_pos(newid, topicid, position)
             position += 1
             attachments = info['qtemplates'][qtid]['attachments']

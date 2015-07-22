@@ -59,7 +59,7 @@ uniqueKey = cp.get("cache", "cachekey")
 
 logfile = cp.get("app", "logfile")
 _ll = cp.getint("app", "loglevel")
-if not ( 1 <= _ll <= 5 ):
+if not (1 <= _ll <= 5):
     loglevel = logging.ERROR
 else:
     loglevel = [logging.FATAL, logging.CRITICAL, logging.ERROR, logging.WARN, logging.INFO][_ll - 1]

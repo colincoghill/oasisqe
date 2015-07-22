@@ -235,7 +235,7 @@ def get_q_guesses_before_time(q_id, lasttime):
                      WHERE question=%s
                        AND created < %s
                      ORDER BY created DESC;""",
-                     (q_id, lasttime))
+                  (q_id, lasttime))
     if not ret:
         return {}
     guesses = {}

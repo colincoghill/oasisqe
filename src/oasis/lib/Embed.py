@@ -22,7 +22,9 @@ from oasis.lib import DB, General
 
 from logging import getLogger
 
+
 L = getLogger("oasisqe")
+
 
 def mark_q(user_id, qtid, request):
     """Mark the question and show a page containing marking results."""

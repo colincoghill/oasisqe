@@ -25,7 +25,9 @@ from . import Courses, Exams
 from oasis.lib import OaConfig, DB, Topics, script_funcs, OqeSmartmarkFuncs, Audit
 from logging import getLogger
 
+
 L = getLogger("oasisqe")
+
 
 def htmlesc(text):
     """ HTML escape the text. """
@@ -978,7 +980,7 @@ def get_exam_q(exam, page, user_id):
     except (ValueError, TypeError, AssertionError):
         L.warn("generateExamQuestion(%s,%s, %s) Failed (returned %s)" %
             (exam, page, user_id, qid))
-        qid=None
+        qid = None
     if qid:
         DB.set_q_viewtime(qid)
     return qid

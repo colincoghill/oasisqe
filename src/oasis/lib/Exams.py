@@ -483,7 +483,7 @@ def get_exam_struct(exam_id, user_id=None, include_qtemplates=False,
                 'markstatus': row[10],
                 'instant': row[11],
                 'code': row[12]
-        }
+                }
 
         MC.set(key, _serialize_examstruct(exam),
                60)  # 60 second cache. to take the edge off exam start peak load

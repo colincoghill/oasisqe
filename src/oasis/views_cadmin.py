@@ -22,10 +22,11 @@ from oasis.lib.Permissions import satisfy_perms, check_perm
 from oasis.lib.General import date_from_py2js, sanitize_username
 from oasis.lib import External
 
-
 from oasis import app, require_course_perm, require_perm
 
+
 L = getLogger("oasisqe")
+
 
 @app.route("/cadmin/<int:course_id>/top")
 @require_course_perm(("questionedit", "viewmarks",
@@ -896,7 +897,7 @@ def cadmin_topic_save(course_id, topic_id):
             return result
 
     flash("Error saving Topic Information!")
-    L.error( "Error saving Topic Information " % repr(request.form))
+    L.error("Error saving Topic Information " % repr(request.form))
     return redirect(url_for('cadmin_edit_topic',
                             course_id=course_id,
                             topic_id=topic_id))
@@ -979,7 +980,7 @@ def cadmin_course_questions_import(course_id, topic_id):
                                 course_id=course_id,
                                 topic_id=topic_id))
 
-    num = External.import_qts_from_zip(data)
+    num = External.import_qts_from_zip(data, topicid=topic_id)
     if num is False:
         flash("Invalid OASISQE file? No data recognized.")
         return redirect(url_for("cadmin_edit_topic",

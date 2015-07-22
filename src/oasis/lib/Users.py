@@ -15,7 +15,9 @@ import bcrypt
 
 from oasis.lib.DB import run_sql, MC
 
+
 L = getLogger("oasisqe")
+
 
 def get_version():
     """ Fetch the current version of the user table.

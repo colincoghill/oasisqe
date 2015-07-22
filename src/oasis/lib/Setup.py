@@ -119,7 +119,7 @@ def do_topic_page_commands(request, topic_id, user_id):
             if len(qtids) < 1:
                 flash("No questions selected to export")
             else:
-                data = External.qts_to_zip(qtids, fname="oa_export", suffix="oaq")
+                data = External.qts_to_zip(qtids, fname="oa_export")
                 if not data:
                     abort(401)
 

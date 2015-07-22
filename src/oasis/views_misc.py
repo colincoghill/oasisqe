@@ -156,7 +156,7 @@ def qedit_qtlog(topic_id, qt_id):
     course = Courses2.get_course(course_id)
 
     return render_template("qtlog_errors.html",
-                           course = course,
+                           course=course,
                            topic_id=topic_id,
                            html=errors)
 
@@ -326,7 +326,7 @@ def qedit_raw_save(topic_id, qt_id):
             newname = fptr.filename
         if len(newname) < 1:
             L.info("File with no name uploaded by %s" % (session['username']))
-            newname='NONAME'
+            newname = 'NONAME'
         data = fptr.read()
         mtype = fptr.content_type
 

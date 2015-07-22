@@ -14,6 +14,7 @@ import datetime
 
 L = getLogger("oasisqe")
 
+
 class Period(object):
     """ A time period is relatively simple, mainly just name and
         start and finish.

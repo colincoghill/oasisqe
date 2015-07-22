@@ -24,7 +24,9 @@ from .lib.Permissions import check_perm
 
 from oasis import app, authenticated
 
+
 L = logging.getLogger("oasisqe")
+
 
 @app.route("/assess/top")
 @authenticated

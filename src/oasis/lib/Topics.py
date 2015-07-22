@@ -137,9 +137,9 @@ def get_num_qs(topic_id):
         if res:
             prev = -1
             for row in res:
-               if int(row[0]) != prev:
-                   num += 1
-                   prev = int(row[0])
+                if int(row[0]) != prev:
+                    num += 1
+                    prev = int(row[0])
         MC.set(key, num, 180)  # 3 minute cache
         return num
     except LookupError:
