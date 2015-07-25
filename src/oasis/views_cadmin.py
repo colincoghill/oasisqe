@@ -275,7 +275,7 @@ def cadmin_create_exam(course_id):
             'end_minute': int(today.minute),
             'duration': 60,
             'title': "Assessment",
-            'archived': 1,
+            'archived': 1
         }
     )
 
@@ -876,6 +876,8 @@ def cadmin_view_topic(course_id, topic_id):
 @require_course_perm(("questionedit", 'coursecoord', 'courseadmin'))
 def cadmin_topic_save(course_id, topic_id):
     """ Receive the page from cadmin_edit_topic and process any changes. """
+    L.debug("cadmin_topic_save(%s), REQUEST=%s" % (course_id, topic_id, repr(request)))
+
     user_id = session['user_id']
 
     if not course_id:

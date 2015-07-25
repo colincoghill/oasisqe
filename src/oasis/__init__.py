@@ -31,7 +31,7 @@ app.config['MAX_CONTENT_LENGTH'] = 8 * 1024 * 1024  # 8MB max file size upload
 
 # Flask initializes logging lazily and removes existing handlers when it does so,
 # so we need to make sure it initializes here, before we add our own (in imports too!)
-app.logger.fatal("Flask starting up")
+app.logger.info("Flask starting up")
 
 L = logging.getLogger("oasisqe")
 
