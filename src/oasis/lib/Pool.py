@@ -83,6 +83,7 @@ class DbPool(object):
     """
 
     def __init__(self, connectstring, size):
+        self.size = size
         self.connqueue = Queue.Queue(size)
         for _ in range(0, size):
             self.connqueue.put(DbConn(connectstring))
@@ -100,6 +101,18 @@ class DbPool(object):
         """Put the db connection back in the pool."""
         # TODO: check for errors and reset connection if any
         self.connqueue.put(dbc)
+
+    def __len__(self):
+        """
+        :return: integer : the number of free entries in the pool.
+        """
+        return self.connqueue.qsize()
+
+    def total(self):
+        """
+        :return: integer : the number of db connections.
+        """
+        return self.size
 
 
 class FileCache(object):
@@ -260,9 +273,10 @@ class MCPool(object):
         """
 
         self.connqueue = Queue.Queue(size)
+        self.size = size
         for _ in range(0, size):
             try:
-                if not OaConfig.enableMemcache:
+                if not OaConfig.memcache_enable:
                     mc = FakeMCConn
                 else:
                     mc = MCConn
@@ -292,3 +306,15 @@ class MCPool(object):
         res = dbc.delete(key)
         self.connqueue.put(dbc)
         return res
+
+    def __len__(self):
+        """
+        :return: integer : the number of free entries in the pool.
+        """
+        return self.connqueue.qsize()
+
+    def total(self):
+        """
+        :return: integer : the number of db connections.
+        """
+        return self.size

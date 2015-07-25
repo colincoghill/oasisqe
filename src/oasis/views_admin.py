@@ -15,7 +15,7 @@ from flask import render_template, \
     request, redirect, abort, url_for, flash
 
 from logging import getLogger
-from oasis.lib import Courses, Courses2, Setup, Periods, Feeds, External, UFeeds
+from oasis.lib import Courses, Courses2, Setup, Periods, Feeds, External, UFeeds, OaConfig
 
 MYPATH = os.path.dirname(__file__)
 from .lib import DB, Groups
@@ -54,11 +54,24 @@ def admin_sysstats():
     """ Present the top level admin page """
     db_version = DB.get_db_version()
     db_sizes = DB.get_db_size()
+    db_queue_size = DB.dbpool.total()
+    db_queue_free = len(DB.dbpool)
+    if OaConfig.memcache_enable:
+        mc_queue_size = DB.MC.total()
+        mc_queue_free = len(DB.MC)
+    else:
+        mc_queue_free = 0
+        mc_queue_size = 0
     return render_template(
         "admin_sysstats.html",
         courses=Setup.get_sorted_courselist(),
         db_version=db_version,
-        db_sizes=db_sizes
+        db_sizes=db_sizes,
+        db_queue_size=db_queue_size,
+        db_queue_free=db_queue_free,
+        mc_enable=OaConfig.memcache_enable,
+        mc_queue_size=mc_queue_size,
+        mc_queue_free=mc_queue_free
     )
 
 
