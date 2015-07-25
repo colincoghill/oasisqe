@@ -29,6 +29,7 @@ def save_score(exam_id, student, examtotal):
     assert isinstance(exam_id, int)
     assert isinstance(student, int)
     assert isinstance(examtotal, float) or isinstance(examtotal, int)
+    L.info("Saving exam score %s for user %s, exam %s" % (examtotal, student, exam_id))
     run_sql("""INSERT INTO marklog (eventtime, exam, student, marker, operation, value)
                  VALUES (NOW(), %s, %s, 1, 'Submitted', %s);""",
             (exam_id, student, "%.1f" % examtotal))
@@ -284,6 +285,7 @@ def set_submit_time(student, exam, submittime=None):
     assert isinstance(student, int)
     assert isinstance(exam, int)
     assert isinstance(submittime, datetime.datetime) or submittime is None
+    L.info("Setting exam submit time to %s for user %s exam %s" % (submittime, student, exam))
     if submittime:
         run_sql("""UPDATE userexams SET submittime=%s WHERE exam=%s AND student=%s;""", (submittime, exam, student))
     else:
