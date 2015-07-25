@@ -27,7 +27,7 @@ L = getLogger("oasisqe.db")
 
 # 3 connections. Lets us keep going if one is slow but
 # doesn't overload the server if there're a lot of us
-dbpool = Pool.DbPool(OaConfig.oasisdbconnectstring, 9)
+dbpool = Pool.DbPool(OaConfig.oasisdbconnectstring, 3)
 
 # Cache stuff on local drives to save our poor database
 fileCache = Pool.FileCache(OaConfig.cachedir)
@@ -35,24 +35,16 @@ fileCache = Pool.FileCache(OaConfig.cachedir)
 from Pool import MCPool
 
 # Get a pool of memcache connections to use
-MC = MCPool('127.0.0.1:11211', 9)
+MC = MCPool('127.0.0.1:11211', 3)
 
 
 def run_sql(sql, params=None, quiet=False):
     """ Execute SQL commands using the dbpool"""
-    L.warn("SQL: %s ;(%s)", sql, params)
+    L.debug("SQL: %s ;(%s)", sql, params)
     conn = dbpool.start()
     res = conn.run_sql(sql, params, quiet=quiet)
     dbpool.finish(conn)
     return res
-
-
-def set_logger(logger):
-    """ Set the logger used by the DB Layer
-    """
-
-    global L
-    L = logger
 
 
 def set_q_viewtime(question):
@@ -158,6 +150,7 @@ def update_q_score(q_id, score):
     except (TypeError, ValueError):
         L.error("Unable to cast score to float!? '%s'" % score)
         return
+    L.debug("Setting question %s score to %s" % (q_id, score))
     run_sql("""UPDATE questions SET score=%s WHERE question=%s;""",
             ("%.1f" % sc, q_id))
 
@@ -202,6 +195,7 @@ def save_guess(q_id, part, value):
     assert isinstance(q_id, int)
     assert isinstance(part, int)
     assert isinstance(value, unicode)
+    L.info("Saving guess for qid %s:  %s = %s " % (q_id, part, value))
     # noinspection PyComparisonWithNone
     if value is not None:  # "" is legit
         run_sql("""INSERT INTO guesses (question, created, part, guess)
@@ -778,17 +772,17 @@ def create_q_att(qt_id, variation, name, mimetype, data, version):
     if not name and not data:
         L.warn("Refusing to create empty attachment for question %s" % qt_id)
         return
-    safedata = psycopg2.Binary(data)
+    safe_data = psycopg2.Binary(data)
     run_sql("""INSERT INTO qattach (qtemplate, variation, mimetype, name, data, version)
                VALUES (%s, %s, %s, %s, %s, %s);""",
-               (qt_id, variation, mimetype, name, safedata, version))
+               (qt_id, variation, mimetype, name, safe_data, version))
 
 
-def create_qt_att(qt_id, name, mimetype, data, version):
+def create_qt_att(qt_id, name, mime_type, data, version):
     """ Create a new Question Template Attachment using given data."""
     assert isinstance(qt_id, int)
     assert isinstance(name, str) or isinstance(name, unicode)
-    assert isinstance(mimetype, str) or isinstance(mimetype, unicode)
+    assert isinstance(mime_type, str) or isinstance(mime_type, unicode)
     assert isinstance(data, str) or isinstance(data, unicode)
     assert isinstance(version, int)
     key = "qtemplateattach/%d/%s/%d" % (qt_id, name, version)
@@ -797,10 +791,10 @@ def create_qt_att(qt_id, name, mimetype, data, version):
         data = ""
     if isinstance(data, unicode):
         data = data.encode("utf8")
-    safedata = psycopg2.Binary(data)
+    safe_data = psycopg2.Binary(data)
     run_sql("""INSERT INTO qtattach (qtemplate, mimetype, name, data, version)
                VALUES (%s, %s, %s, %s, %s);""",
-            (qt_id, mimetype, name, safedata, version))
+            (qt_id, mime_type, name, safe_data, version))
     return None
 
 
@@ -869,19 +863,19 @@ def update_qt_marker(qt_id, marker):
     run_sql(sql, params)
 
 
-def update_exam_qt_in_pos(exam_id, position, qtlist):
+def update_exam_qt_in_pos(exam_id, position, qts):
     """ Set the qtemplates at a given position in the exam to match
         the passed list. If we get qtlist = [0], we remove that position.
     """
     assert isinstance(exam_id, int)
     assert isinstance(position, int)
-    assert isinstance(qtlist, list)
+    assert isinstance(qts, list)
     # First remove the current set
     run_sql("DELETE FROM examqtemplates "
             "WHERE exam=%s "
             "AND position=%s;", (exam_id, position))
     # Now insert the new set
-    for alt in qtlist:
+    for alt in qts:
         if alt > 0:
             if isinstance(alt, int):  # might be '---'
                 run_sql("""INSERT INTO examqtemplates
@@ -997,7 +991,7 @@ def copy_qt(qt_id):
     if not res:
         raise KeyError("QTemplate %d not found" % qt_id)
     orig = res[0]
-    newid = create_qt(
+    new_id = create_qt(
         int(orig[0]),
         orig[1],
         orig[2],
@@ -1005,9 +999,9 @@ def copy_qt(qt_id):
         orig[4],
         int(orig[5])
     )
-    if newid <= 0:
+    if new_id <= 0:
         raise IOError("Unable to create copy of QTemplate %d" % qt_id)
-    return newid
+    return new_id
 
 
 def add_qt_variation(qt_id, variation, data, version):
@@ -1016,26 +1010,28 @@ def add_qt_variation(qt_id, variation, data, version):
     assert isinstance(variation, int)
     assert isinstance(version, int)
     pick = cPickle.dumps(data)
-    safedata = psycopg2.Binary(pick)
+    safe_data = psycopg2.Binary(pick)
     run_sql("INSERT INTO qtvariations (qtemplate, variation, data, version) "
             "VALUES (%s, %s, %s, %s)",
-            (qt_id, variation, safedata, version))
+            (qt_id, variation, safe_data, version))
 
 
-def create_qt(owner, title, desc, marker, scoremax, status):
+def create_qt(owner, title, desc, marker, score_max, status):
     """ Create a new Question Template. """
     assert isinstance(owner, int)
     assert isinstance(title, str) or isinstance(title, unicode)
     assert isinstance(desc, str) or isinstance(desc, unicode)
     assert isinstance(marker, int)
-    assert isinstance(scoremax, float) or scoremax is None
+    assert isinstance(score_max, float) or score_max is None
     assert isinstance(status, int)
+
+    L.debug("Creating question template %s (owner %s)" % (title, owner))
     res = run_sql("INSERT INTO qtemplates (owner, title, description, marker, scoremax, status, version) "
                   "VALUES (%s, %s, %s, %s, %s, %s, 2) RETURNING qtemplate;",
-                  (owner, title, desc, marker, scoremax, status))
+                  (owner, title, desc, marker, score_max, status))
     if res:
         return int(res[0][0])
-    L.error("create_qt error (%d, %s, %s, %d, %s, %s)" % (owner, title, desc, marker, scoremax, status))
+    L.error("create_qt error (%d, %s, %s, %d, %s, %s)" % (owner, title, desc, marker, score_max, status))
 
 
 def _serialize_courseexaminfo(info):
@@ -1118,6 +1114,7 @@ def add_exam_q(user, exam, question, position):
     assert isinstance(exam, int)
     assert isinstance(question, int)
     assert isinstance(position, int)
+    L.debug("Assigning question %s to user %s for exam %s, position %s" % (question, user, exam, position))
     sql = """SELECT id FROM examquestions
               WHERE exam = %s
               AND student = %s
@@ -1168,8 +1165,7 @@ def secs_to_human(seconds):
     """Convert a number of seconds to a human readable string, eg  "8 days"
     """
     assert isinstance(seconds, int) or isinstance(seconds, float)
-    perday = 86400
-    return "%d days ago" % int(seconds / perday)
+    return "%d days ago" % int(seconds / 86400)
 
 
 def get_prac_stats_user_qt(user_id, qt_id):
