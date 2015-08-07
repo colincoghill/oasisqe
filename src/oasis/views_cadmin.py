@@ -353,11 +353,10 @@ def cadmin_export_csv(course_id, exam_id, group_id):
 
     group = Groups.Group(g_id=group_id)
     output = Spreadsheets.exam_results_as_spreadsheet(course_id, group, exam_id)
-    ctitle = course.title
-    etitle = exam.title
+
     response = make_response(output)
     response.headers.add('Content-Type', "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet; charset=utf-8")
-    response.headers.add('Content-Disposition', 'attachment; filename="OASIS_%s_%s_Results.xlsx"' % (ctitle, etitle))
+    response.headers.add('Content-Disposition', 'attachment; filename="OASIS_%s_%s_Results.xlsx"' % (course.title, exam.title))
 
     return response
 
@@ -563,6 +562,7 @@ def cadmin_editgroup_addperson(course_id, group_id):
 def cadmin_editgroup_member(course_id, group_id):
     """ Perform operation on group member. Remove/Edit/Etc
     """
+    cur_user = session['user_id']
     group = None
     try:
         group = Groups.Group(g_id=group_id)
@@ -574,13 +574,14 @@ def cadmin_editgroup_member(course_id, group_id):
 
     done = False
     cmds = request.form.keys()
-    # expecting   "remove_UID"
+    #  "remove_UID", only know how to remove for now.
     for cmd in cmds:
         if '_' in cmd:
             op, uid = cmd.split("_", 1)
             if op == "remove":
                 uid = int(uid)
                 user = Users2.get_user(uid)
+                L.info("courseadmin: user %s removed from group %s by %s" % (uid, group_id, cur_user))
                 group.remove_member(uid)
                 flash("%s removed from group" % user['uname'])
                 done = True
@@ -597,6 +598,7 @@ def cadmin_editgroup_member(course_id, group_id):
 def cadmin_assign_coord(course_id):
     """ Set someone as course coordinator
     """
+    cur_user = session['user_id']
     course = Courses2.get_course(course_id)
     if not course:
         abort(404)
@@ -613,6 +615,7 @@ def cadmin_assign_coord(course_id):
         if not new_uid:
             flash("User '%s' Not Found" % new_uname)
         else:
+            L.info("courseadmin: user %s assigned as coordinator to course %s by %s" % (new_uid, course_id, cur_user))
             Permissions.add_perm(new_uid, course_id, 3)  # courseadmin
             Permissions.add_perm(new_uid, course_id, 4)  # coursecoord
             flash("%s can now control the course." % (new_uname,))
@@ -773,9 +776,8 @@ def cadmin_edit_topic(course_id, topic_id):
             question['embed_url'] = None
         question['editor'] = DB.get_qt_editor(question['id'])
 
-    all_courses = Courses2.get_course_list()
     all_courses = [crse
-                   for crse in all_courses
+                   for crse in Courses2.get_course_list()
                    if satisfy_perms(user_id, int(crse['id']),
                                     ("questionedit", "courseadmin",
                                     "sysadmin"))]
@@ -848,9 +850,8 @@ def cadmin_view_topic(course_id, topic_id):
             question['embed_url'] = None
         question['editor'] = DB.get_qt_editor(question['id'])
 
-    all_courses = Courses2.get_course_list()
     all_courses = [crse
-                   for crse in all_courses
+                   for crse in Courses2.get_course_list()
                    if satisfy_perms(user_id, int(crse['id']),
                                     ("questionedit", "courseadmin", "sysadmin"))]
     all_courses.sort(lambda f, s: cmp(f['name'], s['name']))

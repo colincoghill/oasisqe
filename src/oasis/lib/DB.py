@@ -6,8 +6,7 @@
 """ OaDB.py
     This provides a collection of methods for accessing the database.
     If the database is changed to something other than postgres, this
-    is where to start. Since this has grown so large, parts of it are
-    being broken off and put in db/*.py
+    is where to start.
 """
 
 import psycopg2
