@@ -31,6 +31,7 @@
     <div class="span5 offset1 well">
       <FORM NAME='login' METHOD='post'
             ACTION='{{ cf.url }}login/local/submit'>
+           <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
         <div class="pull-left"><img src='{{ cf.static }}oalogo.gif'
                                     alt='OASIS'
                                     style='height:40px; margin-right: 24px;'>

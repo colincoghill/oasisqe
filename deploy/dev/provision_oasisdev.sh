@@ -19,6 +19,8 @@ apt-get install ${APTOPTS} python-bcrypt python-decorator python-flask python-im
 apt-get install ${APTOPTS} python-memcache python-psycopg2 python-openpyxl
 apt-get install ${APTOPTS} postgresql postgresql-client
 apt-get install ${APTOPTS} postfix unzip
+apt-get install ${APTOPTS} --no-install-recommends python-pip
+pip install Flask-WTF
 
 adduser --disabled-login --disabled-password --gecos OASIS oasisqe
 

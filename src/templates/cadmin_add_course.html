@@ -6,6 +6,7 @@
     <h3>Adding a new course</h3>
     <form id="form" method='post' action='{{ cf.url }}cadmin/add_course/save'
           data-validate="parsley">
+     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
         <div class="container-fluid well">
             <h4>Course</h4>
 
