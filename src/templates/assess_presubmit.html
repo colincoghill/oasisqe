@@ -6,6 +6,7 @@
   <div class="container-fluid well ">
     <FORM METHOD='post'
           ACTION='{{ cf.url }}assess/assessmentpage/{{ course_id }}/{{ exam.id }}/{{ page }}'>
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
       <div class='navbar'>
         <div class='navbar-inner'>
           <span class='brand'> Go To:</span>

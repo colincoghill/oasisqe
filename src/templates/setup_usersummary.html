@@ -7,6 +7,7 @@
     <div class="well">
 
       <FORM METHOD='post' ACTION='{{ cf.url }}setup/usersearch'>
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
         <label>Search for: <INPUT TYPE='text' NAME='usersearch_name'
                                   VALUE=''></label>
       </FORM>
@@ -71,11 +72,13 @@
 
             {% if user_is_admin %}
                 <form method='post' action='{{ cf.url }}setup/user/remove_admin'>
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                 <input type='hidden' name='userid' value='{{ user.id }}'>
                  <input type='submit' class='btn btn-danger' name='submit' value='Remove Admin'>
                 </form>
                 {% else %}
                     <form method='post' action='{{ cf.url }}setup/user/make_admin'>
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                     <input type='hidden' name='userid' value='{{ user.id }}'>
                     <input type='submit' class='btn btn-danger' name='submit' value='Make Admin'>
                     </form>

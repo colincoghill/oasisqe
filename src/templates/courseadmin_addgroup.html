@@ -6,6 +6,7 @@
   <H2>Add a New Group</H2>
   <form id='addperson_form' method='post'
         action='{{ cf.url }}cadmin/{{ course.id }}/addgroup_submit'>
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
     <div class="container-fluid well">
       <h5>Group information</h5>
 

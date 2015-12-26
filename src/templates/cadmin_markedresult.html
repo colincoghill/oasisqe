@@ -4,6 +4,7 @@
   <h2>{{ course.name }}({{ course.title }})</h2>
   <H3>{{ exam.title }}</H3>
     <form method='post' action='{{ cf.url }}cadmin/{{ course.id }}/exam/{{ exam.id }}/unsubmit/{{ user.id }}'>
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
         <input type='submit' name='unsubmit' class='btn btn-warning' value='Un-Submit'> (and reset timer)
     </form>
   <p>{% if user.fullname %}<b>{{ user.fullname }}</b>{% endif %} {% if user.uname %}<b>

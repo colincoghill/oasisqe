@@ -36,6 +36,7 @@
       <div class="well">
         <form method='post'
               action='{{ cf.url }}admin/edit_period_create'>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
           <label>Short Name:</label>
           <input placeholder="Short Name" class="input-medium"
                  type="text" name='name'>

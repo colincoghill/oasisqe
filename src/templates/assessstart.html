@@ -38,6 +38,7 @@
 
           <form class='startbutton' method='POST'
                 action='{{ cf.url }}assess/assessmentunlock/{{ course.id }}/{{ exam.id }}'>
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
             <input type='text' name='code'>
             <INPUT class='btn btn-danger' TYPE='submit'
                    NAME='unlock' VALUE='UNLOCK'/>
@@ -51,6 +52,7 @@
       <div style="text-align: center;">
         <form class='startbutton' method='POST'
               action='{{ cf.url }}assess/assessmentpage/{{ course.id }}/{{ exam.id }}/1'>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
           <INPUT class='btn btn-primary' TYPE='submit' NAME='START'
                  VALUE='START'/>
         </form>

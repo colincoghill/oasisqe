@@ -50,6 +50,7 @@
           <form id='form' method='post'
                 action='{{ cf.url }}admin/edit_group_feed_submit/{{ feed.id }}'
                 data-validate="parsley">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
             <label>Short Name:</label>
             <input placeholder="Short Name" name='name'
                    class="required input-medium"

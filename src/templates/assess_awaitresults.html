@@ -8,6 +8,7 @@
 
     <FORM METHOD='post'
           ACTION='{{ cf.url }}assess/presubmit/{{ course_id }}/{{ exam.id }}'>
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
       <h2>Your Answers</h2>
       {% for q in questions %}
         <h5>Page {{ q.pos }}</h5>

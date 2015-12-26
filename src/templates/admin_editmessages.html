@@ -7,6 +7,7 @@
   <P>Messages that are displayed at various points in OASIS. You can use HTML
     in them if you wish.</P>
   <form method='post' action='{{ cf.url }}admin/save_messages'>
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
     <div class='container-fluid well'>
       <div class='row'>
         <div class='span8'>

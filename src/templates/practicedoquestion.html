@@ -37,6 +37,7 @@
       <div class='well'>
         <form method="post"
               action="{{ cf.url }}practice/markquestion/{{ topic_id }}/{{ q_id }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
           {{ q_body|safe }}
           <input name="marknow" value="Mark Now!" type="submit">
         </form>

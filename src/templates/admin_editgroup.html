@@ -60,7 +60,7 @@
       </h1>
 
       <form method='post' action='{{ cf.url }}admin/edit_group_submit/{{ group.id }}' data-validate='parsley'>
-
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
       <div class="well">
 
 

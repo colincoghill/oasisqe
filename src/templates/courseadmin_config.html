@@ -8,6 +8,7 @@
     <h3>Course Configuration</h3>
     <form method="POST"
           action="{{ cf.url }}cadmin/{{ course.id }}/config_submit">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
         <div class="container-fluid well">
             <h5>Course Name</h5>
 
@@ -31,6 +32,7 @@
                 <div class='span5'>
                     <form method='post'
                           action='{{ cf.url }}cadmin/{{ course.id }}/assign_coord'>
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                         {% if coords %}Course-Coordinators: {% for coord in coords %}<br/>&nbsp;&nbsp;{{ coord.uname }} ({{ coord.fullname }}) <a href='{{ cf.url }}cadmin/{{ course.id }}/remove_coord/{{ coord.uname }}'><i class='icon icon-trash'> </i> </a>{% endfor %}{% endif %}
                         <br/><input type='text' class='typeahead' name='coord'
                                placeholder='username'>
@@ -48,6 +50,7 @@
                     {% if course.active %}
                     <form method='post'
                           action='{{ cf.url }}cadmin/{{ course.id }}/deactivate'>
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                         <input type='submit' name='deactivate_course'
                                value='Deactivate Course'
                                class='btn btn-small btn-danger'>
@@ -64,6 +67,7 @@
                     {% else %}
                         <form method='post'
                           action='{{ cf.url }}cadmin/{{ course.id }}/activate'>
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                         <input type='submit' name='reactivate_course'
                                value='Activate Course'
                                class='btn btn-small btn-primary'>
@@ -122,6 +126,7 @@
       can grant them more permissions later if you wish.</p>
             <form method='post'
                   action='{{ cf.url }}cadmin/{{ course.id }}/add_group'>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                 <select name='addgroup'>
                     <option value='0'>--</option>
                     {% for group in choosegroups %}

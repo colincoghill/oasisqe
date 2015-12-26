@@ -28,6 +28,7 @@
   <h2>Server Administration</h2>
   <h3>{{ course.name }} ({{ course.title }})</h3>
   <form method='post' action='{{ cf.url }}admin/course/save/{{ course.id }}'>
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
     <div class="container-fluid well">
       <h4>Course</h4>
 

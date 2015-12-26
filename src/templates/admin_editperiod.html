@@ -41,6 +41,7 @@
         <form method='post' id="form"
               action='{{ cf.url }}admin/edit_period_submit/{{ period.id }}'
               data-validate="parsley">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
           <label>Short Name:</label>
           <input placeholder="Short Name"
                  class="required input-medium"

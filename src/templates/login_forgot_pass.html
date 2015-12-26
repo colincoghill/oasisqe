@@ -31,6 +31,7 @@
 
       <FORM NAME='login' METHOD='post'
             ACTION='{{ cf.url }}login/forgot_pass/submit'>
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
         <img src='{{ cf.static }}oalogo.gif' alt='OASIS'
              style='height:60px; margin-right: 24px;'>
         <br/>

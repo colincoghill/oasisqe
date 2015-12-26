@@ -24,6 +24,7 @@
 
     <form method='post'
           action='{{ cf.url }}cadmin/{{ course.id }}/perms_save'>
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
       <br/>
       <table id='permstable' class='checks'>
         <colgroup>

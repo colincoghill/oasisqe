@@ -270,6 +270,7 @@ $(function () {
   <form method="post"
         action="{{ cf.url }}cadmin/{{ course.id }}/exam_edit_submit/{{ exam.id }}"
         name="create_assessment">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
     <br>
     {% if exam %}
       <input type="hidden" name="exam_id" value="{{ exam.id }}">

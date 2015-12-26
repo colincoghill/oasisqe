@@ -6,6 +6,7 @@
 
   <form method="post"
         action="{{ cf.url }}practice/question/{{ topic_id }}/{{ q_pos }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
     {{ mesg }}
     <input name="marknow" value="Try Refresh" type="submit">
   </form>

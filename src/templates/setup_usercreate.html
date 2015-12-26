@@ -8,6 +8,7 @@
       <h2>Create New User Account</h2>
 
       <FORM METHOD='post' ACTION='{{ cf.url }}setup/usercreate'>
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
         <TABLE>
           <TR>
             <TH style='text-align: right;'><label

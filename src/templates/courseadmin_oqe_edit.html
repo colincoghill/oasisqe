@@ -15,6 +15,7 @@
 
       <form method='post' ENCTYPE='multipart/form-data'
             ACTION='{{ cf.url }}qedit_raw/save/{{ topic.id }}/{{ qtemplate.id }}'>
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
         <div class='pull-right'><INPUT type='submit'
                                        class='btn btn-primary'
                                        name='save' value='Save Changes'>

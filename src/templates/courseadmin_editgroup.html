@@ -16,6 +16,7 @@
     <h5>Members</h5>
  <form id='member_edit' method='post'
           action='{{ cf.url }}cadmin/{{ course.id }}/groupmember/{{ group.id }}'>
+ <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
     <table class="table datatable">
       <thead>
       <tr>

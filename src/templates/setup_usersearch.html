@@ -16,6 +16,7 @@
       <h2>User Account Search</h2>
 
       <FORM METHOD='post' ACTION='{{ cf.url }}setup/usersearch'>
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
         <label>Search for: <INPUT TYPE='text' NAME='usersearch_name'
                                   VALUE='{{ findname }}'></label>
         <input class='btn btn-primary' type='submit' name='submit'
