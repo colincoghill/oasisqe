@@ -29,7 +29,7 @@ app = Flask(__name__,
             static_url_path=os.path.join(os.path.sep, OaConfig.staticpath, "static"))
 app.secret_key = OaConfig.secretkey
 app.config['MAX_CONTENT_LENGTH'] = 8 * 1024 * 1024  # 8MB max file size upload
-# CsrfProtect(app)  # enable once all forms checked
+CsrfProtect(app)  # enable once all forms checked
 
 # Flask initializes logging lazily and removes existing handlers when it does so,
 # so we need to make sure it initializes here, before we add our own (in imports too!)
