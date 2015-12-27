@@ -17,9 +17,7 @@ from logging import getLogger
 import random
 from oasis import app, authenticated
 
-
 L = getLogger("oasisqe")
-
 
 @app.route("/practice/top")
 @authenticated

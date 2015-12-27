@@ -22,21 +22,20 @@ import logging
 from logging.handlers import SMTPHandler, RotatingFileHandler
 from flask_wtf.csrf import CsrfProtect
 
-
 app = Flask(__name__,
             template_folder=os.path.join(OaConfig.homedir, "templates"),
             static_folder=os.path.join(OaConfig.homedir, "static"),
             static_url_path=os.path.join(os.path.sep, OaConfig.staticpath, "static"))
 app.secret_key = OaConfig.secretkey
 app.config['MAX_CONTENT_LENGTH'] = 8 * 1024 * 1024  # 8MB max file size upload
-CsrfProtect(app)  # enable once all forms checked
+
 
 # Flask initializes logging lazily and removes existing handlers when it does so,
 # so we need to make sure it initializes here, before we add our own (in imports too!)
 app.logger.info("Flask starting up")
 
 L = logging.getLogger("oasisqe")
-
+L.setLevel(OaConfig.loglevel)
 if OaConfig.email_admins:
     MH = SMTPHandler(OaConfig.smtp_server,
                      OaConfig.email,
@@ -74,6 +73,7 @@ from oasis.lib.Audit import audit
 from oasis.lib.Permissions import satisfy_perms
 from oasis.lib.General import sanitize_username
 
+CsrfProtect(app)
 
 @app.context_processor
 def template_context():
