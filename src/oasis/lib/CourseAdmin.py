@@ -25,11 +25,12 @@ def do_topic_update(course, request):
     form = request.form
     if form:
         for i in form.keys():
-            parts = i.split('_')
-            if len(parts) > 1:
-                catid = parts[0]
-                if catid not in categories:
-                    categories = categories + [catid]
+            if i not in ("csrf_token"):
+                parts = i.split('_')
+                if len(parts) > 1:
+                    catid = parts[0]
+                    if catid not in categories:
+                        categories = categories + [catid]
 
         for c in categories:
             topics = topics + [{'id': int(c),
