@@ -12,7 +12,7 @@
 from oasis.lib import General, Courses
 
 
-def get_q_list(topic):
+def get_q_list(topic_id):
     """
     Return a list of questions, sorted by position.
     """
@@ -24,7 +24,7 @@ def get_q_list(topic):
         """
         return cmp(abs(a['position']), abs(b['position']))
 
-    questionlist = General.get_q_list(topic, None, False)
+    questionlist = General.get_q_list(topic_id, None, False)
     if questionlist:
         # At the moment we use -'ve positions to indicate that a question is
         # hidden but when displaying them we want to maintain the sort order.
@@ -40,10 +40,10 @@ def get_q_list(topic):
     return questionlist
 
 
-def exam_available_q_list(course):
+def exam_available_q_list(course_id):
     """ Return a list of questions that can be used to create an assessment
     """
-    topics = Courses.get_topics_all(course, archived=0, numq=False)
+    topics = Courses.get_topics_all(course_id, archived=0, numq=False)
     for num, topic in topics.iteritems():
         topic_id = topics[num]['id']
         topics[num]['questions'] = get_q_list(topic_id)
