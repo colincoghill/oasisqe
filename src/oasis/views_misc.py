@@ -147,10 +147,14 @@ def qedit_redirect(course_id, topic_id, qt_id):
         :param course_id: ID of the course the question is in.
         :param topic_id: ID of the topic the question is in.
         :param qt_id: ID of the question template.
-     """
+    """
     etype = DB.get_qt_editor(qt_id)
     if etype == "Raw":
         return redirect(url_for("qedit_raw_edit",
+                                topic_id=topic_id,
+                                qt_id=qt_id))
+    if etype == "OQE":
+        return redirect(url_for("qedit_oqe_edit",
                                 topic_id=topic_id,
                                 qt_id=qt_id))
 
