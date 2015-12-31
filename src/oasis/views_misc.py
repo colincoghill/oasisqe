@@ -26,14 +26,18 @@ from .lib.Permissions import check_perm
 
 from oasis import app, authenticated
 
-
 L = getLogger("oasisqe")
 
 
 # Does its own auth because it may be used in embedded questions
 @app.route("/att/qatt/<int:qt_id>/<int:version>/<int:variation>/<fname>")
 def attachment_question(qt_id, version, variation, fname):
-    """ Serve the given question attachment """
+    """ Serve the given question attachment. This will come specifically from the question, not the qtemplate.
+        :param qt_id: ID of the QTemplate
+        :param version: QTemplate version
+        :param variation: Which variation of the QTemplate
+        :param fname: The "filename" of the attachment
+    """
     qtemplate = DB.get_qtemplate(qt_id)
     if len(qtemplate['embed_id']) < 1:  # if it's not embedded, check auth
         if 'user_id' not in session:
@@ -54,7 +58,12 @@ def attachment_question(qt_id, version, variation, fname):
 @app.route("/att/qtatt/<int:qt_id>/<int:version>/<int:variation>/<fname>")
 # Does its own auth because it may be used in embedded questions
 def attachment_qtemplate(qt_id, version, variation, fname):
-    """ Serve the given question attachment """
+    """ Serve the given question template attachment.
+        :param qt_id: ID of the QTemplate
+        :param version: QTemplate version
+        :param variation: Which variation of the QTemplate
+        :param fname: The "filename" of the attachment
+    """
     qtemplate = DB.get_qtemplate(qt_id)
     if len(qtemplate['embed_id']) < 1:  # if it's not embedded, check auth
         if 'user_id' not in session:
@@ -76,7 +85,6 @@ def attachment_qtemplate(qt_id, version, variation, fname):
 def logout():
     """ Log the user out, if they're logged in. Mainly by clearing the session.
     """
-
     if "user_id" in session:
         user_id = session["user_id"]
         username = session["username"]
@@ -88,7 +96,8 @@ def logout():
 
 @app.errorhandler(401)
 def custom_401(error):
-    """ Give them a custom 401 error
+    """ Give them a custom 401 error.
+        :param error: A string containing the message.
     """
     return Response('Authentication declined %s' % error,
                     401,
@@ -126,15 +135,19 @@ def main_top():
 def main_news():
     """ Present the top menu page """
     return render_template(
-        "news.html",
-        news=DB.get_message("news"),
+            "news.html",
+            news=DB.get_message("news"),
     )
 
 
 @app.route("/cadmin/<int:course_id>/editquestion/<int:topic_id>/<int:qt_id>")
 @authenticated
 def qedit_redirect(course_id, topic_id, qt_id):
-    """ Work out the appropriate question editor and redirect to it """
+    """ Work out the appropriate question editor and redirect to it
+        :param course_id: ID of the course the question is in.
+        :param topic_id: ID of the topic the question is in.
+        :param qt_id: ID of the question template.
+     """
     etype = DB.get_qt_editor(qt_id)
     if etype == "Raw":
         return redirect(url_for("qedit_raw_edit",
@@ -151,6 +164,8 @@ def qedit_redirect(course_id, topic_id, qt_id):
 @authenticated
 def qedit_qtlog(topic_id, qt_id):
     """ Show a table of all recent error messages affecting that question.
+        :param topic_id: ID of the topic the question is in
+        :param qt_id: ID of the question template to display the log of.
     """
 
     errors = QEditor.qtlog_as_html(topic_id, qt_id)
@@ -168,15 +183,17 @@ def qedit_qtlog(topic_id, qt_id):
 def qedit_raw_edit(topic_id, qt_id):
     """ Present a question editor so they can edit the question template.
         Main page of editor
+        :param topic_id: ID of the topic the question template is in.
+        :param qt_id: ID of the Question Template to edit.
     """
     user_id = session['user_id']
 
     course_id = Topics.get_course_id(topic_id)
 
-    if not (check_perm(user_id, course_id, "courseadmin")
-            or check_perm(user_id, course_id, "courseadmin")
-            or check_perm(user_id, course_id, "questionedit")
-            or check_perm(user_id, course_id, "questionsource")):
+    if not (check_perm(user_id, course_id, "courseadmin") or
+            check_perm(user_id, course_id, "courseadmin") or
+            check_perm(user_id, course_id, "questionedit") or
+            check_perm(user_id, course_id, "questionsource")):
         flash("You do not have question editor privilege in this course")
         return redirect(url_for("cadmin_edit_topic",
                                 course_id=course_id, topic_id=topic_id))
@@ -201,28 +218,31 @@ def qedit_raw_edit(topic_id, qt_id):
         } for name in attachnames
         if name not in ['qtemplate.html', 'image.gif', 'datfile.txt',
                         '__datfile.txt', '__qtemplate.html']
-    ]
+        ]
     return render_template(
-        "courseadmin_raw_edit.html",
-        course=course,
-        topic=topic,
-        html=html,
-        attachments=attachments,
-        qtemplate=qtemplate
+            "courseadmin_raw_edit.html",
+            course=course,
+            topic=topic,
+            html=html,
+            attachments=attachments,
+            qtemplate=qtemplate
     )
 
 
 @app.route("/qedit_raw/save/<int:topic_id>/<int:qt_id>", methods=['POST', ])
 @authenticated
 def qedit_raw_save(topic_id, qt_id):
-    """ Accept the question editor form and save the results. """
+    """ Accept the question editor form and save the results.
+        :param topic_id: ID of the topic the question template is in.
+        :param qt_id: ID of the Question Template to save.
+    """
     valid = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
     user_id = session['user_id']
     course_id = Topics.get_course_id(topic_id)
-    if not (check_perm(user_id, course_id, "courseadmin")
-            or check_perm(user_id, course_id, "courseadmin")
-            or check_perm(user_id, course_id, "questionedit")
-            or check_perm(user_id, course_id, "questionsource")):
+    if not (check_perm(user_id, course_id, "courseadmin") or
+            check_perm(user_id, course_id, "courseadmin") or
+            check_perm(user_id, course_id, "questionedit") or
+            check_perm(user_id, course_id, "questionsource")):
         flash("You do not have question editor privilege in this course")
         return redirect(url_for("cadmin_edit_topic",
                                 course_id=course_id,
@@ -259,8 +279,8 @@ def qedit_raw_save(topic_id, qt_id):
 
     # They entered something into the html field and didn't upload a
     # qtemplate.html
-    if not ('newattachmentname' in form
-            and form['newattachmentname'] == "qtemplate.html"):
+    if not ('newattachmentname' in form and
+            form['newattachmentname'] == "qtemplate.html"):
         if 'newhtml' in form:
             html = form['newhtml'].encode("utf8")
             DB.create_qt_att(qt_id,
@@ -345,33 +365,38 @@ def qedit_raw_save(topic_id, qt_id):
 def qedit_raw_attach(qt_id, fname):
     """ Serve the given question template attachment
         straight from DB so it's fresh
+        :param qt_id: ID of the Question Template the attachment belongs to.
+        :param fname: The "filename" of the attachment.
     """
-    mtype = DB.get_qt_att_mimetype(qt_id, fname)
+    mimetype = DB.get_qt_att_mimetype(qt_id, fname)
     data = DB.get_qt_att(qt_id, fname)
     if not data:
         abort(404)
-    if not mtype:
-        mtype = "text/plain"
-    if mtype == "text/html":
-        mtype = "text/plain"
+    if not mimetype:
+        mimetype = "text/plain"
+    if mimetype == "text/html":
+        mimetype = "text/plain"
     sio = StringIO.StringIO(data)
-    return send_file(sio, mtype, as_attachment=True, attachment_filename=fname)
+    return send_file(sio, mimetype, as_attachment=True, attachment_filename=fname)
 
 
+# TODO: Fix or remove.
 @app.route("/qedit_oqe/edit/<int:topic_id>/<int:qt_id>")
 @authenticated
 def qedit_oqe_edit(topic_id, qt_id):
     """ Present a question editor so they can edit the question template.
-        Main page of editor
+        Main page of editor. This is the "OQE" editor. Currently not functional.
+        :param topic_id: ID of the topic the question template is in.
+        :param qt_id: ID of the Question Template to edit.
     """
     user_id = session['user_id']
 
     course_id = Topics.get_course_id(topic_id)
 
-    if not (check_perm(user_id, course_id, "courseadmin")
-            or check_perm(user_id, course_id, "courseadmin")
-            or check_perm(user_id, course_id, "questionedit")
-            or check_perm(user_id, course_id, "questionsource")):
+    if not (check_perm(user_id, course_id, "courseadmin") or
+            check_perm(user_id, course_id, "courseadmin") or
+            check_perm(user_id, course_id, "questionedit") or
+            check_perm(user_id, course_id, "questionsource")):
         flash("You do not have question editor privilege in this course")
         return redirect(url_for("cadmin_edit_topic",
                                 course_id=course_id, topic_id=topic_id))
@@ -396,14 +421,14 @@ def qedit_oqe_edit(topic_id, qt_id):
         } for name in attachnames
         if name not in ['qtemplate.html', 'image.gif', 'datfile.txt',
                         '__datfile.txt', '__qtemplate.html']
-    ]
+        ]
 
     return render_template(
-        "courseadmin_oqe_edit.html",
-        course=course,
-        topic=topic,
-        html=html,
-        attachments=attachments,
-        attachnames=attachnames,
-        qtemplate=qtemplate
+            "courseadmin_oqe_edit.html",
+            course=course,
+            topic=topic,
+            html=html,
+            attachments=attachments,
+            attachnames=attachnames,
+            qtemplate=qtemplate
     )
