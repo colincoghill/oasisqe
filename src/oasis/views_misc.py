@@ -153,8 +153,8 @@ def qedit_redirect(course_id, topic_id, qt_id):
         return redirect(url_for("qedit_raw_edit",
                                 topic_id=topic_id,
                                 qt_id=qt_id))
-    if etype == "OQE":
-        return redirect(url_for("qedit_oqe_edit",
+    if etype == "qe2":
+        return redirect(url_for("qedit_qe2_edit",
                                 topic_id=topic_id,
                                 qt_id=qt_id))
 
@@ -385,11 +385,11 @@ def qedit_raw_attach(qt_id, fname):
 
 
 # TODO: Fix or remove.
-@app.route("/qedit_oqe/edit/<int:topic_id>/<int:qt_id>")
+@app.route("/qedit_qe2/edit/<int:topic_id>/<int:qt_id>")
 @authenticated
-def qedit_oqe_edit(topic_id, qt_id):
+def qedit_qe2_edit(topic_id, qt_id):
     """ Present a question editor so they can edit the question template.
-        Main page of editor. This is the "OQE" editor. Currently not functional.
+        Main page of editor. This is the "QE2" editor. Currently not functional.
         :param topic_id: ID of the topic the question template is in.
         :param qt_id: ID of the Question Template to edit.
     """
@@ -428,7 +428,7 @@ def qedit_oqe_edit(topic_id, qt_id):
         ]
 
     return render_template(
-            "courseadmin_oqe_edit.html",
+            "courseadmin_qe2_edit.html",
             course=course,
             topic=topic,
             html=html,

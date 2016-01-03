@@ -21,6 +21,9 @@ def is_restricted(fname):
         return True
     if fname.endswith(".oqe"):
         return True
+    if fname.endswith(".qe2"):
+        return True
+
     return False
 
 

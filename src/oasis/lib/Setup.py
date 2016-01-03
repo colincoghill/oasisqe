@@ -168,6 +168,13 @@ def do_topic_page_commands(request, topic_id, user_id):
                                      "application/oasis-oqe",
                                      "",
                                      1)
+                if new_qtype == "qe2":
+                    mesg.append("Creating new question, id %s as QE2" % newid)
+                    DB.create_qt_att(newid,
+                                     "_editor.qe2",
+                                     "application/oasis-qe2",
+                                     "",
+                                     1)
                 if new_qtype == "raw":
                     mesg.append("Creating new question, id %s as RAW (%s)" %
                                 (newid, new_qtype))
