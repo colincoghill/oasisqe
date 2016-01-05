@@ -156,18 +156,6 @@ def do_topic_page_commands(request, topic_id, user_id):
                                  "application/oasis-html",
                                  "empty",
                                  1)
-                DB.create_qt_att(newid,
-                                 "qtemplate.html",
-                                 "application/oasis-html",
-                                 "empty",
-                                 1)
-                if new_qtype == "oqe":
-                    mesg.append("Creating new question, id %s as OQE" % newid)
-                    DB.create_qt_att(newid,
-                                     "_editor.oqe",
-                                     "application/oasis-oqe",
-                                     "",
-                                     1)
                 if new_qtype == "qe2":
                     mesg.append("Creating new question, id %s as QE2" % newid)
                     DB.create_qt_att(newid,

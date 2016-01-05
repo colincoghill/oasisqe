@@ -384,7 +384,6 @@ def qedit_raw_attach(qt_id, fname):
     return send_file(sio, mimetype, as_attachment=True, attachment_filename=fname)
 
 
-# TODO: Fix or remove.
 @app.route("/qedit_qe2/edit/<int:topic_id>/<int:qt_id>")
 @authenticated
 def qedit_qe2_edit(topic_id, qt_id):
@@ -409,10 +408,10 @@ def qedit_qe2_edit(topic_id, qt_id):
     topic = Topics.get_topic(topic_id)
     qtemplate = DB.get_qtemplate(qt_id)
     try:
-        html = DB.get_qt_att(qt_id, "qtemplate.html")
+        html = DB.get_qt_att(qt_id, "_editor.qe2")
     except KeyError:
         try:
-            html = DB.get_qt_att(qt_id, "__qtemplate.html")
+            html = DB.get_qt_att(qt_id, "__editor.qe2")
         except KeyError:
             html = "[question html goes here]"
 
