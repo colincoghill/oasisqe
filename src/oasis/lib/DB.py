@@ -1327,7 +1327,7 @@ def touch_user_exam(exam_id, user_id):
 
 def get_qt_editor(qt_id):
     """ Return which type of editor the question should use.
-        OQE | Raw
+        OQE | Raw | QE2
     """
     assert isinstance(qt_id, int)
     etype = "Raw"

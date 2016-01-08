@@ -3,15 +3,36 @@
 # This code is under the GNU Affero General Public License
 # http://www.gnu.org/licenses/agpl-3.0.html
 
-"""Provides a question editing interface to the user."""
+"""Provides a "raw" question editing interface to the user. Allows the user
+   to create all the low level attachments and scripts used by OASIS questions
+   directly."""
 
 from oasis.lib import DB
 from oasis.lib import Audit
 from logging import getLogger
 import re
 
-
 L = getLogger("oasisqe")
+
+
+def create_new(qt_id, name):
+    """
+    Set the given qtemplate up as a new (default) question. Makes sure
+    the appropriate things the editor needs are configured and in place.
+    Assumes the QT has not previously been set up.
+
+    :param qt_id: The ID of the qtemplate to set up.
+    :param name: Name of the question.
+    :return:
+    """
+
+    # The datfile contains a list of variations.
+    DB.create_qt_att(qt_id,
+                     "datfile.txt",
+                     "application/oasis-dat",
+                     "0",
+                     1)
+    return
 
 
 def parse_datfile(datfile):
