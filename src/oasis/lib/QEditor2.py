@@ -45,6 +45,20 @@ def create_new(qt_id, name):
     return
 
 
+def process_save(qt_id, topic_id, request):
+    """ Have received a web form POST to save the current changes.
+
+    :param qt_id: ID of the question template being edited
+    :param topic_id: Topic the question template is in
+    :param request: The POST request.
+    :param session: The web session object
+    :param version: (int) the new version of the qt being saved
+    :return: None
+    """
+
+    raise NotImplemented
+
+
 def qtlog_as_html(topic, qtid):
     """Show the most recent log errors for the given qtid.
     """
