@@ -788,6 +788,7 @@ def create_qt_att(qt_id, name, mime_type, data, version):
     MC.delete(key)
     if not data:
         data = ""
+    L.info("QT Attachment upload '%s' '%s' %s bytes" % (name, mime_type, len(data)))
     if isinstance(data, unicode):
         data = data.encode("utf8")
     safe_data = psycopg2.Binary(data)
