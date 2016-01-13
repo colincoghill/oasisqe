@@ -37,7 +37,7 @@ fname = sys.argv[2]
 print "Topic %s found: %s" % (tid, topic['title'])
 
 base, suffix = os.path.splitext(fname)
-data = External.topic_to_zip(tid, base, suffix=suffix)
+data = External.topic_to_zip(tid)
 
 f = open("%s" % fname, mode='w')
 f.write(data)
