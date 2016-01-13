@@ -1336,6 +1336,8 @@ def get_qt_editor(qt_id):
     for att in atts:
         if att.endswith(".oqe"):
             etype = "OQE"
+        if att.endswith(".qe2"):
+            etype = "qe2"
     return etype
 
 

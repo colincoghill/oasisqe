@@ -7,14 +7,14 @@
   <a href="{{ cf.url }}cadmin/{{ course.id }}/edittopic/{{ topic.id }}">Topic
     Page</a>
   <h4>{{ course.name }} ({{ course.title }})</h4>
-  <h2>"OQE" Question Editor</h2>
+  <h2>"QE2" Question Editor</h2>
   <p>NOT YET FUNCTIONAL</p>
   <div class="container-fluid well"
        style='padding:1em; background-color: #fff8f8; border: solid darkred 1px;'>
     <div>
 
       <form method='post' ENCTYPE='multipart/form-data'
-            ACTION='{{ cf.url }}qedit_raw/save/{{ topic.id }}/{{ qtemplate.id }}'>
+            ACTION='{{ cf.url }}qedit_qe2/save/{{ topic.id }}/{{ qtemplate.id }}'>
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
         <div class='pull-right'><INPUT type='submit'
                                        class='btn btn-primary'
@@ -44,100 +44,26 @@
         <h4>Marking Type:</h4>
 
         <div style='padding-left: 1em;'>
-          <select name='newmodule'>
-            <option value='1'
-                    {% if qtemplate.marker == 1 %}SELECTED{% endif %}>
-              Standard
-            </option>
-            <option value='2'
-                    {% if qtemplate.marker == 2 %}SELECTED{% endif %}>
-              "Smart"
-            </option>
-          </select>
-
-          <p>With "Smart" marking, you must also provide a script to
-            mark the question.</p>
-
         </div>
 
-        <h4>Maximum Score:</h4>
+        <H4>Question Text:</H4>
 
         <div style='padding-left: 1em;'>
-          <input type='text' id='maxscore' name='newmaxscore'
-                 value='{% if qtemplate.scoremax %}{{ qtemplate.scoremax }}{% endif %}'>
-
-          <p>Maximum Score
-            is the maximum number of points the question can score.
-            Optional if you are not using Smart
-            marking.</p>
-        </div>
-
-        <H4>HTML Template (qtemplate.html):</H4>
-
-        <div style='padding-left: 1em;'>
-          <TEXTAREA NAME='newhtml' CLASS='input-xxlarge'
-                    rows='20'>{{ qtemplate.html }}</TEXTAREA>
+          <TEXTAREA NAME='newtext' CLASS='input-xxlarge'
+                    rows='20'>{{ _qtext.html }}</TEXTAREA>
         </div>
         <H4>Attachments:</H4>
-
-        <p>OASIS questions <i>require</i> an attachment called
-          <b>datfile.dat</b> (or datfile.txt)
-          with question values and
-          answers.
-          <b>image.gif</b> is a special image attachment that will
-          have values from the datfile written on to
-          it
-          when generating questions. For convenience, the <b>qtemplate.html</b>
-          file may be edited above.</p>
-
         <div style='padding-left: 1em;'>
           <table class='table table-condensed att_table'>
             <tr>
               <th>OASIS Attachments:</th>
-
-            </tr>
-            <tr>
-              <td>qtemplate.html</td>
-
-              <td style='width: 100px;'>OASIS Template</td>
-              <td>
-                <a href='{{ cf.url }}qedit_raw/att/{{ qtemplate.id }}/qtemplate.html'
-                   target='_new'>View/Download</a>
-                or
-                Upload New: <input type='file' name='newindex'>
-              </td>
-            </tr>
-            <tr>
-              <td>datfile.txt</td>
-
-              <td>OASIS DATA</td>
-              <td>
-                <a href='{{ cf.url }}qedit_raw/att/{{ qtemplate.id }}/datfile.txt'
-                   target='_new'>View/Download</a>
-                or
-                Upload New: <input type='file'
-                                   name='newdatfile'></td>
-            </tr>
-            <tr>
-              <td>image.gif</td>
-              <td>Dynamic Image</td>
-              <td>
-                <a href='{{ cf.url }}qedit_raw/att/{{ qtemplate.id }}/image.gif'
-                   target='_new'>View/Download</a>
-                or
-                Upload New: <input type='file'
-                                   name='newimgfile'></td>
-            </tr>
-            <tr>
-              <th>Extra Attachments:</th>
-
-            </tr>
+         </tr>
             {% for att in attachments %}
               <tr>
                 <td style='width:20%;'>{{ att.name }}</td>
                 <td style='width:20%;'>{{ att.mimetype }}</td>
                 <td style='width:20%;'>
-                  <a href='{{ cf.url }}qedit_raw/att/{{ qtemplate.id }}/{{ att.name }}'>View/Download</a>
+                  <a href='{{ cf.url }}qedit_qe2/att/{{ qtemplate.id }}/{{ att.name }}'>View/Download</a>
                 </td>
               </tr>
             {% endfor %}
@@ -166,7 +92,7 @@
     </div>
 
     <a class='btn btn-small'
-       href='{{ cf.url }}/qedit_raw/qtlog/{{ topic.id }}/{{ qtemplate.id }}'>Show
+       href='{{ cf.url }}/qedit_qe2/qtlog/{{ topic.id }}/{{ qtemplate.id }}'>Show
       Log</a>
 
 
