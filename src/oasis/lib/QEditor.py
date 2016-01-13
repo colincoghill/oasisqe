@@ -125,7 +125,7 @@ def process_save(qt_id, topic_id, request, session, version):
         data = fptr.read()
         mtype = fptr.content_type
 
-        if len(data) >= 1 and newname == 'NONAME':
+        if len(data) >= 1:
             DB.create_qt_att(qt_id, newname, mtype, data, version)
             L.info("File '%s' uploaded by %s" % (newname, session['username']))
 
