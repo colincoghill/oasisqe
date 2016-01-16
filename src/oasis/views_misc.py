@@ -343,7 +343,9 @@ def qedit_qe2_edit(topic_id, qt_id):
             'name': name,
             'mimetype': DB.get_qt_att_mimetype(qt_id, name)
         } for name in attachnames
-        if not name.startswith("_")
+        if (not name.startswith("__") and
+            name not in ('qtemplate.html', 'image.gif', 'datfile.txt',
+                        '__datfile.txt', '__qtemplate.html'))
         ]
 
     return render_template(
