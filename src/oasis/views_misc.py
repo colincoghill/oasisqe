@@ -343,8 +343,7 @@ def qedit_qe2_edit(topic_id, qt_id):
             'name': name,
             'mimetype': DB.get_qt_att_mimetype(qt_id, name)
         } for name in attachnames
-        if name not in ['qtemplate.html', 'image.gif', 'datfile.txt',
-                        '__datfile.txt', '__qtemplate.html']
+        if not name.startswith("_")
         ]
 
     return render_template(
@@ -406,7 +405,10 @@ def qedit_qe2_save(topic_id, qt_id):
                   "possibly the value is already used elsewhere.")
 
     # Let the question editor deal with the rest
-    QEditor2.process_save(qt_id, topic_id, request, session, version)
+    try:
+        QEditor2.process_save(qt_id, topic_id, request, session, version)
+    except KeyError, e:
+        abort(400)
 
     flash("Question changes saved")
-    return redirect(url_for("qedit_raw_edit", topic_id=topic_id, qt_id=qt_id))
+    return redirect(url_for("qedit_qe2_edit", topic_id=topic_id, qt_id=qt_id))

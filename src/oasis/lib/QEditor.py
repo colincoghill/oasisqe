@@ -26,6 +26,12 @@ def create_new(qt_id, name):
     :return:
     """
 
+    # Raw questions require the user to provide qtemplate.html
+    DB.create_qt_att(new_id,
+                     "qtemplate.html",
+                     "application/oasis-html",
+                     "empty",
+                     1)
     # The datfile contains a list of variations.
     DB.create_qt_att(qt_id,
                      "datfile.txt",

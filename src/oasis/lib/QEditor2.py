@@ -45,7 +45,7 @@ def create_new(qt_id, name):
     return
 
 
-def process_save(qt_id, topic_id, request):
+def process_save(qt_id, topic_id, request, session, version):
     """ Have received a web form POST to save the current changes.
 
     :param qt_id: ID of the question template being edited
@@ -56,7 +56,15 @@ def process_save(qt_id, topic_id, request):
     :return: None
     """
 
-    raise NotImplemented
+    form = request.form
+    files = request.files
+
+    if 'blocks' in form:
+        blocks = form['blocks']
+    else:
+        raise KeyError("blocks")
+
+    return
 
 
 def qtlog_as_html(topic, qtid):

@@ -153,13 +153,6 @@ def do_topic_page_commands(request, topic_id, user_id):
                                  topic_id,
                                  new_position)
 
-                # Needed by all question types
-                DB.create_qt_att(new_id,
-                                 "qtemplate.html",
-                                 "application/oasis-html",
-                                 "empty",
-                                 1)
-
                 if new_qtype == "qe2":
                     mesg.append("Creating new question, id %s as QE2" % new_id)
                     QEditor2.create_new(new_id, new_title)
