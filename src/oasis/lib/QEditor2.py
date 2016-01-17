@@ -38,7 +38,7 @@ def create_new(qt_id, name):
         'qe_version': 0.1
     }
     DB.create_qt_att(qt_id,
-                     "_editor.qe2",
+                     "__editor.qe2",
                      "application/oasis-qe2",
                      json.dumps(default_),
                      1)
@@ -60,7 +60,12 @@ def process_save(qt_id, topic_id, request, session, version):
     files = request.files
 
     if 'blocks' in form:
-        blocks = form['blocks']
+        blocks = form['blocks'].encode("utf8")
+        DB.create_qt_att(qt_id,
+                         "__editor.qe2",
+                         "text/json",
+                         blocks,
+                         version)
     else:
         raise KeyError("blocks")
 

@@ -332,7 +332,7 @@ def qedit_qe2_edit(topic_id, qt_id):
     topic = Topics.get_topic(topic_id)
     qtemplate = DB.get_qtemplate(qt_id)
     try:
-        html = DB.get_qt_att(qt_id, "_editor.qe2")
+        html = DB.get_qt_att(qt_id, "__editor.qe2")
     except KeyError:
         html = "[ERROR: Missing question editor data]"
 
