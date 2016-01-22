@@ -20,8 +20,6 @@ MYPATH = os.path.dirname(__file__)
 
 from oasis.lib.Permissions import satisfy_perms, check_perm
 from oasis.lib.General import date_from_py2js, sanitize_username
-from oasis.lib import External
-
 from oasis import app, require_course_perm, require_perm
 
 
