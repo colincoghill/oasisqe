@@ -26,10 +26,9 @@ bugs still remain and it needs more testing.
  * Security Fixes
  * Remove all known "Internal Server Error" pages.
  * Better error checking or handling of permissions on log file & cache
- * Basic Question import/export (for testing/dev purposes, not for end users yet)
+ * Basic Question import/export
  * Example Questions
 
- 
  * Developer setup. 
  * Load testing setup.
 
