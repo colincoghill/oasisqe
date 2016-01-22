@@ -877,7 +877,6 @@ def cadmin_view_topic(course_id, topic_id):
 @require_course_perm(("questionedit", 'coursecoord', 'courseadmin'))
 def cadmin_topic_save(course_id, topic_id):
     """ Receive the page from cadmin_edit_topic and process any changes. """
-    L.debug("cadmin_topic_save(%s, %s), REQUEST=%s" % (course_id, topic_id, repr(request)))
 
     user_id = session['user_id']
 
@@ -889,10 +888,11 @@ def cadmin_topic_save(course_id, topic_id):
         return redirect(url_for('cadmin_top', course_id=course_id))
 
     if "save_changes" in request.form:
+
         (what, result) = Setup.do_topic_page_commands(request, topic_id, user_id)
 
         if what == 1:
-            # flash(result['mesg'])
+            flash(result['mesg'])
             return redirect(url_for('cadmin_edit_topic',
                                     course_id=course_id,
                                     topic_id=topic_id))
@@ -961,41 +961,3 @@ def cadmin_course_add_group(course_id):
     group = Groups.Group(group_id)
     flash("Group %s added" % (group.name,))
     return redirect(url_for('cadmin_config', course_id=course_id))
-
-
-@app.route("/cadmin/<int:course_id>/questions_import/<topic_id>", methods=['POST', ])
-@require_course_perm(("questioneditor", 'coursecoord', 'courseadmin'))
-def cadmin_course_questions_import(course_id, topic_id):
-    """ Take an OAQ file and import any questions in it into topic
-    """
-
-    if 'importfile' in request.files:
-        data = request.files['importfile'].read()
-    else:
-        flash("No file uploaded?")
-        return redirect(url_for("cadmin_edit_topic",
-                                course_id=course_id,
-                                topic_id=topic_id))
-
-    if len(data) > 52000000:  # approx 50Mb
-        flash("Upload is too large, 50MB Maximum.")
-        return redirect(url_for("cadmin_edit_topic",
-                                course_id=course_id,
-                                topic_id=topic_id))
-
-    num = External.import_qts_from_zip(data, topicid=topic_id)
-    if num is False:
-        flash("Invalid OASISQE file? No data recognized.")
-        return redirect(url_for("cadmin_edit_topic",
-                                course_id=course_id,
-                                topic_id=topic_id))
-    if num is 0:
-        flash("Empty OASISQE file? No questions found.")
-        return redirect(url_for("cadmin_edit_topic",
-                                course_id=course_id,
-                                topic_id=topic_id))
-
-    flash("%s questions imported!" % num)
-    return redirect(url_for("cadmin_edit_topic",
-                            course_id=course_id,
-                            topic_id=topic_id))
