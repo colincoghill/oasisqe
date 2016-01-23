@@ -38,10 +38,37 @@ def create_new(qt_id, name):
         'qe_version': 0.1
     }
     DB.create_qt_att(qt_id,
-                     "_editor.qe2",
+                     "__editor.qe2",
                      "application/oasis-qe2",
                      json.dumps(default_),
                      1)
+    return
+
+
+def process_save(qt_id, topic_id, request, session, version):
+    """ Have received a web form POST to save the current changes.
+
+    :param qt_id: ID of the question template being edited
+    :param topic_id: Topic the question template is in
+    :param request: The POST request.
+    :param session: The web session object
+    :param version: (int) the new version of the qt being saved
+    :return: None
+    """
+
+    form = request.form
+    files = request.files
+
+    if 'blocks' in form:
+        blocks = form['blocks'].encode("utf8")
+        DB.create_qt_att(qt_id,
+                         "__editor.qe2",
+                         "text/json",
+                         blocks,
+                         version)
+    else:
+        raise KeyError("blocks")
+
     return
 
 
