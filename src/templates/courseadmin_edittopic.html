@@ -1,176 +1,187 @@
 {% extends "page_courseadmin.html" %}
 {% block js %}
-  <script>
-    $("#target_cmd").change(function () {
-      var tcmd = $(this).val();
-      if (tcmd == "hide" || tcmd == "show" || tcmd == "export" || tcmd == "--") {
-        $("#target_topic").hide();
-      } else {
-        $("#target_topic").show();
-      }
-    })
-  </script>
+    <script>
+        $("#target_cmd").change(function () {
+            var tcmd = $(this).val();
+            if (tcmd == "hide" || tcmd == "show" || tcmd == "export" || tcmd == "--") {
+                $("#target_topic").hide();
+            } else {
+                $("#target_topic").show();
+            }
+        })
+    </script>
 
 {% endblock js %}
 {% block body %}
-  <br/>
-  Back to <a href="{{ cf.url }}cadmin/{{ course.id }}/top">Course Page</a>
-  <h4>{{ course.name }} ({{ course.title }})</h4>
-  <H2>{{ topic.position }}. {{ topic.name }}</H2>
-  <p>Note: Questions will be displayed in order of their position. It is ok
-    for multiple questions to have the same
-    position or for there to be gaps. The user will see the numbering,
-    however.</p>
-  <div class="container-fluid well">
-    <h5>Visible Questions</h5>
+    <br/>
+    Back to <a href="{{ cf.url }}cadmin/{{ course.id }}/top">Course Page</a>
+    <h4>{{ course.name }} ({{ course.title }})</h4>
+    <H2>{{ topic.position }}. {{ topic.name }}</H2>
+    <p>Note: Questions will be displayed in order of their position. It is ok
+        for multiple questions to have the same
+        position or for there to be gaps. The user will see the numbering,
+        however.</p>
+    <div class="container-fluid well">
+        <h5>Visible Questions</h5>
 
-    <form method="POST"
-          action="{{ cf.url }}cadmin/{{ course.id }}/topic_save/{{ topic.id }}">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-      <table class="table">
-        <thead>
-        <tr>
-          <th>Select</th>
-          <th>Pos</th>
-          <th>Name</th>
-          <th>Type</th>
-          <th></th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for q in questions if q.position >= 1 %}
-          <tr>
-            <td><input name="select_{{ q.id }}" type="checkbox">
-            </td>
-            <td><input name="position_{{ q.id }}" type="text"
-                       class="input-mini" value='{{ q.position }}'>
-            </td>
-            <td><input name="name_{{ q.id }}" type="text"
-                       class="input" value='{{ q.name }}'></td>
-            <td><sub>{{ q.editor }}</sub> {% if q.embed_url %}
-              <a href='{{ q.embed_url }}'>
+        <form method="POST" ENCTYPE='multipart/form-data'
+              action="{{ cf.url }}cadmin/{{ course.id }}/topic_save/{{ topic.id }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Select</th>
+                    <th>Pos</th>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for q in questions if q.position >= 1 %}
+                    <tr>
+                        <td><input name="select_{{ q.id }}" type="checkbox">
+                        </td>
+                        <td><input name="position_{{ q.id }}" type="text"
+                                   class="input-mini" value='{{ q.position }}'>
+                        </td>
+                        <td><input name="name_{{ q.id }}" type="text"
+                                   class="input" value='{{ q.name }}'></td>
+                        <td><sub>{{ q.editor }}</sub> {% if q.embed_url %}
+                            <a href='{{ q.embed_url }}'>
                 <span
-                    style='font-size: xx-small; color: darkred;'>embeddable</span>
-              </a>{% endif %}</td>
-            <td>
-              <a href="{{ cf.url }}cadmin/{{ course.id }}/editquestion/{{ topic.id }}/{{ q.id }}"
-                 class='btn-mini btn'>Edit Question</a>
-              <a target='_new'
-                 href="{{ cf.url }}practice/questionid/{{ topic.id }}/{{ q.id }}"
-                 class='btn-mini btn'>View</a></td>
-          </tr>
-        {% endfor %}
-        </tbody>
-      </table>
+                        style='font-size: xx-small; color: darkred;'>embeddable</span>
+                            </a>{% endif %}</td>
+                        <td>
+                            <a href="{{ cf.url }}cadmin/{{ course.id }}/editquestion/{{ topic.id }}/{{ q.id }}"
+                               class='btn-mini btn'>Edit Question</a>
+                            <a target='_new'
+                               href="{{ cf.url }}practice/questionid/{{ topic.id }}/{{ q.id }}"
+                               class='btn-mini btn'>View</a></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
 
-      <h5>Hidden Questions</h5>
+            <h5>Hidden Questions</h5>
 
-      <p>To hide a topic, for now, set its position to be 0 or
-        negative.</p>
-      <table class="table">
-        <thead>
-        <tr>
-          <th>Select</th>
-          <th>Pos</th>
-          <th>Name</th>
-          <th>Type</th>
-          <th></th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for q in questions if q.position <1 %}
-          <tr>
-            <td><input name="select_{{ q.id }}" type="checkbox">
-            </td>
-            <td><input name="position_{{ q.id }}" type="text"
-                       class="input-mini" value='{{ q.position }}'>
-            </td>
-            <td><input name="name_{{ q.id }}" type="text"
-                       class="input" value='{{ q.name }}'></td>
-            <td><sub>{{ q.editor }}</sub> {% if q.embed_url %}
-              <a href='{{ q.embed_url }}'>
+            <p>To hide a topic, for now, set its position to be 0 or
+                negative.</p>
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Select</th>
+                    <th>Pos</th>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for q in questions if q.position <1 %}
+                    <tr>
+                        <td><input name="select_{{ q.id }}" type="checkbox">
+                        </td>
+                        <td><input name="position_{{ q.id }}" type="text"
+                                   class="input-mini" value='{{ q.position }}'>
+                        </td>
+                        <td><input name="name_{{ q.id }}" type="text"
+                                   class="input" value='{{ q.name }}'></td>
+                        <td><sub>{{ q.editor }}</sub> {% if q.embed_url %}
+                            <a href='{{ q.embed_url }}'>
                 <span
-                    style='font-size: xx-small; color: darkred;'>embeddable</span>
-              </a>{% endif %}</td>
-            <td>
-              <a href="{{ cf.url }}cadmin/{{ course.id }}/editquestion/{{ topic.id }}/{{ q.id }}"
-                 class='btn-mini btn'>Edit
-                Question</a> <a target='_new'
-                                href="{{ cf.url }}practice/questionid/{{ topic.id }}/{{ q.id }}"
-                                class='btn-mini btn'>View</a>
-            </td>
-          </tr>
-        {% endfor %}
-        </tbody>
-      </table>
+                        style='font-size: xx-small; color: darkred;'>embeddable</span>
+                            </a>{% endif %}</td>
+                        <td>
+                            <a href="{{ cf.url }}cadmin/{{ course.id }}/editquestion/{{ topic.id }}/{{ q.id }}"
+                               class='btn-mini btn'>Edit
+                                Question</a> <a target='_new'
+                                                href="{{ cf.url }}practice/questionid/{{ topic.id }}/{{ q.id }}"
+                                                class='btn-mini btn'>View</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
 
-      <br/>
+            <br/>
 
-      <div>
-        <h5>With Selected questions:</h5> <select name="target_cmd"
-                                                  id="target_cmd">
-        <option value="--" SELECTED>--</option>
-        <option value="hide">Hide</option>
-        <option value="show">Show</option>
-        <option value="move">Move To Topic</option>
-        <option value="copy">Copy To Topic</option>
-      <!--  <option value="export">Export (Download)</option> -->
-      </select>
-        <select id="target_topic" name='target_topic' class="hidden">
-          <option value="">--</option>
-          {% for course in all_course_topics %}
-            <optgroup label='{{ course.course }}'>
-              {% for k,v in course.topics.iteritems() %}
-                <option value='{{ v.id }}'>{{ v.title }}</option>
-              {% endfor %}
-            </optgroup>
-          {% endfor %}
-        </select>
-      </div>
-      <div>
-        <br>
-        <h5>Create New Question:</h5>
-        <table class="table">
-          <thead>
-          <tr>
-            <th>Pos</th>
-            <th>Name</th>
-            <th>Type</th>
-            <th></th>
-          </tr>
-          </thead>
-          <tbody>
-          <tr>
-            <td>
-              <input type="text" name="new_position"
-                     class='input input-mini'>
-            </td>
-            <td>
-              <input type="text" name="new_title" class='input'>
-            </td>
-            <td>
-              <input type='hidden' name='new_qtype' value='raw'>
-             <select name='new_qtype'>
-                  <option value='raw'>Raw Editor</option>
-                 <option value='qe2'>QE2</option>
-                 <!--
-                  <option value='import'>Import from Upload</option>
-                  -->
-              </select>
-            </td>
-          </tr>
-          </tbody>
-        </table>
-      </div>
+            <div>
+                <h5>With Selected questions:</h5> <select name="target_cmd"
+                                                          id="target_cmd">
+                <option value="--" SELECTED>--</option>
+                <option value="hide">Hide</option>
+                <option value="show">Show</option>
+                <option value="move">Move To Topic</option>
+                <option value="copy">Copy To Topic</option>
+                <option value="export">Export (Download)</option>
+            </select>
+                <select id="target_topic" name='target_topic' class="hidden">
+                    <option value="">--</option>
+                    {% for course in all_course_topics %}
+                        <optgroup label='{{ course.course }}'>
+                            {% for k,v in course.topics.iteritems() %}
+                                <option value='{{ v.id }}'>{{ v.title }}</option>
+                            {% endfor %}
+                        </optgroup>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <br>
+                <h5>Create New Question:</h5>
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Pos</th>
+                        <th>Name</th>
+                        <th>Type</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>
+                            <input type="text" name="new_position"
+                                   class='input input-mini'>
+                        </td>
+                        <td>
+                            <input type="text" name="new_title" class='input'>
+                        </td>
+                        <td>
+                            <input type='hidden' name='new_qtype' value='raw'>
+                            <select name='new_qtype'>
+                                <option value='raw'>Raw Editor</option>
+                               <!-- <option value='qe2'>QE2</option> -->
+                            </select>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div><br><h5>Import Questions</h5>
+                <table class="table">
+                    <thead>
+                    <tr>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>import from file: <input type="file" name="import_file"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
 
-      <div class='pull-right'>
-        <input type="submit" name="save_changes" value="Apply Changes"
-               class='btn btn-primary'>
-        <input type="submit" name="cancel_edit" value="Cancel"
-               class='btn btn-danger'>
-      </div>
-    </form>
 
-  </div>
+            <div class='pull-right'>
+                <input type="submit" name="save_changes" value="Apply Changes"
+                       class='btn btn-primary'>
+                <input type="submit" name="cancel_edit" value="Cancel"
+                       class='btn btn-danger'>
+            </div>
+        </form>
+
+    </div>
 
 {% endblock body %}
