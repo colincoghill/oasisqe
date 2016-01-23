@@ -14,9 +14,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.provision "shell", path: "deploy/dev/provision_oasisdev.sh"
 
   config.vm.provider "virtualbox" do |v|
+
     v.name = "oasisdev"
     v.memory = 1024
     v.cpus = 2
   end
+
 
 end

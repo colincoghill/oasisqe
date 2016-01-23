@@ -326,36 +326,38 @@ def import_qts_from_zip(data, topicid):
     tmpd = tempfile.mkdtemp(prefix="oa")
     qdir = os.path.join(tmpd, "oasisqe")
     os.mkdir(qdir)
-    with zipfile.ZipFile(sdata, "r") as zfile:
+    try:
+        with zipfile.ZipFile(sdata, "r") as zfile:
 
-        zfile.extractall(qdir)
-        data = open("%s/info.json" % qdir, "r").read()
-        info = json.loads(data)
-        print "%s questions found" % (len(info['qtemplates']))
-        position = 1
-        for qtid in info['qtemplates'].keys():
-            qtemplate = info['qtemplates'][qtid]['qtemplate']
-            print "%s" % qtemplate['title']
-            newid = DB.create_qt(1,
-                                 qtemplate['title'],
-                                 qtemplate['description'],
-                                 qtemplate['marker'],
-                                 qtemplate['scoremax'],
-                                 qtemplate['status'])
-            DB.update_qt_pos(newid, topicid, position)
-            position += 1
-            attachments = info['qtemplates'][qtid]['attachments']
+            zfile.extractall(qdir)
+            data = open("%s/info.json" % qdir, "r").read()
+            info = json.loads(data)
+     #       print "%s questions found" % (len(info['qtemplates']))
+            position = 1
+            for qtid in info['qtemplates'].keys():
+                qtemplate = info['qtemplates'][qtid]['qtemplate']
+    #            print "%s" % qtemplate['title']
+                newid = DB.create_qt(1,
+                                     qtemplate['title'],
+                                     qtemplate['description'],
+                                     qtemplate['marker'],
+                                     qtemplate['scoremax'],
+                                     qtemplate['status'])
+                DB.update_qt_pos(newid, topicid, position)
+                position += 1
+                attachments = info['qtemplates'][qtid]['attachments']
 
-            print "%s attachments" % len(attachments)
-            for att in attachments:
-                (att_name, att_type, att_size) = att
-                data = open("%s/%s/attach/%s" % (qdir, qtemplate['id'], att_name)).read()
-                DB.create_qt_att(newid, att_name, att_type, data, 1)
-                if att_name == "datfile.txt" or att_name == "datfile.dat" or att_name == "datfile" or att_name == "_datfile" or att_name == "__datfile":
-                    qvars = QEditor.parse_datfile(data)
-                    print "generating variations..."
-                    for row in range(0, len(qvars)):
-                        DB.add_qt_variation(newid, row + 1, qvars[row], 1)
-
+    #            print "%s attachments" % len(attachments)
+                for att in attachments:
+                    (att_name, att_type, att_size) = att
+                    data = open("%s/%s/attach/%s" % (qdir, qtemplate['id'], att_name)).read()
+                    DB.create_qt_att(newid, att_name, att_type, data, 1)
+                    if att_name == "datfile.txt" or att_name == "datfile.dat" or att_name == "datfile" or att_name == "_datfile" or att_name == "__datfile":
+                        qvars = QEditor.parse_datfile(data)
+      #                  print "generating variations..."
+                        for row in range(0, len(qvars)):
+                            DB.add_qt_variation(newid, row + 1, qvars[row], 1)
+    except zipfile.BadZipfile:
+        return False
     Topics.flush_num_qs(topicid)
     return 0

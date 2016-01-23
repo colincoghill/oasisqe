@@ -3,13 +3,13 @@ oasisqe
 
 OASIS Question Engine
 
-Current Status:  fourth pre-release, 3.9.4. 
+Current Status:  fifth pre-release, 3.9.5.
 
 This has most of the functionality of the original OASIS system, but still needs
 a lot more documentation and testing.
 
 
-Priority for fifth release is documentation, stability, and question editing.
+Priority for sixth release is documentation, stability, and question editing.
 
 
 Main web site:  http://www.oasisqe.com/

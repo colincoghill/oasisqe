@@ -39,15 +39,18 @@ def do_topic_page_commands(request, topic_id, user_id):
     """
 
     form = request.form
+    files = request.files
+
     mesg = []
 
     # Make a list of all the commands to run
     cmdlist = []
     for command in request.form.keys():
-        (cmd, data) = command.split('_', 2)
-        value = form[command]
-        if not value == "none":
-            cmdlist += [{'cmd': cmd, 'data': data, 'value': value}]
+        if '_' in command:
+            (cmd, data) = command.split('_', 2)
+            value = form[command]
+            if not value == "none":
+                cmdlist += [{'cmd': cmd, 'data': data, 'value': value}]
 
     # Now run them:
     # Titles first
@@ -173,9 +176,36 @@ def do_topic_page_commands(request, topic_id, user_id):
                 mesg.append("Error creating new question, id %s" % new_id)
                 L.error("Unable to create new question (%s) (%s)" %
                     (new_title, new_position))
+
+    L.info("request.files = %s" % (repr(request.files.keys())))
+    # Did they upload a file to import?
+    if 'import_file' in request.files:
+        L.info("File upload to topic %s by user %s" % (topic_id, user_id))
+        data = files['import_file'].read()
+        mesg.append(_import_questions_from_file(data, topic_id))
+
     Topics.flush_num_qs(topic_id)
 
     return 1, {'mesg': mesg}
+
+
+def _import_questions_from_file(data, topic_id):
+    """ Take a data string with a question export and import questions from it into the given topic.
+        :returns [string,]: list of (string) messages
+    """
+    mesg = list()
+    mesg.append("Attempting to import questions from file")
+    if len(data) > 52000000:  # approx 50Mb
+        mesg.append("Upload is too large, 50MB Maximum.")
+
+    num = External.import_qts_from_zip(data, topicid=topic_id)
+    if num is False:
+        mesg.append("Invalid OASISQE file? No data recognized.")
+    if num is 0:
+        mesg.append("Empty OASISQE file? No questions found.")
+
+    mesg.append("%s questions imported!" % num)
+    return mesg
 
 
 def get_sorted_courselist(with_stats=False, only_active=True):
