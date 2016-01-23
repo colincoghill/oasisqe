@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Provisions an Ubuntu (Trusty) VM to run OASIS with a useful "developer" configuration.
+# Sets up Ubuntu (Trusty) or Debian (Jessie) to run OASIS with a useful "developer" configuration.
 #
 # Assumes oasis code is mounted at /opt/oasisqe/3.9  (Vagrant should do this)
 # This is not appropriate for running a production site. It may be insecure.
