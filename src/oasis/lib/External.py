@@ -326,18 +326,21 @@ def import_qts_from_zip(data, topicid):
     tmpd = tempfile.mkdtemp(prefix="oa")
     qdir = os.path.join(tmpd, "oasisqe")
     os.mkdir(qdir)
+    position=1
     try:
         with zipfile.ZipFile(sdata, "r") as zfile:
 
             zfile.extractall(qdir)
             data = open("%s/info.json" % qdir, "r").read()
             info = json.loads(data)
+            qtids = info['qtemplates'].keys()
+            qtids.sort()
      #       print "%s questions found" % (len(info['qtemplates']))
-            position = 1
-            for qtid in info['qtemplates'].keys():
+            for qtid in qtids:
                 qtemplate = info['qtemplates'][qtid]['qtemplate']
+                attachments = info['qtemplates'][qtid]['attachments']
     #            print "%s" % qtemplate['title']
-                newid = DB.create_qt(1,
+                newid = DB.create_qt(1,   # ownerid
                                      qtemplate['title'],
                                      qtemplate['description'],
                                      qtemplate['marker'],
@@ -345,7 +348,6 @@ def import_qts_from_zip(data, topicid):
                                      qtemplate['status'])
                 DB.update_qt_pos(newid, topicid, position)
                 position += 1
-                attachments = info['qtemplates'][qtid]['attachments']
 
     #            print "%s attachments" % len(attachments)
                 for att in attachments:
@@ -361,3 +363,10 @@ def import_qts_from_zip(data, topicid):
         return False
     Topics.flush_num_qs(topicid)
     return 0
+
+
+#"36": {"qtemplate": {"status": 0, "marker": 1, "version": 49, "scoremax": null, "description": "No Description",
+#                     "title": "Q5", "owner": 4, "id": 36, "embed_id": ""},
+#       "attachments": [["UNKNOWN", "", 0], ["datfile.txt", "text/plain", 649], ["q5", "image/gif", 7083],
+#                       ["q5a", "image/gif", 1216], ["q5b", "image/gif", 1222], ["q5c", "image/gif", 1367],
+#                       ["q5d", "image/gif", 1355], ["qtemplate.html", "text/plain", 219], ["image.gif", "", 0]]}
