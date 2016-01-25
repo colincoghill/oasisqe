@@ -890,7 +890,8 @@ def cadmin_topic_save(course_id, topic_id):
         (what, result) = Setup.do_topic_page_commands(request, topic_id, user_id)
 
         if what == 1:
-            flash(result['mesg'])
+            for msg in result['mesg']:
+                flash(msg)
             return redirect(url_for('cadmin_edit_topic',
                                     course_id=course_id,
                                     topic_id=topic_id))

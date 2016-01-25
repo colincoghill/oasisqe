@@ -326,7 +326,8 @@ def import_qts_from_zip(data, topicid):
     tmpd = tempfile.mkdtemp(prefix="oa")
     qdir = os.path.join(tmpd, "oasisqe")
     os.mkdir(qdir)
-    position=1
+    position = 1
+    num = 0
     try:
         with zipfile.ZipFile(sdata, "r") as zfile:
 
@@ -346,8 +347,10 @@ def import_qts_from_zip(data, topicid):
                                      qtemplate['marker'],
                                      qtemplate['scoremax'],
                                      qtemplate['status'])
+
                 DB.update_qt_pos(newid, topicid, position)
                 position += 1
+                num += 1
 
     #            print "%s attachments" % len(attachments)
                 for att in attachments:
@@ -362,7 +365,7 @@ def import_qts_from_zip(data, topicid):
     except zipfile.BadZipfile:
         return False
     Topics.flush_num_qs(topicid)
-    return 0
+    return num
 
 
 #"36": {"qtemplate": {"status": 0, "marker": 1, "version": 49, "scoremax": null, "description": "No Description",
