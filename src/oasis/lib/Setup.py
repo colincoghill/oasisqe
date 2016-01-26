@@ -150,7 +150,6 @@ def do_topic_page_commands(request, topic_id, user_id):
                                  new_max_score,
                                  0)
             if newid:
-                mesg.append("Created new question, id %s" % newid)
                 DB.update_qt_pos(newid,
                                  topic_id,
                                  new_position)
@@ -165,21 +164,21 @@ def do_topic_page_commands(request, topic_id, user_id):
                                  "empty",
                                  1)
                 if new_qtype == "oqe":
-                    mesg.append("Creating new question, id %s as OQE" % newid)
+                    mesg.append("Creating new question, id %s (OQE)" % newid)
                     DB.create_qt_att(newid,
                                      "_editor.oqe",
                                      "application/oasis-oqe",
                                      "",
                                      1)
                 if new_qtype == "qe2":
-                    mesg.append("Creating new question, id %s as QE2" % newid)
+                    mesg.append("Creating new question, id %s (QE2)" % newid)
                     DB.create_qt_att(newid,
                                      "_editor.qe2",
                                      "application/oasis-qe2",
                                      "",
                                      1)
                 if new_qtype == "raw":
-                    mesg.append("Creating new question, id %s as RAW (%s)" %
+                    mesg.append("Creating new question, id %s (%s)" %
                                 (newid, new_qtype))
                     DB.create_qt_att(newid,
                                      "datfile.txt",
@@ -196,7 +195,9 @@ def do_topic_page_commands(request, topic_id, user_id):
     if 'import_file' in request.files:
         L.info("File upload to topic %s by user %s" % (topic_id, user_id))
         data = files['import_file'].read()
-        mesg.append(_import_questions_from_file(data, topic_id))
+        if len(data) > 1:
+            for msg in _import_questions_from_file(data, topic_id):
+                mesg.append(msg)
 
     Topics.flush_num_qs(topic_id)
 
@@ -207,8 +208,7 @@ def _import_questions_from_file(data, topic_id):
     """ Take a data string with a question export and import questions from it into the given topic.
         :returns [string,]: list of (string) messages
     """
-    mesg = list()
-    mesg.append("Attempting to import questions from file")
+    mesg = []
     if len(data) > 52000000:  # approx 50Mb
         mesg.append("Upload is too large, 50MB Maximum.")
 
