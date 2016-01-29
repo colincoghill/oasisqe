@@ -1363,14 +1363,13 @@ def get_qt_editor(qt_id):
         OQE | Raw
     """
     assert isinstance(qt_id, int)
-    etype = "Raw"
     atts = get_qt_atts(qt_id)
     for att in atts:
-        if att.endswith(".oqe"):
-            etype = "OQE"
         if att.endswith(".qe2"):
-            etype = "qe2"
-    return etype
+            return "qe2"
+        if att.endswith(".oqe"):
+            return "OQE"
+    return "Raw"
 
 
 def get_db_version():
