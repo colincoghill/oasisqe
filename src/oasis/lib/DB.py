@@ -648,6 +648,8 @@ def get_topics_for_qtemplate(qt_id):
     :param qt_id: (int) qtemplate
     :return: (list of (int,int)):  ((topic_id, position),...)
     """
+    # A question template should only be in one topic, but originally OASIS allowed
+    # it to be in multiple topics, so just return what we see in the database.
     assert isinstance(qt_id, int)
     ret = run_sql("""SELECT topic, position
                      FROM questiontopics
@@ -660,8 +662,8 @@ def get_topics_for_qtemplate(qt_id):
 def get_qtemplate_topic_pos(qt_id, topic_id=None):
     """ Fetch the position of a question template in a topic. """
     # Originally, a qtemplate could be in multiple topics. This was never really
-    # used in practice, although we have to allow for it. If a qtemplate is in
-    # multiple topics we just use the first.
+    # used in practice, although we have to not crash if we see it. If a qtemplate
+    # is in multiple topics we just use the first.
     assert isinstance(qt_id, int)
     if topic_id:
         assert isinstance(topic_id, int)
