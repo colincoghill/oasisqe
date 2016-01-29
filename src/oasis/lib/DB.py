@@ -1430,3 +1430,76 @@ def get_db_size():
         sizes.append([row[0], row[1]])
 
     return sizes
+
+
+def check_safe():
+    """ Is it safe to do dangerous stuff to the database? Mainly tries to
+        figure out if there is real data in it.
+    """
+    # If there are only 2 or fewer user accounts and questions, assume it's
+    # ok.
+
+    what = is_oasis_db()
+    if what == "no":
+        return False
+
+    if what == "empty":
+        return True
+
+    users = num_records("users")
+    print '%s user records' % users
+    qtemplates = num_records("qtemplates")
+    print '%s question templates' % qtemplates
+    exams = num_records("exams")
+    print '%s assessments' % exams
+
+    if users > 2:
+        print "Contains non-default data."
+        return False
+
+    if qtemplates > 1:
+        print "Contains non-default data."
+        return False
+
+    if exams > 0:
+        print "Contains non-default data."
+        return False
+
+    return True
+
+
+def is_oasis_db():
+    """ Is this likely an OASIS database? Look at the table names to see
+        if we have the more specific ones.
+        Return "yes", "no", or "empty"
+    """
+
+    expect = ['qtvariations', 'users', 'examqtemplates', 'marklog', 'qtattach',
+              'questions', 'guesses', 'exams', 'qtemplates']
+
+    tables = public_tables()
+
+    if len(tables) == 0:
+        return "empty"
+
+    if set(expect).issubset(tables):
+        return "yes"
+
+    return "no"
+
+
+def public_tables():
+    """ Return a list of names of all tables in schema ("public" is default)
+    """
+
+    ret = run_sql("SELECT * FROM pg_stat_user_tables;")
+    tables = [row[2] for row in ret]
+    return tables
+
+
+def num_records(table_name):
+    """ How many rows are in the given table.
+    """
+    ret = run_sql('SELECT count(*) FROM "%s";' % table_name)
+    num = int(ret[0][0])
+    return num

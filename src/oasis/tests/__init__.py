@@ -7,8 +7,6 @@ import os
 
 TESTINI = "src/oasis/lib/test.ini"
 
-DB = None
-
 
 # In PROGRESS. Still thinking this through.
 def setup():
@@ -28,8 +26,7 @@ def setup():
 
     from oasis.lib import DB  # Do this *after* writing the test ini file.
 
-    DB.run_sql("SELECT name, value FROM config WHERE name='test_status';")
-    # assert ret
+    assert DB.check_safe(), "Database not safe for tests"
 
 
 def teardown():
