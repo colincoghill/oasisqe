@@ -64,36 +64,6 @@ def api_stats_qtemplates_year(qt_id, year):
     counts = Stats.daily_prac_q_count(start_time, end_time, qt_id)
     return jsonify(result=counts)
 
-#
-# @app.route("/api/stats/practice/qtemplate/<int:qt_id>/<int:year>/scores")
-# @authenticated
-# def api_stats_qt_year_scores(qt_id, year):
-#     """ Return the number of times the qtemplate was practiced in the given
-#         year, broken down by day
-#     """
-#     start_time = datetime.datetime(year=year, month=1, day=1, hour=0)
-#     end_time = datetime.datetime(year=year, month=12, day=31, hour=23)
-#
-#     scores = Stats.daily_prac_q_scores(start_time, end_time, qt_id)
-#     return jsonify(result=scores)
-#
-#
-# @app.route("/api/stats/practice/qtemplate/<int:qt_id>/3months/scores")
-# @authenticated
-# def api_stats_qtemplates_3month_scores(qt_id):
-#     """ Return the number of times the qtemplate was practiced in approx
-#         the last three months
-#     """
-#     month3 = datetime.timedelta(weeks=12)
-#     days3 = datetime.timedelta(days=3)
-#
-#     now = datetime.datetime.now()
-#     end_time = now+days3
-#     start_time = now-month3
-#
-#     scores = Stats.daily_prac_q_scores(start_time, end_time, qt_id)
-#     return jsonify(result=scores)
-
 
 @app.route("/api/stats/practice/qtemplate/<int:qt_id>/3months")
 @authenticated

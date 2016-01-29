@@ -274,6 +274,7 @@ def qts_to_zip(qt_ids, extra_info=None):
         os.mkdir(os.path.join(qtdir, "attach"))
         info["qtemplates"][qt_id] = {'qtemplate': qtemplate}
         info["qtemplates"][qt_id]["attachments"] = []
+        info["qtemplates"][qt_id]["position"] = DB.get_qtemplate_topic_pos(qt_id)
 
         for name in attachments:
             if not name:
@@ -326,26 +327,33 @@ def import_qts_from_zip(data, topicid):
     tmpd = tempfile.mkdtemp(prefix="oa")
     qdir = os.path.join(tmpd, "oasisqe")
     os.mkdir(qdir)
+    num = 0
     try:
         with zipfile.ZipFile(sdata, "r") as zfile:
 
             zfile.extractall(qdir)
             data = open("%s/info.json" % qdir, "r").read()
             info = json.loads(data)
+            qtids = info['qtemplates'].keys()
+            qtids.sort()
      #       print "%s questions found" % (len(info['qtemplates']))
-            position = 1
-            for qtid in info['qtemplates'].keys():
+            for qtid in qtids:
                 qtemplate = info['qtemplates'][qtid]['qtemplate']
+                attachments = info['qtemplates'][qtid]['attachments']
+                if 'position' in info['qtemplates'][qtid]:
+                    position = info['qtemplates'][qtid]['position']
+                else:
+                    position = 0
     #            print "%s" % qtemplate['title']
-                newid = DB.create_qt(1,
+                newid = DB.create_qt(1,   # ownerid
                                      qtemplate['title'],
                                      qtemplate['description'],
                                      qtemplate['marker'],
                                      qtemplate['scoremax'],
                                      qtemplate['status'])
+
                 DB.update_qt_pos(newid, topicid, position)
-                position += 1
-                attachments = info['qtemplates'][qtid]['attachments']
+                num += 1
 
     #            print "%s attachments" % len(attachments)
                 for att in attachments:
@@ -360,4 +368,11 @@ def import_qts_from_zip(data, topicid):
     except zipfile.BadZipfile:
         return False
     Topics.flush_num_qs(topicid)
-    return 0
+    return num
+
+
+#"36": {"qtemplate": {"status": 0, "marker": 1, "version": 49, "scoremax": null, "description": "No Description",
+#                     "title": "Q5", "owner": 4, "id": 36, "embed_id": ""},
+#       "attachments": [["UNKNOWN", "", 0], ["datfile.txt", "text/plain", 649], ["q5", "image/gif", 7083],
+#                       ["q5a", "image/gif", 1216], ["q5b", "image/gif", 1222], ["q5c", "image/gif", 1367],
+#                       ["q5d", "image/gif", 1355], ["qtemplate.html", "text/plain", 219], ["image.gif", "", 0]]}

@@ -1,5 +1,5 @@
 --
--- Make the changes needed to move from v3.9.3 to 3.9.4
+-- Make the changes needed to move from v3.9.4 to 3.9.5
 -- This is just the SQL changes, the application will need to run some logic
 -- too. Use the "oasisdb" tool to run this, do not try to run it directly.
 --
@@ -15,6 +15,6 @@ SET standard_conforming_strings = on;
 
 BEGIN;
 
-update config SET "value" = '3.9.4' WHERE "name" = 'dbversion';
+update config SET "value" = '3.9.5' WHERE "name" = 'dbversion';
 
 COMMIT;
