@@ -274,6 +274,7 @@ def qts_to_zip(qt_ids, extra_info=None):
         os.mkdir(os.path.join(qtdir, "attach"))
         info["qtemplates"][qt_id] = {'qtemplate': qtemplate}
         info["qtemplates"][qt_id]["attachments"] = []
+        info["qtemplates"][qt_id]["position"] = DB.get_qtemplate_topic_pos(qt_id)
 
         for name in attachments:
             if not name:
@@ -326,7 +327,6 @@ def import_qts_from_zip(data, topicid):
     tmpd = tempfile.mkdtemp(prefix="oa")
     qdir = os.path.join(tmpd, "oasisqe")
     os.mkdir(qdir)
-    position = 1
     num = 0
     try:
         with zipfile.ZipFile(sdata, "r") as zfile:
@@ -340,6 +340,10 @@ def import_qts_from_zip(data, topicid):
             for qtid in qtids:
                 qtemplate = info['qtemplates'][qtid]['qtemplate']
                 attachments = info['qtemplates'][qtid]['attachments']
+                if 'position' in info['qtemplates'][qtid]:
+                    position = info['qtemplates'][qtid]['position']
+                else:
+                    position = 0
     #            print "%s" % qtemplate['title']
                 newid = DB.create_qt(1,   # ownerid
                                      qtemplate['title'],
@@ -349,7 +353,6 @@ def import_qts_from_zip(data, topicid):
                                      qtemplate['status'])
 
                 DB.update_qt_pos(newid, topicid, position)
-                position += 1
                 num += 1
 
     #            print "%s attachments" % len(attachments)

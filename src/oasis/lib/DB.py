@@ -642,14 +642,44 @@ def get_qt_exam_pos(exam_id, qt_id):
     return None
 
 
-def get_qtemplate_topic_pos(qt_id, topic_id):
-    """ Fetch the position of a question template in a topic. """
-    assert isinstance(topic_id, int)
+def get_topics_for_qtemplate(qt_id):
+    """
+    Find which topics a given qtemplate appears in.
+    :param qt_id: (int) qtemplate
+    :return: (list of (int,int)):  ((topic_id, position),...)
+    """
     assert isinstance(qt_id, int)
-    key = "topic-%d-qtemplate-%d-position" % (topic_id, qt_id)
+    ret = run_sql("""SELECT topic, position
+                     FROM questiontopics
+                     WHERE qtemplate=%s;""", (qt_id,))
+    if ret:
+        return [[int(row[0]), int(row[1])] for row in ret]
+    return []
+
+
+def get_qtemplate_topic_pos(qt_id, topic_id=None):
+    """ Fetch the position of a question template in a topic. """
+    # Originally, a qtemplate could be in multiple topics. This was never really
+    # used in practice, although we have to allow for it. If a qtemplate is in
+    # multiple topics we just use the first.
+    assert isinstance(qt_id, int)
+    if topic_id:
+        assert isinstance(topic_id, int)
+
+    key = "topic-%s-qtemplate-%d-position" % (topic_id, qt_id)
     obj = MC.get(key)
     if obj is not None:
         return int(obj)
+    if not topic_id:  # We don't know the topic_id, figure it out
+        topics = get_topics_for_qtemplate(qt_id)
+        if not topics:
+            return False
+        topic_id = topics[0][0]
+        pos = topics[0][1]
+        key = "topic-%s-qtemplate-%d-position" % (topic_id, qt_id)
+        MC.set(key, pos, 120)  # remember for 2 minutes
+        return pos
+
     ret = run_sql("""SELECT position
                      FROM questiontopics
                      WHERE qtemplate=%s AND topic=%s;""", (qt_id, topic_id))
