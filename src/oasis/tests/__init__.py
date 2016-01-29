@@ -33,4 +33,7 @@ def teardown():
     """
         Remove testing configuration file and otherwise clean up.
     """
-    pass
+    with open(os.path.join(APPDIR, "deploy", "eraseexisting.sql")) as f:
+        sql = f.read()
+    print "Removing tables."
+    DB.run_sql(sql)
