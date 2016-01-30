@@ -2,38 +2,38 @@
 
 """testing module
 """
-
+import sys
 import os
+APPDIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__)))))
+sys.path.append(os.path.join(APPDIR, "src"))
 
-TESTINI = "src/oasis/lib/test.ini"
+from oasis.lib import DB
+assert DB.check_safe(), "Database not safe for tests"
 
-DB = None
 
-
-# In PROGRESS. Still thinking this through.
 def setup():
-    """ Prepare database  and configuration file for testing
+    """ Prepare database for testing.
     """
-    # Switch us to use a test database
-    test_config = """
+    if not DB.check_safe():
+        print "Attempt to erase database with data."
+        sys.exit(-1)
+    with open(os.path.join(APPDIR, "deploy", "eraseexisting.sql")) as f:
+        sql = f.read()
+    print "Removing existing tables."
+    DB.run_sql(sql)
 
+    with open(os.path.join(APPDIR, "deploy", "emptyschema_395.sql")) as f:
+        sql = f.read()
 
-
-    """
-
-    f = open(TESTINI, "w")
-    f.write(test_config)
-    f.close()
-    global DB
-
-    from oasis.lib import DB  # Do this *after* writing the test ini file.
-
-    DB.run_sql("SELECT name, value FROM config WHERE name='test_status';")
-    # assert ret
+    DB.run_sql(sql)
+    print "Installed v3.9.5 table structure."
 
 
 def teardown():
     """
         Remove testing configuration file and otherwise clean up.
     """
-    os.remove(TESTINI)
+    with open(os.path.join(APPDIR, "deploy", "eraseexisting.sql")) as f:
+        sql = f.read()
+    print "Removing tables."
+    DB.run_sql(sql)

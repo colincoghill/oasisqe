@@ -274,7 +274,7 @@ def qts_to_zip(qt_ids, extra_info=None):
         os.mkdir(os.path.join(qtdir, "attach"))
         info["qtemplates"][qt_id] = {'qtemplate': qtemplate}
         info["qtemplates"][qt_id]["attachments"] = []
-        info["qtemplates"][qt_id]["position"] = DB.get_qtemplate_topic_pos(qt_id)
+        info["qtemplates"][qt_id]["position"] = DB.get_qtemplate_practice_pos(qt_id)
 
         for name in attachments:
             if not name:
@@ -309,7 +309,7 @@ def qts_to_zip(qt_ids, extra_info=None):
     return data
 
 
-def import_qts_from_zip(data, topicid):
+def import_qts_from_zip(data, topic_id):
     """ Open the given OAQ file and import any qtemplates found.
         Return False if it's not valid
         Return 0 if it's valid but has no qtemplates
@@ -336,7 +336,6 @@ def import_qts_from_zip(data, topicid):
             info = json.loads(data)
             qtids = info['qtemplates'].keys()
             qtids.sort()
-     #       print "%s questions found" % (len(info['qtemplates']))
             for qtid in qtids:
                 qtemplate = info['qtemplates'][qtid]['qtemplate']
                 attachments = info['qtemplates'][qtid]['attachments']
@@ -344,7 +343,6 @@ def import_qts_from_zip(data, topicid):
                     position = info['qtemplates'][qtid]['position']
                 else:
                     position = 0
-    #            print "%s" % qtemplate['title']
                 newid = DB.create_qt(1,   # ownerid
                                      qtemplate['title'],
                                      qtemplate['description'],
@@ -352,7 +350,7 @@ def import_qts_from_zip(data, topicid):
                                      qtemplate['scoremax'],
                                      qtemplate['status'])
 
-                DB.update_qt_pos(newid, topicid, position)
+                DB.move_qt_to_topic(newid, topic_id, position)
                 num += 1
 
     #            print "%s attachments" % len(attachments)
@@ -367,7 +365,7 @@ def import_qts_from_zip(data, topicid):
                             DB.add_qt_variation(newid, row + 1, qvars[row], 1)
     except zipfile.BadZipfile:
         return False
-    Topics.flush_num_qs(topicid)
+    Topics.flush_num_qs(topic_id)
     return num
 
 

@@ -10,6 +10,7 @@
 
 from flask import Flask, session, redirect, url_for, request, \
     render_template, render_template_string, flash, abort
+import tempfile
 import datetime
 import os
 
@@ -46,11 +47,13 @@ if OaConfig.email_admins:
 # Try and find somewhere to send our log entries, even if primary location is broken.
 lf = OaConfig.logfile
 if not os.access(lf, os.W_OK):
+    app.logger.warning("Unable to write to log file %s, trying %s-%s.log" % (lf, lf, os.getuid()))
     lf += "-%s.log" % os.getuid()
-    app.logger.fatal("Unable to write to log file %s" % lf)
 
 if not os.access(lf, os.W_OK):
-    app.logger.fatal("Unable to write to log file %s" % lf)
+    app.logger.warning("Unable to write to log file %s" % lf)
+    lf = tempfile.mkstemp(prefix="oasisqe_", suffix=".log")[1]
+    app.logger.warning("Logging to temporary log file %s" % lf)
 
 FH = RotatingFileHandler(filename=lf)
 FH.setLevel(OaConfig.loglevel)

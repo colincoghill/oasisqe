@@ -23,7 +23,7 @@ def createQuestion(topicid, title, position, owner=1):
         Return the question id
     """
     newid = DB.create_qt(owner, title, "", 0, 0.0, 1)
-    DB.update_qt_pos(newid, topicid, position)
+    DB.update_qt_practice_pos(newid, position)
     Topics.flush_num_qs(topicid)
    
 

@@ -15,23 +15,6 @@ APPDIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 sys.path.append(os.path.join(APPDIR, "src"))
 
 
-def public_tables(db):
-    """ Return a list of names of all tables in schema ("public" is default)
-    """
-
-    ret = db.run_sql("SELECT * FROM pg_stat_user_tables;")
-    tables = [row[2] for row in ret]
-    return tables
-
-
-def num_records(db, table_name):
-    """ How many rows are in the given table.
-    """
-    ret = db.run_sql('SELECT count(*) FROM "%s";' % table_name)
-    num = int(ret[0][0])
-    return num
-
-
 def do_list_courses(db):
     """ Print a list of courses in the database.
     """
@@ -92,62 +75,6 @@ def do_show(db, c_args):
     print "Where item is one of:"
     print "   courses      List all courses in the database"
     print "   users        List all users in the database"
-
-
-def check_safe(db):
-    """ Is it safe to do dangerous stuff to the database? Mainly tries to
-        figure out if there is real data in it.
-    """
-    # If there are only 2 or fewer user accounts and questions, assume it's
-    # ok.
-
-    what = is_oasis_db(db)
-    if what == "no":
-        return False
-
-    if what == "empty":
-        return True
-
-    users = num_records(db, "users")
-    print '%s user records' % users
-    qtemplates = num_records(db, "qtemplates")
-    print '%s question templates' % qtemplates
-    exams = num_records(db, "exams")
-    print '%s assessments' % exams
-
-    if users > 2:
-        print "Contains non-default data."
-        return False
-
-    if qtemplates > 1:
-        print "Contains non-default data."
-        return False
-
-    if exams > 0:
-        print "Contains non-default data."
-        return False
-
-    return True
-
-
-def is_oasis_db(db):
-    """ Is this likely an OASIS database? Look at the table names to see
-        if we have the more specific ones.
-        Return "yes", "no", or "empty"
-    """
-
-    expect = ['qtvariations', 'users', 'examqtemplates', 'marklog', 'qtattach',
-              'questions', 'guesses', 'exams', 'qtemplates']
-
-    tables = public_tables(db)
-
-    if len(tables) == 0:
-        return "empty"
-
-    if set(expect).issubset(tables):
-        return "yes"
-
-    return "no"
 
 
 def calc_stats():
@@ -416,7 +343,7 @@ def do_status(db):
     print "  username: ", OaConfig.dbuname
     print
 
-    what = is_oasis_db(db)
+    what = db.is_oasis_db()
     if what == "empty":
         print "Empty database detected."
         print ""
@@ -432,7 +359,7 @@ def do_status(db):
     ver = db.get_db_version()
     print "Detected DB Version", ver
     print
-    safe = check_safe(db)
+    safe = DB.check_safe()
     if safe:
         print
         print "However it does not contain much data so may be safe to erase:"
@@ -450,7 +377,7 @@ def do_init(db, c_opts):
         our tables.
     """
 
-    what = is_oasis_db(db)
+    what = db.is_oasis_db()
     if what == "empty":
         print "Empty database detected, installing a clean setup:"
         print ""
@@ -492,7 +419,7 @@ def do_init(db, c_opts):
     ver = db.get_db_version()
     print "Detected DB Version", ver
     print
-    safe = check_safe(db)
+    safe = db.check_safe()
     if c_opts.eraseall:
         if c_opts.oaver == '3.6':
             erase_existing(db)  # might be some dregs, like sequences or views
