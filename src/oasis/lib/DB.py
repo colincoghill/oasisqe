@@ -675,7 +675,9 @@ def get_qtemplate_practice_pos(qt_id):
     if ret:
         MC.set(key, ret[0][0], 120)  # remember for 2 minutes
         return int(ret[0][0])
-    return False
+
+    # if it hasn't been assigned a position, it's 0
+    return 0
 
 
 def get_qtemplates_in_topic_position(topic_id, position):
@@ -899,7 +901,7 @@ def update_exam_qt_in_pos(exam_id, position, qts):
             if isinstance(alt, int):  # might be '---'
                 run_sql("""INSERT INTO examqtemplates
                                 (exam, position, qtemplate)
-                           VALUES (%s,%s,%s);""",
+                           VALUES (%s, %s, %s);""",
                                 (exam_id, position, alt))
 
 
@@ -909,13 +911,6 @@ def update_qt_practice_pos(qt_id, position):
     assert isinstance(position, int)
 
     topic_id = get_topic_for_qtemplate(qt_id)
-    key = "topic-%d-qtemplate-%d-position" % (topic_id, qt_id)
-    MC.delete(key)
-    key = "topic-%d-qtemplates-position-%d" % (topic_id, qt_id)
-    MC.delete(key)
-    key = "topic-%d-qtemplates" % topic_id
-    MC.delete(key)
-
     move_qt_to_topic(qt_id, topic_id, position)
 
 
@@ -929,8 +924,6 @@ def move_qt_to_topic(qt_id, topic_id, position=None):
     MC.delete(key)
     key = "topic-%d-numquestions" % topic_id
     MC.delete(key)
-    key = "topic-%d-qtemplates-position-%d" % (topic_id, qt_id)
-    MC.delete(key)
     key = "topic-%d-qtemplates" % topic_id
     MC.delete(key)
 
@@ -943,8 +936,6 @@ def move_qt_to_topic(qt_id, topic_id, position=None):
         key = "topic-%d-qtemplate-%d-position" % (prev_topic_id, qt_id)
         MC.delete(key)
         key = "topic-%d-numquestions" % prev_topic_id
-        MC.delete(key)
-        key = "topic-%d-qtemplates-position-%d" % (prev_topic_id, qt_id)
         MC.delete(key)
         key = "topic-%d-qtemplates" % prev_topic_id
         MC.delete(key)
