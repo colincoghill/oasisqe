@@ -202,6 +202,11 @@ class FakeMCConn(object):
         """Do nothing."""
         return None
 
+    def flush(self):
+        """ Do nothing
+        """
+        return None
+
 
 class MCConn(object):
     """ Look after a connection to a memcached server.
@@ -258,6 +263,12 @@ class MCConn(object):
 
         return res
 
+    def flush_all(self):
+        """ Clear the cache
+        """
+
+        return self.conn.flush_all()
+
 
 # nowadays memcache-client comes with its own pool, but this works and I haven't
 # had time to evaluate the memcache one.
@@ -304,6 +315,15 @@ class MCPool(object):
         """Remove an item from the cache. """
         dbc = self.connqueue.get(True)
         res = dbc.delete(key)
+        self.connqueue.put(dbc)
+        return res
+
+    def flush_all(self):
+        """ Clear the cache
+        """
+
+        dbc = self.connqueue.get(True)
+        res = dbc.flush_all()
         self.connqueue.put(dbc)
         return res
 
