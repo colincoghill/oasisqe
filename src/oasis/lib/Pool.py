@@ -28,6 +28,8 @@ except AttributeError:
 
 L = getLogger("oasisqe")
 
+disable_mc_cache = False
+
 
 class DbConn(object):
     """Manage a single database connection."""
@@ -220,6 +222,8 @@ class MCConn(object):
 
     def set(self, key, value, expiry=None):
         """ store item. """
+        if disable_mc_cache:
+            return True
         key = "%s-%s" % (uniqueKey, key)
         key = key.encode("utf-8")
         try:
@@ -237,6 +241,8 @@ class MCConn(object):
 
     def get(self, key):
         """ fetch item."""
+        if disable_mc_cache:
+            return None
         key = "%s-%s" % (uniqueKey, key)
         key = key.encode("utf-8")
         try:
@@ -251,6 +257,8 @@ class MCConn(object):
 
     def delete(self, key):
         """ remove item."""
+        if disable_mc_cache:
+            return None
         key = "%s-%s" % (uniqueKey, key)
         key = key.encode("utf-8")
         try:
@@ -266,7 +274,8 @@ class MCConn(object):
     def flush_all(self):
         """ Clear the cache
         """
-
+        if disable_mc_cache:
+            return None
         return self.conn.flush_all()
 
 
