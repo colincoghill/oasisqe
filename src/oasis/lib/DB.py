@@ -642,49 +642,36 @@ def get_qt_exam_pos(exam_id, qt_id):
     return None
 
 
-def get_topics_for_qtemplate(qt_id):
+def get_topic_for_qtemplate(qt_id):
     """
-    Find which topics a given qtemplate appears in.
+    Find which topic a given qtemplate appears in.
     :param qt_id: (int) qtemplate
-    :return: (list of (int,int)):  ((topic_id, position),...)
+    :return: (int) topic_id or 0
     """
     # A question template should only be in one topic, but originally OASIS allowed
-    # it to be in multiple topics, so just return what we see in the database.
+    # it to be in multiple topics, so just return the first.
     assert isinstance(qt_id, int)
-    ret = run_sql("""SELECT topic, position
+    ret = run_sql("""SELECT topic
                      FROM questiontopics
-                     WHERE qtemplate=%s;""", (qt_id,))
+                     WHERE qtemplate=%s LIMIT 1;""", (qt_id,))
     if ret:
-        return [[int(row[0]), int(row[1])] for row in ret]
-    return []
+        return int(ret[0][0])
+    return 0
 
 
-def get_qtemplate_topic_pos(qt_id, topic_id=None):
+def get_qtemplate_practice_pos(qt_id):
     """ Fetch the position of a question template in a topic. """
-    # Originally, a qtemplate could be in multiple topics. This was never really
-    # used in practice, although we have to not crash if we see it. If a qtemplate
-    # is in multiple topics we just use the first.
     assert isinstance(qt_id, int)
-    if topic_id:
-        assert isinstance(topic_id, int)
 
-    key = "topic-%s-qtemplate-%d-position" % (topic_id, qt_id)
+    topic_id = get_topic_for_qtemplate(qt_id)
+    key = "topic-%d-qtemplate-%d-position" % (topic_id, qt_id)
     obj = MC.get(key)
     if obj is not None:
         return int(obj)
-    if not topic_id:  # We don't know the topic_id, figure it out
-        topics = get_topics_for_qtemplate(qt_id)
-        if not topics:
-            return False
-        topic_id = topics[0][0]
-        pos = topics[0][1]
-        key = "topic-%s-qtemplate-%d-position" % (topic_id, qt_id)
-        MC.set(key, pos, 120)  # remember for 2 minutes
-        return pos
 
     ret = run_sql("""SELECT position
                      FROM questiontopics
-                     WHERE qtemplate=%s AND topic=%s;""", (qt_id, topic_id))
+                     WHERE qtemplate=%s;""", (qt_id,))
     if ret:
         MC.set(key, ret[0][0], 120)  # remember for 2 minutes
         return int(ret[0][0])
@@ -916,71 +903,58 @@ def update_exam_qt_in_pos(exam_id, position, qts):
                                 (exam_id, position, alt))
 
 
-def update_qt_pos(qt_id, topic_id, position):
-    """ Update the position a question template holds in a topic."""
+def update_qt_practice_pos(qt_id, position):
+    """ Update the position a question template holds in its topic."""
     assert isinstance(qt_id, int)
     assert isinstance(position, int)
-    assert isinstance(topic_id, int)
-    previous = get_qtemplate_topic_pos(qt_id, topic_id)
+
+    topic_id = get_topic_for_qtemplate(qt_id)
+    key = "topic-%d-qtemplate-%d-position" % (topic_id, qt_id)
+    MC.delete(key)
     key = "topic-%d-qtemplates-position-%d" % (topic_id, qt_id)
     MC.delete(key)
+    key = "topic-%d-qtemplates" % topic_id
+    MC.delete(key)
+
+    move_qt_to_topic(qt_id, topic_id, position)
+
+
+def move_qt_to_topic(qt_id, topic_id, position=None):
+    """ Move a question template to a different sub category."""
+    assert isinstance(qt_id, int)
+    assert isinstance(topic_id, int)
+
+    # clear out cached info about destination topic
     key = "topic-%d-qtemplate-%d-position" % (topic_id, qt_id)
     MC.delete(key)
     key = "topic-%d-numquestions" % topic_id
     MC.delete(key)
-    key = "topic-%d-qtemplates" % topic_id
-    MC.delete(key)
-    sql = """UPDATE questiontopics
-             SET position=%s
-             WHERE topic=%s
-             AND qtemplate=%s;"""
-    params = (position, topic_id, qt_id)
-    if previous is not False:
-        run_sql(sql, params)
-    else:
-        add_qt_to_topic(qt_id, topic_id, position)
-
-
-def move_qt_to_topic(qt_id, topic_id):
-    """ Move a question template to a different sub category."""
-    assert isinstance(qt_id, int)
-    assert isinstance(topic_id, int)
-    key = "topic-%d-numquestions" % topic_id
-    MC.delete(key)
     key = "topic-%d-qtemplates-position-%d" % (topic_id, qt_id)
     MC.delete(key)
     key = "topic-%d-qtemplates" % topic_id
     MC.delete(key)
 
-    sql = "SELECT topic FROM questiontopics WHERE qtemplate=%s"
-    params = (qt_id,)
-    ret = run_sql(sql, params)
-    if ret:
-        for row in ret:
-            fromtopic = int(row[0])
-            key = "topic-%d-numquestions" % fromtopic
-            MC.delete(key)
-            key = "topic-%d-qtemplates" % fromtopic
-            MC.delete(key)
-            key = "topic-%d-qtemplate-%d-position" % (fromtopic, qt_id)
-            MC.delete(key)
-    run_sql("""UPDATE questiontopics
-         SET topic=%s WHERE qtemplate=%s;""", (topic_id, qt_id))
+    # If we were in a different topic, clear out cached info about that
+    prev_topic_id = get_topic_for_qtemplate(qt_id)
+    if prev_topic_id:
+        prev_position = get_qtemplate_practice_pos(qt_id)
+        if position is None:
+            position = prev_position
+        key = "topic-%d-qtemplate-%d-position" % (prev_topic_id, qt_id)
+        MC.delete(key)
+        key = "topic-%d-numquestions" % prev_topic_id
+        MC.delete(key)
+        key = "topic-%d-qtemplates-position-%d" % (prev_topic_id, qt_id)
+        MC.delete(key)
+        key = "topic-%d-qtemplates" % prev_topic_id
+        MC.delete(key)
 
-
-def add_qt_to_topic(qt_id, topic_id, position=0):
-    """ Put the question template into the topic."""
-    assert isinstance(qt_id, int)
-    assert isinstance(topic_id, int)
-    assert isinstance(position, int)
-    run_sql("INSERT INTO questiontopics (qtemplate, topic, position) "
-            "VALUES (%s, %s, %s)", (qt_id, topic_id, position))
-    key = "topic-%d-numquestions" % topic_id
-    MC.delete(key)
-    key = "topic-%d-qtemplates-position-%d" % (topic_id, position)
-    MC.delete(key)
-    key = "topic-%d-qtemplates" % topic_id
-    MC.delete(key)
+        run_sql("""UPDATE questiontopics SET "topic"=%s, "position"=%s WHERE "qtemplate"=%s;""", (topic_id, position, qt_id))
+    else:
+        if position is None:
+            position = 0
+        run_sql("""INSERT INTO questiontopics ("qtemplate", "topic", "position")
+                VALUES (%s, %s, %s)""", (qt_id, topic_id, position))
 
 
 def copy_qt_all(qt_id):
@@ -1062,7 +1036,8 @@ def create_qt(owner, title, desc, marker, score_max, status):
                   "VALUES (%s, %s, %s, %s, %s, %s, 2) RETURNING qtemplate;",
                   (owner, title, desc, marker, score_max, status))
     if res:
-        return int(res[0][0])
+        qt_id = int(res[0][0])
+        return qt_id
     L.error("create_qt error (%d, %s, %s, %d, %s, %s)" % (owner, title, desc, marker, score_max, status))
 
 

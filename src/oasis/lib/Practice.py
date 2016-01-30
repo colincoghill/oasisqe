@@ -149,7 +149,7 @@ def is_q_blocked(user_id, course_id, topic_id, qt_id):
     topicvisibility = Topics.get_vis(topic_id)
     canpreview = check_perm(user_id, course_id, "questionpreview")
     # They're trying to go directly to a hidden question?
-    position = DB.get_qtemplate_topic_pos(qt_id, topic_id)
+    position = DB.get_qtemplate_practice_pos(qt_id)
     if position <= 0 and not canpreview:
         return "Access denied to question."
         # They're trying to go directly to a question in an invisible category?
