@@ -17,7 +17,7 @@ from flask import render_template, session, \
 from logging import getLogger
 
 from .lib import Users2, DB, Topics, \
-    Courses2, Attach, QEditor
+    Courses2, Attach, QEditor, QEditor2
 
 MYPATH = os.path.dirname(__file__)
 
@@ -281,85 +281,8 @@ def qedit_raw_save(topic_id, qt_id):
             flash("Error updating EmbedID, "
                   "possibly the value is already used elsewhere.")
 
-    # They entered something into the html field and didn't upload a
-    # qtemplate.html
-    if not ('newattachmentname' in form and
-            form['newattachmentname'] == "qtemplate.html"):
-        if 'newhtml' in form:
-            html = form['newhtml'].encode("utf8")
-            DB.create_qt_att(qt_id,
-                             "qtemplate.html",
-                             "text/plain",
-                             html,
-                             version)
-
-    # They uploaded a new qtemplate.html
-    if 'newindex' in request.files:
-        data = request.files['newindex'].read()
-        if len(data) > 1:
-            html = data
-            DB.create_qt_att(qt_id,
-                             "qtemplate.html",
-                             "text/plain",
-                             html,
-                             version)
-
-    # They uploaded a new datfile
-    if 'newdatfile' in request.files:
-        data = request.files['newdatfile'].read()
-        if len(data) > 1:
-            DB.create_qt_att(qt_id,
-                             "datfile.txt",
-                             "text/plain",
-                             data,
-                             version)
-            qvars = QEditor.parse_datfile(data)
-            for row in range(0, len(qvars)):
-                DB.add_qt_variation(qt_id, row + 1, qvars[row], version)
-
-                # They uploaded a new image file
-    if 'newimgfile' in request.files:
-        data = request.files['newimgfile'].read()
-        if len(data) > 1:
-            df = data
-            DB.create_qt_att(qt_id, "image.gif", "image/gif", df, version)
-
-    if 'newmodule' in form:
-        try:
-            newmodule = int(form['newmodule'])
-        except (ValueError, TypeError):
-            flash(form['newmodule'])
-        else:
-            DB.update_qt_marker(qt_id, newmodule)
-
-    if 'newmaxscore' in form:
-        try:
-            newmaxscore = float(form['newmaxscore'])
-        except (ValueError, TypeError):
-            newmaxscore = None
-        DB.update_qt_maxscore(qt_id, newmaxscore)
-
-    newname = False
-    if 'newattachmentname' in form:
-        if len(form['newattachmentname']) > 1:
-            newname = form['newattachmentname']
-    if 'newattachment' in request.files:
-
-        fptr = request.files['newattachment']
-        if not newname:
-            # If they haven't supplied a filename we use
-            # the name of the file they uploaded.
-            # TODO: Security check? We don't create disk files with this name
-            newname = fptr.filename
-        L.info("QEditor: new attachment uploaded: File '%s' by user '%s'" % (newname, session['username']))
-        if len(newname) < 1:
-            L.info("File with no name uploaded by %s" % (session['username']))
-            newname = 'NONAME'
-        data = fptr.read()
-        mtype = fptr.content_type
-
-        if len(data) >= 1:   #  and newname == 'NONAME':
-            DB.create_qt_att(qt_id, newname, mtype, data, version)
+    # Let the question editor deal with the rest
+    QEditor.process_save(qt_id, topic_id, request, session, version)
 
     flash("Question changes saved")
     return redirect(url_for("qedit_raw_edit", topic_id=topic_id, qt_id=qt_id))
@@ -385,7 +308,6 @@ def qedit_raw_attach(qt_id, fname):
     return send_file(sio, mimetype, as_attachment=True, attachment_filename=fname)
 
 
-# TODO: Fix or remove.
 @app.route("/qedit_qe2/edit/<int:topic_id>/<int:qt_id>")
 @authenticated
 def qedit_qe2_edit(topic_id, qt_id):
@@ -410,12 +332,9 @@ def qedit_qe2_edit(topic_id, qt_id):
     topic = Topics.get_topic(topic_id)
     qtemplate = DB.get_qtemplate(qt_id)
     try:
-        html = DB.get_qt_att(qt_id, "qtemplate.html")
+        html = DB.get_qt_att(qt_id, "__editor.qe2")
     except KeyError:
-        try:
-            html = DB.get_qt_att(qt_id, "__qtemplate.html")
-        except KeyError:
-            html = "[question html goes here]"
+        html = "[ERROR: Missing question editor data]"
 
     qtemplate['html'] = html
     attachnames = DB.get_qt_atts(qt_id, version=qtemplate['version'])
@@ -424,8 +343,9 @@ def qedit_qe2_edit(topic_id, qt_id):
             'name': name,
             'mimetype': DB.get_qt_att_mimetype(qt_id, name)
         } for name in attachnames
-        if name not in ['qtemplate.html', 'image.gif', 'datfile.txt',
-                        '__datfile.txt', '__qtemplate.html']
+        if (not name.startswith("__") and
+            name not in ('qtemplate.html', 'image.gif', 'datfile.txt',
+                        '__datfile.txt', '__qtemplate.html'))
         ]
 
     return render_template(
@@ -437,3 +357,60 @@ def qedit_qe2_edit(topic_id, qt_id):
             attachnames=attachnames,
             qtemplate=qtemplate
     )
+
+@app.route("/qedit_qe2/save/<int:topic_id>/<int:qt_id>", methods=['POST', ])
+@authenticated
+def qedit_qe2_save(topic_id, qt_id):
+    """ Accept the question editor form and save the results.
+        :param topic_id: ID of the topic the question template is in.
+        :param qt_id: ID of the Question Template to save.
+    """
+    valid_embed = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+    user_id = session['user_id']
+    course_id = Topics.get_course_id(topic_id)
+    if not (check_perm(user_id, course_id, "courseadmin") or
+            check_perm(user_id, course_id, "courseadmin") or
+            check_perm(user_id, course_id, "questionedit") or
+            check_perm(user_id, course_id, "questionsource")):
+        flash("You do not have question editor privilege in this course")
+        return redirect(url_for("cadmin_edit_topic",
+                                course_id=course_id,
+                                topic_id=topic_id))
+
+    form = request.form
+
+    if 'cancel' in form:
+        flash("Question editing cancelled, changes not saved.")
+        return redirect(url_for("cadmin_edit_topic",
+                                course_id=course_id,
+                                topic_id=topic_id))
+
+    version = DB.incr_qt_version(qt_id)
+    owner = Users2.get_user(user_id)
+    DB.update_qt_owner(qt_id, user_id)
+    audit(3, user_id, qt_id, "qeditor",
+          "version=%s,message=%s" %
+          (version, "Edited: ownership set to %s" % owner['uname']))
+
+    if 'qtitle' in form:
+        qtitle = form['qtitle']
+        qtitle = qtitle.replace("'", "&#039;")
+        title = qtitle.replace("%", "&#037;")
+        DB.update_qt_title(qt_id, title)
+
+    if 'embed_id' in form:
+        embed_id = form['embed_id']
+        embed_id = ''.join([ch for ch in embed_id
+                            if ch in valid_embed])
+        if not DB.update_qt_embedid(qt_id, embed_id):
+            flash("Error updating EmbedID, "
+                  "possibly the value is already used elsewhere.")
+
+    # Let the question editor deal with the rest
+    try:
+        QEditor2.process_save(qt_id, topic_id, request, session, version)
+    except KeyError, e:
+        abort(400)
+
+    flash("Question changes saved")
+    return redirect(url_for("qedit_qe2_edit", topic_id=topic_id, qt_id=qt_id))

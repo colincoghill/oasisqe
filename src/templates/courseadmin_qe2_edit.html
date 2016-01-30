@@ -49,14 +49,14 @@
         <H4>Question Text:</H4>
 
         <div style='padding-left: 1em;'>
-          <TEXTAREA NAME='newtext' CLASS='input-xxlarge'
-                    rows='20'>{{ _qtext.html }}</TEXTAREA>
+          <TEXTAREA NAME='blocks' CLASS='input-xxlarge'
+                    rows='20'>{{ qtemplate.html }}</TEXTAREA>
         </div>
         <H4>Attachments:</H4>
         <div style='padding-left: 1em;'>
           <table class='table table-condensed att_table'>
             <tr>
-              <th>OASIS Attachments:</th>
+              <th>Attachments:</th>
          </tr>
             {% for att in attachments %}
               <tr>

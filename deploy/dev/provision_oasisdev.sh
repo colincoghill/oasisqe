@@ -52,6 +52,7 @@ a2ensite oasisqe
 
 service apache2 reload
 
+su oasisqe -c "/opt/oasisqe/3.9/bin/create_test_topic EXAMPLE101 Samples"
 echo
 echo 
 echo OASISQE deployed to http://localhost:8080/oasis
