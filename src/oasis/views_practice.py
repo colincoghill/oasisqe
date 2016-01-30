@@ -379,7 +379,7 @@ def practice_mark_question(topic_id, question_id):
         )
 
     marking = Practice.mark_q(user_id, topic_id, question_id, request)
-    prev_id, next_id = Practice.get_next_prev_pos(qt_id, topic_id)
+    prev_pos, next_pos = Practice.get_next_prev_pos(qt_id, topic_id)
 
     return render_template(
         "practicemarkquestion.html",
@@ -392,6 +392,6 @@ def practice_mark_question(topic_id, question_id):
         q_pos=q_pos,
         q_id=question_id,
         marking=marking,
-        next_id=next_id,
-        prev_id=prev_id
+        next_pos=next_pos,
+        prev_pos=prev_pos
     )
