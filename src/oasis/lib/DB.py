@@ -13,6 +13,7 @@ import psycopg2
 import cPickle
 import datetime
 import json
+import os
 
 IntegrityError = psycopg2.IntegrityError
 
@@ -1469,3 +1470,13 @@ def num_records(table_name):
     ret = run_sql('SELECT count(*) FROM "%s";' % table_name)
     num = int(ret[0][0])
     return num
+
+
+def erase_existing():
+    """ Remove the existing database. DANGEROUS
+    """
+
+    with open(os.path.join(os.path.dirname(OaConfig.homedir), "deploy", "eraseexisting.sql")) as f:
+        sql = f.read()
+    print "Removing existing tables."
+    run_sql(sql)

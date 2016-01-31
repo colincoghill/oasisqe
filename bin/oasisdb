@@ -322,15 +322,6 @@ Commands:
 """
 
 
-def erase_existing(db):
-    """ Remove the existing tables. DANGEROUS
-    """
-    with open(os.path.join(APPDIR, "deploy", "eraseexisting.sql")) as f:
-        sql = f.read()
-    print "Removing existing tables."
-    db.run_sql(sql)
-
-
 def do_status(db):
     """ Show some status information
     """
@@ -383,22 +374,22 @@ def do_init(db, c_opts):
         print ""
 
         if c_opts.oaver == '3.6':
-            erase_existing(db)  # might be some dregs, like sequences or views
+            DB.erase_existing()  # might be some dregs, like sequences or views
             clean_install_3_6(db)
         elif c_opts.oaver == '3.9.1':
-            erase_existing(db)  # might be some dregs, like sequences or views
+            DB.erase_existing()  # might be some dregs, like sequences or views
             clean_install_3_9_1(db)
         elif c_opts.oaver == '3.9.2':
-            erase_existing(db)  # might be some dregs, like sequences or views
+            DB.erase_existing()  # might be some dregs, like sequences or views
             clean_install_3_9_2(db)
         elif c_opts.oaver == '3.9.3':
-            erase_existing(db)  # might be some dregs, like sequences or views
+            DB.erase_existing()  # might be some dregs, like sequences or views
             clean_install_3_9_3(db)
         elif c_opts.oaver == '3.9.4':
-            erase_existing(db)  # might be some dregs, like sequences or views
+            DB.erase_existing()  # might be some dregs, like sequences or views
             clean_install_3_9_4(db)
         elif c_opts.oaver == '3.9.5':
-            erase_existing(db)  # might be some dregs, like sequences or views
+            DB.erase_existing()  # might be some dregs, like sequences or views
             clean_install_3_9_5(db)
         else:
             print "Unknown database version (%s)" % (c_opts.oaver,)
@@ -422,22 +413,22 @@ def do_init(db, c_opts):
     safe = db.check_safe()
     if c_opts.eraseall:
         if c_opts.oaver == '3.6':
-            erase_existing(db)  # might be some dregs, like sequences or views
+            DB.erase_existing()  # might be some dregs, like sequences or views
             clean_install_3_6(db)
         elif c_opts.oaver == '3.9.1':
-            erase_existing(db)  # might be some dregs, like sequences or views
+            DB.erase_existing()  # might be some dregs, like sequences or views
             clean_install_3_9_1(db)
         elif c_opts.oaver == '3.9.2':
-            erase_existing(db)  # might be some dregs, like sequences or views
+            DB.erase_existing()  # might be some dregs, like sequences or views
             clean_install_3_9_2(db)
         elif c_opts.oaver == '3.9.3':
-            erase_existing(db)  # might be some dregs, like sequences or views
+            DB.erase_existing()  # might be some dregs, like sequences or views
             clean_install_3_9_3(db)
         elif c_opts.oaver == '3.9.4':
-            erase_existing(db)  # might be some dregs, like sequences or views
+            DB.erase_existing()  # might be some dregs, like sequences or views
             clean_install_3_9_3(db)
         elif c_opts.oaver == '3.9.5':
-            erase_existing(db)  # might be some dregs, like sequences or views
+            DB.erase_existing()  # might be some dregs, like sequences or views
             clean_install_3_9_5(db)
         else:
             print "Unknown database version (%s)" % (c_opts.oaver,)
