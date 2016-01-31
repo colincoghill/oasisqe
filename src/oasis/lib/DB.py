@@ -642,21 +642,42 @@ def get_qt_exam_pos(exam_id, qt_id):
     return None
 
 
-def get_qtemplate_topic_pos(qt_id, topic_id):
-    """ Fetch the position of a question template in a topic. """
-    assert isinstance(topic_id, int)
+def get_topic_for_qtemplate(qt_id):
+    """
+    Find which topic a given qtemplate appears in.
+    :param qt_id: (int) qtemplate
+    :return: (int) topic_id or 0
+    """
+    # A question template should only be in one topic, but originally OASIS allowed
+    # it to be in multiple topics, so just return the first.
     assert isinstance(qt_id, int)
+    ret = run_sql("""SELECT topic
+                     FROM questiontopics
+                     WHERE qtemplate=%s LIMIT 1;""", (qt_id,))
+    if ret:
+        return int(ret[0][0])
+    return 0
+
+
+def get_qtemplate_practice_pos(qt_id):
+    """ Fetch the position of a question template in a topic. """
+    assert isinstance(qt_id, int)
+
+    topic_id = get_topic_for_qtemplate(qt_id)
     key = "topic-%d-qtemplate-%d-position" % (topic_id, qt_id)
     obj = MC.get(key)
     if obj is not None:
         return int(obj)
+
     ret = run_sql("""SELECT position
                      FROM questiontopics
-                     WHERE qtemplate=%s AND topic=%s;""", (qt_id, topic_id))
+                     WHERE qtemplate=%s;""", (qt_id,))
     if ret:
         MC.set(key, ret[0][0], 120)  # remember for 2 minutes
         return int(ret[0][0])
-    return False
+
+    # if it hasn't been assigned a position, it's 0
+    return 0
 
 
 def get_qtemplates_in_topic_position(topic_id, position):
@@ -880,75 +901,51 @@ def update_exam_qt_in_pos(exam_id, position, qts):
             if isinstance(alt, int):  # might be '---'
                 run_sql("""INSERT INTO examqtemplates
                                 (exam, position, qtemplate)
-                           VALUES (%s,%s,%s);""",
+                           VALUES (%s, %s, %s);""",
                                 (exam_id, position, alt))
 
 
-def update_qt_pos(qt_id, topic_id, position):
-    """ Update the position a question template holds in a topic."""
+def update_qt_practice_pos(qt_id, position):
+    """ Update the position a question template holds in its topic."""
     assert isinstance(qt_id, int)
     assert isinstance(position, int)
+
+    topic_id = get_topic_for_qtemplate(qt_id)
+    move_qt_to_topic(qt_id, topic_id, position)
+
+
+def move_qt_to_topic(qt_id, topic_id, position=None):
+    """ Move a question template to a different sub category."""
+    assert isinstance(qt_id, int)
     assert isinstance(topic_id, int)
-    previous = get_qtemplate_topic_pos(qt_id, topic_id)
-    key = "topic-%d-qtemplates-position-%d" % (topic_id, qt_id)
-    MC.delete(key)
+
+    # clear out cached info about destination topic
     key = "topic-%d-qtemplate-%d-position" % (topic_id, qt_id)
     MC.delete(key)
     key = "topic-%d-numquestions" % topic_id
     MC.delete(key)
     key = "topic-%d-qtemplates" % topic_id
     MC.delete(key)
-    sql = """UPDATE questiontopics
-             SET position=%s
-             WHERE topic=%s
-             AND qtemplate=%s;"""
-    params = (position, topic_id, qt_id)
-    if previous is not False:
-        run_sql(sql, params)
+
+    # If we were in a different topic, clear out cached info about that
+    prev_topic_id = get_topic_for_qtemplate(qt_id)
+    if prev_topic_id:
+        prev_position = get_qtemplate_practice_pos(qt_id)
+        if position is None:
+            position = prev_position
+        key = "topic-%d-qtemplate-%d-position" % (prev_topic_id, qt_id)
+        MC.delete(key)
+        key = "topic-%d-numquestions" % prev_topic_id
+        MC.delete(key)
+        key = "topic-%d-qtemplates" % prev_topic_id
+        MC.delete(key)
+
+        run_sql("""UPDATE questiontopics SET "topic"=%s, "position"=%s WHERE "qtemplate"=%s;""", (topic_id, position, qt_id))
     else:
-        add_qt_to_topic(qt_id, topic_id, position)
-
-
-def move_qt_to_topic(qt_id, topic_id):
-    """ Move a question template to a different sub category."""
-    assert isinstance(qt_id, int)
-    assert isinstance(topic_id, int)
-    key = "topic-%d-numquestions" % topic_id
-    MC.delete(key)
-    key = "topic-%d-qtemplates-position-%d" % (topic_id, qt_id)
-    MC.delete(key)
-    key = "topic-%d-qtemplates" % topic_id
-    MC.delete(key)
-
-    sql = "SELECT topic FROM questiontopics WHERE qtemplate=%s"
-    params = (qt_id,)
-    ret = run_sql(sql, params)
-    if ret:
-        for row in ret:
-            fromtopic = int(row[0])
-            key = "topic-%d-numquestions" % fromtopic
-            MC.delete(key)
-            key = "topic-%d-qtemplates" % fromtopic
-            MC.delete(key)
-            key = "topic-%d-qtemplate-%d-position" % (fromtopic, qt_id)
-            MC.delete(key)
-    run_sql("""UPDATE questiontopics
-         SET topic=%s WHERE qtemplate=%s;""", (topic_id, qt_id))
-
-
-def add_qt_to_topic(qt_id, topic_id, position=0):
-    """ Put the question template into the topic."""
-    assert isinstance(qt_id, int)
-    assert isinstance(topic_id, int)
-    assert isinstance(position, int)
-    run_sql("INSERT INTO questiontopics (qtemplate, topic, position) "
-            "VALUES (%s, %s, %s)", (qt_id, topic_id, position))
-    key = "topic-%d-numquestions" % topic_id
-    MC.delete(key)
-    key = "topic-%d-qtemplates-position-%d" % (topic_id, position)
-    MC.delete(key)
-    key = "topic-%d-qtemplates" % topic_id
-    MC.delete(key)
+        if position is None:
+            position = 0
+        run_sql("""INSERT INTO questiontopics ("qtemplate", "topic", "position")
+                VALUES (%s, %s, %s)""", (qt_id, topic_id, position))
 
 
 def copy_qt_all(qt_id):
@@ -1030,7 +1027,8 @@ def create_qt(owner, title, desc, marker, score_max, status):
                   "VALUES (%s, %s, %s, %s, %s, %s, 2) RETURNING qtemplate;",
                   (owner, title, desc, marker, score_max, status))
     if res:
-        return int(res[0][0])
+        qt_id = int(res[0][0])
+        return qt_id
     L.error("create_qt error (%d, %s, %s, %d, %s, %s)" % (owner, title, desc, marker, score_max, status))
 
 
@@ -1331,14 +1329,13 @@ def get_qt_editor(qt_id):
         OQE | Raw | QE2
     """
     assert isinstance(qt_id, int)
-    etype = "Raw"
     atts = get_qt_atts(qt_id)
     for att in atts:
-        if att.endswith(".oqe"):
-            etype = "OQE"
         if att.endswith(".qe2"):
-            etype = "qe2"
-    return etype
+            return "qe2"
+        if att.endswith(".oqe"):
+            return "OQE"
+    return "Raw"
 
 
 def get_db_version():
@@ -1399,3 +1396,76 @@ def get_db_size():
         sizes.append([row[0], row[1]])
 
     return sizes
+
+
+def check_safe():
+    """ Is it safe to do dangerous stuff to the database? Mainly tries to
+        figure out if there is real data in it.
+    """
+    # If there are only 2 or fewer user accounts and questions, assume it's
+    # ok.
+
+    what = is_oasis_db()
+    if what == "no":
+        return False
+
+    if what == "empty":
+        return True
+
+    users = num_records("users")
+    print '%s user records' % users
+    qtemplates = num_records("qtemplates")
+    print '%s question templates' % qtemplates
+    exams = num_records("exams")
+    print '%s assessments' % exams
+
+    if users > 2:
+        print "Contains non-default data."
+        return False
+
+    if qtemplates > 1:
+        print "Contains non-default data."
+        return False
+
+    if exams > 0:
+        print "Contains non-default data."
+        return False
+
+    return True
+
+
+def is_oasis_db():
+    """ Is this likely an OASIS database? Look at the table names to see
+        if we have the more specific ones.
+        Return "yes", "no", or "empty"
+    """
+
+    expect = ['qtvariations', 'users', 'examqtemplates', 'marklog', 'qtattach',
+              'questions', 'guesses', 'exams', 'qtemplates']
+
+    tables = public_tables()
+
+    if len(tables) == 0:
+        return "empty"
+
+    if set(expect).issubset(tables):
+        return "yes"
+
+    return "no"
+
+
+def public_tables():
+    """ Return a list of names of all tables in schema ("public" is default)
+    """
+
+    ret = run_sql("SELECT * FROM pg_stat_user_tables;")
+    tables = [row[2] for row in ret]
+    return tables
+
+
+def num_records(table_name):
+    """ How many rows are in the given table.
+    """
+    ret = run_sql('SELECT count(*) FROM "%s";' % table_name)
+    num = int(ret[0][0])
+    return num

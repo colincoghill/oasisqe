@@ -66,7 +66,7 @@ def do_topic_page_commands(request, topic_id, user_id):
             position = int(command['value'])
         except ValueError:
             position = 0
-        DB.update_qt_pos(qtid, topic_id, position)
+        DB.update_qt_practice_pos(qtid, position)
 
     # Then commands on selected questions
     target_cmd = form.get('target_cmd', None)
@@ -84,7 +84,6 @@ def do_topic_page_commands(request, topic_id, user_id):
                     topic_title = Topics.get_name(target_topic)
                     flash("Moving %s to %s" % (qt_title, topic_title))
                     DB.move_qt_to_topic(qtid, target_topic)
-                    Topics.flush_num_qs(topic_id)
                     Topics.flush_num_qs(target_topic)
         if target_cmd == 'copy':
             if target_topic:
@@ -92,31 +91,29 @@ def do_topic_page_commands(request, topic_id, user_id):
                     qt_title = DB.get_qt_name(qtid)
                     topic_title = Topics.get_name(target_topic)
                     flash("Copying %s to %s" % (qt_title, topic_title))
-                    new_id = DB.copy_qt_all(qtid)
-                    DB.add_qt_to_topic(new_id, target_topic)
+                    position = DB.get_qtemplate_practice_pos(qtid)
+                    newid = DB.copy_qt_all(qtid)
+                    DB.move_qt_to_topic(newid, target_topic, position)
                     Topics.flush_num_qs(target_topic)
 
         if target_cmd == 'hide':
             for qtid in qtids:
-                position = DB.get_qtemplate_topic_pos(qtid, topic_id)
+                position = DB.get_qtemplate_practice_pos(qtid)
                 if position > 0:  # If visible, make it hidden
-                    DB.update_qt_pos(qtid, topic_id, -position)
+                    DB.update_qt_practice_pos(qtid, -position)
                     title = DB.get_qt_name(qtid)
                     flash("Made '%s' Hidden" % title)
-                    Topics.flush_num_qs(topic_id)
 
         if target_cmd == 'show':
             for qtid in qtids:
-                position = DB.get_qtemplate_topic_pos(qtid, topic_id)
+                position = DB.get_qtemplate_practice_pos(qtid)
                 if position == 0:  # If hidden, make it visible
                     newpos = DB.get_qt_max_pos_in_topic(topic_id)
-                    DB.update_qt_pos(qtid, topic_id, newpos + 1)
-                    Topics.flush_num_qs(topic_id)
+                    DB.update_qt_practice_pos(qtid, newpos + 1)
                     title = DB.get_qt_name(qtid)
                     flash("Made '%s' Visible" % title)
                 if position < 0:  # If hidden, make it visible
-                    DB.update_qt_pos(qtid, topic_id, -position)
-                    Topics.flush_num_qs(topic_id)
+                    DB.update_qt_practice_pos(qtid, -position)
                     title = DB.get_qt_name(qtid)
                     flash("Made '%s' Visible" % title)
         if target_cmd == "export":
@@ -152,9 +149,7 @@ def do_topic_page_commands(request, topic_id, user_id):
                                  0)
             if new_id:
                 mesg.append("Created new question, id %s" % new_id)
-                DB.update_qt_pos(new_id,
-                                 topic_id,
-                                 new_position)
+                DB.update_qt_practice_pos(new_id, new_position)
 
                 if new_qtype == "qe2":
                     mesg.append("Creating new question, id %s as QE2" % new_id)
@@ -175,9 +170,12 @@ def do_topic_page_commands(request, topic_id, user_id):
     if 'import_file' in request.files:
         L.info("File upload to topic %s by user %s" % (topic_id, user_id))
         data = files['import_file'].read()
-        mesg.append(_import_questions_from_file(data, topic_id))
+        if len(data) > 1:
+            for msg in _import_questions_from_file(data, topic_id):
+                mesg.append(msg)
 
     Topics.flush_num_qs(topic_id)
+    Courses.incr_version()
 
     return 1, {'mesg': mesg}
 
@@ -186,12 +184,11 @@ def _import_questions_from_file(data, topic_id):
     """ Take a data string with a question export and import questions from it into the given topic.
         :returns [string,]: list of (string) messages
     """
-    mesg = list()
-    mesg.append("Attempting to import questions from file")
+    mesg = []
     if len(data) > 52000000:  # approx 50Mb
         mesg.append("Upload is too large, 50MB Maximum.")
 
-    num = External.import_qts_from_zip(data, topicid=topic_id)
+    num = External.import_qts_from_zip(data, topic_id=topic_id)
     if num is False:
         mesg.append("Invalid OASISQE file? No data recognized.")
     if num is 0:

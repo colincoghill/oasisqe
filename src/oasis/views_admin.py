@@ -291,27 +291,6 @@ def admin_edit_userfeed(feed_id):
     )
 
 
-#
-# @app.route("/admin/test_group_feed/<string:filename>")
-# @require_perm('sysadmin')
-# def test_group_feed(filename):
-#     """ Run the group feed script and return the output or error message.
-#     """
-#     error = None
-#     output = ""
-#     try:
-#         output = External.feeds_run_group_script("example_simple.py")
-#     except BaseException, err:
-#         error = err
-#
-#     return render_template(
-#         "admin_test_group_feed.html",
-#         output=output,
-#         error=error,
-#         scriptname=filename
-#     )
-
-
 @app.route("/admin/group/<int:group_id>/test_feed_output")
 @require_perm('sysadmin')
 def group_test_feed_output(group_id):

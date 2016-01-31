@@ -103,7 +103,9 @@
                 {% endfor %}
                 </tbody>
             </table>
+
             <br/>
+
             <div>
                 <h5>With Selected questions:</h5> <select name="target_cmd"
                                                           id="target_cmd">
@@ -147,10 +149,9 @@
                             <input type="text" name="new_title" class='input'>
                         </td>
                         <td>
-                            <input type='hidden' name='new_qtype' value='raw'>
                             <select name='new_qtype'>
                                 <option value='raw'>Raw Editor</option>
-                               <!-- <option value='qe2'>QE2</option> -->
+                                <option value='qe2'>QE2</option>
                             </select>
                         </td>
                     </tr>

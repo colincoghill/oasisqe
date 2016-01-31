@@ -355,7 +355,7 @@ CREATE TABLE config (
     "name" character varying(50) unique primary key,
     "value" text
 );
-INSERT INTO config ("name", "value") VALUES ('dbversion', '3.9.4');
+INSERT INTO config ("name", "value") VALUES ('dbversion', '3.9.5');
 
 CREATE SEQUENCE users_version_seq START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;
 CREATE SEQUENCE courses_version_seq START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;

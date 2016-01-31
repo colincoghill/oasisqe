@@ -28,6 +28,8 @@ except AttributeError:
 
 L = getLogger("oasisqe")
 
+disable_mc_cache = False
+
 
 class DbConn(object):
     """Manage a single database connection."""
@@ -202,6 +204,11 @@ class FakeMCConn(object):
         """Do nothing."""
         return None
 
+    def flush(self):
+        """ Do nothing
+        """
+        return None
+
 
 class MCConn(object):
     """ Look after a connection to a memcached server.
@@ -215,6 +222,8 @@ class MCConn(object):
 
     def set(self, key, value, expiry=None):
         """ store item. """
+        if disable_mc_cache:
+            return True
         key = "%s-%s" % (uniqueKey, key)
         key = key.encode("utf-8")
         try:
@@ -232,6 +241,8 @@ class MCConn(object):
 
     def get(self, key):
         """ fetch item."""
+        if disable_mc_cache:
+            return None
         key = "%s-%s" % (uniqueKey, key)
         key = key.encode("utf-8")
         try:
@@ -246,6 +257,8 @@ class MCConn(object):
 
     def delete(self, key):
         """ remove item."""
+        if disable_mc_cache:
+            return None
         key = "%s-%s" % (uniqueKey, key)
         key = key.encode("utf-8")
         try:
@@ -257,6 +270,13 @@ class MCConn(object):
             return False
 
         return res
+
+    def flush_all(self):
+        """ Clear the cache
+        """
+        if disable_mc_cache:
+            return None
+        return self.conn.flush_all()
 
 
 # nowadays memcache-client comes with its own pool, but this works and I haven't
@@ -304,6 +324,15 @@ class MCPool(object):
         """Remove an item from the cache. """
         dbc = self.connqueue.get(True)
         res = dbc.delete(key)
+        self.connqueue.put(dbc)
+        return res
+
+    def flush_all(self):
+        """ Clear the cache
+        """
+
+        dbc = self.connqueue.get(True)
+        res = dbc.flush_all()
         self.connqueue.put(dbc)
         return res
 

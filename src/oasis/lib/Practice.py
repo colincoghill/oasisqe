@@ -149,7 +149,7 @@ def is_q_blocked(user_id, course_id, topic_id, qt_id):
     topicvisibility = Topics.get_vis(topic_id)
     canpreview = check_perm(user_id, course_id, "questionpreview")
     # They're trying to go directly to a hidden question?
-    position = DB.get_qtemplate_topic_pos(qt_id, topic_id)
+    position = DB.get_qtemplate_practice_pos(qt_id)
     if position <= 0 and not canpreview:
         return "Access denied to question."
         # They're trying to go directly to a question in an invisible category?
@@ -158,38 +158,37 @@ def is_q_blocked(user_id, course_id, topic_id, qt_id):
     return False
 
 
-def get_next_prev(qt_id, topic_id):
-    """ Find the "next" and "previous" qtemplates, by topic, position. """
+def get_next_prev_pos(qt_id, topic_id):
+    """ Find the positions of the "next" and "previous" qtemplates in the practice topic..
+        Returns their positions."""
+
     if not topic_id:
         return None, None
         # This is very inefficient, but with the way questions are stored,
         # I didn't see a better way. Could maybe be revisited some time?
-    questionlist = General.get_q_list(topic_id, numdone=False)
-    if questionlist:
-        # Filter out the questions without a positive position
-        questionlist = [question
-                        for question in questionlist
-                        if question['position'] > 0]
+
+    pos = DB.get_qtemplate_practice_pos(qt_id)
+    if not pos:
+        return None, None
+
+    maxp = DB.get_qt_max_pos_in_topic(topic_id)
+    if pos == maxp:
+        next_pos = None
     else:
-        questionlist = []
-        # We need to step through the list finding the "next and previous" id's
-    nextid = None
-    foundprev = None
-    previd = None
-    foundcurrent = None
-    for i in questionlist:
-        if foundcurrent:
-            nextid = int(i['qtid'])
-            break
-        if int(i['qtid']) == int(qt_id):
-            foundprev = True
-            foundcurrent = True
-        if not foundprev:
-            previd = int(i['qtid'])
-        # previd and nextid should now contain the correct values
-    # or None, if they are not valid (current_qtid is the first or
-    # last question)
-    return previd, nextid
+        p = pos + 1
+        while p < maxp and not DB.get_qtemplates_in_topic_position(topic_id, p):
+            p += 1
+        next_pos = p
+
+    p = pos - 1
+    while p > 0 and not DB.get_qtemplates_in_topic_position(topic_id, p):
+        p -= 1
+    if p == 0:
+        prev_pos = None
+    else:
+        prev_pos = p
+
+    return prev_pos, next_pos
 
 
 def mark_q(user_id, topic_id, q_id, request):
