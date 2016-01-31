@@ -1480,3 +1480,69 @@ def erase_existing():
         sql = f.read()
     print "Removing existing tables."
     run_sql(sql)
+
+
+def clean_install_3_6():
+    """ Install a fresh blank v3.6 schema.
+    """
+
+    with open(os.path.join(os.path.dirname(OaConfig.homedir), "deploy", "emptyschema_36x.sql")) as f:
+        sql = f.read()
+
+    run_sql(sql)
+    print "Installed v3.6.x table structure."
+
+
+def clean_install_3_9_1():
+    """ Install a fresh blank v3.9.1 schema.
+    """
+
+    with open(os.path.join(os.path.dirname(OaConfig.homedir), "deploy", "emptyschema_391.sql")) as f:
+        sql = f.read()
+
+    run_sql(sql)
+    print "Installed v3.9.1 table structure."
+
+
+def clean_install_3_9_2():
+    """ Install a fresh blank v3.9.2 schema.
+    """
+
+    with open(os.path.join(os.path.dirname(OaConfig.homedir), "deploy", "emptyschema_392.sql")) as f:
+        sql = f.read()
+
+    run_sql(sql)
+    print "Installed v3.9.2 table structure."
+
+
+def clean_install_3_9_3():
+    """ Install a fresh blank v3.9.3 schema.
+    """
+
+    with open(os.path.join(os.path.dirname(OaConfig.homedir), "deploy", "emptyschema_393.sql")) as f:
+        sql = f.read()
+
+    run_sql(sql)
+    print "Installed v3.9.3 table structure."
+
+
+def clean_install_3_9_4():
+    """ Install a fresh blank v3.9.4 schema.
+    """
+
+    with open(os.path.join(os.path.dirname(OaConfig.homedir), "deploy", "emptyschema_394.sql")) as f:
+        sql = f.read()
+
+    run_sql(sql)
+    print "Installed v3.9.4 table structure."
+
+
+def clean_install_3_9_5():
+    """ Install a fresh blank v3.9.4 schema.
+    """
+
+    with open(os.path.join(os.path.dirname(OaConfig.homedir), "deploy", "emptyschema_395.sql")) as f:
+        sql = f.read()
+
+    run_sql(sql)
+    print "Installed v3.9.5 table structure."
