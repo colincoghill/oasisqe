@@ -1546,3 +1546,171 @@ def clean_install_3_9_5():
 
     run_sql(sql)
     print "Installed v3.9.5 table structure."
+
+
+ def upgrade_3_6_to_3_9_5():
+    """ Given a 3.6 database, upgrade it to 3.9.3
+    """
+    with open(os.path.join(os.path.dirname(OaConfig.homedir), "deploy", "migrate_36x_to_392.sql")) as f:
+        sql = f.read()
+
+    run_sql(sql)
+    print "Migrated table structure from 3.6 to 3.9.2"
+
+    calc_stats()
+
+    with open(os.path.join(os.path.dirname(OaConfig.homedir), "deploy", "migrate_392_to_393.sql")) as f:
+        sql = f.read()
+    run_sql(sql)
+    print "Migrated table structure from 3.9.2 to 3.9.3"
+
+    with open(os.path.join(os.path.dirname(OaConfig.homedir), "deploy", "migrate_393_to_394.sql")) as f:
+        sql = f.read()
+    run_sql(sql)
+    print "Migrated table structure from 3.9.3 to 3.9.4"
+    with open(os.path.join(os.path.dirname(OaConfig.homedir), "deploy", "migrate_394_to_395.sql")) as f:
+        sql = f.read()
+    run_sql(sql)
+    print "Migrated table structure from 3.9.4 to 3.9.5"
+
+    if not options.noresetadmin:
+        generate_admin_passwd(db)  # 3.6 passwords were in a slightly less secure format
+
+
+def upgrade_3_9_1_to_3_9_5():
+    """ Given a 3.9.1 database, upgrade it to 3.9.4.
+    """
+    with open(os.path.join(os.path.dirname(OaConfig.homedir), "deploy", "migrate_391_to_392.sql")) as f:
+        sql = f.read()
+    run_sql(sql)
+    print "Migrated table structure from 3.9.1 to 3.9.2"
+
+    with open(os.path.join(os.path.dirname(OaConfig.homedir), "deploy", "migrate_392_to_393.sql")) as f:
+        sql = f.read()
+    run_sql(sql)
+    print "Migrated table structure from 3.9.2 to 3.9.3"
+
+    with open(os.path.join(os.path.dirname(OaConfig.homedir), "deploy", "migrate_393_to_394.sql")) as f:
+        sql = f.read()
+    run_sql(sql)
+    print "Migrated table structure from 3.9.3 to 3.9.4"
+    with open(os.path.join(os.path.dirname(OaConfig.homedir), "deploy", "migrate_394_to_395.sql")) as f:
+        sql = f.read()
+    run_sql(sql)
+    print "Migrated table structure from 3.9.4 to 3.9.5"
+
+
+def upgrade_3_9_2_to_3_9_5():
+    """ Given a 3.9.2 database, upgrade it to 3.9.4.
+    """
+    with open(os.path.join(os.path.dirname(OaConfig.homedir), "deploy", "migrate_392_to_393.sql")) as f:
+        sql = f.read()
+    run_sql(sql)
+    print "Migrated table structure from 3.9.2 to 3.9.3"
+
+    with open(os.path.join(os.path.dirname(OaConfig.homedir), "deploy", "migrate_393_to_394.sql")) as f:
+        sql = f.read()
+    run_sql(sql)
+    print "Migrated table structure from 3.9.3 to 3.9.4"
+    with open(os.path.join(os.path.dirname(OaConfig.homedir), "deploy", "migrate_394_to_395.sql")) as f:
+        sql = f.read()
+    run_sql(sql)
+    print "Migrated table structure from 3.9.4 to 3.9.5"
+
+
+def upgrade_3_9_3_to_3_9_5():
+    """ Given a 3.9.3 database, upgrade it to 3.9.5.
+    """
+    with open(os.path.join(os.path.dirname(OaConfig.homedir), "deploy", "migrate_393_to_394.sql")) as f:
+        sql = f.read()
+    run_sql(sql)
+    print "Migrated table structure from 3.9.3 to 3.9.4"
+    with open(os.path.join(os.path.dirname(OaConfig.homedir), "deploy", "migrate_394_to_395.sql")) as f:
+        sql = f.read()
+    run_sql(sql)
+    print "Migrated table structure from 3.9.4 to 3.9.5"
+
+
+def upgrade_3_9_4_to_3_9_5():
+    """ Given a 3.9.4 database, upgrade it to 3.9.5.
+    """
+    with open(os.path.join(os.path.dirname(OaConfig.homedir), "deploy", "migrate_394_to_395.sql")) as f:
+        sql = f.read()
+    run_sql(sql)
+    print "Migrated table structure from 3.9.4 to 3.9.5"
+
+
+def do_upgrade():
+    """ Upgrade the database from an older version of OASIS.
+    """
+
+    dbver = get_db_version()
+    if dbver == "3.6":
+        upgrade_3_6_to_3_9_5()
+        return
+    if dbver == "3.9.1":
+        upgrade_3_9_1_to_3_9_5()
+        return
+    if dbver == "3.9.2":
+        upgrade_3_9_2_to_3_9_5()
+        return
+    if dbver == "3.9.3":
+        upgrade_3_9_3_to_3_9_5()
+        return
+    if dbver == "3.9.4":
+        upgrade_3_9_4_to_3_9_5()
+        return
+    if dbver == "3.9.5":
+        print "Your database is already the latest version (3.9.5)"
+    return
+
+
+def generate_admin_passwd():
+    """ Generate a new random password for the admin account.
+    """
+    from oasis.lib import Users, Users2, Permissions
+
+    ver = get_db_version()
+
+    passwd = Users.gen_confirm_code()
+
+    uid = Users.uid_by_uname('admin')
+    if not uid:
+        if ver == "3.6":
+            sql = """
+                INSERT INTO users (uname, passwd, givenname, familyname,
+                                  acctstatus, student_id, email, expiry,
+                                  source)
+                VALUES ('admin', 'NOLOGIN', 'Admin', 'Account',
+                        1, '', '', NULL,
+                        'local');
+                """
+            run_sql(sql)
+            uid = Users.uid_by_uname('admin')
+        else:
+            uid = Users.create(
+                uname="admin",
+                passwd="NOLOGIN",
+                email=OaConfig.email,
+                givenname="Admin",
+                familyname="Account",
+                acctstatus=1,
+                studentid="",
+                source="local",
+                confirm_code="",
+                confirm=True)
+
+    Users2.set_password(uid, passwd)
+
+    Permissions.add_perm(uid, 0, 1)  # superuser
+    print "Admin password reset to: ", passwd
+
+
+def calc_stats():
+    """ Run stats generation over the whole database.
+    """
+    print "Calculating Statistics"
+    from oasis.lib import Stats
+    Stats.do_initial_stats_update()
+
+
