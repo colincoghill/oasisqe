@@ -289,7 +289,7 @@ if __name__ == "__main__":
         sys.exit()
 
     if args[0] == 'upgrade':
-        DB.do_upgrade()
+        DB.do_upgrade(options)
         sys.exit()
 
     if args[0] == 'show':

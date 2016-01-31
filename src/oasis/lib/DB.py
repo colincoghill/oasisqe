@@ -1540,7 +1540,6 @@ def clean_install_3_9_4():
 def clean_install_3_9_5():
     """ Install a fresh blank v3.9.4 schema.
     """
-
     with open(os.path.join(os.path.dirname(OaConfig.homedir), "deploy", "emptyschema_395.sql")) as f:
         sql = f.read()
 
@@ -1548,7 +1547,7 @@ def clean_install_3_9_5():
     print "Installed v3.9.5 table structure."
 
 
- def upgrade_3_6_to_3_9_5():
+def upgrade_3_6_to_3_9_5(options):
     """ Given a 3.6 database, upgrade it to 3.9.3
     """
     with open(os.path.join(os.path.dirname(OaConfig.homedir), "deploy", "migrate_36x_to_392.sql")) as f:
@@ -1574,10 +1573,10 @@ def clean_install_3_9_5():
     print "Migrated table structure from 3.9.4 to 3.9.5"
 
     if not options.noresetadmin:
-        generate_admin_passwd(db)  # 3.6 passwords were in a slightly less secure format
+        generate_admin_passwd()  # 3.6 passwords were in a slightly less secure format
 
 
-def upgrade_3_9_1_to_3_9_5():
+def upgrade_3_9_1_to_3_9_5(options):
     """ Given a 3.9.1 database, upgrade it to 3.9.4.
     """
     with open(os.path.join(os.path.dirname(OaConfig.homedir), "deploy", "migrate_391_to_392.sql")) as f:
@@ -1600,7 +1599,7 @@ def upgrade_3_9_1_to_3_9_5():
     print "Migrated table structure from 3.9.4 to 3.9.5"
 
 
-def upgrade_3_9_2_to_3_9_5():
+def upgrade_3_9_2_to_3_9_5(options):
     """ Given a 3.9.2 database, upgrade it to 3.9.4.
     """
     with open(os.path.join(os.path.dirname(OaConfig.homedir), "deploy", "migrate_392_to_393.sql")) as f:
@@ -1618,7 +1617,7 @@ def upgrade_3_9_2_to_3_9_5():
     print "Migrated table structure from 3.9.4 to 3.9.5"
 
 
-def upgrade_3_9_3_to_3_9_5():
+def upgrade_3_9_3_to_3_9_5(options):
     """ Given a 3.9.3 database, upgrade it to 3.9.5.
     """
     with open(os.path.join(os.path.dirname(OaConfig.homedir), "deploy", "migrate_393_to_394.sql")) as f:
@@ -1631,7 +1630,7 @@ def upgrade_3_9_3_to_3_9_5():
     print "Migrated table structure from 3.9.4 to 3.9.5"
 
 
-def upgrade_3_9_4_to_3_9_5():
+def upgrade_3_9_4_to_3_9_5(options):
     """ Given a 3.9.4 database, upgrade it to 3.9.5.
     """
     with open(os.path.join(os.path.dirname(OaConfig.homedir), "deploy", "migrate_394_to_395.sql")) as f:
@@ -1640,25 +1639,25 @@ def upgrade_3_9_4_to_3_9_5():
     print "Migrated table structure from 3.9.4 to 3.9.5"
 
 
-def do_upgrade():
+def do_upgrade(options):
     """ Upgrade the database from an older version of OASIS.
     """
 
     dbver = get_db_version()
     if dbver == "3.6":
-        upgrade_3_6_to_3_9_5()
+        upgrade_3_6_to_3_9_5(options)
         return
     if dbver == "3.9.1":
-        upgrade_3_9_1_to_3_9_5()
+        upgrade_3_9_1_to_3_9_5(options)
         return
     if dbver == "3.9.2":
-        upgrade_3_9_2_to_3_9_5()
+        upgrade_3_9_2_to_3_9_5(options)
         return
     if dbver == "3.9.3":
-        upgrade_3_9_3_to_3_9_5()
+        upgrade_3_9_3_to_3_9_5(options)
         return
     if dbver == "3.9.4":
-        upgrade_3_9_4_to_3_9_5()
+        upgrade_3_9_4_to_3_9_5(options)
         return
     if dbver == "3.9.5":
         print "Your database is already the latest version (3.9.5)"
