@@ -990,12 +990,12 @@ def copy_qt(qt_id):
         raise KeyError("QTemplate %d not found" % qt_id)
     orig = res[0]
     new_id = create_qt(
-        int(orig[0]),
-        orig[1],
-        orig[2],
-        orig[3],
-        orig[4],
-        int(orig[5])
+        owner=int(orig[0]),
+        title=orig[1],
+        desc=orig[2],
+        marker=orig[3],
+        score_max=orig[4],
+        status=int(orig[5])
     )
     if new_id <= 0:
         raise IOError("Unable to create copy of QTemplate %d" % qt_id)
@@ -1014,7 +1014,7 @@ def add_qt_variation(qt_id, variation, data, version):
             (qt_id, variation, safe_data, version))
 
 
-def create_qt(owner, title, desc, marker, score_max, status):
+def create_qt(owner, title, desc, marker, score_max, status, topic_id=None):
     """ Create a new Question Template. """
     assert isinstance(owner, int)
     assert isinstance(title, str) or isinstance(title, unicode)
@@ -1027,8 +1027,13 @@ def create_qt(owner, title, desc, marker, score_max, status):
     res = run_sql("INSERT INTO qtemplates (owner, title, description, marker, scoremax, status, version) "
                   "VALUES (%s, %s, %s, %s, %s, %s, 2) RETURNING qtemplate;",
                   (owner, title, desc, marker, score_max, status))
+    qt_id = None
     if res:
         qt_id = int(res[0][0])
+
+    if topic_id:
+        move_qt_to_topic(qt_id, topic_id,0)
+    if qt_id:
         return qt_id
     L.error("create_qt error (%d, %s, %s, %d, %s, %s)" % (owner, title, desc, marker, score_max, status))
 
