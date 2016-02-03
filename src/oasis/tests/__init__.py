@@ -4,8 +4,8 @@
 """
 import sys
 import os
-APPDIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__)))))
-sys.path.append(os.path.join(APPDIR, "src"))
+import OaConfig
+
 
 from oasis.lib import DB
 assert DB.check_safe(), "Database not safe for tests"
@@ -33,7 +33,7 @@ def teardown():
     """
         Remove testing configuration file and otherwise clean up.
     """
-    with open(os.path.join(APPDIR, "deploy", "eraseexisting.sql")) as f:
+    with open(os.path.join(os.path.dirname(OaConfig.homedir), "deploy", "eraseexisting.sql")) as f:
         sql = f.read()
     print "Removing tables."
     DB.run_sql(sql)

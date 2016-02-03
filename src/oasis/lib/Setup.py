@@ -13,6 +13,7 @@ import StringIO
 from oasis.lib import External
 from flask import send_file, abort
 from logging import getLogger
+from oasis.lib import QEditor, QEditor2
 
 L = getLogger("oasisqe")
 
@@ -140,50 +141,31 @@ def do_topic_page_commands(request, topic_id, user_id):
                 new_max_score = float(form.get('new_maxscore', 0))
             except ValueError:
                 new_max_score = 0
-            newid = DB.create_qt(user_id,
-                                 new_title,
-                                 "No Description",
-                                 1,
-                                 new_max_score,
-                                 0)
-            if newid:
-                DB.update_qt_practice_pos(newid, new_position)
-                DB.create_qt_att(newid,
-                                 "qtemplate.html",
-                                 "application/oasis-html",
-                                 "empty",
-                                 1)
-                DB.create_qt_att(newid,
-                                 "qtemplate.html",
-                                 "application/oasis-html",
-                                 "empty",
-                                 1)
-                if new_qtype == "oqe":
-                    mesg.append("Creating new question, id %s (OQE)" % newid)
-                    DB.create_qt_att(newid,
-                                     "_editor.oqe",
-                                     "application/oasis-oqe",
-                                     "",
-                                     1)
+            new_id = DB.create_qt(owner=user_id,
+                                  title=new_title,
+                                  desc="No Description",
+                                  marker=1,
+                                  score_max=new_max_score,
+                                  status=0,
+                                  topic_id=topic_id)
+            if new_id:
+                mesg.append("Created new question, id %s" % new_id)
+                if new_position and new_position >= 1:
+                    DB.update_qt_practice_pos(new_id, new_position)
+
                 if new_qtype == "qe2":
-                    mesg.append("Creating new question, id %s (QE2)" % newid)
-                    DB.create_qt_att(newid,
-                                     "_editor.qe2",
-                                     "application/oasis-qe2",
-                                     "",
-                                     1)
+                    mesg.append("Creating new question, id %s as QE2" % new_id)
+                    QEditor2.create_new(new_id, new_title)
+
                 if new_qtype == "raw":
-                    mesg.append("Creating new question, id %s (%s)" %
-                                (newid, new_qtype))
-                    DB.create_qt_att(newid,
-                                     "datfile.txt",
-                                     "application/oasis-dat",
-                                     "0",
-                                     1)
+                    mesg.append("Creating new question, id %s as RAW (%s)" %
+                                (new_id, new_qtype))
+                    QEditor.create_new(new_id, new_title)
+
             else:
-                mesg.append("Error creating new question, id %s" % newid)
+                mesg.append("Error creating new question, id %s" % new_id)
                 L.error("Unable to create new question (%s) (%s)" %
-                    (new_title, new_position))
+                        (new_title, new_position))
 
     L.info("request.files = %s" % (repr(request.files.keys())))
     # Did they upload a file to import?

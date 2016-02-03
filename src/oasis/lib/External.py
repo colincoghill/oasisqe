@@ -343,14 +343,15 @@ def import_qts_from_zip(data, topic_id):
                     position = info['qtemplates'][qtid]['position']
                 else:
                     position = 0
-                newid = DB.create_qt(1,   # ownerid
-                                     qtemplate['title'],
-                                     qtemplate['description'],
-                                     qtemplate['marker'],
-                                     qtemplate['scoremax'],
-                                     qtemplate['status'])
+                newid = DB.create_qt(owner=1,   # ownerid
+                                     title=qtemplate['title'],
+                                     desc=qtemplate['description'],
+                                     marker=qtemplate['marker'],
+                                     score_max=qtemplate['scoremax'],
+                                     status=qtemplate['status'],
+                                     topic_id=topic_id)
 
-                DB.move_qt_to_topic(newid, topic_id, position)
+                DB.update_qt_practice_pos(newid, position)
                 num += 1
 
     #            print "%s attachments" % len(attachments)

@@ -3,15 +3,137 @@
 # This code is under the GNU Affero General Public License
 # http://www.gnu.org/licenses/agpl-3.0.html
 
-"""Provides a question editing interface to the user."""
+"""Provides a "raw" question editing interface to the user. Allows the user
+   to create all the low level attachments and scripts used by OASIS questions
+   directly."""
 
 from oasis.lib import DB
 from oasis.lib import Audit
 from logging import getLogger
 import re
 
-
 L = getLogger("oasisqe")
+
+
+def create_new(qt_id, name):
+    """
+    Set the given qtemplate up as a new (default) question. Makes sure
+    the appropriate things the editor needs are configured and in place.
+    Assumes the QT has not previously been set up.
+
+    :param qt_id: The ID of the qtemplate to set up.
+    :param name: Name of the question.
+    :return:
+    """
+
+    # Raw questions require the user to provide qtemplate.html
+    DB.create_qt_att(qt_id,
+                     "qtemplate.html",
+                     "application/oasis-html",
+                     "empty",
+                     1)
+    # The datfile contains a list of variations.
+    DB.create_qt_att(qt_id,
+                     "datfile.txt",
+                     "application/oasis-dat",
+                     "0",
+                     1)
+    return
+
+
+def process_save(qt_id, topic_id, request, session, version):
+    """ Have received a web form POST to save the current changes.
+
+    :param qt_id: ID of the question template being edited
+    :param topic_id: Topic the question template is in
+    :param request: The POST request.
+    :param session: The web session object
+    :param version: (int) the new version of the qt being saved
+    :return: None
+    """
+
+    form = request.form
+    files = request.files
+
+    # They entered something into the html field and didn't upload a
+    # qtemplate.html
+    if not ('newattachmentname' in form and
+            form['newattachmentname'] == "qtemplate.html"):
+        if 'newhtml' in form:
+            html = form['newhtml'].encode("utf8")
+            DB.create_qt_att(qt_id,
+                             "qtemplate.html",
+                             "text/plain",
+                             html,
+                             version)
+
+    # They uploaded a new qtemplate.html
+    if 'newindex' in files:
+        data = files['newindex'].read()
+        if len(data) > 1:
+            html = data
+            DB.create_qt_att(qt_id,
+                             "qtemplate.html",
+                             "text/plain",
+                             html,
+                             version)
+
+    # They uploaded a new datfile
+    if 'newdatfile' in files:
+        data = files['newdatfile'].read()
+        if len(data) > 1:
+            DB.create_qt_att(qt_id,
+                             "datfile.txt",
+                             "text/plain",
+                             data,
+                             version)
+            qvars = parse_datfile(data)
+            for row in range(0, len(qvars)):
+                DB.add_qt_variation(qt_id, row + 1, qvars[row], version)
+
+                # They uploaded a new image file
+    if 'newimgfile' in files:
+        data = files['newimgfile'].read()
+        if len(data) > 1:
+            df = data
+            DB.create_qt_att(qt_id, "image.gif", "image/gif", df, version)
+
+    if 'newmodule' in form:
+        try:
+            newmodule = int(form['newmodule'])
+        except (ValueError, TypeError):
+            L.warn("QEditor: invalid value for newmodule received. Ignoring. '%s'" % form['newmodule'])
+        else:
+            DB.update_qt_marker(qt_id, newmodule)
+
+    if 'newmaxscore' in form:
+        try:
+            newmaxscore = float(form['newmaxscore'])
+        except (ValueError, TypeError):
+            L.warn("QEditor: invalid value for newmaxscore received. Ignoring. '%s'" % form['newmaxscore'])
+            newmaxscore = None
+        DB.update_qt_maxscore(qt_id, newmaxscore)
+
+    newname = False
+    if 'newattachmentname' in form:
+        if len(form['newattachmentname']) > 1:
+            newname = form['newattachmentname']
+    if 'newattachment' in files:
+        fptr = files['newattachment']
+        if not newname:
+            # If they haven't supplied a filename we use
+            # the name of the file they uploaded.
+            # TODO: Do we need a security check? We don't create disk files with this name
+            newname = fptr.filename
+        if len(newname) < 1:
+            L.info("File with no name uploaded by %s" % (session['username']))
+            newname = 'NONAME'
+        data = fptr.read()
+        mtype = fptr.content_type
+
+        if len(data) >= 1:
+            DB.create_qt_att(qt_id, newname, mtype, data, version)
+            L.info("File '%s' uploaded by %s" % (newname, session['username']))
 
 
 def parse_datfile(datfile):

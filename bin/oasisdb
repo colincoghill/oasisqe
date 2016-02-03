@@ -77,196 +77,6 @@ def do_show(db, c_args):
     print "   users        List all users in the database"
 
 
-def calc_stats():
-    """ Run stats generation over the whole database.
-    """
-    print "Calculating Statistics"
-    from oasis.lib import Stats
-    Stats.do_initial_stats_update()
-
-
-def upgrade_3_6_to_3_9_4(db):
-    """ Given a 3.6 database, upgrade it to 3.9.3
-    """
-    with open(os.path.join(APPDIR, "deploy", "migrate_36x_to_392.sql")) as f:
-        sql = f.read()
-
-    db.run_sql(sql)
-    print "Migrated table structure from 3.6 to 3.9.2"
-
-    calc_stats()
-
-    with open(os.path.join(APPDIR, "deploy", "migrate_392_to_393.sql")) as f:
-        sql = f.read()
-    db.run_sql(sql)
-    print "Migrated table structure from 3.9.2 to 3.9.3"
-
-    with open(os.path.join(APPDIR, "deploy", "migrate_393_to_394.sql")) as f:
-        sql = f.read()
-    db.run_sql(sql)
-    print "Migrated table structure from 3.9.3 to 3.9.4"
-
-    if not options.noresetadmin:
-        generate_admin_passwd(db)  # 3.6 passwords were in a slightly less secure format
-
-
-def upgrade_3_9_1_to_3_9_4(db):
-    """ Given a 3.9.1 database, upgrade it to 3.9.4.
-    """
-    with open(os.path.join(APPDIR, "deploy", "migrate_391_to_392.sql")) as f:
-        sql = f.read()
-    db.run_sql(sql)
-    print "Migrated table structure from 3.9.1 to 3.9.2"
-
-    with open(os.path.join(APPDIR, "deploy", "migrate_392_to_393.sql")) as f:
-        sql = f.read()
-    db.run_sql(sql)
-    print "Migrated table structure from 3.9.2 to 3.9.3"
-
-    with open(os.path.join(APPDIR, "deploy", "migrate_393_to_394.sql")) as f:
-        sql = f.read()
-    db.run_sql(sql)
-    print "Migrated table structure from 3.9.3 to 3.9.4"
-
-
-def upgrade_3_9_2_to_3_9_4(db):
-    """ Given a 3.9.2 database, upgrade it to 3.9.4.
-    """
-    with open(os.path.join(APPDIR, "deploy", "migrate_392_to_393.sql")) as f:
-        sql = f.read()
-    db.run_sql(sql)
-    print "Migrated table structure from 3.9.2 to 3.9.3"
-
-    with open(os.path.join(APPDIR, "deploy", "migrate_393_to_394.sql")) as f:
-        sql = f.read()
-    db.run_sql(sql)
-    print "Migrated table structure from 3.9.3 to 3.9.4"
-
-
-def upgrade_3_9_3_to_3_9_4(db):
-    """ Given a 3.9.3 database, upgrade it to 3.9.4.
-    """
-    with open(os.path.join(APPDIR, "deploy", "migrate_393_to_394.sql")) as f:
-        sql = f.read()
-    db.run_sql(sql)
-    print "Migrated table structure from 3.9.3 to 3.9.4"
-
-
-def upgrade_3_9_4_to_3_9_5(db):
-    """ Given a 3.9.4 database, upgrade it to 3.9.5.
-    """
-    with open(os.path.join(APPDIR, "deploy", "migrate_394_to_395.sql")) as f:
-        sql = f.read()
-    db.run_sql(sql)
-    print "Migrated table structure from 3.9.4 to 3.9.5"
-
-
-def clean_install_3_6(db):
-    """ Install a fresh blank v3.6 schema.
-    """
-
-    with open(os.path.join(APPDIR, "deploy", "emptyschema_36x.sql")) as f:
-        sql = f.read()
-
-    db.run_sql(sql)
-    print "Installed v3.6.x table structure."
-
-
-def clean_install_3_9_1(db):
-    """ Install a fresh blank v3.9.1 schema.
-    """
-
-    with open(os.path.join(APPDIR, "deploy", "emptyschema_391.sql")) as f:
-        sql = f.read()
-
-    db.run_sql(sql)
-    print "Installed v3.9.1 table structure."
-
-
-def clean_install_3_9_2(db):
-    """ Install a fresh blank v3.9.2 schema.
-    """
-
-    with open(os.path.join(APPDIR, "deploy", "emptyschema_392.sql")) as f:
-        sql = f.read()
-
-    db.run_sql(sql)
-    print "Installed v3.9.2 table structure."
-
-
-def clean_install_3_9_3(db):
-    """ Install a fresh blank v3.9.3 schema.
-    """
-
-    with open(os.path.join(APPDIR, "deploy", "emptyschema_393.sql")) as f:
-        sql = f.read()
-
-    db.run_sql(sql)
-    print "Installed v3.9.3 table structure."
-
-
-def clean_install_3_9_4(db):
-    """ Install a fresh blank v3.9.4 schema.
-    """
-
-    with open(os.path.join(APPDIR, "deploy", "emptyschema_394.sql")) as f:
-        sql = f.read()
-
-    db.run_sql(sql)
-    print "Installed v3.9.4 table structure."
-
-
-def clean_install_3_9_5(db):
-    """ Install a fresh blank v3.9.4 schema.
-    """
-
-    with open(os.path.join(APPDIR, "deploy", "emptyschema_395.sql")) as f:
-        sql = f.read()
-
-    db.run_sql(sql)
-    print "Installed v3.9.5 table structure."
-
-
-def generate_admin_passwd(db):
-    """ Generate a new random password for the admin account.
-    """
-    from oasis.lib import Users, OaConfig, Users2, Permissions
-
-    ver = db.get_db_version()
-
-    passwd = Users.gen_confirm_code()
-
-    uid = Users.uid_by_uname('admin')
-    if not uid:
-        if ver == "3.6":
-            sql = """
-                INSERT INTO users (uname, passwd, givenname, familyname,
-                                  acctstatus, student_id, email, expiry,
-                                  source)
-                VALUES ('admin', 'NOLOGIN', 'Admin', 'Account',
-                        1, '', '', NULL,
-                        'local');
-                """
-            db.run_sql(sql)
-            uid = Users.uid_by_uname('admin')
-        else:
-            uid = Users.create(
-                uname="admin",
-                passwd="NOLOGIN",
-                email=OaConfig.email,
-                givenname="Admin",
-                familyname="Account",
-                acctstatus=1,
-                studentid="",
-                source="local",
-                confirm_code="",
-                confirm=True)
-
-    Users2.set_password(uid, passwd)
-
-    Permissions.add_perm(uid, 0, 1)  # superuser
-    print "Admin password reset to: ", passwd
-
 
 def cmd_options():
     """ Parse any command line options
@@ -293,7 +103,7 @@ def cmd_options():
     oparser.add_option("--oasis-ver",
                        dest='oaver',
                        metavar="X.Y.Z",
-                       default='3.9.4',
+                       default='3.9.5',
                        help='work with a specific OASIS version. (default 3.9.5)')
     oparser.add_option("-v", "--verbose",
                        dest='verbose',
@@ -320,15 +130,6 @@ Commands:
     init                - Set up the OASIS table structure in the database.
     upgrade             - Upgrade an older OASIS database to the newest version.
 """
-
-
-def erase_existing(db):
-    """ Remove the existing tables. DANGEROUS
-    """
-    with open(os.path.join(APPDIR, "deploy", "eraseexisting.sql")) as f:
-        sql = f.read()
-    print "Removing existing tables."
-    db.run_sql(sql)
 
 
 def do_status(db):
@@ -383,29 +184,29 @@ def do_init(db, c_opts):
         print ""
 
         if c_opts.oaver == '3.6':
-            erase_existing(db)  # might be some dregs, like sequences or views
-            clean_install_3_6(db)
+            DB.erase_existing()  # might be some dregs, like sequences or views
+            DB.clean_install_3_6()
         elif c_opts.oaver == '3.9.1':
-            erase_existing(db)  # might be some dregs, like sequences or views
-            clean_install_3_9_1(db)
+            DB.erase_existing()  # might be some dregs, like sequences or views
+            DB.clean_install_3_9_1()
         elif c_opts.oaver == '3.9.2':
-            erase_existing(db)  # might be some dregs, like sequences or views
-            clean_install_3_9_2(db)
+            DB.erase_existing()  # might be some dregs, like sequences or views
+            DB.clean_install_3_9_2()
         elif c_opts.oaver == '3.9.3':
-            erase_existing(db)  # might be some dregs, like sequences or views
-            clean_install_3_9_3(db)
+            DB.erase_existing()  # might be some dregs, like sequences or views
+            DB.clean_install_3_9_3()
         elif c_opts.oaver == '3.9.4':
-            erase_existing(db)  # might be some dregs, like sequences or views
-            clean_install_3_9_4(db)
+            DB.erase_existing()  # might be some dregs, like sequences or views
+            DB.clean_install_3_9_4()
         elif c_opts.oaver == '3.9.5':
-            erase_existing(db)  # might be some dregs, like sequences or views
-            clean_install_3_9_5(db)
+            DB.erase_existing()  # might be some dregs, like sequences or views
+            DB.clean_install_3_9_5()
         else:
             print "Unknown database version (%s)" % (c_opts.oaver,)
             print "Available options:    3.6   3.9.1   3.9.2   3.9.3    3.9.4    3.9.5"
             sys.exit()
         if not c_opts.noresetadmin:
-            generate_admin_passwd(db)
+            DB.generate_admin_passwd()
         print "Remember to restart OASIS if it's currently running."
         print "On Linux you can use:      sudo service apache2 restart"
         sys.exit()
@@ -422,29 +223,29 @@ def do_init(db, c_opts):
     safe = db.check_safe()
     if c_opts.eraseall:
         if c_opts.oaver == '3.6':
-            erase_existing(db)  # might be some dregs, like sequences or views
-            clean_install_3_6(db)
+            DB.erase_existing()  # might be some dregs, like sequences or views
+            DB.clean_install_3_6()
         elif c_opts.oaver == '3.9.1':
-            erase_existing(db)  # might be some dregs, like sequences or views
-            clean_install_3_9_1(db)
+            DB.erase_existing()  # might be some dregs, like sequences or views
+            DB.clean_install_3_9_1()
         elif c_opts.oaver == '3.9.2':
-            erase_existing(db)  # might be some dregs, like sequences or views
-            clean_install_3_9_2(db)
+            DB.erase_existing()  # might be some dregs, like sequences or views
+            DB.clean_install_3_9_2()
         elif c_opts.oaver == '3.9.3':
-            erase_existing(db)  # might be some dregs, like sequences or views
-            clean_install_3_9_3(db)
+            DB.erase_existing()  # might be some dregs, like sequences or views
+            DB.clean_install_3_9_3()
         elif c_opts.oaver == '3.9.4':
-            erase_existing(db)  # might be some dregs, like sequences or views
-            clean_install_3_9_3(db)
+            DB.erase_existing()  # might be some dregs, like sequences or views
+            DB.clean_install_3_9_3()
         elif c_opts.oaver == '3.9.5':
-            erase_existing(db)  # might be some dregs, like sequences or views
-            clean_install_3_9_5(db)
+            DB.erase_existing()  # might be some dregs, like sequences or views
+            DB.clean_install_3_9_5()
         else:
             print "Unknown database version (%s)" % (c_opts.oaver,)
             print "Available options:   3.6   3.9.1     3.9.2    3.9.3      3.9.4     3.9.5"
             sys.exit()
         if not c_opts.noresetadmin:
-            generate_admin_passwd(db)
+            DB.generate_admin_passwd()
         print "Remember to restart OASIS if it's currently running."
         print "On Linux you can use:      sudo service apache2 restart"
         sys.exit()
@@ -461,30 +262,6 @@ def do_init(db, c_opts):
     sys.exit()
 
 
-def do_upgrade(db):
-    """ Upgade the databse from an older version of OASIS.
-    """
-
-    dbver = db.get_db_version()
-    if dbver == "3.6":
-        upgrade_3_6_to_3_9_4(db)
-        sys.exit()
-    if dbver == "3.9.1":
-        upgrade_3_9_1_to_3_9_4(db)
-        sys.exit()
-    if dbver == "3.9.2":
-        upgrade_3_9_2_to_3_9_4(db)
-        sys.exit()
-    if dbver == "3.9.3":
-        upgrade_3_9_3_to_3_9_4(db)
-        sys.exit()
-    if dbver == "3.9.4":
-        upgrade_3_9_4_to_3_9_5(db)
-        sys.exit()
-    if dbver == "3.9.5":
-        print "Your database is already the latest version (3.9.5)"
-        sys.exit()
-    return
 
 
 def do_help():
@@ -512,7 +289,7 @@ if __name__ == "__main__":
         sys.exit()
 
     if args[0] == 'upgrade':
-        do_upgrade(DB)
+        DB.do_upgrade(options)
         sys.exit()
 
     if args[0] == 'show':
@@ -520,7 +297,7 @@ if __name__ == "__main__":
         sys.exit()
 
     if args[0] == 'calcstats':
-        calc_stats()
+        DB.calc_stats()
         sys.exit()
 
     if args[0] == 'status':
@@ -529,7 +306,7 @@ if __name__ == "__main__":
 
     if args[0] == 'resetpw':
         if not options.noresetadmin:  # silly, but maybe they did it
-            generate_admin_passwd(DB)
+            DB.generate_admin_passwd(DB)
         sys.exit()
 
     show_help()
