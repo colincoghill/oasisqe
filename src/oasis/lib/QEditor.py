@@ -27,7 +27,7 @@ def create_new(qt_id, name):
     """
 
     # Raw questions require the user to provide qtemplate.html
-    DB.create_qt_att(new_id,
+    DB.create_qt_att(qt_id,
                      "qtemplate.html",
                      "application/oasis-html",
                      "empty",
