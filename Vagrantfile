@@ -7,9 +7,7 @@ VAGRANTFILE_API_VERSION = "2"
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.box = "ubuntu/trusty64"
-  config.vm.network :forwarded_port, guest: 80, host: 8080
-  config.vm.network :forwarded_port, guest: 5432, host: 5434
-  config.vm.network :private_network, ip: "192.168.35.2"
+
   # config.vm.network :public_network
   config.vm.synced_folder ".", "/opt/oasisqe/3.9"
 
@@ -19,6 +17,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       v.memory = 1024
       v.cpus = 2
     end
+    config.vm.network :forwarded_port, guest: 80, host: 8080
+    config.vm.network :forwarded_port, guest: 5432, host: 5434
+    config.vm.network :private_network, ip: "192.168.35.2"
     config.vm.provision "dev", type: "shell", path: "deploy/dev/provision_oasisdev.sh"
   end
 
@@ -28,6 +29,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       v.memory = 1024
       v.cpus = 2
     end
+    config.vm.network :forwarded_port, guest: 80, host: 8081
+    config.vm.network :forwarded_port, guest: 5432, host: 5435
+    config.vm.network :private_network, ip: "192.168.35.3"
     config.vm.provision "test", type: "shell", path: "deploy/dev/provision_oasistest.sh"
   end
 
