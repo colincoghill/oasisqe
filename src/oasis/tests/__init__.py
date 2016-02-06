@@ -4,10 +4,10 @@
 """
 import sys
 import os
-import OaConfig
 
-
+from oasis.lib import OaConfig
 from oasis.lib import DB
+
 assert DB.check_safe(), "Database not safe for tests"
 
 
@@ -17,12 +17,12 @@ def setup():
     if not DB.check_safe():
         print "Attempt to erase database with data."
         sys.exit(-1)
-    with open(os.path.join(APPDIR, "deploy", "eraseexisting.sql")) as f:
+    with open(os.path.join(os.path.dirname(OaConfig.homedir), "deploy", "eraseexisting.sql")) as f:
         sql = f.read()
     print "Removing existing tables."
     DB.run_sql(sql)
 
-    with open(os.path.join(APPDIR, "deploy", "emptyschema_395.sql")) as f:
+    with open(os.path.join(os.path.dirname(OaConfig.homedir), "deploy", "emptyschema_395.sql")) as f:
         sql = f.read()
 
     DB.run_sql(sql)

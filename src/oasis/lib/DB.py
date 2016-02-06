@@ -1022,6 +1022,7 @@ def create_qt(owner, title, desc, marker, score_max, status, topic_id=None):
     assert isinstance(marker, int)
     assert isinstance(score_max, float) or score_max is None
     assert isinstance(status, int)
+    assert isinstance(topic_id, int) or topic_id is None
 
     L.debug("Creating question template %s (owner %s)" % (title, owner))
     res = run_sql("INSERT INTO qtemplates (owner, title, description, marker, scoremax, status, version) "
@@ -1031,7 +1032,7 @@ def create_qt(owner, title, desc, marker, score_max, status, topic_id=None):
     if res:
         qt_id = int(res[0][0])
 
-    if topic_id:
+    if topic_id and qt_id:
         move_qt_to_topic(qt_id, topic_id,0)
     if qt_id:
         return qt_id
