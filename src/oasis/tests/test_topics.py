@@ -2,7 +2,7 @@
 
 from unittest import TestCase
 
-from oasis.lib import DB, Topics, Courses, Practice
+from oasis.lib import OaConfig, DB, Topics, Courses, Practice
 
 
 class TestTopics(TestCase):
@@ -56,6 +56,27 @@ class TestTopics(TestCase):
         self.assertEqual(qt1['description'], "Test question 1")
         self.assertEqual(qt2['description'], "Test question 2")
 
+        course_id = Courses.create("TEST107", "Test create qtemplate", 1, 1)
+<<<<<<< .merge_file_aS9gZT
+        topic1_id = Topics.create(course_id, "TESTTOPIC9", 1, 2)
+=======
+        topic1_id = Topics.create(course_id, "TESTTOPIC1", 1, 2)
+>>>>>>> .merge_file_VONotU
+
+        qt3_id = DB.create_qt(1, "TESTQ3", "Test question 3", 0, 5.0, 1, topic1_id)
+
+        self.assertIsInstance(qt3_id, int)
+
+        qt3 = DB.get_qtemplate(qt3_id)
+        self.assertEqual(qt3['title'], "TESTQ3")
+        self.assertEqual(qt3['description'], "Test question 3")
+<<<<<<< .merge_file_aS9gZT
+        self.assertEqual(DB.get_topic_for_qtemplate(qt3_id), topic1_id)
+=======
+        self.assertEqual(DB.get_topic_for_qtemplate(qt3), topic1_id)
+>>>>>>> .merge_file_VONotU
+
+
     def test_topic_position(self):
         """ Test putting qtemplates into topics and moving them around
         """
@@ -64,10 +85,9 @@ class TestTopics(TestCase):
         topic1_id = Topics.create(course_id, "TESTTOPIC1", 1, 2)
         topic2_id = Topics.create(course_id, "TESTTOPIC2", 3, 3)
         qt1_id = DB.create_qt(1, "TESTQ1", "Test question 1", 0, 5.0, 1)
-        qt2_id = DB.create_qt(1, "TESTQ2", "Test question 2", 0, 4.1, 2)
+        qt2_id = DB.create_qt(1, "TESTQ2", "Test question 2", 0, 4.1, 2, topic1_id)
 
         DB.move_qt_to_topic(qt1_id, topic1_id)
-        DB.move_qt_to_topic(qt2_id, topic1_id)
 
         self.assertEqual(DB.get_qtemplate_practice_pos(qt1_id), 0)
         self.assertEqual(DB.get_qtemplate_practice_pos(qt2_id), 0)

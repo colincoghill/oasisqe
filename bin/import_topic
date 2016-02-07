@@ -39,4 +39,4 @@ uid = Users.uid_by_uname('admin')
 topic = Topics.get_topic(topicid)
 
 data = open(filename).read()
-External.import_qts_from_zip(data, topicid=topicid)
+External.import_qts_from_zip(data, topicid)

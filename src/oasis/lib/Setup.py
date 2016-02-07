@@ -141,15 +141,17 @@ def do_topic_page_commands(request, topic_id, user_id):
                 new_max_score = float(form.get('new_maxscore', 0))
             except ValueError:
                 new_max_score = 0
-            new_id = DB.create_qt(user_id,
-                                 new_title,
-                                 "No Description",
-                                 1,
-                                 new_max_score,
-                                 0)
+            new_id = DB.create_qt(owner=user_id,
+                                  title=new_title,
+                                  desc="No Description",
+                                  marker=1,
+                                  score_max=new_max_score,
+                                  status=0,
+                                  topic_id=topic_id)
             if new_id:
                 mesg.append("Created new question, id %s" % new_id)
-                DB.update_qt_practice_pos(new_id, new_position)
+                if new_position and new_position >= 1:
+                    DB.update_qt_practice_pos(new_id, new_position)
 
                 if new_qtype == "qe2":
                     mesg.append("Creating new question, id %s as QE2" % new_id)
@@ -163,7 +165,7 @@ def do_topic_page_commands(request, topic_id, user_id):
             else:
                 mesg.append("Error creating new question, id %s" % new_id)
                 L.error("Unable to create new question (%s) (%s)" %
-                    (new_title, new_position))
+                        (new_title, new_position))
 
     L.info("request.files = %s" % (repr(request.files.keys())))
     # Did they upload a file to import?
