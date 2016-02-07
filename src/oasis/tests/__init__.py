@@ -4,11 +4,6 @@
 """
 import sys
 import os
-<<<<<<< .merge_file_oy9ekQ
-=======
-import OaConfig
-
->>>>>>> .merge_file_iuK0XP
 
 from oasis.lib import OaConfig
 from oasis.lib import DB
