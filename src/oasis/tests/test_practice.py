@@ -112,3 +112,31 @@ class TestPractice(TestCase):
 
             self.assertIn("TESTCOURSE1", s.data)
             self.assertIn("TESTCOURSE2", s.data)
+
+    def test_practice_topic_list(self):
+
+        with self.app.test_client() as c:
+
+            self.login(ADMIN_UNAME, self.adminpass, client=c)
+
+            s = c.get('/practice/top', follow_redirects=True)
+            self.assertEqual(s.status, "200 OK")
+            self.assertIn("Choose A Course", s.data)
+
+            self.assertNotIn("TESTCOURSE10", s.data)
+
+            course_id = Courses.create("TESTCOURSE10", "unit tests", 1, 1)
+            Courses.create_config(course_id, "casual", 1)
+            Courses.set_active(course_id, True)
+            Courses.set_prac_vis(course_id, "all")
+
+            s = c.get('/practice/top', follow_redirects=True)
+            self.assertEqual(s.status, "200 OK")
+            self.assertIn("Choose A Course", s.data)
+
+            self.assertIn("TESTCOURSE10", s.data)
+
+            s = c.get('/practice/coursequestions/%s'%(course_id))
+
+            self.assertIn("<h2>TESTCOURSE10 (unit tests)</h2>", s.data)
+            self.assertIn("Select a Topic", s.data)
