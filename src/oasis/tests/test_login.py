@@ -6,8 +6,6 @@ import re
 from logging import getLogger
 from oasis import app
 from oasis.lib import DB
-from oasis.lib import Users
-from oasis.lib import OaConfig
 
 L = getLogger("oasisqe")
 

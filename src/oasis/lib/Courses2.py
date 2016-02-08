@@ -36,12 +36,18 @@ def load_courses():
 
 def reload_if_needed():
     """If the course table has changed, reload the info. """
-    global COURSES_VERSION
-    newversion = Courses.get_version()
-    if newversion > COURSES_VERSION:
-        COURSES_VERSION = newversion
-        load_courses()
+    load_courses()
     return
+    # BUGGY? disable
+    #
+    #global COURSES_VERSION
+    #newversion = Courses.get_version()
+    #if not newversion:
+    #    newversion = COURSES_VERSION + 1
+    #if newversion > COURSES_VERSION:
+    #    COURSES_VERSION = newversion
+    #    load_courses()
+    #return
 
 
 def get_course_dict(only_active=True):

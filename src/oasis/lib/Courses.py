@@ -248,6 +248,7 @@ def create(name, description, owner, coursetype):
     key = "courses-all"
     MC.delete(key)
     if res:
+        L.warn("Courses.create('%s','%s',%d,%d)" % (name, description, owner, coursetype))
         return int(res[0][0])
     L.error("create('%s','%s',%d,%d) Fail" % (name, description, owner, coursetype))
     return 0
