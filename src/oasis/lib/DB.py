@@ -1708,7 +1708,9 @@ def generate_admin_passwd():
     Users2.set_password(uid, passwd)
 
     Permissions.add_perm(uid, 0, 1)  # superuser
+    L.warn("Admin password reset")
     print "Admin password reset to: ", passwd
+    return passwd
 
 
 def calc_stats():
