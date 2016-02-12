@@ -89,6 +89,7 @@ class TestPractice(TestCase):
 
             self.assertNotIn("TESTCOURSE1", s.data)
 
+            # create a course, set it visible, is it there?
             course_id = Courses.create("TESTCOURSE1", "unit tests", 1, 1)
             Courses.create_config(course_id, "casual", 1)
             Courses.set_active(course_id, True)
@@ -101,6 +102,7 @@ class TestPractice(TestCase):
             self.assertIn("TESTCOURSE1", s.data)
             self.assertNotIn("TESTCOURSE2", s.data)
 
+            # create a second course, set it visible, is it there?
             course_id = Courses.create("TESTCOURSE2", "unit tests", 1, 1)
             Courses.create_config(course_id, "casual", 1)
             Courses.set_active(course_id, True)
@@ -112,6 +114,23 @@ class TestPractice(TestCase):
 
             self.assertIn("TESTCOURSE1", s.data)
             self.assertIn("TESTCOURSE2", s.data)
+
+            # create a third course, set it not visible
+            course_id = Courses.create("TESTCOURSE3", "unit tests", 1, 1)
+            Courses.create_config(course_id, "casual", 1)
+            Courses.set_active(course_id, True)
+            Courses.set_prac_vis(course_id, "none")
+
+            s = c.get('/practice/top', follow_redirects=True)
+            self.assertEqual(s.status, "200 OK")
+            self.assertIn("Choose A Course", s.data)
+
+            self.assertIn("TESTCOURSE1", s.data)
+            self.assertIn("TESTCOURSE2", s.data)
+            # admin can still see it
+            self.assertIn("TESTCOURSE3", s.data)
+
+
 
     def test_practice_topic_list(self):
 
