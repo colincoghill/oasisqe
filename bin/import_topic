@@ -15,17 +15,8 @@ import os
 APPDIR = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), "src")
 sys.path.append(APPDIR)
 
-from oasis.lib import Users, External, DB, Topics
+from oasis.lib import Users, External, Topics
 
-
-def createQuestion(topicid, title, position, owner=1):
-    """ Create a question entry and put it in the topic
-        Return the question id
-    """
-    newid = DB.create_qt(owner, title, "", 0, 0.0, 1)
-    DB.update_qt_practice_pos(newid, position)
-    Topics.flush_num_qs(topicid)
-   
 
 if len(sys.argv) < 2:
     print "Usage: "

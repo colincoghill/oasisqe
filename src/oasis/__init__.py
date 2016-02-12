@@ -118,7 +118,10 @@ def internal_error(exception):
 
 def authenticated(func):
     """ Decorator to check the user is currently authenticated and
-        deal with the session/redirect """
+        deal with the session/redirect.
+        :param func: Function to decorate.
+        :type func: function.
+    """
     @wraps(func)
     def call_fn(*args, **kwargs):
         """ If they're not in session, redirect them and remember where
@@ -137,6 +140,11 @@ def require_perm(perms, redir="setup_top"):
         perms.
         Will flash() a message to them and redirect if they don't.
 
+        :param perms: one or more permission short names. eg "sysadmin"
+        :type perms: string or list of strings
+        :param redir: a URL to redirect to if they don't have that permission.
+        :type redir: string
+
         example:
 
         @app.route(...)
@@ -151,7 +159,9 @@ def require_perm(perms, redir="setup_top"):
     """
 
     def decorator(func):
-        """ Handle decorator
+        """ Normal python decorator function. Nothing too fancy going on.
+             :param func: The function to decorate.
+             :type func: function.
         """
         @wraps(func)
         def call_fn(*args, **kwargs):
@@ -183,6 +193,11 @@ def require_course_perm(perms, redir=None):
         perms.
         Will flash() a message to them and redirect if they don't.
 
+        :param perms: one or more permission short names. eg "sysadmin"
+        :type perms: string or list of strings
+        :param redir: a URL to redirect to if they don't have that permission.
+        :type redir: string
+
         example:
 
         @app.route(...)
@@ -197,7 +212,9 @@ def require_course_perm(perms, redir=None):
     """
 
     def decorator(func):
-        """ Handle decorator
+        """ Normal python decorator function. Nothing too fancy going on.
+             :param func: The function to decorate.
+             :type func: function.
         """
         @wraps(func)
         def call_fn(*args, **kwargs):
@@ -373,7 +390,10 @@ def login_forgot_pass_submit():
 
 @app.route("/login/confirm/<string:code>")
 def login_confirm(code):
-    """ They've clicked on a confirmation link."""
+    """ They've clicked on a confirmation link.
+         :param code: previously genereted confirmation code.
+         :type code: string.
+    """
     if not OaConfig.open_registration:
         abort(404)
 
@@ -391,7 +411,11 @@ def login_confirm(code):
 @app.route("/login/email_passreset/<string:code>")
 def login_email_passreset(code):
     """ They've clicked on a password reset link.
-        Log them in (might as well) and send them to the password reset page."""
+        Log them in (might as well) and send them to the password reset page.
+
+         :param code: previously genereted confirmation code.
+         :type code: string.
+    """
     # This will also confirm their email if they haven't.
     # Doesn't seem to be any harm in doing that
 
@@ -426,10 +450,10 @@ def login_signup_submit():
     if not OaConfig.open_registration:
         abort(404)
     form = request.form
-    if not ('username' in form
-            and 'password' in form
-            and 'confirm' in form
-            and 'email' in form):
+    if not ('username' in form and
+            'password' in form and
+            'confirm' in form and
+            'email' in form):
         flash("Please fill in all fields")
         return redirect(url_for("login_signup"))
 
