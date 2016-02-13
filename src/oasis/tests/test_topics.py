@@ -2,7 +2,7 @@
 
 from unittest import TestCase
 
-from oasis.lib import OaConfig, DB, Topics, Courses, Practice
+from oasis.lib import DB, Topics, Courses, Practice
 
 
 class TestTopics(TestCase):
@@ -124,7 +124,6 @@ class TestTopics(TestCase):
 
         course_id = Courses.create("TEST101", "Test topic next/prev logic", 1, 1)
         topic1_id = Topics.create(course_id, "TESTTOPIC1", 1, 2)
-        topic2_id = Topics.create(course_id, "TESTTOPIC2", 3, 3)
 
         qt1_id = DB.create_qt(1, "TESTQ1", "Test question 1", 0, 5.0, 1)
         qt2_id = DB.create_qt(1, "TESTQ2", "Test question 2", 0, 4.1, 2)

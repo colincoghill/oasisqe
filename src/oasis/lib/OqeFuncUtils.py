@@ -11,6 +11,16 @@
 
 def chrange(start, end):
     """Generates a range of characters from start to end
+       :param start: a character, eg.   'b'
+       :type start: character (1 element string)
+       :param end: a character, eg.   'b'
+       :type end: character (1 element string)
+
+       :example:
+         >>> chrange('d','f')
+         ['d','e','f']
+         >>>
+
     """
     return [chr(i) for i in range(ord(start), ord(end) + 1)]
 
@@ -18,6 +28,16 @@ def chrange(start, end):
 def splitall(string, splitcharlist):
     """Splits the supplied string at all of the characters given in the
        second argument list
+
+       :param string: the string to break up
+       :type string: string
+       :param splitcharlist: a list of characters to break on
+       :type splitcharlist: a list of characters (string)
+
+       :example:
+          >>> splitall("fred,daphne.velma", ",.")
+          ["fred", "daphne", "velma"]
+          >>>
     """
     strlist = [string]
     for i in splitcharlist:

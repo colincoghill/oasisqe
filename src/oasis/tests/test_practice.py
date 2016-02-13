@@ -5,7 +5,7 @@ import re
 
 from logging import getLogger
 from oasis import app
-from oasis.lib import DB, Courses, Setup, Courses2
+from oasis.lib import DB, Courses
 
 L = getLogger("oasisqe")
 

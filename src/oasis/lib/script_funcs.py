@@ -16,7 +16,28 @@ from Audit import audit
 
 def within_tolerance(guess, correct, tolerance):
     """ Is the guess within tolerance % of the correct answer?
+        If correct answer is 0.0, we check between -tolerance and + tolerance
+
+        :param guess: a guess value, eg. 3.25
+        :type guess: float
+        :param correct: the correct answer, eg. 3.249
+        :type correct: float
+        :param tolerance: the percentage tolerance to compare with
+        :type tolerance: float or int
+        :rtype: bool
+
+        :example:
+        >>> within_tolerance("3.429", 3.43, 10)
+        False
+        >>> within_tolerance("3.429", 3.43, 1)
+        False
+        >>> within_tolerance(0.01, 0, 10)
+        True
+        >>>
     """
+
+    tolerance = float(tolerance)
+    correct = float(correct)
 
     try:
         lower = correct - (abs(correct) * (tolerance / 100))
@@ -26,18 +47,22 @@ def within_tolerance(guess, correct, tolerance):
         upper = None
 
     if upper < lower:
-        tmp = lower
-        lower = upper
-        upper = tmp
+        lower, upper = upper, lower
 
     try:
         guess = float(guess)
     except (ValueError, TypeError):
         guess = None
 
+    if correct == 0.0:
+        lower = -(tolerance / 100)
+        upper = tolerance / 100
+
     # noinspection PyComparisonWithNone
-    if guess == None:  # guess could be 0
+    if guess is None:  # guess could be 0
         return False
+
+    # print "lower,guess,upper, correct => ", lower, guess, upper, correct
 
     if lower <= guess <= upper:
         return True

@@ -14,6 +14,9 @@ def todatetime(mydate):
         This is intended mainly to be used with the mx.DateTime that psycopg
         sometimes returns,
         but could be extended in the future to take other types.
+
+        :param mydate: a date of some kind
+        :type mydate: string or datetime.datetime
     """
     if isinstance(mydate, datetime.datetime):
         return mydate    # Already a datetime
