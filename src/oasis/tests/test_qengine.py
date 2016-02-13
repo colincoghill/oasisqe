@@ -189,4 +189,9 @@ class TestQEngine(TestCase):
         self.assertFalse(script_funcs.within_tolerance(3.429, 9, 10))
         self.assertFalse(script_funcs.within_tolerance(3.429, 4, 10))
         self.assertFalse(script_funcs.within_tolerance(3.429, 3, 1))
+        self.assertTrue(script_funcs.within_tolerance(0.01, 0.0, 10))
 
+        # messing around
+        self.assertFalse(script_funcs.within_tolerance("fred", 1.3, 1))
+        self.assertRaises(ValueError, script_funcs.within_tolerance, 0, "fred", 1)
+        self.assertRaises(ValueError, script_funcs.within_tolerance, 0, 3, "10%")

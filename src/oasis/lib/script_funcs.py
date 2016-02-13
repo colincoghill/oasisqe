@@ -36,8 +36,15 @@ def within_tolerance(guess, correct, tolerance):
         >>>
     """
 
-    tolerance = float(tolerance)
-    correct = float(correct)
+    try:
+        tolerance = float(tolerance)
+    except (TypeError, ValueError):
+        raise ValueError("Tolerance of '%s' is not valid." % tolerance)
+
+    try:
+        correct = float(correct)
+    except (TypeError, ValueError):
+        raise ValueError("Correct answer of '%s' is not a number." % correct)
 
     try:
         lower = correct - (abs(correct) * (tolerance / 100))
