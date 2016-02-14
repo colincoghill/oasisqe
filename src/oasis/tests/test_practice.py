@@ -74,7 +74,6 @@ class TestPractice(TestCase):
             self.assertEqual(s.status, "200 OK")
             self.assertIn("Choose A Course", s.data)
 
-
     def test_practice_course_list(self):
         """ Check the list of courses is reasonably ok
         :return:
@@ -129,8 +128,6 @@ class TestPractice(TestCase):
             self.assertIn("TESTCOURSE2", s.data)
             # admin can still see it
             self.assertIn("TESTCOURSE3", s.data)
-
-
 
     def test_practice_topic_list(self):
 

@@ -376,30 +376,30 @@ def cadmin_exam_viewmarked(course_id, exam_id, student_uid):
         status = 0
     else:
         status = 1
-    marktime = Exams.get_mark_time(exam_id, student_uid)
-    firstview = Exams.get_student_start_time(exam_id, student_uid)
-    submittime = Exams.get_submit_time(exam_id, student_uid)
+    mark_time = Exams.get_mark_time(exam_id, student_uid)
+    first_view = Exams.get_student_start_time(exam_id, student_uid)
+    submit_time = Exams.get_submit_time(exam_id, student_uid)
 
     try:
-        datemarked = General.human_date(marktime)
+        datemarked = General.human_date(mark_time)
     except AttributeError:
         datemarked = None
     try:
-        datefirstview = General.human_date(firstview)
+        datefirstview = General.human_date(first_view)
     except AttributeError:
         datefirstview = None
     try:
-        datesubmit = General.human_date(submittime)
+        datesubmit = General.human_date(submit_time)
     except AttributeError:
         datesubmit = None
 
     user = Users2.get_user(student_uid)
 
-    if submittime and firstview:
-        taken = submittime-firstview
-        takenmins = (taken.seconds/60)
+    if submit_time and first_view:
+        taken = submit_time-first_view
+        taken_mins = (taken.seconds/60)
     else:
-        takenmins = None
+        taken_mins = None
 
     return render_template(
         "cadmin_markedresult.html",
@@ -410,7 +410,7 @@ def cadmin_exam_viewmarked(course_id, exam_id, student_uid):
         datesubmit=datesubmit,
         datemarked=datemarked,
         datefirstview=datefirstview,
-        taken=takenmins,
+        taken=taken_mins,
         user=user,
         status=status
     )
@@ -419,7 +419,7 @@ def cadmin_exam_viewmarked(course_id, exam_id, student_uid):
 @app.route("/cadmin/<int:course_id>/exam/<int:exam_id>/unsubmit/<int:student_uid>", methods=['POST', ])
 @require_course_perm(("coursecoord", "courseadmin", "viewmarks", "altermarks"))
 def cadmin_exam_unsubmit(course_id, exam_id, student_uid):
-    """ "unsubmit" the student's assessment and reset their timer so they can
+    """ "un-submit" the student's assessment and reset their timer so they can
         log back on and have another attempt.
     """
 
@@ -430,7 +430,7 @@ def cadmin_exam_unsubmit(course_id, exam_id, student_uid):
         abort(404)
     Exams.unsubmit(exam_id, student_uid)
     user = Users2.get_user(student_uid)
-    flash("""Assessment for %s unsubmitted and timer reset.""" % user['uname'])
+    flash("""Assessment for %s un-submitted and timer reset.""" % user['uname'])
     return redirect(url_for("cadmin_exam_viewmarked",
                             course_id=course_id,
                             exam_id=exam['id'],
