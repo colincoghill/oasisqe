@@ -14,7 +14,6 @@
 
 
 import Queue
-import os
 import OaConfig
 from logging import getLogger
 import psycopg2
@@ -115,73 +114,6 @@ class DbPool(object):
         :return: integer : the number of db connections.
         """
         return self.size
-
-
-class FileCache(object):
-    """Cache data in local files """
-
-    def __init__(self, cachedir):
-
-        if not os.access(cachedir, os.W_OK):
-            try:
-                os.makedirs(cachedir)
-            except BaseException as err:
-                L.warn("Can't create file cache in %s (%s)" % (cachedir, err))
-            if not os.access(cachedir, os.W_OK):
-                L.warn("Can't write to cache dir '%s' please check permissions." % cachedir)
-        self.cachedir = cachedir
-
-    def set(self, key, value):
-        """ store item."""
-        if value is False:
-            # We want to delete the item from the cache
-            try:
-                os.unlink(os.path.join(self.cachedir, key, "DATA"))
-            except OSError:
-                # this usually happens when the file is already gone
-                pass
-            return
-        if not os.access(os.path.join(self.cachedir, key), os.W_OK):
-            try:
-                os.makedirs(os.path.join(self.cachedir, key))
-            except IOError:
-                L.error("Can't create cache in %s/%s" % (self.cachedir, key))
-        try:
-            fptr = open(os.path.join(self.cachedir, key, "DATA"), "wb")
-            fptr.write(value)
-            fptr.close()
-        except IOError as err:
-            L.error("File Cache Error. (%s)" % err)
-            return False
-        return True
-
-    def get_filename(self, key):
-        """ return the full path to the on-disk file """
-        try:
-            fptr = open(os.path.join(self.cachedir, key, "DATA"), "r")
-        except IOError:
-            return False, False
-        fptr.close()
-        return os.path.join(self.cachedir, key, "DATA"), True
-
-    def get(self, key):
-        """ fetch item. """
-        try:
-            fptr = open(os.path.join(self.cachedir, key, "DATA"), "r")
-        except IOError:
-            return False, False
-        try:
-            data = fptr.read()
-            fptr.close()
-            if len(data) == 0:
-                if "/image.gif" not in key:  # many questions don't have one
-                    L.error("file Cache EMPTY retrieval. (key=%s)" % (key,))
-                data = False
-        except IOError as err:
-            # it's possible that something went wrong
-            L.error("file Cache ERROR. (key=%s, exception=%s)" % (key, err))
-            return False, False
-        return data, True
 
 
 # noinspection PyUnusedLocal

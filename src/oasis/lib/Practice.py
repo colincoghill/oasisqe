@@ -16,8 +16,6 @@ from logging import getLogger
 
 L = getLogger("oasisqe")
 
-fileCache = Pool.FileCache(OaConfig.cachedir)
-
 
 def get_practice_q(qt_id, user_id):
     """ Find an existing, or create a new, practice question

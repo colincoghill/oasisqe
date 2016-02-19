@@ -14,23 +14,18 @@ import cPickle
 import datetime
 import json
 import os
-
-IntegrityError = psycopg2.IntegrityError
-
-# Global dbpool
 import OaConfig
 import Pool
 from logging import getLogger
 
 L = getLogger("oasisqe.db")
 
+IntegrityError = psycopg2.IntegrityError
 
 # 3 connections. Lets us keep going if one is slow but
 # doesn't overload the server if there're a lot of us
 dbpool = Pool.DbPool(OaConfig.oasisdbconnectstring, 3)
 
-# Cache stuff on local drives to save our poor database
-fileCache = Pool.FileCache(OaConfig.cachedir)
 
 from Pool import MCPool
 
@@ -428,28 +423,18 @@ def get_q_att_mimetype(qt_id, name, variation, version=1000000000):
     assert isinstance(name, str) or isinstance(name, unicode)
     if version == 1000000000:
         version = get_qt_version(qt_id)
-    try:
-        key = "questionattach/%d/%s/%d/%d/mimetype" % \
-              (qt_id, name, variation, version)
-        (value, found) = fileCache.get(key)
-        if not found:
-            ret = run_sql("""SELECT qtemplate, mimetype
-                                FROM qattach
-                                WHERE name=%s
-                                AND qtemplate=%s
-                                AND variation=%s
-                                AND version=%s
-                                """, (name, qt_id, variation, version))
-            if ret:
-                data = ret[0][1]
-                fileCache.set(key, data)
-                return data
-                # We use mimetype to see if an attachment is generated so
-                # not finding one is no big deal.
-            return False
-        return value
-    except BaseException as err:
-        L.warn("%s args=(%s,%s,%s,%s)" % (err, qt_id, name, variation, version))
+
+    ret = run_sql("""SELECT qtemplate, mimetype
+                     FROM qattach
+                     WHERE name=%s
+                       AND qtemplate=%s
+                       AND variation=%s
+                       AND version=%s
+                  """, (name, qt_id, variation, version))
+    if ret:
+        return ret[0][1]
+    # We use mimetype to see if an attachment is generated so
+    # not finding one is no big deal.
     return False
 
 
@@ -462,65 +447,29 @@ def get_qt_att_mimetype(qt_id, name, version=1000000000):
     assert isinstance(name, str) or isinstance(name, unicode)
     if version == 1000000000:
         version = get_qt_version(qt_id)
-    key = "qtemplateattach/%d/%s/%d/mimetype" % (qt_id, name, version)
-    (value, found) = fileCache.get(key)
-    if not found:
-        nameparts = name.split("?")
-        if len(nameparts) > 1:
-            name = nameparts[0]
-        ret = run_sql("""SELECT mimetype
+
+    nameparts = name.split("?")
+    if len(nameparts) > 1:
+        name = nameparts[0]
+    ret = run_sql("""SELECT mimetype
+                        FROM qtattach
+                        WHERE qtemplate = %s
+                        AND name = %s
+                        AND version = (SELECT MAX(version)
                             FROM qtattach
-                            WHERE qtemplate = %s
-                            AND name = %s
-                            AND version = (SELECT MAX(version)
-                                FROM qtattach
-                                WHERE qtemplate=%s
-                                AND version <= %s
-                                AND name=%s)""",
-                      (qt_id, name, qt_id, version, name))
-        if ret:
-            data = ret[0][0]
-            fileCache.set(key, data)
-            return data
-        return False
-    return value
-
-
-def get_q_att_fname(qt_id, name, variation, version=1000000000):
-    """ Fetch the on-disk filename where the attachment is stored.
-        This may have to fetch it from the database.
-        The intent is to save time by passing around a filename rather than the
-        entire attachment.
-    """
-    assert isinstance(qt_id, int)
-    assert isinstance(version, int)
-    assert isinstance(variation, int)
-    assert isinstance(name, str) or isinstance(name, unicode)
-    if version == 1000000000:
-        version = get_qt_version(qt_id)
-    key = "questionattach/%d/%s/%d/%d" % (qt_id, name, variation, version)
-    (filename, found) = fileCache.get_filename(key)
-    if not found:
-        ret = run_sql("""SELECT qtemplate, data
-                            FROM qattach
                             WHERE qtemplate=%s
-                            AND name=%s
-                            AND variation=%s
-                            AND version=%s;""",
-                      (qt_id, name, variation, version))
-        if ret:
-            data = str(ret[0][1])
-            fileCache.set(key, data)
-            (filename, found) = fileCache.get_filename(key)
-            if found:
-                return filename
-        fileCache.set(key, False)
-        return False
-    return filename
+                            AND version <= %s
+                            AND name=%s)""",
+                  (qt_id, name, qt_id, version, name))
+    if ret:
+        return ret[0][0]
+
+    return False
 
 
 def get_q_att(qt_id, name, variation, version=1000000000):
     """ Fetch an attachment for the question"""
+
     assert isinstance(qt_id, int)
     assert isinstance(version, int)
     assert isinstance(variation, int)
@@ -530,57 +479,18 @@ def get_q_att(qt_id, name, variation, version=1000000000):
     if not version or not qt_id:
         L.warn("Request for unknown qt version. get_qt_att(%s, %s, %s, %s)" % (qt_id, name, variation, version))
         return None
-    key = "questionattach/%d/%s/%d/%d" % (qt_id, name, variation, version)
-    (value, found) = fileCache.get(key)
-    if not found:
-        ret = run_sql("""SELECT qtemplate, data
-                            FROM qattach
-                            WHERE qtemplate=%s
-                            AND name=%s
-                            AND variation=%s
-                            AND version=%s;""",
-                      (qt_id, name, variation, version))
-        if ret:
-            data = str(ret[0][1])
-            fileCache.set(key, data)
-            return data
-        fileCache.set(key, False)
-        return get_qt_att(qt_id, name, version)
-    return value
 
-
-def get_qt_att_fname(qt_id, name, version=1000000000):
-    """ Fetch a filename for the attachment in the question template.
-        If version is set to 0, will fetch the newest.
-    """
-    assert isinstance(qt_id, int)
-    assert isinstance(version, int)
-    assert isinstance(name, str) or isinstance(name, unicode)
-    if version == 1000000000:
-        version = get_qt_version(qt_id)
-    key = "qtemplateattach/%d/%s/%d" % (qt_id, name, version)
-    (filename, found) = fileCache.get_filename(key)
-    if (not found) or version == 1000000000:
-        ret = run_sql("""SELECT data
-                         FROM qtattach
-                         WHERE qtemplate = %s
-                           AND name = %s
-                           AND version =
-                             (SELECT MAX(version)
-                              FROM qtattach
-                              WHERE qtemplate=%s
-                                AND version <= %s
-                                AND name=%s);""",
-                      (qt_id, name, qt_id, version, name))
-        if ret:
-            data = str(ret[0][0])
-            fileCache.set(key, data)
-            (filename, found) = fileCache.get_filename(key)
-            if found:
-                return filename
-        fileCache.set(key, False)
-        return False
-    return filename
+    ret = run_sql("""SELECT qtemplate, data
+                        FROM qattach
+                        WHERE qtemplate=%s
+                        AND name=%s
+                        AND variation=%s
+                        AND version=%s;""",
+                  (qt_id, name, variation, version))
+    if ret:
+        data = str(ret[0][1])
+        return data
+    return get_qt_att(qt_id, name, version)
 
 
 def get_qt_att(qt_id, name, version=1000000000):
@@ -592,27 +502,24 @@ def get_qt_att(qt_id, name, version=1000000000):
     assert isinstance(name, str) or isinstance(name, unicode)
     if version == 1000000000:
         version = get_qt_version(qt_id)
-    key = "qtemplateattach/%d/%s/%d" % (qt_id, name, version)
-    (value, found) = fileCache.get(key)
-    if (not found) or version == 1000000000:
-        ret = run_sql("""SELECT data
-                         FROM qtattach
-                         WHERE qtemplate = %s
-                           AND name = %s
-                           AND version =
-                             (SELECT MAX(version)
-                              FROM qtattach
-                              WHERE qtemplate=%s
-                                AND version <= %s
-                                AND name=%s);""",
-                      (qt_id, name, qt_id, version, name))
-        if ret:
-            data = str(ret[0][0])
-            fileCache.set(key, data)
-            return data
-        fileCache.set(key, False)
-        return False
-    return value
+
+    ret = run_sql("""SELECT data
+                     FROM qtattach
+                     WHERE qtemplate = %s
+                       AND name = %s
+                       AND version =
+                         (SELECT MAX(version)
+                          FROM qtattach
+                          WHERE qtemplate=%s
+                            AND version <= %s
+                            AND name=%s);""",
+                  (qt_id, name, qt_id, version, name))
+    if ret:
+        data = str(ret[0][0])
+
+        return data
+
+    return False
 
 
 def get_exam_qts_in_pos(exam_id, position):

@@ -17,8 +17,7 @@ apt-get upgrade
 apt-get install ${APTOPTS} apache2 libapache2-mod-wsgi memcached
 apt-get install ${APTOPTS} python-bcrypt python-decorator python-flask python-imaging python-jinja2
 apt-get install ${APTOPTS} python-memcache python-psycopg2 python-openpyxl
-apt-get install ${APTOPTS} postgresql postgresql-client
-apt-get install ${APTOPTS} postfix unzip
+apt-get install ${APTOPTS} postgresql postgresql-client unzip
 apt-get install ${APTOPTS} --no-install-recommends python-pip
 apt-get install ${APTOPTS} python-nose2 python-coverage
 pip install Flask-WTF
@@ -27,9 +26,6 @@ adduser --disabled-login --disabled-password --gecos OASIS oasisqe
 
 DBPASS=oasistest
 
-mkdir -p /var/cache/oasisqe/v3.9
-chown oasisqe /var/cache/oasisqe
-chown oasisqe /var/cache/oasisqe/v3.9
 mkdir -p /var/log/oasisqe
 chown oasisqe /var/log/oasisqe
 touch /var/log/oasisqe/main.log

@@ -84,33 +84,6 @@ def get_q_list(tid, uid=None, numdone=True):
     return qlist
 
 
-def get_q_att_fname(qid, name):
-    """ Return (mimetype, filename) with the relevant filename.
-        If it's not found in question, look in questiontemplate.
-    """
-    qtid = DB.get_q_parent(qid)
-    variation = DB.get_q_variation(qid)
-    version = DB.get_q_version(qid)
-    # for the two biggies we hit the question first,
-    # otherwise check the question template first
-    if name == "image.gif" or name == "qtemplate.html":
-
-        fname = DB.get_q_att_fname(qtid, name, variation, version)
-        if fname:
-            return DB.get_q_att_mimetype(qtid, name, variation, version), fname
-        fname = DB.get_qt_att_fname(qtid, name, version)
-        if fname:
-            return DB.get_qt_att_mimetype(qtid, name, version), fname
-    else:
-        fname = DB.get_qt_att_fname(qtid, name, version)
-        if fname:
-            return DB.get_qt_att_mimetype(qtid, name, version), fname
-        fname = DB.get_q_att_fname(qtid, name, variation, version)
-        if fname:
-            return DB.get_q_att_mimetype(qtid, name, variation, version), fname
-    return None, None
-
-
 def get_q_att(qid, name):
     """ Return (mimetype, data) with the relevant attachment.
         If it's not found in question, look in questiontemplate.

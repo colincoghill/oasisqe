@@ -13,7 +13,7 @@ import datetime
 
 from flask import render_template, session, \
     request, redirect, abort, url_for, flash, \
-    send_file, Response
+    Response, make_response, send_file
 from logging import getLogger
 
 from .lib import Users2, DB, Topics, \
@@ -45,12 +45,14 @@ def attachment_question(qt_id, version, variation, fname):
             return redirect(url_for('index'))
     if Attach.is_restricted(fname):
         abort(403)
-    (mtype, fname) = Attach.q_att_details(qt_id, version, variation, fname)
+    mtype = DB.get_q_att_mimetype(qt_id, fname, variation, version)
     if not mtype:
         abort(404)
 
+    data = DB.get_q_att(qt_id, fname, variation, version)
+    response = make_response(data)
+    response.headers["Content-Type"] = mtype
     expiry_time = datetime.datetime.utcnow() + datetime.timedelta(10)
-    response = send_file(fname, mtype)
     response.headers["Expires"] = expiry_time.strftime("%a, %d %b %Y %H:%M:%S GMT")
     return response
 
@@ -69,13 +71,16 @@ def attachment_qtemplate(qt_id, version, variation, fname):
         if 'user_id' not in session:
             session['redirect'] = request.path
             return redirect(url_for('index'))
-    (mtype, filename) = Attach.q_att_details(qt_id, version, variation, fname)
+    mtype = DB.get_q_att_mimetype(qt_id, fname, variation, version)
     if Attach.is_restricted(fname):
         abort(403)
     if not mtype:
         abort(404)
+
+    data = DB.get_qt_att(qt_id, fname, version)
+    response = make_response(data)
+    response.headers["Content-Type"] = mtype
     expiry_time = datetime.datetime.utcnow() + datetime.timedelta(10)
-    response = send_file(filename, mtype)
     response.headers["Expires"] = expiry_time.strftime("%a, %d %b %Y %H:%M:%S GMT")
     return response
 

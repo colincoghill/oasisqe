@@ -26,9 +26,6 @@ adduser --disabled-login --disabled-password --gecos OASIS oasisqe
 
 DBPASS=`uuidgen`
 
-mkdir -p /var/cache/oasisqe/v3.9
-chown oasisqe /var/cache/oasisqe
-chown oasisqe /var/cache/oasisqe/v3.9
 mkdir -p /var/log/oasisqe
 chown oasisqe /var/log/oasisqe
 touch /var/log/oasisqe/main.log
