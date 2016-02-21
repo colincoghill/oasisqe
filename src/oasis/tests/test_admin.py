@@ -1,8 +1,8 @@
 # Test that group functionality is working
 
 from unittest import TestCase
-
-from oasis.lib import DB, Groups
+import datetime
+from oasis.lib import DB, Groups, Periods
 
 
 class TestGroups(TestCase):
@@ -16,13 +16,32 @@ class TestGroups(TestCase):
         """ Fetch a group back and check it
         """
 
+        period1 = Periods.Period(name="Period 01",
+                                title="Test 01",
+                                start=datetime.datetime.now(),
+                                finish=datetime.datetime.now(),
+                                code="CODE1"
+                                )
+        period1.save()
+
+        period2 = Periods.Period(name="Period 01")
+        self.assertTrue(period2)
+        self.assertEqual(period2.title, "Test 01")
+
+        period3 = Periods.Period(code="CODE1")
+        self.assertEqual(period2.title, "Test 01")
+
+        self.assertEqual(period2.id, period3.id)
+
+        period4 = Periods.Period(period2.id)
+        self.assertEqual(period2.start, period4.start)
+
         name = "TESTGROUP1"
         title = "Test Group 01"
         gtype = 1
         source = None
         feed = None
         feed_args = ""
-        period = 1
 
         self.assertFalse(Groups.get_ids_by_name(name))
         group = Groups.Group(g_id=0)
@@ -30,7 +49,7 @@ class TestGroups(TestCase):
         group.title = title
         group.gtype = gtype
         group.source = source
-        group.period = period
+        group.period = period2.id
         group.feed = feed
         group.feedargs = feed_args
         group.active = True
@@ -38,4 +57,5 @@ class TestGroups(TestCase):
         group.save()
 
         self.assertTrue(Groups.get_ids_by_name(name))
+
 
