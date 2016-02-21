@@ -24,9 +24,7 @@ def create_topic(course, topicname):
     """ Create or return the topic.
     """
 
-    topic = Topics.create(course['id'], topicname, 3, 1)
-    Courses.incr_version()
-    return topic
+    return Topics.create(course['id'], topicname, 3, 1)
 
 
 def create_course(coursename):

@@ -177,7 +177,6 @@ def do_topic_page_commands(request, topic_id, user_id):
                 mesg.append(msg)
 
     Topics.flush_num_qs(topic_id)
-    Courses.incr_version()
 
     return 1, {'mesg': mesg}
 

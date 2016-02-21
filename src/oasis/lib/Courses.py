@@ -16,41 +16,10 @@ L = getLogger("oasisqe")
 # WARNING: name and title are stored in the database as: title, description
 
 
-def get_version():
-    """ Fetch the current version of the course table.
-        This will be incremented when anything in the courses table is changed.
-        The idea is that while the version hasn't changed, course information
-        can be cached in memory.
-    """
-    key = "coursetable-version"
-    obj = MC.get(key)
-    if obj:
-        return int(obj)
-    ret = run_sql("SELECT last_value FROM courses_version_seq;")
-    if ret:
-        MC.set(key, int(ret[0][0]))
-        return int(ret[0][0])
-    L.error("Error fetching Courses version.")
-    return -1
-
-
-def incr_version():
-    """ Increment the course table version."""
-    key = "coursetable-version"
-    MC.delete(key)
-    ret = run_sql("SELECT nextval('courses_version_seq');")
-    if ret:
-        MC.set(key, int(ret[0][0]))
-        return int(ret[0][0])
-    L.error("Error incrementing Courses version.")
-    return -1
-
-
 def set_name(course_id, name):
     """ Set the name of a course."""
     assert isinstance(course_id, int)
     assert isinstance(name, str) or isinstance(name, unicode)
-    incr_version()
     run_sql("UPDATE courses SET title=%s WHERE course=%s;", (name, course_id))
     key = "course-%s-name" % course_id
     MC.delete(key)
@@ -60,7 +29,6 @@ def set_title(course_id, title):
     """ Set the title of a course."""
     assert isinstance(course_id, int)
     assert isinstance(title, str) or isinstance(title, unicode)
-    incr_version()
     run_sql("UPDATE courses SET description=%s WHERE course=%s;",
             (title, course_id))
     key = "course-%s-title" % course_id
@@ -96,7 +64,6 @@ def set_active(course_id, active):
     else:
         val = 0
     run_sql("UPDATE courses SET active=%s WHERE course=%s;", (val, course_id))
-    incr_version()
     key = "course-%s-active" % course_id
     MC.delete(key)
     key = "courses-active"
@@ -116,7 +83,6 @@ def set_prac_vis(cid, visibility):
 
     run_sql("UPDATE courses SET practice_visibility=%s WHERE course=%s;",
             (visibility, cid))
-    incr_version()
 
 
 def set_assess_vis(cid, visibility):
@@ -126,7 +92,6 @@ def set_assess_vis(cid, visibility):
 
     run_sql("UPDATE courses SET assess_visibility=%s WHERE course=%s;",
             (visibility, cid))
-    incr_version()
 
 
 def get_users(course_id):
@@ -276,7 +241,6 @@ def create(name, description, owner, coursetype):
     res = run_sql("""INSERT INTO courses (title, description, owner, type)
                      VALUES (%s, %s, %s, %s) RETURNING course;""",
                   (name, description, owner, coursetype))
-    incr_version()
     key = "courses-active"
     MC.delete(key)
     key = "courses-all"
