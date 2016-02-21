@@ -173,6 +173,14 @@ class TestQEngine(TestCase):
         self.assertTrue(General.is_between(a, b, c))
         self.assertFalse(General.is_between(a, c, d))
 
+        a = datetime.datetime.now()
+        b = a - datetime.timedelta(hours=1)
+        c = a + datetime.timedelta(hours=1)
+
+        self.assertTrue(General.is_now(b, c))
+        self.assertTrue(General.is_recent(b))
+        self.assertTrue(General.is_soon(c))
+
     def test_script_funcs(self):
         """ Functions that can be called by question markers and generators.
         """

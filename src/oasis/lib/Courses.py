@@ -156,24 +156,6 @@ def get_all(only_active=True):
     return []
 
 
-def get_course_dict(only_active=True):
-    """ Return a dictionary of courses.
-        By default only active courses.
-        key will be course ID.
-
-        courses[cid] = {id:, name:, title:}
-    """
-
-    courses = get_courses_dict()
-    if not only_active:
-        return courses
-    cdict = {}
-    for course_id, course in courses.iteritems():
-        if course['active']:
-            cdict[course_id] = course
-    return cdict
-
-
 def get_course_list(only_active=True, sortedby="name"):
     """ Return a list of courses.
         By default only active courses.
@@ -181,7 +163,7 @@ def get_course_list(only_active=True, sortedby="name"):
 
        [{id:, name:, title:}, ]
     """
-    courses = get_course_dict(only_active=only_active)
+    courses = get_courses_dict(only_active=only_active)
     clist = []
     for course in courses:
         clist.append(courses[course])
@@ -190,14 +172,21 @@ def get_course_list(only_active=True, sortedby="name"):
     return clist
 
 
-def get_courses_dict():
+def get_courses_dict(only_active=False):
     """ Return a summary of all courses, keyed by course id
         [id] = { 'id':id, 'name':name, 'title':title }
     """
-    ret = run_sql(
-        """SELECT course, title, description, owner, active, type,
-                  practice_visibility, assess_visibility
-             FROM courses;""")
+    if only_active:
+        ret = run_sql(
+            """SELECT course, title, description, owner, active, type,
+                    practice_visibility, assess_visibility
+              FROM courses
+              WHERE active='1';""")
+    else:
+        ret = run_sql(
+            """SELECT course, title, description, owner, active, type,
+                    practice_visibility, assess_visibility
+              FROM courses;""")
     cdict = {}
     if ret:
         for row in ret:

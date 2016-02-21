@@ -39,7 +39,6 @@ if len(admin_list):
     email_admins = admin_list
 else:
     email_admins = ()
-cachedir = cp.get("cache", "cachedir")
 
 dbhost = cp.get("db", "host")
 dbuname = cp.get("db", "uname")
