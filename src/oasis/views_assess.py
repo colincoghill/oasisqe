@@ -16,7 +16,7 @@ import logging
 from flask import render_template, session, \
     request, redirect, abort, url_for, flash
 
-from .lib import DB, General, Exams, Courses2, Assess, Audit
+from .lib import DB, General, Exams, Courses, Assess, Audit
 
 MYPATH = os.path.dirname(__file__)
 
@@ -123,7 +123,7 @@ def assess_startexam(course_id, exam_id):
 
     return render_template(
         "assessstart.html",
-        course=Courses2.get_course(course_id),
+        course=Courses.get_course(course_id),
         exam=exam
     )
 
@@ -203,7 +203,7 @@ def assess_assessmentpage(course_id, exam_id, page):
                                 course_id=course_id,
                                 exam_id=exam_id))
 
-    course = Courses2.get_course(course_id)
+    course = Courses.get_course(course_id)
     if Exams.is_done_by(user_id, exam_id):
         exam['is_done'] = True
         html = General.render_q_html(q_id, readonly=True)
@@ -236,7 +236,7 @@ def assess_presubmit(course_id, exam_id):
     user_id = session['user_id']
 
     exam = Exams.get_exam_struct(exam_id, course_id)
-    course = Courses2.get_course(course_id)
+    course = Courses.get_course(course_id)
     numquestions = Exams.get_num_questions(exam_id)
     qids = []
     questions = []
@@ -298,7 +298,7 @@ def assess_awaitresults(course_id, exam_id):
     """
     user_id = session['user_id']
     exam = Exams.get_exam_struct(exam_id, course_id)
-    course = Courses2.get_course(course_id)
+    course = Courses.get_course(course_id)
     numquestions = Exams.get_num_questions(exam_id)
     qids = []
     questions = []
@@ -327,7 +327,7 @@ def assess_awaitresults(course_id, exam_id):
 def assess_viewmarked(course_id, exam_id):
     """  Show them their marked assessment results """
     user_id = session['user_id']
-    course = Courses2.get_course(course_id)
+    course = Courses.get_course(course_id)
     try:
         exam = Exams.get_exam_struct(exam_id, course_id)
     except KeyError:

@@ -3,7 +3,7 @@
     Functionality for importing and exporting spreadsheets.
 """
 
-from oasis.lib import Courses2, Exams, Users2
+from oasis.lib import Courses, Exams, Users2
 from openpyxl.writer.excel import save_virtual_workbook
 from openpyxl.workbook import Workbook
 
@@ -16,7 +16,7 @@ L = getLogger("oasisqe")
 def exam_results_as_spreadsheet(course_id, group, exam_id):
     """ Export the assessment results as a XLSX spreadsheet """
 
-    course = Courses2.get_course(course_id)
+    course = Courses.get_course(course_id)
     exam = Exams.get_exam_struct(exam_id, course_id)
 
     uids = set([])

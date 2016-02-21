@@ -17,7 +17,7 @@ from flask import render_template, session, \
 from logging import getLogger
 
 from .lib import Users2, DB, Topics, \
-    Courses2, Attach, QEditor, QEditor2
+    Courses, Attach, QEditor, QEditor2
 
 MYPATH = os.path.dirname(__file__)
 
@@ -179,7 +179,7 @@ def qedit_qtlog(topic_id, qt_id):
 
     errors = QEditor.qtlog_as_html(topic_id, qt_id)
     course_id = Topics.get_course_id(topic_id)
-    course = Courses2.get_course(course_id)
+    course = Courses.get_course(course_id)
 
     return render_template("qtlog_errors.html",
                            course=course,
@@ -207,7 +207,7 @@ def qedit_raw_edit(topic_id, qt_id):
         return redirect(url_for("cadmin_edit_topic",
                                 course_id=course_id, topic_id=topic_id))
 
-    course = Courses2.get_course(course_id)
+    course = Courses.get_course(course_id)
     topic = Topics.get_topic(topic_id)
     qtemplate = DB.get_qtemplate(qt_id)
     try:
@@ -333,7 +333,7 @@ def qedit_qe2_edit(topic_id, qt_id):
         return redirect(url_for("cadmin_edit_topic",
                                 course_id=course_id, topic_id=topic_id))
 
-    course = Courses2.get_course(course_id)
+    course = Courses.get_course(course_id)
     topic = Topics.get_topic(topic_id)
     qtemplate = DB.get_qtemplate(qt_id)
     try:

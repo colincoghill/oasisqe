@@ -83,7 +83,12 @@ def get_active(course_id):
 
 
 def set_active(course_id, active):
-    """ Set the active flag of a course."""
+    """ Set the active flag of a course.
+        :param course_id: the course to alter
+        :type course_id: int
+        :param active: whether the course is active or not
+        :type active: bool
+    """
     assert isinstance(course_id, int)
     assert isinstance(active, bool)
     if active:
@@ -99,7 +104,13 @@ def set_active(course_id, active):
 
 
 def set_prac_vis(cid, visibility):
-    """ Who can do practice questions."""
+    """ Who can do practice questions.
+        :param cid: Course ID
+        :type cid: int
+        :param visibility: who can see the course in the practice section
+                    "all", "", "", ""
+        :type visibility: string
+    """
     assert isinstance(cid, int)
     assert isinstance(visibility, str) or isinstance(visibility, unicode)
 
@@ -143,6 +154,40 @@ def get_all(only_active=True):
         MC.set(key, courses)
         return courses
     return []
+
+
+def get_course_dict(only_active=True):
+    """ Return a dictionary of courses.
+        By default only active courses.
+        key will be course ID.
+
+        courses[cid] = {id:, name:, title:}
+    """
+
+    courses = get_courses_dict()
+    if not only_active:
+        return courses
+    cdict = {}
+    for course_id, course in courses.iteritems():
+        if course['active']:
+            cdict[course_id] = course
+    return cdict
+
+
+def get_course_list(only_active=True, sortedby="name"):
+    """ Return a list of courses.
+        By default only active courses.
+        will be ordered by given field.
+
+       [{id:, name:, title:}, ]
+    """
+    courses = get_course_dict(only_active=only_active)
+    clist = []
+    for course in courses:
+        clist.append(courses[course])
+
+    clist.sort(lambda f, s: cmp(f[sortedby], s[sortedby]))
+    return clist
 
 
 def get_courses_dict():
@@ -337,6 +382,13 @@ def get_topics_all(course, archived=2, numq=True):
                     info[count]['numquestions'] = Topics.get_num_qs(int(row[0]))
                 count += 1
     return info
+
+
+def get_topics_list(course_id, archived=2):
+    """ Return a list of all topics in the course.
+    """
+    topics = get_topics_all(course_id, archived, True)
+    return [topics[tid] for tid in topics]
 
 
 def get_topics(cid):

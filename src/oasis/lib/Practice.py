@@ -11,7 +11,7 @@ from oasis.lib import General
 
 from oasis.lib.Permissions import check_perm
 from oasis.lib.OaExceptions import OaMarkerError
-from . import OaConfig, DB, Pool, Topics
+from . import OaConfig, DB, Topics
 from logging import getLogger
 
 L = getLogger("oasisqe")

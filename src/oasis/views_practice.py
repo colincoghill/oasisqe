@@ -10,7 +10,7 @@ import os
 
 from flask import render_template, session, request, abort
 
-from oasis.lib import DB, Practice, Topics, General, Courses2, Setup, Courses
+from oasis.lib import DB, Practice, Topics, General, Setup, Courses
 MYPATH = os.path.dirname(__file__)
 from oasis.lib.Permissions import check_perm
 from logging import getLogger
@@ -35,12 +35,12 @@ def practice_choose_topic(course_id):
     """ Present a list of topics for them to choose from the given course """
     user_id = session['user_id']
     try:
-        course = Courses2.get_course(course_id)
+        course = Courses.get_course(course_id)
     except KeyError:
         course = None
         abort(404)
     try:
-        topics = Courses2.get_topics_list(course_id)
+        topics = Courses.get_topics_list(course_id)
     except KeyError:
         topics = []
         abort(404)
@@ -73,11 +73,11 @@ def practice_choose_question(topic_id):
         abort(404)
     topics = []
     try:
-        topics = Courses2.get_topics_list(course_id)
+        topics = Courses.get_topics_list(course_id)
     except KeyError:
         abort(404)
     try:
-        course = Courses2.get_course(course_id)
+        course = Courses.get_course(course_id)
     except KeyError:
         course = None
         abort(404)
@@ -122,8 +122,8 @@ def practice_choose_question_stats(topic_id):
     if not course_id:
         abort(404)
 
-    topics = Courses2.get_topics_list(course_id)
-    course = Courses2.get_course(course_id)
+    topics = Courses.get_topics_list(course_id)
+    course = Courses.get_course(course_id)
     topictitle = Topics.get_name(topic_id)
     questions = Practice.get_sorted_qlist_wstats(course_id, topic_id, user_id)
 
@@ -150,7 +150,7 @@ def practice_do_question(topic_id, position):
         course_id = None
         abort(404)
     try:
-        course = Courses2.get_course(course_id)
+        course = Courses.get_course(course_id)
     except KeyError:
         course = None
         abort(404)
@@ -260,7 +260,7 @@ def practice_do_question_id(topic_id, qt_id):
         course_id = None
         abort(404)
     try:
-        course = Courses2.get_course(course_id)
+        course = Courses.get_course(course_id)
     except KeyError:
         course = None
         abort(404)
@@ -341,14 +341,14 @@ def practice_do_question_id(topic_id, qt_id):
            methods=['POST', ])
 @authenticated
 def practice_mark_question(topic_id, question_id):
-    """ Mark the submitted question answersjust wa """
+    """ Mark the submitted question answers """
     user_id = session['user_id']
 
     course_id = Topics.get_course_id(topic_id)
     if not course_id:
         abort(404)
 
-    course = Courses2.get_course(course_id)
+    course = Courses.get_course(course_id)
     if not course:
         abort(404)
 

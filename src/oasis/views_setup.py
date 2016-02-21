@@ -12,7 +12,7 @@ from flask import render_template, session, \
     request, redirect, url_for, flash, abort
 
 from oasis.lib import Users2, General, Exams, \
-    Courses2, Setup
+    Courses, Setup
 
 MYPATH = os.path.dirname(__file__)
 
@@ -200,7 +200,7 @@ def setup_usersummary(view_id):
     course_ids = Users2.get_courses(view_id)
     courses = []
     for course_id in course_ids:
-        courses.append(Courses2.get_course(course_id))
+        courses.append(Courses.get_course(course_id))
 
     user_is_admin = check_perm(view_id, 0, 'sysadmin')
     return render_template(
@@ -223,7 +223,7 @@ def setup_myprofile():
     course_ids = Users2.get_courses(user_id)
     courses = []
     for course_id in course_ids:
-        courses.append(Courses2.get_course(course_id))
+        courses.append(Courses.get_course(course_id))
     return render_template(
         'setup_myprofile.html',
         user=user,

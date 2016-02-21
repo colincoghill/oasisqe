@@ -13,7 +13,7 @@ from flask import render_template, session, request, redirect, \
     abort, url_for, flash, make_response
 from logging import getLogger
 from oasis.lib import OaConfig, Users2, DB, Topics, Permissions, \
-    Exams, Courses, Courses2, Setup, CourseAdmin, Groups, General, Assess, \
+    Exams, Courses, Setup, CourseAdmin, Groups, General, Assess, \
     Spreadsheets
 
 MYPATH = os.path.dirname(__file__)
@@ -33,14 +33,14 @@ L = getLogger("oasisqe")
                      redir="setup_top")
 def cadmin_top(course_id):
     """ Present top level course admin page """
-    course = Courses2.get_course(course_id)
+    course = Courses.get_course(course_id)
     if not course:
         abort(404)
 
     user_id = session['user_id']
     is_sysadmin = check_perm(user_id, -1, 'sysadmin')
 
-    topics = Courses2.get_topics_list(course_id)
+    topics = Courses.get_topics_list(course_id)
     exams = [Exams.get_exam_struct(exam_id, course_id)
              for exam_id in Courses.get_exams(course_id, prev_years=False)]
 
@@ -64,7 +64,7 @@ def cadmin_top(course_id):
 @require_course_perm(("course_admin", "coursecoord"))
 def cadmin_config(course_id):
     """ Allow some course configuration """
-    course = Courses2.get_course(course_id)
+    course = Courses.get_course(course_id)
     if not course:
         abort(404)
 
@@ -91,7 +91,7 @@ def cadmin_config(course_id):
 @require_course_perm(("courseadmin", "coursecoord"))
 def cadmin_config_submit(course_id):
     """ Allow some course configuration """
-    course = Courses2.get_course(course_id)
+    course = Courses.get_course(course_id)
     if not course:
         abort(404)
 
@@ -142,7 +142,7 @@ def cadmin_config_submit(course_id):
                       "coursecoord", "courseadmin"))
 def cadmin_prev_assessments(course_id):
     """ Show a list of older assessments."""
-    course = Courses2.get_course(course_id)
+    course = Courses.get_course(course_id)
     if not course:
         abort(404)
 
@@ -251,7 +251,7 @@ def cadmin_add_course_save():
 @require_course_perm(("examcreate", "coursecoord", "courseadmin"))
 def cadmin_create_exam(course_id):
     """ Provide a form to create/edit a new assessment """
-    course = Courses2.get_course(course_id)
+    course = Courses.get_course(course_id)
     if not course:
         abort(404)
 
@@ -282,7 +282,7 @@ def cadmin_create_exam(course_id):
 @require_course_perm(("examcreate", "coursecoord", "courseadmin"))
 def cadmin_exam_results(course_id, exam_id):
     """ View the results of an assessment """
-    course = Courses2.get_course(course_id)
+    course = Courses.get_course(course_id)
     if not course:
         abort(404)
 
@@ -337,7 +337,7 @@ def cadmin_exam_results(course_id, exam_id):
 @require_course_perm(("coursecoord", "courseadmin", "viewmarks"))
 def cadmin_export_csv(course_id, exam_id, group_id):
     """ Send the group results as a CSV file """
-    course = Courses2.get_course(course_id)
+    course = Courses.get_course(course_id)
     if not course:
         abort(404)
 
@@ -364,7 +364,7 @@ def cadmin_export_csv(course_id, exam_id, group_id):
 def cadmin_exam_viewmarked(course_id, exam_id, student_uid):
     """  Show a student's marked assessment results """
 
-    course = Courses2.get_course(course_id)
+    course = Courses.get_course(course_id)
     try:
         exam = Exams.get_exam_struct(exam_id, course_id)
     except KeyError:
@@ -441,7 +441,7 @@ def cadmin_exam_unsubmit(course_id, exam_id, student_uid):
 @require_course_perm(("examcreate", "coursecoord", "courseadmin"))
 def cadmin_edit_exam(course_id, exam_id):
     """ Provide a form to edit an assessment """
-    course = Courses2.get_course(course_id)
+    course = Courses.get_course(course_id)
     if not course:
         abort(404)
 
@@ -474,7 +474,7 @@ def cadmin_edit_exam_submit(course_id, exam_id):
     """ Provide a form to edit an assessment """
     user_id = session['user_id']
 
-    course = Courses2.get_course(course_id)
+    course = Courses.get_course(course_id)
     if not course:
         abort(404)
 
@@ -506,7 +506,7 @@ def cadmin_editgroup(course_id, group_id):
     if not group:
         abort(404)
 
-    course = Courses2.get_course(course_id)
+    course = Courses.get_course(course_id)
     if not course:
         abort(404)
     ulist = group.members()
@@ -597,7 +597,7 @@ def cadmin_assign_coord(course_id):
     """ Set someone as course coordinator
     """
     cur_user = session['user_id']
-    course = Courses2.get_course(course_id)
+    course = Courses.get_course(course_id)
     if not course:
         abort(404)
 
@@ -626,7 +626,7 @@ def cadmin_assign_coord(course_id):
 def cadmin_remove_coord(course_id, coordname):
     """ Remove someone as course coordinator
     """
-    course = Courses2.get_course(course_id)
+    course = Courses.get_course(course_id)
     if not course:
         abort(404)
 
@@ -651,14 +651,14 @@ def cadmin_edittopics(course_id):
     """ Present a page to view and edit all topics, including hidden. """
     course = None
     try:
-        course = Courses2.get_course(course_id)
+        course = Courses.get_course(course_id)
     except KeyError:
         abort(404)
 
     if not course:
         abort(404)
 
-    topics = Courses2.get_topics_list(course_id)
+    topics = Courses.get_topics_list(course_id)
     return render_template("courseadmin_edittopics.html",
                            course=course,
                            topics=topics)
@@ -671,7 +671,7 @@ def cadmin_deactivate(course_id):
     """
     course = None
     try:
-        course = Courses2.get_course(course_id)
+        course = Courses.get_course(course_id)
     except KeyError:
         abort(404)
 
@@ -690,7 +690,7 @@ def cadmin_group_detach(course_id, group_id):
     """
     course = None
     try:
-        course = Courses2.get_course(course_id)
+        course = Courses.get_course(course_id)
     except KeyError:
         abort(404)
 
@@ -710,7 +710,7 @@ def cadmin_activate(course_id):
     """
     course = None
     try:
-        course = Courses2.get_course(course_id)
+        course = Courses.get_course(course_id)
     except KeyError:
         abort(404)
 
@@ -728,7 +728,7 @@ def cadmin_edittopics_save(course_id):
     """ Accept a submitted topics page and save it."""
     course = None
     try:
-        course = Courses2.get_course(course_id)
+        course = Courses.get_course(course_id)
     except KeyError:
         abort(404)
 
@@ -757,7 +757,7 @@ def cadmin_edit_topic(course_id, topic_id):
     if not course_id:
         abort(404)
 
-    course = Courses2.get_course(course_id)
+    course = Courses.get_course(course_id)
     topic = {
         'id': topic_id,
         'position': Topics.get_pos(topic_id),
@@ -775,7 +775,7 @@ def cadmin_edit_topic(course_id, topic_id):
         question['editor'] = DB.get_qt_editor(question['id'])
 
     all_courses = [crse
-                   for crse in Courses2.get_course_list()
+                   for crse in Courses.get_course_list()
                    if satisfy_perms(user_id, int(crse['id']),
                                     ("questionedit", "courseadmin",
                                     "sysadmin"))]
@@ -804,7 +804,7 @@ def cadmin_view_qtemplate_history(course_id, topic_id, qt_id):
     if not course_id:
         abort(404)
 
-    course = Courses2.get_course(course_id)
+    course = Courses.get_course(course_id)
     topic = {
         'id': topic_id,
         'position': Topics.get_pos(topic_id),
@@ -832,7 +832,7 @@ def cadmin_view_topic(course_id, topic_id):
     if not course_id:
         abort(404)
 
-    course = Courses2.get_course(course_id)
+    course = Courses.get_course(course_id)
     topic = {
         'id': topic_id,
         'position': Topics.get_pos(topic_id),
@@ -849,7 +849,7 @@ def cadmin_view_topic(course_id, topic_id):
         question['editor'] = DB.get_qt_editor(question['id'])
 
     all_courses = [crse
-                   for crse in Courses2.get_course_list()
+                   for crse in Courses.get_course_list()
                    if satisfy_perms(user_id, int(crse['id']),
                                     ("questionedit", "courseadmin", "sysadmin"))]
     all_courses.sort(lambda f, s: cmp(f['name'], s['name']))
@@ -909,7 +909,7 @@ def cadmin_topic_save(course_id, topic_id):
 @require_course_perm(("useradmin", 'coursecoord', 'courseadmin'))
 def cadmin_permissions(course_id):
     """ Present a page for them to assign permissions to the course"""
-    course = Courses2.get_course(course_id)
+    course = Courses.get_course(course_id)
 
     permlist = Permissions.get_course_perms(course_id)
     perms = {}

@@ -15,7 +15,7 @@ from flask import render_template, \
     request, redirect, abort, url_for, flash
 
 from logging import getLogger
-from oasis.lib import Courses, Courses2, Setup, Periods, Feeds, External, UFeeds, OaConfig
+from oasis.lib import Courses, Setup, Periods, Feeds, External, UFeeds, OaConfig
 
 MYPATH = os.path.dirname(__file__)
 from .lib import DB, Groups
@@ -576,7 +576,7 @@ def admin_edit_period_submit(p_id):
 def admin_course(course_id):
     """ Present page to administer settings for a given course"""
 
-    course = Courses2.get_course(course_id)
+    course = Courses.get_course(course_id)
     course['size'] = len(Courses.get_users(course_id))
     groups = Courses.get_groups(course_id)
     choosegroups = [group
@@ -601,7 +601,7 @@ def admin_course_save(course_id):
         return redirect(url_for("admin_courses"))
 
     changed = False
-    course = Courses2.get_course(course_id)
+    course = Courses.get_course(course_id)
     groups = Courses.get_groups(course_id)
 
     for g_id, group in groups.iteritems():
@@ -642,11 +642,10 @@ def admin_course_save(course_id):
             flash("Group %s added." % group.name)
 
     if changed:
-        Courses2.reload_if_needed()
         flash("Course changes saved!")
         return redirect(url_for("admin_course", course_id=course_id))
 
-    course = Courses2.get_course(course_id)
+    course = Courses.get_course(course_id)
     course['size'] = len(Courses.get_users(course_id))
     return redirect(url_for("admin_courses"))
 

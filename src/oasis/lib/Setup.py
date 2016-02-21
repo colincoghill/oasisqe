@@ -8,7 +8,7 @@
 """
 
 from flask import flash
-from oasis.lib import DB, Topics, Courses, Courses2
+from oasis.lib import DB, Topics, Courses
 import StringIO
 from oasis.lib import External
 from flask import send_file, abort
@@ -205,7 +205,7 @@ def get_sorted_courselist(with_stats=False, only_active=True):
          [  ('example101', { coursedict }),  ('sorted302', { coursedict } )  ]
     """
 
-    courses = Courses2.get_course_dict(only_active=only_active)
+    courses = Courses.get_course_dict(only_active=only_active)
 
     inorder = []
     for cid, course in courses.iteritems():

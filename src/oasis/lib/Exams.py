@@ -13,10 +13,10 @@ import datetime
 
 from .DB import run_sql, MC
 from .OaTypes import todatetime
-import Courses2
 from .Permissions import check_perm
 import DB
 import General
+import Courses
 from logging import getLogger
 
 L = getLogger("oasisqe")
@@ -489,7 +489,7 @@ def get_exam_struct(exam_id, user_id=None, include_qtemplates=False,
 
         MC.set(key, _serialize_examstruct(exam),
                60)  # 60 second cache. to take the edge off exam start peak load
-    course = Courses2.get_course(exam['cid'])
+    course = Courses.get_course(exam['cid'])
     exam['future'] = General.is_future(exam['start'])
     exam['past'] = General.is_past(exam['end'])
     exam['soon'] = General.is_soon(exam['start'])
