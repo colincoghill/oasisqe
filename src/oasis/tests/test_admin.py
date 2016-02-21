@@ -2,7 +2,7 @@
 
 from unittest import TestCase
 import datetime
-from oasis.lib import DB, Groups, Periods
+from oasis.lib import DB, Groups, Periods, Courses
 
 
 class TestGroups(TestCase):
@@ -58,4 +58,33 @@ class TestGroups(TestCase):
 
         self.assertTrue(Groups.get_ids_by_name(name))
 
+
+    def test_course_config(self):
+        """ Test course configuration templates
+        """
+        course1_id = Courses.create("TEMPL01", "Test course templates", 1, 1)
+        period = Periods.Period(name="TEMPL01",
+                                title="Template 01",
+                                start=datetime.datetime.now(),
+                                finish=datetime.datetime.now(),
+                                code="TMPL1"
+                                )
+        period.save()
+
+        period2 = Periods.Period(code="TMPL1")
+        Courses.create_config(course1_id, "large", period2.id)
+        groups = Courses.get_groups(course1_id)
+
+        self.assertEqual(len(groups), 1)
+
+        course2_id = Courses.create("TEMPL02", "Test course standard", 1, 1)
+        Courses.create_config(course2_id, "standard", period2.id)
+        groups = Courses.get_groups(course2_id)
+
+        self.assertEqual(len(groups), 2)
+
+        course3_id = Courses.create("TEMPL03", "Test course demo", 1, 1)
+        Courses.create_config(course3_id, "demo", period2.id)
+        groups = Courses.get_groups(course3_id)
+        self.assertEqual(len(groups), 3)
 

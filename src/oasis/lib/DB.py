@@ -861,7 +861,7 @@ def copy_qt_all(qt_id):
         including all attachments.
     """
     assert isinstance(qt_id, int)
-    newid = copy_qt(qt_id)
+    newid = _copy_qt(qt_id)
     if newid <= 0:
         return 0
     attachments = get_qt_atts(qt_id)
@@ -884,7 +884,7 @@ def copy_qt_all(qt_id):
     return newid
 
 
-def copy_qt(qt_id):
+def _copy_qt(qt_id):
     """ Make an identical copy of a question template entry.
         Returns the new qtemplate id.
     """

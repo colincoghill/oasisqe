@@ -54,6 +54,19 @@ class TestTopics(TestCase):
         self.assertEqual(topic1['visibility'], 1)
         self.assertEqual(topic2['visibility'], 3)
 
+        self.assertEqual(Topics.get_name(topic1_id), topic1['title'])
+
+        Topics.set_name(topic1_id, "NEWNAME1")
+        self.assertEqual(Topics.get_name(topic1_id), "NEWNAME1")
+
+        self.assertEqual(Topics.get_num_qs(topic1_id), 0)
+
+        self.assertEqual(Topics.get_pos(topic1_id), 2)
+
+        Topics.set_pos(topic1_id, 8)
+        self.assertEqual(Topics.get_pos(topic1_id), 8)
+
+
     def test_create_qtemplate(self):
         """ Test qtemplates creation
         """
