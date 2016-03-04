@@ -26,6 +26,7 @@ def set_name(course_id, name):
 
 
 def set_title(course_id, title):
+    # type: (int, string) -> None
     """ Set the title of a course."""
     assert isinstance(course_id, int)
     assert isinstance(title, str) or isinstance(title, unicode)

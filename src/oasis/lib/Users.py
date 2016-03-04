@@ -32,8 +32,12 @@ def get_version():
 
     ret = run_sql("SELECT last_value FROM users_version_seq;")
     if ret:
-        MC.set(key, int(ret[0][0]))
-        return int(ret[0][0])
+        ver = int(ret[0][0])
+
+        if ver == 1:
+            ver = 0
+        MC.set(key, ver)
+        return ver
     L.error("Error fetching version.")
     return -1
 

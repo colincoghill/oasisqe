@@ -181,6 +181,11 @@ class TestQEngine(TestCase):
         self.assertTrue(General.is_recent(b))
         self.assertTrue(General.is_soon(c))
 
+        self.assertTrue(General.is_future(c))
+        self.assertTrue(General.is_past(b))
+        self.assertFalse(General.is_future(b))
+        self.assertFalse(General.is_past(c))
+
     def test_script_funcs(self):
         """ Functions that can be called by question markers and generators.
         """

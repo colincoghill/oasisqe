@@ -6,6 +6,7 @@ import re
 from logging import getLogger
 from oasis import app
 from oasis.lib import DB
+from oasis.lib import Users
 
 L = getLogger("oasisqe")
 
@@ -104,7 +105,22 @@ class TestLogin(TestCase):
             self.assertNotIn("CSRF token missing or incorrect", s.data)
             self.assertIn("The latest news and information about OASIS", s.data)
 
+    def test_user_stuff(self):
+        """ Try some Users.py functions
+        """
 
+        with self.app.test_client(use_cookies=True) as c:
+            # We had a bug with incr_version on a fresh DB, so check this.
+            v = Users.get_version()
+            Users.incr_version()
+            v2 = Users.get_version()
+            self.assertGreater(v2, v)
+            Users.incr_version()
+            v3 = Users.get_version()
+            self.assertGreater(v3, v2)
 
+            self.assertIsNone(Users.uid_by_uname("notexist"))
+
+            self.assertFalse(Users.verify_password("notexist", "fred"))
 
 

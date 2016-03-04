@@ -907,6 +907,7 @@ def is_recent(date):
 def is_soon(date):
     """ Return True if the given date (datetime object) is in the near future.
         Currently this means within 24 hours, but that may change.
+        :type date: datetime.datetime
     """
     end = datetime.datetime.now() + datetime.timedelta(1)
     start = datetime.datetime.now()

@@ -1213,6 +1213,7 @@ def set_message(name, message):
 
 
 def get_message(name):
+    # type: (str) -> str
     """Retrieve a message
     """
     assert isinstance(name, str) or isinstance(name, unicode)
