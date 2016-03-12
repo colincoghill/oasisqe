@@ -192,3 +192,5 @@ class TestTopics(TestCase):
         self.assertTupleEqual(Practice.get_next_prev_pos(qt2_id, topic1_id), (1, 4))
         self.assertTupleEqual(Practice.get_next_prev_pos(qt3_id, topic1_id), (1, 4))
         self.assertTupleEqual(Practice.get_next_prev_pos(qt4_id, topic1_id), (3, None))
+
+        self.assertTupleEqual(Practice.get_next_prev_pos(qt4_id, None), (None, None))

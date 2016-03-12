@@ -88,3 +88,31 @@ class TestGroups(TestCase):
         groups = Courses.get_groups(course3_id)
         self.assertEqual(len(groups), 3)
 
+        self.assertListEqual(groups.keys(), [4,5,6])
+
+        self.assertEqual(groups[4].members(), [])
+        self.assertEqual(groups[5].members(), [])
+        self.assertEqual(groups[6].members(), [])
+
+        groups[4].add_member(1)
+        self.assertEqual(groups[4].members(), [1])
+        self.assertEqual(groups[5].members(), [])
+        self.assertEqual(groups[6].members(), [])
+
+        groups[4].add_member(1)
+        groups[5].add_member(1)
+        self.assertEqual(groups[4].members(), [1])
+        self.assertEqual(groups[5].members(), [1])
+
+        groups[4].remove_member(1)
+        self.assertEqual(groups[4].members(), [])
+        self.assertEqual(groups[5].members(), [1])
+
+        self.assertListEqual(groups[4].member_unames(), [])
+        self.assertListEqual(groups[5].member_unames(), ["admin"])
+
+        self.assertEqual(groups[4].size(), 0)
+        self.assertEqual(groups[5].size(), 1)
+
+        groups[5].flush_members()
+        self.assertEqual(groups[5].members(), [])
