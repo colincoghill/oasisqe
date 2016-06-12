@@ -60,6 +60,8 @@ I'm working on that now, along with some sample content.
 
 If you have any suggestions or improvements, please contact me.
 
+Pull requests will be gladly accepted if I think they're helpful! But contact me before doing a huge amount of work :)
+
 Colin Coghill
  ( colin@colincoghill.com )
 
