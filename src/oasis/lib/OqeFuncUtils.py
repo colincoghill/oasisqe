@@ -100,13 +100,13 @@ def comp_bool_eqs(eq1str, eq2str, varlist):
     """
     numvars = len(varlist)
     boolvals = []
-    for i in range(numvars):
+    for _ in range(numvars):
         boolvals.append(0)
 
     vardict = {}
     anslist1 = []
     anslist2 = []
-    for i in range(2 ** numvars):
+    for _ in range(2 ** numvars):
         for j in range(numvars):
             vardict[varlist[j]] = boolvals[j]
         try:

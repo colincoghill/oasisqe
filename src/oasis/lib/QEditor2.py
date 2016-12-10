@@ -57,7 +57,6 @@ def process_save(qt_id, topic_id, request, session, version):
     """
 
     form = request.form
-    files = request.files
 
     if 'blocks' in form:
         blocks = form['blocks'].encode("utf8")

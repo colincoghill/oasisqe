@@ -262,8 +262,6 @@ def do_init(db, c_opts):
     sys.exit()
 
 
-
-
 def do_help():
     """ Display more help about a command
     """
@@ -306,7 +304,7 @@ if __name__ == "__main__":
 
     if args[0] == 'resetpw':
         if not options.noresetadmin:  # silly, but maybe they did it
-            DB.generate_admin_passwd(DB)
+            DB.generate_admin_passwd()
         sys.exit()
 
     show_help()
