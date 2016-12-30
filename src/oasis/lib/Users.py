@@ -111,8 +111,8 @@ def get_user_record(user_id):
 def set_password(user_id, clearpass):
     """ Updates a users password. """
     hashed = bcrypt.hashpw(clearpass, bcrypt.gensalt(10))
-    sql = """UPDATE "users" SET "passwd"=%s WHERE "id"=%s;"""
-    params = (hashed, user_id)
+    sql = """UPDATE "users" SET "passwd" = %s WHERE "id" = %s;"""
+    params = [hashed, user_id]
     try:
         run_sql(sql, params)
     except IOError as err:
@@ -126,8 +126,8 @@ def verify_password(uname, clearpass):
         We first try bcrypt, if it fails we try md5 to see if they have
         an old password, and if so, upgrade the stored password to bcrypt.
     """
-    sql = """SELECT "id", "passwd" FROM "users" WHERE "uname"=%s;"""
-    params = (uname,)
+    sql = """SELECT "id", "passwd" FROM "users" WHERE "uname" = %s;"""
+    params = [uname, ]
     ret = run_sql(sql, params)
     if not ret:
         return False
@@ -259,8 +259,8 @@ def verify_confirm_code(code):
     """
     if len(code) < 5:  # don't want to match if we get an empty one
         return False
-    ret = run_sql("""SELECT id FROM "users" WHERE confirmation_code=%s;""",
-                  (code,))
+    ret = run_sql("""SELECT "id" FROM "users" WHERE confirmation_code=%s;""",
+                  [code, ])
     if ret:
         return ret[0][0]
     return False
@@ -268,14 +268,14 @@ def verify_confirm_code(code):
 
 def set_confirm(uid):
     """ The user has confirmed, mark their record."""
-    run_sql("""UPDATE "users" SET confirmed='TRUE' WHERE id=%s;""", (uid,))
+    run_sql("""UPDATE "users" SET confirmed='TRUE' WHERE id=%s;""", [uid, ])
     incr_version()
 
 
 def set_confirm_code(uid, code):
     """ Set a new code, possibly for password reset confirmation."""
-    run_sql("""UPDATE "users" SET confirmation_code=%s WHERE id=%s;""",
-            (code, uid))
+    run_sql("""UPDATE "users" SET "confirmation_code" = %s WHERE "id" = %s;""",
+            [code, uid])
     incr_version()
 
 
@@ -288,25 +288,25 @@ def gen_confirm_code():
 
 def set_studentid(uid, stid):
     """ Update student ID."""
-    run_sql("""UPDATE "users" SET student_id=%s WHERE id=%s;""", (stid, uid,))
+    run_sql("""UPDATE "users" SET student_id = %s WHERE "id" = %s;""", [stid, uid])
     incr_version()
 
 
 def set_givenname(uid, name):
     """ Update Given Name."""
-    run_sql("""UPDATE "users" SET givenname=%s WHERE id=%s;""", (name, uid,))
+    run_sql("""UPDATE "users" SET givenname = %s WHERE "id" = %s;""", [name, uid])
     incr_version()
 
 
 def set_familyname(uid, name):
     """ Update Family Name."""
-    run_sql("""UPDATE "users" SET familyname=%s WHERE id=%s;""", (name, uid,))
+    run_sql("""UPDATE "users" SET familyname = %s WHERE "id" = %s;""", [name, uid])
     incr_version()
 
 
 def set_email(uid, email):
     """ Update Email."""
-    run_sql("""UPDATE "users" SET email=%s WHERE id=%s;""", (email, uid,))
+    run_sql("""UPDATE "users" SET email = %s WHERE "id" = %s;""", [email, uid])
     incr_version()
 
 

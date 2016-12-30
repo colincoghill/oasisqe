@@ -19,7 +19,7 @@ def create(course_id, name, vis, pos=1):
     MC.delete(key)
     L.info("db/Topics/create(%s, %s, %s, %s)" % (course_id, name, vis, pos))
     res = run_sql("""INSERT INTO topics (course, title, visibility, position)
-        VALUES (%s, %s, %s, %s) RETURNING topic;""", (course_id, name, vis, pos))
+        VALUES (%s, %s, %s, %s) RETURNING topic;""", [course_id, name, vis, pos])
     if res:
         return res[0][0]
     L.error("Topic create error (%s, %s, %s, %s)" % (course_id, name, vis, pos))
@@ -34,8 +34,8 @@ def get_topic(topic_id):
         return json.loads(obj)
     sql = """SELECT topic, course, title, visibility, position, archived
              FROM topics
-             WHERE topic=%s;"""
-    params = (topic_id,)
+             WHERE topic = %s;"""
+    params = [topic_id, ]
     ret = run_sql(sql, params)
     if not ret:
         raise KeyError("Unable to find topic %s" % topic_id)
@@ -63,7 +63,7 @@ def set_name(topic_id, name):
     """Set the name of a topic."""
     assert isinstance(topic_id, int)
     assert isinstance(name, str) or isinstance(name, unicode)
-    run_sql("UPDATE topics SET title=%s WHERE topic=%s;", (name, topic_id))
+    run_sql("UPDATE topics SET title = %s WHERE topic = %s;", [name, topic_id])
     key = "topic-%s-record" % topic_id
     MC.delete(key)
 
@@ -84,8 +84,8 @@ def set_pos(topic_id, pos):
         L.warn("Topic->set_pos(%s, %s): Not a valid position, ignoring." % (topic_id, pos))
         return
     run_sql("""UPDATE topics
-               SET position=%s
-               WHERE topic=%s;""", (pos, topic_id))
+               SET position = %s
+               WHERE topic = %s;""", [pos, topic_id])
     key = "topic-%s-record" % topic_id
     MC.delete(key)
     course = get_course_id(topic_id)
@@ -105,8 +105,8 @@ def get_vis(topic_id):
 
 def set_vis(topic_id, vis):
     """Update the visibility of a topic."""
-    run_sql("""UPDATE topics SET visibility=%s WHERE topic=%s;""",
-            (vis, topic_id))
+    run_sql("""UPDATE topics SET visibility = %s WHERE topic = %s;""",
+            [vis, topic_id])
     key = "topic-%s-record" % topic_id
     MC.delete(key)
 
@@ -130,7 +130,7 @@ def get_num_qs(topic_id):
              AND position > 0
             ORDER BY position;
             """
-    params = (topic_id,)
+    params = [topic_id, ]
     try:
         res = run_sql(sql, params)
         num = 0
@@ -158,7 +158,7 @@ def get_qts(topic_id):
             from questiontopics,qtemplates
             where questiontopics.topic=%s
             and questiontopics.qtemplate = qtemplates.qtemplate;"""
-    params = (topic_id,)
+    params = [topic_id, ]
     ret = run_sql(sql, params)
     qtemplates = {}
     if ret:

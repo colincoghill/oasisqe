@@ -88,29 +88,29 @@ class UFeed(object):
                                         "comments", "freq", "status", "error",
                                         "active", "priority", "regex")
                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"""
-            params = (self.name, self.title, self.script, self.envvar,
+            params = [self.name, self.title, self.script, self.envvar,
                       self.comments, self.freq, self.status, self.error,
-                      self.active, self.priority, self.regex)
+                      self.active, self.priority, self.regex]
             run_sql(sql, params)
             self.new = False
             return
 
         sql = """UPDATE userfeeds
-                 SET name=%s,
-                     title=%s,
-                     script=%s,
-                     envvar=%s,
-                     comments=%s,
-                     freq=%s,
-                     status=%s,
-                     error=%s,
-                     active=%s,
-                     priority=%s,
-                     regex=%s
-                 WHERE id=%s;"""
-        params = (self.name, self.title, self.script, self.envvar,
+                 SET "name" = %s,
+                     "title" = %s,
+                     "script" = %s,
+                     "envvar" = %s,
+                     "comments" = %s,
+                     "freq" = %s,
+                     "status" = %s,
+                     "error" = %s,
+                     "active" = %s,
+                     "priority" = %s,
+                     "regex" = %s
+                 WHERE "id" = %s;"""
+        params = [self.name, self.title, self.script, self.envvar,
                   self.comments, self.freq, self.status, self.error,
-                  self.active, self.priority, self.regex, self.id)
+                  self.active, self.priority, self.regex, self.id]
 
         run_sql(sql, params)
 

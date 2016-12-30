@@ -15,7 +15,7 @@ def audit(aclass, instigator, obj, module, message):
     sql = """INSERT INTO audit ("time", "class", "instigator",
                                 "object", "module", "longmesg")
             VALUES (NOW(), %s, %s, %s, %s, %s);"""
-    params = (aclass, instigator, obj, module, message)
+    params = [aclass, instigator, obj, module, message]
     run_sql(sql, params)
 
 
@@ -38,7 +38,7 @@ def get_records_by_user(uid, start=None, end=None, limit=100, offset=0):
                   AND "time" < %s
                 ORDER BY "time" DESC
                 LIMIT %s OFFSET %s;"""
-        params = (uid, uid, start, end, limit, offset)
+        params = [uid, uid, start, end, limit, offset]
     elif start:
         sql = """SELECT "id", "instigator", "module", "longmesg",
                         "time", "object", "message"
@@ -47,7 +47,7 @@ def get_records_by_user(uid, start=None, end=None, limit=100, offset=0):
                   AND "time" > %s
                 ORDER BY "time" DESC
                 LIMIT %s OFFSET %s;"""
-        params = (uid, uid, start, limit, offset)
+        params = [uid, uid, start, limit, offset]
     else:
         sql = """SELECT "id", "instigator", "module", "longmesg",
                         "time", "object", "message"
@@ -55,7 +55,7 @@ def get_records_by_user(uid, start=None, end=None, limit=100, offset=0):
                 WHERE ("object" = %s OR "instigator" = %s)
                 ORDER BY "time" DESC
                 LIMIT %s OFFSET %s;"""
-        params = (uid, uid, limit, offset)
+        params = [uid, uid, limit, offset]
 
     ret = run_sql(sql, params)
     results = []
@@ -92,7 +92,7 @@ def get_records_by_object(obj_id, start=None, end=None, limit=100, offset=0):
                   AND "time" < %s
                 ORDER BY "time" DESC
                 LIMIT %s OFFSET %s;"""
-        params = (obj_id,  start, end, limit, offset)
+        params = [obj_id,  start, end, limit, offset]
     elif start:
         sql = """SELECT "id", "instigator", "module", "longmesg",
                         "time", "object", "message"
@@ -101,7 +101,7 @@ def get_records_by_object(obj_id, start=None, end=None, limit=100, offset=0):
                   AND "time" > %s
                 ORDER BY "time" DESC
                 LIMIT %s OFFSET %s;"""
-        params = (obj_id, obj_id, start, limit, offset)
+        params = [obj_id, obj_id, start, limit, offset]
     else:
         sql = """SELECT "id", "instigator", "module", "longmesg",
                         "time", "object", "message"
@@ -109,7 +109,7 @@ def get_records_by_object(obj_id, start=None, end=None, limit=100, offset=0):
                 WHERE ("object" = %s)
                 ORDER BY "time" DESC
                 LIMIT %s OFFSET %s;"""
-        params = (obj_id, limit, offset)
+        params = [obj_id, limit, offset]
 
     ret = run_sql(sql, params)
     results = []

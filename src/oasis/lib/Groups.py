@@ -151,12 +151,12 @@ class Group(object):
             return
 
         sql = """UPDATE ugroups
-                 SET name=%s, title=%s, gtype=%s, source=%s,
-                     active=%s, period=%s, feed=%s, feedargs=%s
+                 SET name = %s, title = %s, gtype = %s, source = %s,
+                     active = %s, period = %s, feed = %s, feedargs = %s
                  WHERE id=%s;"""
-        params = (self.name, self.title, self.gtype, self.source,
+        params = [self.name, self.title, self.gtype, self.source,
                   self.active, self.period, self.feed, self.feedargs,
-                  self.id)
+                  self.id]
         try:
             run_sql(sql, params)
         except IntegrityError:

@@ -611,7 +611,7 @@ def get_qt_max_pos_in_topic(topic_id):
     assert isinstance(topic_id, int)
     res = run_sql("""SELECT MAX(position)
                      FROM questiontopics
-                     WHERE topic=%s;""", [topic_id,])
+                     WHERE topic=%s;""", [topic_id, ])
     if not res:
         return 0
     return res[0][0]
@@ -950,7 +950,7 @@ def create_qt(owner, title, desc, marker, score_max, status, topic_id=None):
         qt_id = int(res[0][0])
 
     if topic_id and qt_id:
-        move_qt_to_topic(qt_id, topic_id,0)
+        move_qt_to_topic(qt_id, topic_id, 0)
     if qt_id:
         return qt_id
     L.error("create_qt error (%d, %s, %s, %d, %s, %s)" % (owner, title, desc, marker, score_max, status))
@@ -1229,7 +1229,7 @@ def get_message(name):
     assert isinstance(name, str) or isinstance(name, unicode)
 
     ret = run_sql("SELECT message FROM messages WHERE name=%s;",
-                  [name,])
+                  [name, ])
     if not ret:
         return ""
     return ret[0][0]
@@ -1635,5 +1635,3 @@ def calc_stats():
     print "Calculating Statistics"
     from oasis.lib import Stats
     Stats.do_initial_stats_update()
-
-

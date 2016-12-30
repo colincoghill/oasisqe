@@ -361,7 +361,6 @@ def import_qts_from_zip(data, topic_id):
                     DB.create_qt_att(newid, att_name, att_type, data, 1)
                     if att_name == "datfile.txt" or att_name == "datfile.dat" or att_name == "datfile" or att_name == "_datfile" or att_name == "__datfile":
                         qvars = QEditor.parse_datfile(data)
-      #                  print "generating variations..."
                         for row in range(0, len(qvars)):
                             DB.add_qt_variation(newid, row + 1, qvars[row], 1)
     except zipfile.BadZipfile:
@@ -370,8 +369,8 @@ def import_qts_from_zip(data, topic_id):
     return num
 
 
-#"36": {"qtemplate": {"status": 0, "marker": 1, "version": 49, "scoremax": null, "description": "No Description",
-#                     "title": "Q5", "owner": 4, "id": 36, "embed_id": ""},
-#       "attachments": [["UNKNOWN", "", 0], ["datfile.txt", "text/plain", 649], ["q5", "image/gif", 7083],
-#                       ["q5a", "image/gif", 1216], ["q5b", "image/gif", 1222], ["q5c", "image/gif", 1367],
-#                       ["q5d", "image/gif", 1355], ["qtemplate.html", "text/plain", 219], ["image.gif", "", 0]]}
+# "36": {"qtemplate": {"status": 0, "marker": 1, "version": 49, "scoremax": null, "description": "No Description",
+#                      "title": "Q5", "owner": 4, "id": 36, "embed_id": ""},
+#        "attachments": [["UNKNOWN", "", 0], ["datfile.txt", "text/plain", 649], ["q5", "image/gif", 7083],
+#                        ["q5a", "image/gif", 1216], ["q5b", "image/gif", 1222], ["q5c", "image/gif", 1367],
+#                        ["q5d", "image/gif", 1355], ["qtemplate.html", "text/plain", 219], ["image.gif", "", 0]]}

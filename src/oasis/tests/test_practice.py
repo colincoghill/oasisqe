@@ -152,7 +152,7 @@ class TestPractice(TestCase):
 
             self.assertIn("TESTCOURSE10", s.data)
 
-            s = c.get('/practice/coursequestions/%s'%(course_id))
+            s = c.get('/practice/coursequestions/%s' % course_id)
 
             self.assertIn("<h2>TESTCOURSE10 (unit tests)</h2>", s.data)
             self.assertIn("Select a Topic", s.data)

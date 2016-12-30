@@ -66,7 +66,6 @@ class TestTopics(TestCase):
         Topics.set_pos(topic1_id, 8)
         self.assertEqual(Topics.get_pos(topic1_id), 8)
 
-
     def test_create_qtemplate(self):
         """ Test qtemplates creation
         """
@@ -96,7 +95,6 @@ class TestTopics(TestCase):
         self.assertEqual(qt3['title'], "TESTQ3")
         self.assertEqual(qt3['description'], "Test question 3")
         self.assertEqual(DB.get_topic_for_qtemplate(qt3_id), topic1_id)
-
 
     def test_topic_position(self):
         """ Test putting qtemplates into topics and moving them around

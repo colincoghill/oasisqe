@@ -38,21 +38,21 @@ def add_prac_q_count(year, month, day, hour, qtemplate, count, avgscore):
                                               "month", "year", "number",
                                               "when", "avgscore")
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s);"""
-    params = (qtemplate,  hour, day,
+    params = [qtemplate,  hour, day,
               month, year, count,
-              datetime(year=year, hour=hour, day=day, month=month), avgscore)
+              datetime(year=year, hour=hour, day=day, month=month), avgscore]
     DB.run_sql(sql, params)
 
 
 def update_prac_q_count(year, month, day, hour, qtemplate, count, avgscore):
     """ Insert a practice count for the given time/qtemplate """
-    sql = """UPDATE stats_prac_q_course SET "number"=%s, "avgscore"=%s
+    sql = """UPDATE stats_prac_q_course SET "number" = %s, "avgscore" = %s
                  WHERE hour=%s
                  AND month=%s
                  AND day=%s
                  AND year=%s
                  AND qtemplate=%s;"""
-    params = (count, avgscore, hour, month, day, year, qtemplate)
+    params = [count, avgscore, hour, month, day, year, qtemplate]
     DB.run_sql(sql, params)
 
 

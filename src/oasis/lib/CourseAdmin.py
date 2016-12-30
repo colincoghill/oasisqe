@@ -25,7 +25,7 @@ def do_topic_update(course, request):
     form = request.form
     if form:
         for i in form.keys():
-            if i not in ("csrf_token"):
+            if i not in ["csrf_token", ]:
                 parts = i.split('_')
                 if len(parts) > 1:
                     catid = parts[0]

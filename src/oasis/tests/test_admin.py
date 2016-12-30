@@ -58,7 +58,6 @@ class TestGroups(TestCase):
 
         self.assertTrue(Groups.get_ids_by_name(name))
 
-
     def test_course_config(self):
         """ Test course configuration templates
         """
@@ -88,7 +87,7 @@ class TestGroups(TestCase):
         groups = Courses.get_groups(course3_id)
         self.assertEqual(len(groups), 3)
 
-        self.assertListEqual(groups.keys(), [4,5,6])
+        self.assertListEqual(groups.keys(), [4, 5, 6])
 
         self.assertEqual(groups[4].members(), [])
         self.assertEqual(groups[5].members(), [])

@@ -20,7 +20,7 @@ def set_name(course_id, name):
     """ Set the name of a course."""
     assert isinstance(course_id, int)
     assert isinstance(name, str) or isinstance(name, unicode)
-    run_sql("UPDATE courses SET title=%s WHERE course=%s;", (name, course_id))
+    run_sql("UPDATE courses SET title = %s WHERE course = %s;", [name, course_id])
     key = "course-%s-name" % course_id
     MC.delete(key)
 
@@ -30,8 +30,8 @@ def set_title(course_id, title):
     """ Set the title of a course."""
     assert isinstance(course_id, int)
     assert isinstance(title, str) or isinstance(title, unicode)
-    run_sql("UPDATE courses SET description=%s WHERE course=%s;",
-            (title, course_id))
+    run_sql("UPDATE courses SET description = %s WHERE course = %s;",
+            [title, course_id])
     key = "course-%s-title" % course_id
     MC.delete(key)
 
@@ -43,7 +43,7 @@ def get_active(course_id):
     obj = MC.get(key)
     if obj is not None:
         return obj
-    ret = run_sql("SELECT active FROM courses WHERE course=%s;", (course_id,))
+    ret = run_sql("SELECT active FROM courses WHERE course=%s;", [course_id, ])
     if ret:
         MC.set(key, ret[0][0])
         return ret[0][0]
@@ -64,7 +64,7 @@ def set_active(course_id, active):
         val = 1
     else:
         val = 0
-    run_sql("UPDATE courses SET active=%s WHERE course=%s;", (val, course_id))
+    run_sql("UPDATE courses SET active = %s WHERE course = %s;", [val, course_id])
     key = "course-%s-active" % course_id
     MC.delete(key)
     key = "courses-active"
@@ -82,8 +82,8 @@ def set_prac_vis(cid, visibility):
     assert isinstance(cid, int)
     assert isinstance(visibility, str) or isinstance(visibility, unicode)
 
-    run_sql("UPDATE courses SET practice_visibility=%s WHERE course=%s;",
-            (visibility, cid))
+    run_sql("UPDATE courses SET practice_visibility = %s WHERE course = %s;",
+            [visibility, cid])
 
 
 def set_assess_vis(cid, visibility):
@@ -91,8 +91,8 @@ def set_assess_vis(cid, visibility):
     assert isinstance(cid, int)
     assert isinstance(visibility, str) or isinstance(visibility, unicode)
 
-    run_sql("UPDATE courses SET assess_visibility=%s WHERE course=%s;",
-            (visibility, cid))
+    run_sql("UPDATE courses SET assess_visibility = %s WHERE course = %s;",
+            [visibility, cid])
 
 
 def get_users(course_id):
@@ -183,7 +183,7 @@ def get_course_by_name(name):
         """SELECT course, title, description, owner, active, type,
                   practice_visibility, assess_visibility
            FROM courses
-           WHERE lower(title) LIKE lower(%s);""", (name,))
+           WHERE lower(title) LIKE lower(%s);""", [name, ])
     course = None
     if ret:
         row = ret[0]
@@ -214,7 +214,7 @@ def get_course(course_id):
         """SELECT course, title, description, owner, active, type,
                   practice_visibility, assess_visibility
            FROM courses
-           WHERE course=%s;""", (course_id,))
+           WHERE course=%s;""", [course_id, ])
     course = None
     if ret:
         row = ret[0]
@@ -241,7 +241,7 @@ def create(name, description, owner, coursetype):
     """ Add a course to the database."""
     res = run_sql("""INSERT INTO courses (title, description, owner, type)
                      VALUES (%s, %s, %s, %s) RETURNING course;""",
-                  (name, description, owner, coursetype))
+                  [name, description, owner, coursetype])
     key = "courses-active"
     MC.delete(key)
     key = "courses-all"
@@ -263,7 +263,7 @@ def add_group(group_id, course_id):
     """ Add a group to a course."""
     sql = "INSERT INTO groupcourses (groupid, course) " \
           "VALUES (%s, %s);"
-    params = (group_id, course_id)
+    params = [group_id, course_id]
     run_sql(sql, params)
 
 
@@ -273,8 +273,8 @@ def del_group(group_id, course_id):
     assert isinstance(course_id, int)
 
     sql = "DELETE FROM groupcourses" \
-          " WHERE groupid=%s AND course=%s;"
-    params = (group_id, course_id)
+          " WHERE groupid= %s AND course = %s;"
+    params = [group_id, course_id]
     run_sql(sql, params)
 
 
@@ -289,20 +289,20 @@ def get_topics_all(course, archived=2, numq=True):
     if archived == 0:
         ret = run_sql("""SELECT topic, title, position, visibility, archived
                          FROM topics
-                         WHERE course=%s
-                           AND (archived='0' OR archived IS NULL)
-                         ORDER BY position, topic;""", (course,))
+                         WHERE course = %s
+                           AND (archived = '0' OR archived IS NULL)
+                         ORDER BY position, topic;""", [course, ])
     elif archived == 1:
         ret = run_sql("""SELECT topic, title, position, visibility, archived
                          FROM topics
-                         WHERE course=%s
-                           AND archived='1'
-                         ORDER BY position, topic;""", (course,))
+                         WHERE course = %s
+                           AND archived ='1'
+                         ORDER BY position, topic;""", [course, ])
     elif archived == 2:
         ret = run_sql("""SELECT topic, title, position, visibility, 0
                          FROM topics
-                         WHERE course=%s
-                         ORDER BY position, topic;""", (course,))
+                         WHERE course = %s
+                         ORDER BY position, topic;""", [course, ])
     info = {}
     if ret:
         count = 0
@@ -322,7 +322,7 @@ def get_topics_all(course, archived=2, numq=True):
             """SELECT topic, title, position, visibility
                FROM topics
                WHERE course=%s
-               ORDER BY position, topic;""", (course,))
+               ORDER BY position, topic;""", [course, ])
         if ret:
             count = 0
             for row in ret:
@@ -352,7 +352,7 @@ def get_topics(cid):
     if obj:
         return obj
     sql = "SELECT topic FROM topics WHERE course=%s ORDER BY position;"
-    params = (cid,)
+    params = [cid, ]
     ret = run_sql(sql, params)
     if ret:
         topics = [row[0] for row in ret]
@@ -377,7 +377,7 @@ def get_exams(cid, prev_years=False):
         params = (cid, year)
     else:
         sql = """SELECT exam FROM exams WHERE course=%s;"""
-        params = (cid,)
+        params = [cid, ]
     ret = run_sql(sql, params)
     if ret:
         exams = [int(row[0]) for row in ret]

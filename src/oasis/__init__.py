@@ -77,6 +77,7 @@ from oasis.lib.General import sanitize_username
 
 CsrfProtect(app)
 
+
 @app.context_processor
 def template_context():
     """ Useful values for templates to always have access to"""
@@ -109,6 +110,7 @@ def template_context():
         'enable_local_login': OaConfig.enable_local_login,
         'enable_webauth_login': OaConfig.enable_webauth_login,
     }}
+
 
 @app.errorhandler(500)
 def internal_error(exception):

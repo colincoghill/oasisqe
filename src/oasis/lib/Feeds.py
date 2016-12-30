@@ -50,7 +50,7 @@ class Feed(object):
                         status, error, active
                  FROM feeds
                  WHERE id=%s;"""
-        params = (feed_id,)
+        params = [feed_id, ]
         ret = run_sql(sql, params)
         if not ret:
             raise KeyError("Feed with id '%s' not found" % feed_id)
@@ -81,27 +81,27 @@ class Feed(object):
                                         "comments", "freq", "status", "error",
                                         "active")
                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);"""
-            params = (self.name, self.title, self.script, self.envvar,
+            params = [self.name, self.title, self.script, self.envvar,
                       self.comments, self.freq, self.status, self.error,
-                      self.active)
+                      self.active]
             run_sql(sql, params)
             self.new = False
             return
 
         sql = """UPDATE feeds
-                 SET name=%s,
-                     title=%s,
-                     script=%s,
-                     envvar=%s,
-                     comments=%s,
-                     freq=%s,
-                     status=%s,
-                     error=%s,
-                     active=%s
-                 WHERE id=%s;"""
-        params = (self.name, self.title, self.script, self.envvar,
+                 SET name = %s,
+                     title = %s,
+                     script = %s,
+                     envvar = %s,
+                     comments = %s,
+                     freq = %s,
+                     status = %s,
+                     error = %s,
+                     active = %s
+                 WHERE id = %s;"""
+        params = [self.name, self.title, self.script, self.envvar,
                   self.comments, self.freq, self.status, self.error,
-                  self.active, self.id)
+                  self.active, self.id]
 
         run_sql(sql, params)
 

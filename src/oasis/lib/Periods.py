@@ -156,10 +156,10 @@ class Period(object):
             return
 
         sql = """UPDATE periods
-                 SET name=%s, title=%s, start=%s, finish=%s, code=%s
+                 SET name = %s, title = %s, start = %s, finish = %s, code = %s
                  WHERE id=%s;"""
-        params = (self.name, self.title, self.start, self.finish, dbcode,
-                  self.id)
+        params = [self.name, self.title, self.start, self.finish, dbcode,
+                  self.id]
         try:
             run_sql(sql, params)
         except IntegrityError:

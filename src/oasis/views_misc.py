@@ -363,6 +363,7 @@ def qedit_qe2_edit(topic_id, qt_id):
             qtemplate=qtemplate
     )
 
+
 @app.route("/qedit_qe2/save/<int:topic_id>/<int:qt_id>", methods=['POST', ])
 @authenticated
 def qedit_qe2_save(topic_id, qt_id):
