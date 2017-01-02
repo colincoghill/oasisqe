@@ -192,3 +192,23 @@ class TestTopics(TestCase):
         self.assertTupleEqual(Practice.get_next_prev_pos(qt4_id, topic1_id), (3, None))
 
         self.assertTupleEqual(Practice.get_next_prev_pos(qt4_id, None), (None, None))
+
+
+    def test_do_question(self):
+        """ Do a question"""
+
+        course_id = Courses.create("TEST102", "Test question logic", 1, 1)
+        self.assertIsGreater(course_id, 0)
+        topic1_id = Topics.create(course_id, "TESTQUESTIONS1", 1, 2)
+        self.assertIsGreater(topic1_id, 0)
+        qt1_id = DB.create_qt(1, "TESTQ9", "Test question 9", 0, 5.0, 1, topic_id=topic1_id)
+
+        self.assertIsNotNone(qt1_id)
+        q_id = DB.get_q_by_qt_student(qt1_id, 1)
+
+        self.assertGreater(q_id, 0)
+        DB.update_qt_maxscore(qt1_id, 7.0)
+        score = DB.get_qt_maxscore(qt1_id)
+        self.assertEqual(score, 7.0)
+        DB.set_q_viewtime(q_id)
+        self.assertIsNotNone(DB.get_q_viewtime(q_id))
