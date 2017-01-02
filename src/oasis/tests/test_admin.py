@@ -17,11 +17,11 @@ class TestGroups(TestCase):
         """
 
         period1 = Periods.Period(name="Period 01",
-                                title="Test 01",
-                                start=datetime.datetime.now(),
-                                finish=datetime.datetime.now(),
-                                code="CODE1"
-                                )
+                                 title="Test 01",
+                                 start=datetime.datetime.now(),
+                                 finish=datetime.datetime.now(),
+                                 code="CODE1"
+                                 )
         period1.save()
 
         period2 = Periods.Period(name="Period 01")

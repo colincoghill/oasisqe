@@ -118,11 +118,11 @@ def gen_exam_q(exam, position, student):
     qtemplates = DB.get_exam_qts_in_pos(exam, position)
     if not qtemplates:
         L.warn("DB.get_exam_qts_in_pos(%s,%s) returned a non list." %
-            (exam, position))
+               (exam, position))
         return False
     if len(qtemplates) < 1:
         L.warn("DB.get_exam_qts_in_pos(%s,%s) returned an empty list." %
-            (exam, position))
+               (exam, position))
         return False
     whichqtemplate = random.randint(1, len(qtemplates))
     qtid = qtemplates[whichqtemplate - 1]   # lists count from 0
@@ -203,7 +203,7 @@ def gen_q_from_var(qt_id, student, exam, position, version, variation):
         assert (q_id > 0)
     except (ValueError, TypeError, AssertionError):
         L.error("generateQuestionFromVar(%s,%s), can't find qid %s? " %
-                   (qt_id, student, q_id))
+                (qt_id, student, q_id))
     if exam >= 1:
         DB.add_exam_q(student, exam, q_id, position)
     return q_id
@@ -479,7 +479,7 @@ def render_q_html(q_id, readonly=False):
         out = out.replace("<SELECT ", "<SELECT DISABLED=DISABLED STYLE='color: black;'")
     guesses = DB.get_q_guesses(q_id)
     for guess in guesses.keys():
-        # noinspection PyComparisonWithNone
+        # noinspection PyComparisonWithNone,PyPep8
         if guesses[guess] == None:  # If it's 0 we want to leave it alone
             guesses[guess] = ""
         if guesses[guess] == "None":
@@ -561,13 +561,13 @@ def mark_q_standard(qvars, answers):
         except KeyError:
             L.info("null guess %s" % part)
             guess = "None"
-        # noinspection PyComparisonWithNone
+        # noinspection PyComparisonWithNone,PyPep8
         if guess == None:   # If it's 0 we want to leave it alone
             guess = "None"
         if guess == "":
             guess = "None"
         correct = qvars["A%s" % part]
-        # noinspection PyComparisonWithNone
+        # noinspection PyComparisonWithNone,PyPep8
         if correct == None:  # If it's 0 we want to leave it alone
             correct = "None"
         if correct == "":
@@ -683,7 +683,7 @@ def mark_q_script(qvars, script, answer):
     except KeyError:
         qid = -1
     try:
-        exec (script, qvars)
+        exec(script, qvars)
     except BaseException:
         (etype, value, tb) = sys.exc_info()
         script_funcs.q_log(qid,
@@ -809,20 +809,20 @@ def render_mark_results_script(qtid, qid, marks, script):
     qvars['numparts'] = len(answers)
     qvars['parts'] = range(1, len(answers) + 1)
     try:
-        exec (script, qvars)
+        exec(script, qvars)
     except BaseException:
         (etype, value, tb) = sys.exc_info()
         script_funcs.q_log(qid,
                            "error",
                            "__results.py",
                            "Reverting to standard display: __results.py: %s" % (
-                           traceback.format_exception(etype, value, tb)[-2:]))
+                               traceback.format_exception(etype, value, tb)[-2:]))
     if 'resultsHTML' in qvars:
         if len(qvars['resultsHTML']) > 2:
             reshtml = qvars['resultsHTML']
             for v in qvars.keys():
                 reshtml = reshtml.replace("<IMG SRC %s>" % v,
-                                        '<IMG SRC="$OaQID$%s" />' % qvars[v])
+                                          '<IMG SRC="$OaQID$%s" />' % qvars[v])
             reshtml = reshtml.replace("$OaQID$", "%d/" % qid)
             return reshtml
     script_funcs.q_log(qid,

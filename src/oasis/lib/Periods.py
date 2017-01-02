@@ -54,7 +54,7 @@ class Period(object):
         sql = """SELECT id, title, start, finish, code
                  FROM periods
                  WHERE name=%s;"""
-        params = (name,)
+        params = [name, ]
         ret = run_sql(sql, params)
         if not ret:
             raise KeyError("Time Period with name '%s' not found" % name)
@@ -80,7 +80,7 @@ class Period(object):
         sql = """SELECT name, title, start, finish, code
                  FROM periods
                  WHERE id=%s;"""
-        params = (p_id,)
+        params = [p_id, ]
         ret = run_sql(sql, params)
         if not ret:
             raise KeyError("Time Period with id '%s' not found" % p_id)
@@ -106,7 +106,7 @@ class Period(object):
         sql = """SELECT name, title, start, finish, id
                  FROM periods
                  WHERE code=%s;"""
-        params = (code,)
+        params = [code, ]
         ret = run_sql(sql, params)
         if not ret:
             raise KeyError("Time Period with code '%s' not found" % code)
@@ -132,7 +132,7 @@ class Period(object):
         if self.new:
             sql = """INSERT INTO periods ("name", "title", "start", "finish", "code")
                        VALUES (%s, %s, %s, %s,%s);"""
-            params = (self.name, self.title, self.start, self.finish, dbcode)
+            params = [self.name, self.title, self.start, self.finish, dbcode]
             try:
                 run_sql(sql, params)
             except IntegrityError:

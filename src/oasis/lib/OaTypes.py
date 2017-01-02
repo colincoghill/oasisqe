@@ -22,6 +22,6 @@ def todatetime(mydate):
         return mydate    # Already a datetime
     if not mydate:
         return mydate    # maybe it was None
-        # this works for mx.DateTime without requiring us to explicitly
+    # this works for mx.DateTime without requiring us to explicitly
     # check for mx.DateTime (which is annoying if it may not even be installed)
     return datetime.datetime.fromtimestamp(mydate)

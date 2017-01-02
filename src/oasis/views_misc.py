@@ -140,8 +140,8 @@ def main_top():
 def main_news():
     """ Present the top menu page """
     return render_template(
-            "news.html",
-            news=DB.get_message("news"),
+        "news.html",
+        news=DB.get_message("news"),
     )
 
 
@@ -200,9 +200,9 @@ def qedit_raw_edit(topic_id, qt_id):
     course_id = Topics.get_course_id(topic_id)
 
     if not (check_perm(user_id, course_id, "courseadmin") or
-            check_perm(user_id, course_id, "courseadmin") or
-            check_perm(user_id, course_id, "questionedit") or
-            check_perm(user_id, course_id, "questionsource")):
+                check_perm(user_id, course_id, "courseadmin") or
+                check_perm(user_id, course_id, "questionedit") or
+                check_perm(user_id, course_id, "questionsource")):
         flash("You do not have question editor privilege in this course")
         return redirect(url_for("cadmin_edit_topic",
                                 course_id=course_id, topic_id=topic_id))
@@ -229,12 +229,12 @@ def qedit_raw_edit(topic_id, qt_id):
                         '__datfile.txt', '__qtemplate.html']
         ]
     return render_template(
-            "courseadmin_raw_edit.html",
-            course=course,
-            topic=topic,
-            html=html,
-            attachments=attachments,
-            qtemplate=qtemplate
+        "courseadmin_raw_edit.html",
+        course=course,
+        topic=topic,
+        html=html,
+        attachments=attachments,
+        qtemplate=qtemplate
     )
 
 
@@ -249,9 +249,9 @@ def qedit_raw_save(topic_id, qt_id):
     user_id = session['user_id']
     course_id = Topics.get_course_id(topic_id)
     if not (check_perm(user_id, course_id, "courseadmin") or
-            check_perm(user_id, course_id, "courseadmin") or
-            check_perm(user_id, course_id, "questionedit") or
-            check_perm(user_id, course_id, "questionsource")):
+                check_perm(user_id, course_id, "courseadmin") or
+                check_perm(user_id, course_id, "questionedit") or
+                check_perm(user_id, course_id, "questionsource")):
         flash("You do not have question editor privilege in this course")
         return redirect(url_for("cadmin_edit_topic",
                                 course_id=course_id,
@@ -326,9 +326,9 @@ def qedit_qe2_edit(topic_id, qt_id):
     course_id = Topics.get_course_id(topic_id)
 
     if not (check_perm(user_id, course_id, "courseadmin") or
-            check_perm(user_id, course_id, "courseadmin") or
-            check_perm(user_id, course_id, "questionedit") or
-            check_perm(user_id, course_id, "questionsource")):
+                check_perm(user_id, course_id, "courseadmin") or
+                check_perm(user_id, course_id, "questionedit") or
+                check_perm(user_id, course_id, "questionsource")):
         flash("You do not have question editor privilege in this course")
         return redirect(url_for("cadmin_edit_topic",
                                 course_id=course_id, topic_id=topic_id))
@@ -350,17 +350,17 @@ def qedit_qe2_edit(topic_id, qt_id):
         } for name in attachnames
         if (not name.startswith("__") and
             name not in ('qtemplate.html', 'image.gif', 'datfile.txt',
-                        '__datfile.txt', '__qtemplate.html'))
+                         '__datfile.txt', '__qtemplate.html'))
         ]
 
     return render_template(
-            "courseadmin_qe2_edit.html",
-            course=course,
-            topic=topic,
-            html=html,
-            attachments=attachments,
-            attachnames=attachnames,
-            qtemplate=qtemplate
+        "courseadmin_qe2_edit.html",
+        course=course,
+        topic=topic,
+        html=html,
+        attachments=attachments,
+        attachnames=attachnames,
+        qtemplate=qtemplate
     )
 
 
@@ -375,9 +375,9 @@ def qedit_qe2_save(topic_id, qt_id):
     user_id = session['user_id']
     course_id = Topics.get_course_id(topic_id)
     if not (check_perm(user_id, course_id, "courseadmin") or
-            check_perm(user_id, course_id, "courseadmin") or
-            check_perm(user_id, course_id, "questionedit") or
-            check_perm(user_id, course_id, "questionsource")):
+                check_perm(user_id, course_id, "courseadmin") or
+                check_perm(user_id, course_id, "questionedit") or
+                check_perm(user_id, course_id, "questionsource")):
         flash("You do not have question editor privilege in this course")
         return redirect(url_for("cadmin_edit_topic",
                                 course_id=course_id,

@@ -68,7 +68,7 @@ def get_user_record(user_id):
                     acctstatus, email, expiry, source, confirmed
                     FROM users
                     WHERE id=%s"""
-    params = (user_id,)
+    params = [user_id, ]
     ret = run_sql(sql, params)
     if ret:
         row = ret[0]
@@ -167,9 +167,9 @@ def create(uname, passwd, givenname, familyname, acctstatus, studentid,
                                   source, confirmation_code, confirmed)
                VALUES (%s, %s, %s, %s, %s, %s,
                        %s, %s, %s, %s, %s);""",
-            (uname, passwd, givenname, familyname,
+            [uname, passwd, givenname, familyname,
              acctstatus, studentid, email, expiry,
-             source, confirm_code, confirm))
+             source, confirm_code, confirm])
     incr_version()
     uid = uid_by_uname(uname)
     L.info("User created with uid %d." % uid)
@@ -182,7 +182,7 @@ def uid_by_uname(uname):
     obj = MC.get(key)
     if obj is not None:
         return obj
-    ret = run_sql("""SELECT id FROM "users" WHERE uname=%s;""", (uname,))
+    ret = run_sql("""SELECT id FROM "users" WHERE uname=%s;""", [uname, ])
     if ret:
         MC.set(key, ret[0][0])
         return ret[0][0]
@@ -200,7 +200,7 @@ def find(search, limit=20):
                         OR LOWER(givenname) LIKE LOWER(%s)
                         OR student_id LIKE %s
                         OR LOWER(email) LIKE LOWER(%s) LIMIT %s;""",
-                  (search, search, search, search, search, limit))
+                  [search, search, search, search, search, limit])
     res = []
     if ret:
         res = [user[0] for user in ret]
@@ -219,7 +219,7 @@ def typeahead(search, limit=20):
                        OR
                          LOWER(email) LIKE LOWER(%s)
                      LIMIT %s;""",
-                  (search, search, limit))
+                  [search, search, limit])
     res = []
     if ret:
         res = [user[0] for user in ret]
@@ -230,7 +230,7 @@ def get_groups(user):
     """ Return a list of groups the user is a member of.  """
     assert isinstance(user, int)
     ret = run_sql("""SELECT groupid FROM usergroups WHERE userid=%s;""",
-                  (user,))
+                  [user, ])
     if ret:
         groups = [int(row[0]) for row in ret]
         return groups
@@ -246,7 +246,7 @@ def get_courses(user_id):
         res = run_sql("""SELECT course
                          FROM groupcourses
                          WHERE groupid=%s LIMIT 1;""",
-                      (group,))
+                      [group, ])
         if res:
             course_id = int(res[0][0])
             courses.append(course_id)

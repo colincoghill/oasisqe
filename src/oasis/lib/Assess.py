@@ -30,7 +30,8 @@ def mark_exam(user_id, exam_id):
         q_id = General.get_exam_q(exam_id, position, user_id)
         if not q_id:
             L.critical("Unable to retrieve exam question page %s, exam %s, for user %s" % (position, exam_id, user_id
-                                                                                        ))
+                                                                                           )
+                       )
             errors += 1
             continue
         answers = DB.get_q_guesses(q_id)

@@ -44,6 +44,7 @@ def run_sql(sql, params=None, quiet=False):
 
 
 def set_q_viewtime(question):
+    # type: (int) -> None
     """ Record that the question has been viewed.
         Not a good idea to call multiple times since it's
         nearly always the first time that we want.
@@ -56,6 +57,7 @@ def set_q_viewtime(question):
 
 
 def set_q_marktime(question):
+    # type: (int) -> None
     """ Record that the question was marked.
         Probably best not to call multiple times since
         we usually want the first time.
@@ -70,6 +72,7 @@ def get_q_viewtime(question):
     """ Return the time that the question was first viewed
         as a human readable string.
     """
+    # type: (int) -> str or None
     assert isinstance(question, int)
     ret = run_sql("""SELECT "firstview"
                      FROM "questions"
@@ -82,6 +85,7 @@ def get_q_viewtime(question):
 
 
 def get_q_marktime(question):
+    # type: (int) -> str or None
     """ Return the time that the question was marked
         as a human readable string, or None if it hasn't been.
     """
@@ -97,6 +101,7 @@ def get_q_marktime(question):
 
 
 def get_exam_q_by_pos_student(exam, position, student):
+    # type: (int, int, int) -> int or None
     """ Return the question at the given position in the exam for the student.
         Return False if there is no question assigned yet.
     """
@@ -671,7 +676,7 @@ def get_qt_variation(qt_id, variation, version=1000000000):
         data = cPickle.loads(result)
     except TypeError:
         L.warn("Type error trying to cpickle.loads(%s) for (%s, %s, %s)" %
-            (type(result), qt_id, variation, version))
+               (type(result), qt_id, variation, version))
     return data
 
 
@@ -690,7 +695,7 @@ def get_qt_num_variations(qt_id, version=1000000000):
         num = int(ret[0][0])
     except BaseException as err:
         L.warn("No Variation found for qtid=%d, version=%d: %s" %
-            (qt_id, version, err))
+               (qt_id, version, err))
         return 0
     return num
 
@@ -831,6 +836,7 @@ def update_qt_practice_pos(qt_id, position):
 
 
 def move_qt_to_topic(qt_id, topic_id, position=None):
+    # type: (int, int, int or None) -> None
     """ Move a question template to a different sub category."""
     assert isinstance(qt_id, int)
     assert isinstance(topic_id, int)
@@ -951,7 +957,7 @@ def create_qt(owner, title, desc, marker, score_max, status, topic_id=None):
     if res:
         qt_id = int(res[0][0])
     else:
-        L.error("create_qt SQL error: %s" )
+        L.error("create_qt SQL error: %s")
 
     if topic_id and qt_id:
         move_qt_to_topic(qt_id, topic_id, 0)

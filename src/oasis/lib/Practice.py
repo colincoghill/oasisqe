@@ -203,14 +203,14 @@ def mark_q(user_id, topic_id, q_id, request):
                 DB.save_guess(newqid, part, value)
             else:
                 L.warn("received guess for wrong question? (%d,%d,%d,%s)" %
-                    (user_id, topic_id, q_id, request.form))
+                       (user_id, topic_id, q_id, request.form))
     try:
         marks = General.mark_q(q_id, answers)
         DB.set_q_status(q_id, 3)    # 3 = marked
         DB.set_q_marktime(q_id)
     except OaMarkerError:
         L.warn("Marker Error - (%d, %d, %d, %s)" %
-            (user_id, topic_id, q_id, request.form))
+               (user_id, topic_id, q_id, request.form))
         marks = {}
     q_body = General.render_mark_results(q_id, marks)
     parts = [int(var[1:])

@@ -30,14 +30,14 @@ def do_topic_update(course, request):
                 if len(parts) > 1:
                     catid = parts[0]
                     if catid not in categories:
-                        categories = categories + [catid]
+                        categories += [catid]
 
         for c in categories:
-            topics = topics + [{'id': int(c),
-                                'position': form['%s_position' % c],
-                                'name': form['%s_name' % c],
-                                'visibility': form['%s_visibility' % c]
-                                }]
+            topics += [{'id': int(c),
+                        'position': form['%s_position' % c],
+                        'name': form['%s_name' % c],
+                        'visibility': form['%s_visibility' % c]
+                        }]
         for i in topics:
             if not i['id'] == 0:
                 Topics.set_pos(i['id'], i['position'])

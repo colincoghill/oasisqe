@@ -12,6 +12,7 @@ from unittest import TestCase
 from oasis.lib import General, script_funcs
 
 
+# noinspection PyTypeChecker
 class TestQEngine(TestCase):
 
     def test_instance_generate_simple_answer(self):

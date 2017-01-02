@@ -24,7 +24,6 @@ from .lib.Permissions import check_perm
 
 from oasis import app, authenticated
 
-
 L = logging.getLogger("oasisqe")
 
 
@@ -277,8 +276,8 @@ def assess_submit(course_id, exam_id):
         if not marked:
             flash("There was a problem marking the assessment,")
             return redirect(url_for("assess_awaitresults",
-                                course_id=course_id,
-                                exam_id=exam_id))
+                                    course_id=course_id,
+                                    exam_id=exam_id))
 
     if exam["instant"] == 2:
         return redirect(url_for("assess_awaitresults",

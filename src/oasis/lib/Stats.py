@@ -25,7 +25,7 @@ def prac_q_count(year, month, day, hour, qtemplate):
                  AND day=%s
                  AND year=%s
                  AND qtemplate=%s;"""
-    params = (hour, month, day, year, qtemplate)
+    params = [hour, month, day, year, qtemplate]
     res = DB.run_sql(sql, params)
     if not res or len(res) == 0:
         return False
@@ -85,7 +85,7 @@ def populate_prac_q_count(start=None, end=None):
                      EXTRACT (HOUR FROM marktime),
                      qtemplate;
                      """
-    params = (start, end)
+    params = [start, end]
     res = DB.run_sql(sql, params)
     if not res:
         return False
@@ -133,7 +133,7 @@ def daily_prac_q_count(start_time, end_time, qt_id):
                AND "when" <= %s
              GROUP BY "year","month","day"
              ORDER BY "year","month","day" ASC;"""
-    params = (qt_id, start_time, end_time)
+    params = [qt_id, start_time, end_time]
     res = DB.run_sql(sql, params)
     if not res:
         res = []
@@ -199,7 +199,7 @@ def daily_prac_load(start_time, end_time):
                AND "when" <= %s
              GROUP BY "year","month","day"
              ORDER BY "year","month","day" ASC;"""
-    params = (start_time, end_time)
+    params = [start_time, end_time]
     res = DB.run_sql(sql, params)
     if not res:
         res = []

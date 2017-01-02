@@ -32,7 +32,7 @@ def check_perm(user_id, group_id, perm):
                      FROM permissions
                      WHERE userid=%s
                        AND permission=1;""",
-                  (user_id,))
+                  [user_id, ])
     if ret:
         MC.set(key, True)
         return True
@@ -42,7 +42,7 @@ def check_perm(user_id, group_id, perm):
                          FROM permissions
                          WHERE userid=%s
                            AND permission=%s;""",
-                      (user_id, permission))
+                      [user_id, permission])
         if ret:
             return True
         # Do they have the permission explicitly?
@@ -51,7 +51,7 @@ def check_perm(user_id, group_id, perm):
                      WHERE course=%s
                        AND userid=%s
                        AND permission=%s;""",
-                  (group_id, user_id, permission))
+                  [group_id, user_id, permission])
     if ret:
         return True
         # Now check for global override
@@ -60,7 +60,7 @@ def check_perm(user_id, group_id, perm):
                      WHERE course=%s
                        AND userid=%s
                        AND permission='0';""",
-                  (group_id, user_id))
+                  [group_id, user_id])
     if ret:
         return True
     return False
@@ -84,7 +84,7 @@ def delete_perm(uid, group_id, perm):
                WHERE userid=%s
                  AND course=%s
                  AND permission=%s""",
-            (uid, group_id, perm))
+            [uid, group_id, perm])
 
 
 def add_perm(uid, course_id, perm):
@@ -92,7 +92,7 @@ def add_perm(uid, course_id, perm):
     key = "permission-%s-super" % (uid,)
     MC.delete(key)
     run_sql("""INSERT INTO permissions (course, userid, permission)
-               VALUES (%s, %s, %s) """, (course_id, uid, perm))
+               VALUES (%s, %s, %s) """, [course_id, uid, perm])
 
 
 def get_course_perms(course_id):
@@ -102,7 +102,7 @@ def get_course_perms(course_id):
     ret = run_sql("""SELECT "id", userid, permission
                      FROM permissions
                      WHERE course=%s;""",
-                  (course_id,))
+                  [course_id, ])
     if not ret:
         return []
     res = [(int(perm[1]), int(perm[2])) for perm in ret if

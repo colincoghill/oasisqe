@@ -64,7 +64,7 @@ class Group(object):
                         "source", "period", "feed", "feedargs"
                  FROM "ugroups"
                  WHERE id=%s;"""
-        params = (g_id,)
+        params = [g_id, ]
         ret = run_sql(sql, params)
         if not ret:
             raise KeyError("Group with id '%s' not found" % g_id)
@@ -85,7 +85,7 @@ class Group(object):
     def members(self):
         """ Return a list of userids in the group. """
         ret = run_sql("""SELECT userid FROM usergroups WHERE groupid=%s;""",
-                      (self.id,))
+                      [self.id, ])
         if ret:
             users = [int(row[0]) for row in ret]
             return users
@@ -98,7 +98,7 @@ class Group(object):
                FROM users,usergroups
                WHERE usergroups.groupid=%s
                AND usergroups.userid=users.id;""",
-            (self.id,))
+            [self.id, ])
         if ret:
             uids = [row[0] for row in ret]
             return uids
@@ -113,20 +113,20 @@ class Group(object):
         run_sql(
             """INSERT INTO usergroups (userid, groupid)
                VALUES (%s, %s) """,
-            (uid, self.id))
+            [uid, self.id])
 
     def remove_member(self, uid):
         """ Remove given user from the group."""
         run_sql(
             """DELETE FROM usergroups
                WHERE groupid=%s AND userid=%s;""",
-            (self.id, uid))
+            [self.id, uid])
 
     def flush_members(self):
         """ DANGEROUS:  Clears list of enrolled users in group.
             Use only just before importing new list.
         """
-        run_sql("""DELETE FROM usergroups WHERE groupid = %s;""", (self.id,))
+        run_sql("""DELETE FROM usergroups WHERE groupid = %s;""", [self.id, ])
 
     def save(self):
         """ Store us back to database.
@@ -135,8 +135,8 @@ class Group(object):
             sql = """INSERT INTO ugroups ("name", "title", "gtype", "source",
                                         "active", "period", "feed", "feedargs")
                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s);"""
-            params = (self.name, self.title, self.gtype, self.source,
-                      self.active, self.period, self.feed, self.feedargs)
+            params = [self.name, self.title, self.gtype, self.source,
+                      self.active, self.period, self.feed, self.feedargs]
             try:
                 run_sql(sql, params)
             except IntegrityError:
@@ -179,7 +179,7 @@ class Group(object):
         """
 
         sql = """SELECT name FROM periods WHERE id=%s;"""
-        params = (self.period,)
+        params = [self.period, ]
         ret = run_sql(sql, params)
         if not ret:
             return 'unknown'
@@ -201,7 +201,7 @@ def get_by_feed(feed_id):
            FROM "ugroups"
            WHERE "active" = TRUE
            AND "feed" = %s;""",
-        (feed_id,))
+        [feed_id, ])
     groups = []
     if ret:
         for row in ret:
@@ -218,7 +218,7 @@ def get_by_period(period_id):
            FROM "ugroups"
            WHERE "active" = TRUE
            AND "period" = %s;""",
-        (period_id,))
+        [period_id, ])
     groups = []
     if ret:
         for row in ret:
@@ -233,7 +233,7 @@ def get_ids_by_name(name):
         sql = """SELECT "id"
                  FROM "ugroups"
                  WHERE name=%s;"""
-        params = (name,)
+        params = [name, ]
         ret = run_sql(sql, params)
         if not ret:
             return []
@@ -251,7 +251,7 @@ def get_by_name(name):
         sql = """SELECT "id"
                  FROM "ugroups"
                  WHERE name=%s;"""
-        params = (name,)
+        params = [name, ]
         ret = run_sql(sql, params)
         if not ret:
             return 0
@@ -268,7 +268,7 @@ def active_by_course(course_id):
              AND "groupcourses"."groupid" = "ugroups"."id"
              AND "groupcourses"."course" = %s
              AND "ugroups"."period" = "periods"."id";""",  # AND "periods"."finish" > NOW();""";
-        (course_id,))
+        [course_id, ])
     groups = {}
     if ret:
         for row in ret:

@@ -6,10 +6,8 @@ from oasis.lib import DB, Topics, Courses, Practice
 
 
 class TestTopics(TestCase):
-
     @classmethod
     def setUpClass(cls):
-
         DB.MC.flush_all()
 
     def test_create_topic(self):
@@ -19,19 +17,19 @@ class TestTopics(TestCase):
         course_id = Courses.create("TEST101", "Test topic position logic", 1, 1)
 
         self.assertDictContainsSubset(
-                             {course_id:
-                                  {'active': 1,
-                                  'assess_visibility': 'enrol',
-                                  'id': course_id,
-                                  'name': 'TEST101',
-                                  'owner': 1,
-                                  'practice_visibility': 'all',
-                                  'title': 'Test topic position logic',
-                                  'type': 1
-                                   }
-                              },
-                            Courses.get_courses_dict(),
-                             )
+            {course_id:
+                 {'active': 1,
+                  'assess_visibility': 'enrol',
+                  'id': course_id,
+                  'name': 'TEST101',
+                  'owner': 1,
+                  'practice_visibility': 'all',
+                  'title': 'Test topic position logic',
+                  'type': 1
+                  }
+             },
+            Courses.get_courses_dict(),
+        )
 
         topic1_id = Topics.create(course_id, "TESTTOPIC1", 1, 2)
         topic2_id = Topics.create(course_id, "TESTTOPIC2", 3, 3)
@@ -193,14 +191,13 @@ class TestTopics(TestCase):
 
         self.assertTupleEqual(Practice.get_next_prev_pos(qt4_id, None), (None, None))
 
-
     def test_do_question(self):
         """ Do a question"""
 
         course_id = Courses.create("TEST102", "Test question logic", 1, 1)
-        self.assertIsGreater(course_id, 0)
+        self.assertGreater(course_id, 0)
         topic1_id = Topics.create(course_id, "TESTQUESTIONS1", 1, 2)
-        self.assertIsGreater(topic1_id, 0)
+        self.assertGreater(topic1_id, 0)
         qt1_id = DB.create_qt(1, "TESTQ9", "Test question 9", 0, 5.0, 1, topic_id=topic1_id)
 
         self.assertIsNotNone(qt1_id)

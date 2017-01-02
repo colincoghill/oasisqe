@@ -55,7 +55,7 @@ class UFeed(object):
                         status, error, active, priority, regex
                  FROM userfeeds
                  WHERE id=%s;"""
-        params = (feed_id,)
+        params = [feed_id, ]
         ret = run_sql(sql, params)
         if not ret:
             raise KeyError("User Feed with id '%s' not found" % feed_id)
