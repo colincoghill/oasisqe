@@ -47,6 +47,7 @@
   {% if group.source=='adhoc' or group.source=='open' %}
     <form id='addperson_form' method='post'
           action='{{ cf.url }}cadmin/{{ course.id }}/editgroup/{{ group.id }}/addperson'>
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
       <label for='usersearch'>Add a person to this group:</label> <br/>
 
       <div class='input-append'>
@@ -69,6 +70,7 @@
     <div class='span5'>
       <form method='post'
             action='{{ cf.url }}cadmin/{{ course.id }}/group/{{ group.id }}/detach_group'>
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
         <input type='submit' name='group_id'
                value='Remove from Course'
                class='btn btn-small btn-danger'><br/>
