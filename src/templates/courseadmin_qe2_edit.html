@@ -4,10 +4,13 @@
 
     function get_pvar_type_list(selected) {
 
-        return "<option>Integer</option><option>Real</option><option>Text</option><option>List</option><option>Range</option>"
+        return "<option>Integer</option><option>Real</option><option>Text</option><option>List</option><option>Range</option><option>Calculation</option>"
     }
     function get_prevar_edit_row(pvar) {
         return $("<tr><td><input type='text' name='pvar_"+pvar["id"]+"' value='"+pvar["name"]+"'></td><td><select>"+get_pvar_type_list(pvar["type"])+"></select></td><td><input type='text' name='pvar_val_"+pvar["id"]+"' value='"+pvar["value"]+"'></td></tr>")
+    }
+    function get_answer_edit_row(pvar) {
+        return $("<tr><td>"+pvar["id"]+"</td><td><select><option>Variable</option></select></td><td><select><option>aa</option></select></td><td><input type='text' name='marks' value='"+pvar["score"]+"'></td></tr>")
     }
 
     function set_from_struct(qt) {
@@ -16,6 +19,9 @@
         $("#qtext").val(qt['qtext']);
         $.each(qt['pre_vars'], function (idx, pvar) {
             $("#pre_vars").append(get_prevar_edit_row(pvar));
+        });
+        $.each(qt['answers'], function (idx, pvar) {
+            $("#answers").append(get_answer_edit_row(pvar));
         });
     }
     function load() {
@@ -81,106 +87,21 @@
                    <tbody id="pre_vars">
                    </tbody>
                </table>
-                <h4>Calculations</h4>
-                <table>
-                    <thead>
-                    <th>Variable</th>
-                    <th>Type</th>
-                    <th>Value</th>
-                    </thead>
-                    <tbody>
-                    <tr>
-                        <th>AA</th>
-                        <th>a + b * c</th>
-                    </tr>
-                    </tbody>
-                </table>
-
-                <H4>Question:</H4>
+                <H4>Question Text:</H4>
 
                 <div style='padding-left: 1em;'>
           <TEXTAREA NAME='text' ID='qtext' CLASS='input-xxlarge'
                     rows='20'>{{ qtemplate.html }}</TEXTAREA>
                 </div>
-                <h4>Marking:</h4>
-                <div>
-                    Type:
-                    <div style='padding-left: 1em;'>
-                        <select name='newmodule'>
-                            <option value='1'
-                                    {% if qtemplate.marker == 1 %}SELECTED{% endif %}>
-                                Standard
-                            </option>
-                            <option value='2'
-                                    {% if qtemplate.marker == 2 %}SELECTED{% endif %}>
-                                "Smart"
-                            </option>
-                        </select>
-
-                    </div>
-
-                    <table class="span8">
-                        <thead>
-                        <th>Answer</th>
-                        <th>Type</th>
-                        <th>Param</th>
-                        <th>Value</th>
-                        <th>Marks</th>
-                        </thead>
-                        <tbody>
-                        <tr>
-                            <td>1.</td>
-                            <td><select><option>Integer</option><option>Real</option><option>Text</option></select></td>
-                            <td><select><option>Value Of </option><option selected>Integer</option><option>Real</option></select></td>
-                            <td><input type="text" value="42"></td>
-                            <td><input type="text" value="1"></td>
-                        </tr>
-                        <tr>
-                            <td>2.</td>
-                            <td><select><option>Integer</option><option>Real</option><option>Text</option></select></td>
-                            <td><select><option>Value Of </option></select></td>
-                            <td><select><option>AA</option></select></td>
-                            <td><input type="text" value="2"></td>
-                        </tr>
-                        <tr>
-                            <td>3.</td>
-                            <td><select><option>Multi</option></select></td>
-                            <td>Shuffle: <input type="checkbox"></td>
-                            <td>Multiple Correct: <input type="checkbox" checked></td>
-                            <td></td>
-                        </tr>
-                         <tr>
-                            <td></td>
-                            <td>a) </td>
-                            <td><select><option>Value Of </option></select></td>
-                            <td><select><option>A</option></select></td>
-                            <td><input type="text" value="0"></td>
-                        </tr>
-                        <tr>
-                            <td></td>
-                            <td>b) </td>
-                            <td><select><option>Value Of </option></select></td>
-                            <td><select><option>C</option></select></td>
-                            <td><input type="text" value="0.5"></td>
-                        </tr>
-                        <tr>
-                            <td></td>
-                            <td>c) </td>
-                            <td><select><option>Value Of </option></select></td>
-                            <td><select><option>AA</option></select></td>
-                            <td><input type="text" value="2"></td>
-                        </tr>
-
-                        <tr>
-                            <td></td>
-                            <td>d) </td>
-                            <td><select><option>Value Of </option></select></td>
-                            <td><select><option>B</option></select></td>
-                            <td><input type="text" value="0"></td>
-                        </tr>
-
-                        </tbody>
-                    </table>
+                <h4>Answers:</h4>
+            <div>
+               <table>
+                   <thead>
+                   <tr><th>Name</th><th>Type</th><th>Value</th><th>Score</th></tr>
+                   </thead>
+                   <tbody id="answers">
+                   </tbody>
+               </table>
                 </div>
                 <H4>Attachments:</H4>
                 <div style='padding-left: 1em;'>
