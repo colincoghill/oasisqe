@@ -1,5 +1,36 @@
 {% extends "page_courseadmin.html" %}
 {% block js %}
+    <script>
+
+    function get_pvar_type_list(selected) {
+
+        return "<option>Integer</option><option>Real</option><option>Text</option><option>List</option><option>Range</option>"
+    }
+    function get_prevar_edit_row(pvar) {
+        return $("<tr><td><input type='text' name='pvar_"+pvar["id"]+"' value='"+pvar["name"]+"'></td><td><select>"+get_pvar_type_list(pvar["type"])+"></select></td><td><input type='text' name='pvar_val_"+pvar["id"]+"' value='"+pvar["value"]+"'></td></tr>")
+    }
+
+    function set_from_struct(qt) {
+        $("#qtitle").val(qt['title']);
+        $("#embed_id").val(qt['embed_id']);
+        $("#qtext").val(qt['qtext']);
+        $.each(qt['pre_vars'], function (idx, pvar) {
+            $("#pre_vars").append(get_prevar_edit_row(pvar));
+        });
+    }
+    function load() {
+         $.getJSON("{{cf.url}}api/_qedit2/qtemplate/{{ qtemplate.id }}/qtemplate.json",
+            function (data) {
+                var qt = data.result;
+                set_from_struct(qt);
+            });
+    }
+
+    $(function () {
+        load();
+    })
+
+    </script>
 {% endblock js %}
 {% block body %}
     <br/>
@@ -42,32 +73,15 @@
                         question in an external web site. It may make the
                         question publicly accessible.{% endif %}</p>
                 </div>
-                <h4>Setup</h4>
-                <table>
-                    <thead>
-                    <th>Variable</th>
-                    <th>Type</th>
-                    <th>Value</th>
-                    </thead>
-                    <tbody>
-                    <tr>
-                        <th>a</th>
-                        <th>Integer</th>
-                        <th>random(0,10)</th>
-                    </tr>
-                    <tr>
-                        <th>b</th>
-                        <th>Integer</th>
-                        <th>random(0,10)</th>
-                    </tr>
-                    <tr>
-                        <th>c</th>
-                        <th>Integer</th>
-                        <th>random(0,10)</th>
-                    </tr>
-                    </tbody>
-                </table>
-                <h4>Calculate</h4>
+                <h4>Definitions</h4>
+               <table>
+                   <thead>
+                   <tr><th>Name</th><th>Type</th><th>Value</th></tr>
+                   </thead>
+                   <tbody id="pre_vars">
+                   </tbody>
+               </table>
+                <h4>Calculations</h4>
                 <table>
                     <thead>
                     <th>Variable</th>
@@ -85,7 +99,7 @@
                 <H4>Question:</H4>
 
                 <div style='padding-left: 1em;'>
-          <TEXTAREA NAME='blocks' CLASS='input-xxlarge'
+          <TEXTAREA NAME='text' ID='qtext' CLASS='input-xxlarge'
                     rows='20'>{{ qtemplate.html }}</TEXTAREA>
                 </div>
                 <h4>Marking:</h4>

@@ -17,7 +17,7 @@ from oasis.lib import Exams, API, Stats
 MYPATH = os.path.dirname(__file__)
 
 from oasis.lib.Permissions import satisfy_perms
-from oasis.lib import Users
+from oasis.lib import Users, Topics, DB
 from logging import getLogger
 
 from oasis import app, authenticated, require_perm
@@ -124,6 +124,34 @@ def api_exam_available_qtemplates(course_id, exam_id):
         abort(401)
 
     return jsonify(result=API.exam_available_q_list(course_id))
+
+
+# noinspection PyUnusedLocal
+@app.route("/api/_qedit2/qtemplate/<int:qt_id>/qtemplate.json")
+@authenticated
+def api_qedit2_get_qtemplate_json(qt_id):
+    """ Present a list of qtemplates that are available for use in the exam."""
+    if 'user_id' not in session:
+        abort(401)
+    user_id = session['user_id']
+    topic_id = DB.get_topic_for_qtemplate(qt_id)
+    course_id = Topics.get_course_id(topic_id)
+    if not satisfy_perms(user_id, course_id, ("questionedit",)):
+        abort(401)
+
+    # test data while we're building the frontend
+    return jsonify(result={
+        'type': "qtemplate data",
+        'title': "Test QE2 Question",
+        'embed_id': "aaaaaaaaa3",
+        'maxscore': 3,
+        'pre_vars': [
+            {'id': 1, 'name': "a", 'type': 'Integer', 'value': "3"},
+            {'id': 2, 'name': "b", 'type': 'Integer', 'value': "4"},
+            {'id': 3, 'name': "c", 'type': 'Integer', 'value': "5"},
+        ],
+        'qtext': "This is a test question. "
+    })
 
 
 @app.route("/api/users/typeahead")
