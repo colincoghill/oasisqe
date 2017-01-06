@@ -146,7 +146,7 @@ def api_qedit2_get_qtemplate_json(qt_id):
         'embed_id': "aaaaaaaaa3",
         'maxscore': 3,
         'pre_vars': [
-            {'id': 1, 'name': "a", 'type': 'Range', 'value': "1-10"},
+            {'id': 1, 'name': "a", 'type': 'List', 'value': "2,3,4,5,6,7"},
             {'id': 2, 'name': "b", 'type': 'Range', 'value': "1-10"},
             {'id': 3, 'name': "aa", 'type': 'Calculation', 'value': "$a+$b"},
         ],

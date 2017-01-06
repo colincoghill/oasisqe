@@ -4,8 +4,8 @@
 
     var prevar_types = ["Integer", "Real", "Text", "List", "Range", "Calculation"];
 
-    function get_pvar_type_edit(selected) {
-        var ret = ""
+    function get_pvar_type_select(name, selected) {
+        var ret = "<select name='$name'>";
         $.each(prevar_types, function(idx, ptype) {
            if (ptype == selected) {
                ret += "<option selected>"+ptype+"</option>"
@@ -13,10 +13,12 @@
                ret += "<option>"+ptype+"</option>"
            }
         });
+        ret += "</select>";
         return ret;
     }
     function get_prevar_edit_row(pvar) {
-        return $("<tr><td><input type='text' name='pvar_"+pvar["id"]+"' value='"+pvar["name"]+"'></td><td><select>"+get_pvar_type_edit(pvar["type"])+"></select></td><td><input type='text' name='pvar_val_"+pvar["id"]+"' value='"+pvar["value"]+"'></td></tr>")
+        pvarid = "pvar_"+pvar['id'];
+        return $("<tr><td><input type='text' name='"+pvarid+"' value='"+pvar["name"]+"'></td><td>"+get_pvar_type_select(pvarid+"_type", pvar["type"])+"</td><td><input type='text' name='"+pvarid+"_value' value='"+pvar["value"]+"'></td></tr>")
     }
     function get_answer_edit_row(pvar) {
         return $("<tr><td>"+pvar["id"]+"</td><td><select><option>Variable</option></select></td><td><select><option>aa</option></select></td><td><input type='text' name='marks' value='"+pvar["score"]+"'></td></tr>")
