@@ -148,11 +148,13 @@ def api_qedit2_get_qtemplate_json(qt_id):
         'pre_vars': [
             {'id': 1, 'name': "a", 'type': 'List', 'value': "2,3,4,5,6,7"},
             {'id': 2, 'name': "b", 'type': 'Range', 'value': "1-10"},
-            {'id': 3, 'name': "aa", 'type': 'Calculation', 'value': "$a+$b"},
+            {'id': 3, 'name': "a1", 'type': 'Calculation', 'value': "$a+$b"},
+            {'id': 4, 'name': "a2", 'type': 'Calculation', 'value': "$a*$b"},
         ],
-        'qtext': "What is $a + $b ? ",
+        'qtext': "What is $a + $b ? <answer1>\nWhat is $a * $b?  <answer2> ",
         'answers': [
-            {'id': 1, 'source': 'Variable', 'value': '$aa', 'tolerance': 0, 'score': 1}
+            {'id': 1, 'source': 'Variable', 'value': '$a1', 'tolerance': 0, 'score': 1},
+            {'id': 2, 'source': 'Variable', 'value': '$a2', 'tolerance': 0, 'score': 1}
         ]
     })
 
