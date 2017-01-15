@@ -80,7 +80,7 @@ class TestPractice(TestCase):
         """
         with self.app.test_client() as c:
 
-            s = self.login(ADMIN_UNAME, self.adminpass, client=c)
+            self.login(ADMIN_UNAME, self.adminpass, client=c)
 
             s = c.get('/practice/top', follow_redirects=True)
             self.assertEqual(s.status, "200 OK")

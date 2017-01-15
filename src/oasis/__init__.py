@@ -393,7 +393,7 @@ def login_forgot_pass_submit():
 @app.route("/login/confirm/<string:code>")
 def login_confirm(code):
     """ They've clicked on a confirmation link.
-         :param code: previously genereted confirmation code.
+         :param code: previously generated confirmation code.
          :type code: string.
     """
     if not OaConfig.open_registration:
@@ -415,7 +415,7 @@ def login_email_passreset(code):
     """ They've clicked on a password reset link.
         Log them in (might as well) and send them to the password reset page.
 
-         :param code: previously genereted confirmation code.
+         :param code: previously generated confirmation code.
          :type code: string.
     """
     # This will also confirm their email if they haven't.

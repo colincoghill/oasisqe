@@ -13,9 +13,9 @@ L = getLogger("oasisqe")
 ADMIN_UNAME = "admin"
 
 
-# <input type="hidden" name="csrf_token" value="1454892440##2da01a33658b53a9604d6633e45faa2c8f4eec1d" />
+# <input type="hidden" name="csrf_token" value="1454892440##2da01a33658b53a9604d6633.e45faa2c8f4eec1d" />
 csrf_token_input = re.compile(
-    r'name="csrf_token".*value="([0-9a-z#A-Z-\.]*)"'
+    r'name="csrf_token".*value="([0-9a-z#A-Z-.]*)"'
 )
 
 
@@ -65,9 +65,9 @@ class TestLogin(TestCase):
         """
 
         s = self.login_no_csrf(ADMIN_UNAME, self.adminpass)
-        self.assertIn("CSRF token missing or incorrect", s.data)
+        self.assertIn("CSRF token is missing", s.data)
         s = self.login(ADMIN_UNAME, self.adminpass)
-        self.assertNotIn("CSRF token missing or incorrect", s.data)
+        self.assertNotIn("CSRF token is missingt", s.data)
 
     def test_bypass_login(self):
         """ Can we bypass the login page?
@@ -86,7 +86,7 @@ class TestLogin(TestCase):
 
         with self.app.test_client() as c:
             s = self.login(ADMIN_UNAME, self.adminpass, client=c)
-            self.assertNotIn("CSRF token missing or incorrect", s.data)
+            self.assertNotIn("CSRF token is missing", s.data)
             L.error(s.data)
             s = c.get('main/top', follow_redirects=True)
             self.assertEqual(s.status, "200 OK")
@@ -99,10 +99,9 @@ class TestLogin(TestCase):
 
         with self.app.test_client(use_cookies=True) as c:
             s = self.login(ADMIN_UNAME, self.adminpass, client=c)
-            L.error(repr(s))
             s = c.get('/main/top')
             # main top level page
-            self.assertNotIn("CSRF token missing or incorrect", s.data)
+            self.assertNotIn("CSRF token is missing", s.data)
             self.assertIn("The latest news and information about OASIS", s.data)
 
     def test_user_stuff(self):
