@@ -2,7 +2,7 @@
 
 from unittest import TestCase
 
-from oasis.lib import DB, Topics, Courses, Practice
+from oasis.lib import DB, Topics, Courses, Practice, General
 
 
 class TestTopics(TestCase):
@@ -198,12 +198,19 @@ class TestTopics(TestCase):
         self.assertGreater(course_id, 0)
         topic1_id = Topics.create(course_id, "TESTQUESTIONS1", 1, 2)
         self.assertGreater(topic1_id, 0)
+
         qt1_id = DB.create_qt(1, "TESTQ9", "Test question 9", 0, 5.0, 1, topic_id=topic1_id)
-
         self.assertIsNotNone(qt1_id)
-        q_id = DB.get_q_by_qt_student(qt1_id, 1)
 
+        q_id = DB.get_q_by_qt_student(qt1_id, 1)
+        self.assertFalse(q_id)  # Not generated yet
+
+        q_id = General.gen_q(qt1_id, 1)
         self.assertGreater(q_id, 0)
+
+        q_id = DB.get_q_by_qt_student(qt1_id, 1)
+        self.assertTrue(qt1_id)  # Better be there now
+
         DB.update_qt_maxscore(qt1_id, 7.0)
         score = DB.get_qt_maxscore(qt1_id)
         self.assertEqual(score, 7.0)

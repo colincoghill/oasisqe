@@ -14,7 +14,7 @@ ADMIN_UNAME = "admin"
 
 # <input type="hidden" name="csrf_token" value="1454892440##2da01a33658b53a9604d6633e45faa2c8f4eec1d" />
 csrf_token_input = re.compile(
-    r'name="csrf_token".*value="([0-9a-z#A-Z-\.]*)"'
+    r'name="csrf_token".*value="([0-9a-z#A-Z-.]*)"'
 )
 
 

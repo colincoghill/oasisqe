@@ -129,18 +129,18 @@ def gen_exam_q(exam, position, student):
     return gen_q(qtid, student, exam, position)
 
 
-def gen_q(qtid, student=0, exam=0, position=0):
+def gen_q(qtid, student=0, exam=0, position=0, variation=None):
     """ Given a qtemplate, will generate a question instance.
         If student and/or exam is supplied it will be assigned appropriately.
         If exam is supplied, position must also be supplied.
         Will return the ID of the created instance.
     """
-    # Pick a variation randomly
+    # Pick a variation randomly if not supplied
     version = DB.get_qt_version(qtid)
     numvars = DB.get_qt_num_variations(qtid, version)
-    if numvars > 0:
+    if variation is None:
         variation = random.randint(1, numvars)
-    else:
+    if numvars == 0:
         L.warn("No question variations (qtid=%d)" % qtid)
         Audit.audit(3, student, qtid, "General", "Failed to generate question %s for %s, exam %s" % (qtid, student, exam))
 
