@@ -33,8 +33,8 @@ chown oasisqe /var/log/oasisqe/main.log
 
 cp /opt/oasisqe/3.9/deploy/dev/testconfig.ini /etc/oasisqe.ini
 sed -i "s/pass: SECRET/pass: ${DBPASS}/g" /etc/oasisqe.ini
-sed -i "s/statichost: http:\/\/localhost/statichost: http:\/\/localhost:8080/g" /etc/oasisqe.ini
-sed -i "s/url: http:\/\/localhost\/oasis/url: http:\/\/localhost:8080\/oasis/g" /etc/oasisqe.ini
+sed -i "s/statichost: http:\/\/localhost/statichost: http:\/\/localhost:8081/g" /etc/oasisqe.ini
+sed -i "s/url: http:\/\/localhost\/oasis/url: http:\/\/localhost:8081\/oasis/g" /etc/oasisqe.ini
 
 su postgres -c "psql postgres <<EOF
   create user oasisqe;
@@ -51,7 +51,7 @@ service apache2 reload
 
 echo
 echo 
-echo OASISTEST deployed to http://localhost:8080/oasis
+echo OASISTEST deployed to http://localhost:8081/oasis
 echo
 echo ********************************************
 su oasisqe -c "/opt/oasisqe/3.9/bin/reset_admin_password oasistest"
