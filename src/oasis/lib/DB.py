@@ -1272,6 +1272,7 @@ def get_qt_editor(qt_id):
     return "Raw"
 
 
+# noinspection SqlResolve
 def get_db_version():
     """ Return an string representing the database version
         If it's too old to have a configuration field, then use some heuristics.

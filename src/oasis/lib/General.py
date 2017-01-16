@@ -138,12 +138,11 @@ def gen_q(qtid, student=0, exam=0, position=0, variation=None):
     # Pick a variation randomly if not supplied
     version = DB.get_qt_version(qtid)
     numvars = DB.get_qt_num_variations(qtid, version)
-    if variation is None:
+    if variation is None and numvars > 0:
         variation = random.randint(1, numvars)
     if numvars == 0:
         L.warn("No question variations (qtid=%d)" % qtid)
         Audit.audit(3, student, qtid, "General", "Failed to generate question %s for %s, exam %s" % (qtid, student, exam))
-
         return False
     q_id = gen_q_from_var(qtid, student, exam, position, version, variation)
     if not q_id:

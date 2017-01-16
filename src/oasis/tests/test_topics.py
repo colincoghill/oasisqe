@@ -202,6 +202,16 @@ class TestTopics(TestCase):
         qt1_id = DB.create_qt(1, "TESTQ9", "Test question 9", 0, 5.0, 1, topic_id=topic1_id)
         self.assertIsNotNone(qt1_id)
 
+        ver = DB.get_qt_version(qt1_id)
+        self.assertGreater(ver, 0)
+
+        data = "2\n|1\n|2\n"
+        qvars = [{'A1': "2"}, {'A1': "3"}]
+        for row in range(0, len(qvars)):
+            DB.add_qt_variation(qt1_id, row + 1, qvars[row], ver)
+        DB.create_qt_att(qt1_id, "datfile.dat", "text/plain", data , ver)
+        DB.create_qt_att(qt1_id, "qtemplate.html", "text/html", "What is <VAL A1>? <ANSWER 1>", ver)
+
         q_id = DB.get_q_by_qt_student(qt1_id, 1)
         self.assertFalse(q_id)  # Not generated yet
 
