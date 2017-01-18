@@ -5,7 +5,8 @@ import re
 
 from logging import getLogger
 from oasis import app
-from oasis.lib import DB, Courses
+import datetime
+from oasis.lib import DB, Courses, Exams
 
 L = getLogger("oasisqe")
 
@@ -73,3 +74,25 @@ class TestAssess(TestCase):
             s = c.get('/assess/top', follow_redirects=True)
             self.assertEqual(s.status, "200 OK")
             self.assertIn("Past Assessments", s.data)
+
+    def test_assess_create(self):
+        """ Create an empty assessment"""
+
+        course_id = Courses.create("TESTCOURSE5", "unit tests for assessment", 1, 1)
+        Courses.create_config(course_id, "casual", 1)
+        Courses.set_active(course_id, True)
+        Courses.set_prac_vis(course_id, "none")
+        Courses.set_assess_vis(course_id, "none")
+
+        title = "Test Assessment 1"
+        atype = 2  # assignment
+        duration = 60
+        code = "123456"
+        instant = 1
+        instructions = "These are the instructions"
+        astart = datetime.datetime.utcnow()
+        aend = astart + datetime.timedelta(hours=2)
+
+        exam_id = Exams.create(course_id, 1, title, atype, duration, astart,
+                               aend, instructions, code=code, instant=instant)
+        self.assertGreater(exam_id, 0)
