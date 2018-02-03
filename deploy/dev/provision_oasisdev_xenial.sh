@@ -27,6 +27,7 @@ apt-get install ${APTOPTS} --no-install-recommends python-pip
 pip install --upgrade pip
 pip install --upgrade setuptools
 pip install Flask-WTF
+pip install ldap
 
 adduser --disabled-login --disabled-password --gecos OASIS oasisqe
 
