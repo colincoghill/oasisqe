@@ -20,7 +20,7 @@ import _strptime  # import should prevent thread import blocking issues
 from oasis.lib import OaConfig
 import logging
 from logging.handlers import SMTPHandler, RotatingFileHandler
-from flask_wtf.csrf import CsrfProtect
+from flask_wtf.csrf import CSRFProtect
 
 app = Flask(__name__,
             template_folder=os.path.join(OaConfig.homedir, "templates"),
@@ -75,7 +75,7 @@ from oasis.lib.Audit import audit
 from oasis.lib.Permissions import satisfy_perms
 from oasis.lib.General import sanitize_username
 
-CsrfProtect(app)
+CSRFProtect(app)
 
 
 @app.context_processor
