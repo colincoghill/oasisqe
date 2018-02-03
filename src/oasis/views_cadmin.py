@@ -899,7 +899,7 @@ def cadmin_topic_save(course_id, topic_id):
             return result
 
     flash("Error saving Topic Information!")
-    L.error("Error saving Topic Information " % repr(request.form))
+    L.error("Error saving Topic Information %s" % repr(request.form))
     return redirect(url_for('cadmin_edit_topic',
                             course_id=course_id,
                             topic_id=topic_id))
