@@ -110,7 +110,7 @@ def get_user_record(user_id):
 
 def set_password(user_id, clearpass):
     """ Updates a users password. """
-    hashed = bcrypt.hashpw(clearpass, bcrypt.gensalt(10))
+    hashed = bcrypt.hashpw(clearpass.encode('utf8'), bcrypt.gensalt(10))
     sql = """UPDATE "users" SET "passwd" = %s WHERE "id" = %s;"""
     params = [hashed, user_id]
     try:
@@ -138,7 +138,7 @@ def verify_password(uname, clearpass):
         raise
     stored_pw = ret[0][1]
     if len(stored_pw) > 40:  # it's not MD5
-        hashed = bcrypt.hashpw(clearpass, stored_pw)
+        hashed = bcrypt.hashpw(clearpass.encode('utf8'), stored_pw.encode('utf8'))
         if stored_pw == hashed:
             # All good, they matched with bcrypt
             return user_id
