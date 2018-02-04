@@ -10,35 +10,57 @@
 date > /tmp/provision.notes
 echo "Provisioning OASISDEV" >> /tmp/provision.notes
 
+BASEDIR=/opt/oasisqe/3.9
+LOGDIR=/var/log/oasisqe
+
+
 APTOPTS=-y
 
 # pre-answer interactive configuration for Postfix
-sudo debconf-set-selections <<< "postfix postfix/mailname string local.dev"
-sudo debconf-set-selections <<< "postfix postfix/main_mailer_type string 'Internet Site'"
+debconf-set-selections <<< "postfix postfix/mailname string local.dev"
+debconf-set-selections <<< "postfix postfix/main_mailer_type string 'Internet Site'"
+
+# Remove repos we don't need
+sed -i '/xenial-backports/{s/^/#/}' /etc/apt/sources.list
+sed -i '/deb-src/{s/^/#/}' /etc/apt/sources.list
+
+cd ${BASEDIR}
 
 apt-get update
 apt-get upgrade
-apt-get install ${APTOPTS} apache2 libapache2-mod-wsgi memcached
-apt-get install ${APTOPTS} python-bcrypt python-decorator python-flask python-imaging python-jinja2
-apt-get install ${APTOPTS} python-memcache python-psycopg2 python-openpyxl
+
+# Apache
+apt-get install ${APTOPTS} apache2 libapache2-mod-wsgi
+
+# PostgreSQL
 apt-get install ${APTOPTS} postgresql postgresql-client
-apt-get install ${APTOPTS} postfix unzip
+
+# Mail and memcached
+apt-get install ${APTOPTS} postfix unzip memcached
+
+# We'd prefer these by pip, but they like to compile stuff during install so need lots of dev things installed.
+apt-get install ${APTOPTS} python-psycopg2 python-bcrypt python-lxml python-pillow
+
+# Ubuntu pip is a bit old, but installing it means we can use it to install a newer one
 apt-get install ${APTOPTS} --no-install-recommends python-pip
+
+# Upgrade pip
 pip install --upgrade pip
 pip install --upgrade setuptools
-pip install Flask-WTF
-pip install ldap
+
+# Install OASIS python requirements
+pip install -r src/requirements.txt
 
 adduser --disabled-login --disabled-password --gecos OASIS oasisqe
 
 DBPASS=`uuidgen`
 
-mkdir -p /var/log/oasisqe
-chown oasisqe /var/log/oasisqe
-touch /var/log/oasisqe/main.log
-chown oasisqe /var/log/oasisqe/main.log
+mkdir -p ${LOGDIR}
+chown oasisqe ${LOGDIR}
+touch ${LOGDIR}/main.log
+chown oasisqe ${LOGDIR}/main.log
 
-cp /opt/oasisqe/3.9/deploy/sampleconfig.ini /etc/oasisqe.ini
+cp ${BASEDIR}/deploy/sampleconfig.ini /etc/oasisqe.ini
 sed -i "s/pass: SECRET/pass: ${DBPASS}/g" /etc/oasisqe.ini
 sed -i "s/statichost: http:\/\/localhost/statichost: http:\/\/localhost:8082/g" /etc/oasisqe.ini
 sed -i "s/url: http:\/\/localhost\/oasis/url: http:\/\/localhost:8082\/oasis/g" /etc/oasisqe.ini
@@ -51,16 +73,16 @@ EOF"
 su postgres  -c "createdb -O oasisqe oasisqe"
 su oasisqe -c "/opt/oasisqe/3.9/bin/oasisdb init"
 
-cp /opt/oasisqe/3.9/deploy/apache24config.sample /etc/apache2/sites-available/oasisqe.conf
+cp ${BASEDIR}/deploy/apache24config.sample /etc/apache2/sites-available/oasisqe.conf
 a2ensite oasisqe
 
 service apache2 reload
 
-su oasisqe -c "/opt/oasisqe/3.9/bin/create_test_topic EXAMPLE101 Samples"
+su oasisqe -c "${BASEDIR}/bin/create_test_topic EXAMPLE101 Samples"
 echo
 echo 
 echo OASISQE deployed to http://localhost:8082/oasis
 echo
-echo ********************************************
-su oasisqe -c "/opt/oasisqe/3.9/bin/reset_admin_password devtest"
-echo ********************************************
+echo "********************************************"
+su oasisqe -c "${BASEDIR}/bin/reset_admin_password devtest"
+echo "********************************************"
