@@ -50,6 +50,8 @@ pip install --upgrade setuptools
 
 # Install OASIS python requirements
 pip install -r src/requirements.txt
+# Install extra requirements for development/testing
+pip install -r src/requirements-dev.txt
 
 adduser --disabled-login --disabled-password --gecos OASIS oasisqe
 
