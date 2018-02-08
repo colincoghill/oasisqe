@@ -27,7 +27,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       config.vm.box = "ubuntu/xenial64"
       config.vm.provider "virtualbox" do |v|
       v.name = "devxenial"
-      v.memory = 1024
+      v.memory = 2048
       v.cpus = 2
     end
     config.vm.network :forwarded_port, guest: 80, host: 8082
