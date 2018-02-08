@@ -97,19 +97,12 @@
 
       });
 
-        $(".datatable").dataTable();
-/*
-      $('#usersearch').autocomplete({
-        minLength: 3,
-        source: '{{ cf.url }}api/users/typeahead'
-        }
-      );
-*/
-       $(".remove_member").click(
+      $(".datatable").dataTable();
+      $(".remove_member").click(
                function() {
                    $("#member_edit").submit();
                }
-       );
+      );
 
 
     });
