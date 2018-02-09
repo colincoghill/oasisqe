@@ -1471,13 +1471,23 @@ def clean_install_3_9_4():
 
 
 def clean_install_3_9_5():
-    """ Install a fresh blank v3.9.4 schema.
+    """ Install a fresh blank v3.9.5 schema.
     """
     with open(os.path.join(os.path.dirname(OaConfig.homedir), "deploy", "emptyschema_395.sql")) as f:
         sql = f.read()
 
     run_sql(sql)
     print "Installed v3.9.5 table structure."
+
+
+def clean_install_3_9_6():
+    """ Install a fresh blank v3.9.6 schema.
+    """
+    with open(os.path.join(os.path.dirname(OaConfig.homedir), "deploy", "emptyschema_396.sql")) as f:
+        sql = f.read()
+
+    run_sql(sql)
+    print "Installed v3.9.6 table structure."
 
 
 def upgrade_3_6_to_3_9_5(options):
@@ -1572,6 +1582,15 @@ def upgrade_3_9_4_to_3_9_5(_):
     print "Migrated table structure from 3.9.4 to 3.9.5"
 
 
+def upgrade_3_9_5_to_3_9_6(_):
+    """ Given a 3.9.5 database, upgrade it to 3.9.6.
+    """
+    with open(os.path.join(os.path.dirname(OaConfig.homedir), "deploy", "migrate_395_to_396.sql")) as f:
+        sql = f.read()
+    run_sql(sql)
+    print "Migrated table structure from 3.9.5 to 3.9.6"
+
+
 def do_upgrade(options):
     """ Upgrade the database from an older version of OASIS.
     """
@@ -1579,21 +1598,30 @@ def do_upgrade(options):
     dbver = get_db_version()
     if dbver == "3.6":
         upgrade_3_6_to_3_9_5(options)
+        upgrade_3_9_5_to_3_9_6(options)
         return
     if dbver == "3.9.1":
         upgrade_3_9_1_to_3_9_5(options)
+        upgrade_3_9_5_to_3_9_6(options)
         return
     if dbver == "3.9.2":
         upgrade_3_9_2_to_3_9_5(options)
+        upgrade_3_9_5_to_3_9_6(options)
         return
     if dbver == "3.9.3":
         upgrade_3_9_3_to_3_9_5(options)
+        upgrade_3_9_5_to_3_9_6(options)
         return
     if dbver == "3.9.4":
         upgrade_3_9_4_to_3_9_5(options)
+        upgrade_3_9_5_to_3_9_6(options)
         return
     if dbver == "3.9.5":
-        print "Your database is already the latest version (3.9.5)"
+        do_repair()
+        upgrade_3_9_5_to_3_9_6(options)
+        return
+    if dbver == "3.9.6":
+        print "Your database is already the latest version (3.9.6)"
     return
 
 
@@ -1646,3 +1674,40 @@ def calc_stats():
     print "Calculating Statistics"
     from oasis.lib import Stats
     Stats.do_initial_stats_update()
+
+
+def do_repair(repair=True):
+    """ We've occasionally found incorrect fields in databases.
+        Make safe repairs.
+        if repair=False, don't make any changes, just log information and return number of problems.
+    """
+
+    ret = run_sql("SELECT exam, archived, duration FROM exams;")
+    exams = [{'exam_id': int(row[0]),
+              'archived': int(row[1]),
+              'duration': int(row[2])}
+             for row in ret]
+    L.info("Scanning exams table")
+    bad_found = 0
+    for exam in exams:
+        if exam['duration'] < 5 and exam['archived'] > 2:
+            bad_found += 1
+            if repair:
+                # Swap archived and duration fields
+                sql = "UPDATE exams SET duration = %s, archived = %s WHERE exam = %s;"
+                params= [exam['archived'], exam['duration'], exam['exam_id']]
+                L.warn("Repairing swapped duration, archived field in exams (archived=%s,duration=%s,exam=%s" % params)
+                run_sql(sql,params)
+            else:
+                L.info("Exam %(exam_id)d has 'duration=%(duration)d' and 'archived=%(archived)d' swapped?" % exam)
+
+    if bad_found:
+        if repair:
+            L.info("%d records repaired." % bad_found)
+        else:
+            L.info("%d out of %d bad records found." % (bad_found, len(exams)))
+
+    else:
+        L.info("No bad records found.")
+
+    return bad_found
