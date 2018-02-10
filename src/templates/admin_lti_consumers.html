@@ -24,10 +24,8 @@
             <table class='table table-condensed datatable'>
                 <thead>
                 <tr>
-                    <th>Short Name</th>
-                    <th>Title</th>
-                    <th>Shared Secret</th>
                     <th>Consumer Key</th>
+                    <th>Title</th>
                     <th>Active</th>
                     <th>Last Seen</th>
                     <th></th>
@@ -35,14 +33,10 @@
                 </thead>
                 <tbody>
                 {% for consumer in lti_consumers %}
-                    <tr>
-                        <td>{{ consumer.short_name }}</td>
+                    <tr><td>{{ consumer.consumer_key }}</td>
                         <th>{{ consumer.title }}</th>
-                        <td>{{ consumer.shared_secret }}</td>
-                        <td>{{ consumer.consumer_key }}</td>
                         <td>{{ consumer.active }}</td>
-                        <td>{{ consumer.lastseen }}</td>
-
+                        <td>{{ consumer.last_seen }}</td>
                         <td><a class='btn btn-mini'
                                href='{{ cf.url }}admin/edit_lti_consumer/{{ consumer.id }}'>Edit</a>
                         </td>

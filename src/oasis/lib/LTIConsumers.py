@@ -12,21 +12,20 @@ from oasis.lib.DB import run_sql
 
 # CREATE TABLE lti_consumers (
 #    "id" SERIAL PRIMARY KEY,
-#    "short_name" character varying(20) unique NOT NULL,
 #    "title" character varying(250),
 #    "shared_secret" character varying,
 #    "consumer_key" character varying,
 #    "comments" character varying,
 #    "active" BOOLEAN default FALSE,
-#    "lastseen" timestamp with time ZONE
+#    "last_seen" timestamp with time ZONE
 # );
 
 class LTIConsumer(object):
     """ An LTIConsumer can consume our content.
     """
 
-    def __init__(self, ltic_id=None, short_name=None,
-                 title=None, shared_secret=None, consumer_key=None,
+    def __init__(self, ltic_id=None, consumer_key=None,
+                 title=None, shared_secret=None,
                  comments=None, active=None):
         """ If just id is provided, load existing database
             record or raise KeyError.
@@ -44,12 +43,11 @@ class LTIConsumer(object):
 
         else:  # create new
             self.ltic_id = 0
-            self.short_name = short_name
             self.title = title
             self.shared_secret = shared_secret
             self.consumer_key = consumer_key
             self.comments = comments
-            self.lastseen = None
+            self.last_seen = None
             self.error = ""
             self.active = active
             self.new = True
@@ -58,7 +56,7 @@ class LTIConsumer(object):
         """ If an existing record exists with this id, load it and
             return.
         """
-        sql = """SELECT "id", "short_name", "title", "shared_secret", "consumer_key", "comments", "active", "lastseen"
+        sql = """SELECT "id", "title", "shared_secret", "consumer_key", "comments", "active", "last_seen"
                  FROM "lti_consumers"
                  WHERE "id"=%s;"""
         params = [ltic_id, ]
@@ -67,18 +65,13 @@ class LTIConsumer(object):
             raise KeyError("LTIConsumer with id '%s' not found" % ltic_id)
 
         self.id = ltic_id
-        self.short_name = ret[0][1]
-        self.title = ret[0][2]
-        self.shared_secret = ret[0][3]
-        self.consumer_key = ret[0][4]
-        self.comments = ret[0][5]
-        self.active = ret[0][6]
-        self.lastseen = ret[0][7]
+        self.title = ret[0][1]
+        self.shared_secret = ret[0][2]
+        self.consumer_key = ret[0][3]
+        self.comments = ret[0][4]
+        self.active = ret[0][5]
+        self.last_seen = ret[0][6]
         self.new = False
-        if not self.short_name:
-            self.name = ""
-        if not self.title:
-            self.title = ""
         return
 
 
@@ -86,7 +79,7 @@ class LTIConsumer(object):
         """ If an existing record exists with this consumer_key, load it and
             return.
         """
-        sql = """SELECT "id", "short_name", "title", "shared_secret", "consumer_key", "comments", "active", "lastseen"
+        sql = """SELECT "id", "title", "shared_secret", "consumer_key", "comments", "active", "last_seen"
                  FROM "lti_consumers"
                  WHERE "consumer_key"=%s;"""
         params = [consumer_key, ]
@@ -95,18 +88,13 @@ class LTIConsumer(object):
             raise KeyError("LTIConsumer with consumer_key '%s' not found" % consumer_key)
 
         self.id = ret[0][0]
-        self.short_name = ret[0][1]
-        self.title = ret[0][2]
-        self.shared_secret = ret[0][3]
-        self.consumer_key = ret[0][4]
-        self.comments = ret[0][5]
-        self.active = ret[0][6]
-        self.lastseen = ret[0][7]
+        self.title = ret[0][1]
+        self.shared_secret = ret[0][2]
+        self.consumer_key = ret[0][3]
+        self.comments = ret[0][4]
+        self.active = ret[0][5]
+        self.last_seen = ret[0][6]
         self.new = False
-        if not self.short_name:
-            self.name = ""
-        if not self.title:
-            self.title = ""
         return
 
 
@@ -115,23 +103,22 @@ class LTIConsumer(object):
         """
 
         if self.new:
-            sql = """INSERT INTO "lti_consumers" ("short_name", "title", "shared_secret", "consumer_key", "comments", "active")
-                       VALUES (%s, %s, %s, %s, %s, %s);"""
-            params = [self.short_name, self.title, self.shared_secret, self.consumer_key,
+            sql = """INSERT INTO "lti_consumers" ("title", "shared_secret", "consumer_key", "comments", "active")
+                       VALUES (%s, %s, %s, %s, %s);"""
+            params = [self.title, self.shared_secret, self.consumer_key,
                       self.comments, self.active]
             run_sql(sql, params)
             self.new = False
             return
 
         sql = """UPDATE "lti_consumers"
-                 SET "short_name" = %s,
-                     "title" = %s,
+                 SET "title" = %s,
                      "shared_secret" = %s,
                      "consumer_key" = %s,
                      "comments" = %s,
                      "active" = %s
                  WHERE "id" = %s;"""
-        params = [self.short_name, self.title, self.shared_secret, self.consumer_key,
+        params = [self.title, self.shared_secret, self.consumer_key,
                   self.comments, self.active, self.id]
 
         run_sql(sql, params)
