@@ -104,6 +104,12 @@ def get_user_record(user_id):
             user_rec['confirmed'] = True
         else:
             user_rec['confirmed'] = False
+
+        if not user_rec['fullname']:
+            if user_rec['email']:
+                user_rec['fullname'] = user_rec['email']
+            else:
+                user_rec['fullname'] = "Unknown"
         MC.set(key, json.dumps(user_rec))
         return user_rec
 
@@ -157,19 +163,27 @@ def verify_password(uname, clearpass):
 
 def create(uname, passwd, givenname, familyname, acctstatus, studentid,
            email=None, expiry=None, source="local",
-           confirm_code=None, confirm=True):
+           confirm_code=None, confirm=True, display_name=False):
     """ Add a user to the database. """
     L.info("Users.py:create(%s)" % uname)
     if not confirm_code:
         confirm_code = ""
+    if not display_name:
+        if givenname or familyname:
+            display_name = "%s %s" % (givenname, familyname)
+        elif email:
+            display_name = email
+        else:
+            display_name = "Unknown"
+
     run_sql("""INSERT INTO users (uname, passwd, givenname, familyname,
                                   acctstatus, student_id, email, expiry,
-                                  source, confirmation_code, confirmed)
+                                  source, confirmation_code, confirmed, display_name)
                VALUES (%s, %s, %s, %s, %s, %s,
                        %s, %s, %s, %s, %s);""",
             [uname, passwd, givenname, familyname,
              acctstatus, studentid, email, expiry,
-             source, confirm_code, confirm])
+             source, confirm_code, confirm, display_name])
     incr_version()
     uid = uid_by_uname(uname)
     L.info("User created with uid %d." % uid)
@@ -183,6 +197,19 @@ def uid_by_uname(uname):
     if obj is not None:
         return obj
     ret = run_sql("""SELECT id FROM "users" WHERE uname=%s;""", [uname, ])
+    if ret:
+        MC.set(key, ret[0][0])
+        return ret[0][0]
+    return None
+
+
+def uid_by_email(email):
+    """ Lookup the users internal ID number given their email address. """
+    key = "user-%s-emailtouid" % (email,)
+    obj = MC.get(key)
+    if obj is not None:
+        return obj
+    ret = run_sql("""SELECT id FROM "users" WHERE email=%s;""", [email, ])
     if ret:
         MC.set(key, ret[0][0])
         return ret[0][0]

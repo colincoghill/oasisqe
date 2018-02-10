@@ -319,8 +319,7 @@ def login_local_submit():
         del session['redirect']
         return redirect(target)
     L.info("Successful Login for %s" % username)
-    return redirect(url_for("main_top"
-                            ""))
+    return redirect(url_for("main_top"))
 
 
 @app.route("/login/signup")

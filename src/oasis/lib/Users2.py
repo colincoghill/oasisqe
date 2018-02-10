@@ -52,6 +52,8 @@ def get_user(user_id):
 
 
 uid_by_uname = Users.uid_by_uname
+uid_by_email = Users.uid_by_email
+
 verify_pass = Users.verify_password
 create = Users.create
 find = Users.find

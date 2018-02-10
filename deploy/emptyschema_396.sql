@@ -29,7 +29,9 @@ CREATE TABLE users (
     "source" character varying,
     "expiry" timestamp ,
     "confirmation_code" character varying,
-    "confirmed" character varying
+    "confirmed" character varying,
+    "display_name" character varying,
+    "last_seen" timestamp with time zone
 );
 
 INSERT INTO users (uname, passwd, givenname, source, confirmed)
@@ -197,6 +199,15 @@ CREATE TABLE lti_consumers (
     "comments" character varying,
     "active" BOOLEAN default FALSE,
     "last_seen" timestamp with time ZONE
+);
+
+CREATE TABLE lti_course_params (
+    "course_id" INTEGER,
+    "lti_enabled" BOOLEAN default FALSE,
+    "lti_consumer" INTEGER,
+    "lti_coursename" CHARACTER VARYING,
+    "lti_auto_add_user" BOOLEAN default FALSE,
+    "lti_instructor_access" BOOLEAN default FALSE
 );
 
 CREATE TABLE marklog (
