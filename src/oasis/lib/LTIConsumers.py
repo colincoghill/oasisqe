@@ -9,6 +9,8 @@
 
 from oasis.lib.DB import run_sql
 
+from oasis import app
+
 
 # CREATE TABLE lti_consumers (
 #    "id" SERIAL PRIMARY KEY,
@@ -109,6 +111,7 @@ class LTIConsumer(object):
                       self.comments, self.active]
             run_sql(sql, params)
             self.new = False
+            update_lti_config()
             return
 
         sql = """UPDATE "lti_consumers"
@@ -122,7 +125,7 @@ class LTIConsumer(object):
                   self.comments, self.active, self.id]
 
         run_sql(sql, params)
-
+        update_lti_config()
 
 
 def all_list(active=False):
@@ -146,3 +149,21 @@ def all_list(active=False):
 
     return lti_consumers
 
+
+def update_lti_config():
+    """ pylti library wants LTI configuration set in an app variable"""
+
+    lti_consumers = all_list(active=True)
+    consumers = dict()
+    for consumer in lti_consumers:
+        consumers[consumer.consumer_key] = {
+            'secret': consumer.shared_secret
+        }
+
+    app.config['PYLTI_CONFIG'] = {
+        'consumers': consumers,
+        'roles': {
+            'admin': ['Administrator', 'urn:lti:instrole:ims/lis/Administrator'],
+            'student': ['Student', 'urn:lti:instrole:ims/lis/Student']
+        }
+    }
