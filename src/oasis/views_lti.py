@@ -20,6 +20,9 @@ from .lib import Users2, LTIConsumers, OaConfig
 L = getLogger("oasisqe")
 
 
+LTIConsumers.update_lti_config()
+
+
 
 def error(exception=None):
     """ render error page
@@ -28,23 +31,6 @@ def error(exception=None):
     """
     return render_template('lti_error.html',
                            exception=exception)
-
-
-if OaConfig.enable_lti_producer:
-    @app.route("/lti", methods=["POST", "GET"])
-    @lti(request='any', error=error, app=app)
-    @csrf.exempt
-    def lti_launch(lti):
-        """
-        Just testing at the moment
-        :return:
-        """
-        session = _auth_user(lti, app)
-
-        return render_template(
-            "lti_launch.html",
-            lti=lti,
-            session=session)
 
 
 def _auth_user(lti, app):
@@ -80,6 +66,22 @@ def _auth_user(lti, app):
           "%s successfully logged in via ltiauth" % session['username'])
 
     return session
+
+
+@app.route("/lti", methods=["POST", "GET"])
+@lti(request='any', error=error, app=app)
+@csrf.exempt
+def lti_launch(lti):
+    """
+    Just testing at the moment
+    :return:
+    """
+    session = _auth_user(lti, app)
+
+    return render_template(
+        "lti_launch.html",
+        lti=lti,
+        session=session)
 
 
 @app.route("/lti/main", methods=["POST", "GET"])
@@ -143,6 +145,3 @@ def lti_assess_startexam(course_id, exam_id, lti=lti):
     return redirect(url_for("assess_startexam", course_id=course_id, exam_id=exam_id))
 
 
-
-if OaConfig.lti_enabled:
-    LTIConsumers.update_lti_config()

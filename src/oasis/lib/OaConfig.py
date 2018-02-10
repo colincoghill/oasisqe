@@ -70,6 +70,4 @@ enable_local_login = cp.getboolean("web", "enable_local_login")
 enable_webauth_login = cp.getboolean("web", "enable_webauth_login")
 webauth_ignore_domain = cp.getboolean("web", "webauth_ignore_domain")
 enable_lti_login = cp.getboolean("web", "enable_lti_login")
-enable_lti_producer = cp.getboolean("web", "enable_lti_producer")
-
-lti_enabled =  enable_lti_login or enable_lti_producer
+lti_enabled =  enable_lti_login
