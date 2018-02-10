@@ -15,7 +15,7 @@ from flask import render_template, \
     request, redirect, abort, url_for, flash
 
 from logging import getLogger
-from oasis.lib import Courses, Setup, Periods, Feeds, External, UFeeds, OaConfig
+from oasis.lib import Courses, Setup, Periods, Feeds, External, UFeeds, OaConfig, LTIConsumers
 
 MYPATH = os.path.dirname(__file__)
 from .lib import DB, Groups
@@ -45,6 +45,18 @@ def admin_feeds():
     return render_template(
         "admin_group_feeds.html",
         feeds=feeds
+    )
+
+
+@app.route("/admin/lti_consumers")
+@require_perm('sysadmin')
+def admin_lti_consumers():
+    """ Present menu page of LTI consumer options """
+
+    lti_consumers = LTIConsumers.all_list()
+    return render_template(
+        "admin_lti_consumers.html",
+        feeds=lti_consumers
     )
 
 

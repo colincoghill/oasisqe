@@ -75,7 +75,7 @@ from oasis.lib.Audit import audit
 from oasis.lib.Permissions import satisfy_perms
 from oasis.lib.General import sanitize_username
 
-CSRFProtect(app)
+csrf=CSRFProtect(app)
 
 
 @app.context_processor
@@ -626,3 +626,4 @@ from oasis import views_setup
 from oasis import views_api
 from oasis import views_embed
 from oasis import views_misc
+from oasis import views_lti

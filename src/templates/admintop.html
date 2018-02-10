@@ -1,137 +1,152 @@
 {% extends "page_nav.html" %}
 {% block js %}
-  <script>
+    <script>
 
-    function drawgraph(dom_id, title, line, col) {
-      $.jqplot(dom_id, [line], {
-        legend: {
-          show: false
-        },
-        title: title,
-        series: [
-          {renderer: $.jqplot.BarRenderer,
-            rendererOptions: {
-              barMargin: 4,
-              barPadding: 4,
-              barWidth: 2,
-              color: col
-            }
+        function drawgraph(dom_id, title, line, col) {
+            $.jqplot(dom_id, [line], {
+                legend: {
+                    show: false
+                },
+                title: title,
+                series: [
+                    {
+                        renderer: $.jqplot.BarRenderer,
+                        rendererOptions: {
+                            barMargin: 4,
+                            barPadding: 4,
+                            barWidth: 2,
+                            color: col
+                        }
 
-          }
-        ],
-        axes: {
-          xaxis: {
-            renderer: $.jqplot.DateAxisRenderer,
-            tickOptions: {formatString: '%#d&nbsp;%b',
-              fontSize: '12px'
-            }
-          },
-          yaxis: {
-            tickOptions: {
-              fontSize: '12px'
-            }
-          }
-        },
-        grid: {
-          drawBorder: false,
-          shadow: false,
-          background: '#f8ffff'
+                    }
+                ],
+                axes: {
+                    xaxis: {
+                        renderer: $.jqplot.DateAxisRenderer,
+                        tickOptions: {
+                            formatString: '%#d&nbsp;%b',
+                            fontSize: '12px'
+                        }
+                    },
+                    yaxis: {
+                        tickOptions: {
+                            fontSize: '12px'
+                        }
+                    }
+                },
+                grid: {
+                    drawBorder: false,
+                    shadow: false,
+                    background: '#f8ffff'
 
+                }
+
+            });
         }
 
-      });
-    }
+        function bargraph(dom_id, title) {
+            $.ajax({
+                async: true,
+                url: "{{ cf.url }}api/stats/practice/3months",
+                dataType: "json",
+                success: function (data) {
 
-    function bargraph(dom_id, title) {
-      $.ajax({
-        async: true,
-        url: "{{ cf.url }}api/stats/practice/3months",
-        dataType: "json",
-        success: function (data) {
-
-          var line = data.result;
-          if (line.length > 1) {
-            drawgraph(dom_id, title, line, "black")
-          } else {
-            $("#" + dom_id).html("")
-          }
+                    var line = data.result;
+                    if (line.length > 1) {
+                        drawgraph(dom_id, title, line, "black")
+                    } else {
+                        $("#" + dom_id).html("")
+                    }
+                }
+            });
         }
-      });
-    }
 
-    $(document).ready(function () {
+        $(document).ready(function () {
 
-      bargraph("chart", "Questions Marked Per Day");
+            bargraph("chart", "Questions Marked Per Day");
 
-    });
+        });
 
-  </script>
+    </script>
 {% endblock js %}
 {% block body %}
-  <br/>
+    <br/>
 
-  <H2>OASIS Administration</H2>
-  <P><B>System level options can be controlled from here:</B></P>
+    <H2>OASIS Administration</H2>
+    <P><B>System level options can be controlled from here:</B></P>
 
-  <div class='container-fluid well'>
+    <div class='container-fluid well'>
+        <div class='row'>
+
+            <div class='span5'>
+                <B><A HREF='{{ cf.url }}admin/edit_messages'>Messages</A></B>
+
+                <P>Configure messages to display to the users in various parts
+                    of OASIS.</P><br>
+            </div>
+            <div class='span5'>
+
+                <B><A HREF='{{ cf.url }}admin/groups'>Groups</A></B>
+
+                <P>Set up groups of users, optionally linking them to enrolment
+                    feeds.</P><br>
+            </div>
+
+        </div>
+        <div class='row'>
+            <div class='span5'>
+
+                <B><A HREF='{{ cf.url }}admin/periods'>Time Periods</A></B>
+
+                <P>Configure enrolment time periods to match your
+                    terms/semesters.</P>
+            </div>
+
+            <div class='span5'>
+
+                <B><A HREF='{{ cf.url }}admin/feeds'>Group Feeds</A></B>
+
+                <P>Enrolment feed settings, how to match students to
+                    courses.</P><br>
+            </div>
+
+            <BR/>
+
+        </div>
+        <div class='row'>
+            <div class='span5'>
+
+                <B><A HREF='{{ cf.url }}admin/lti_consumers'>LTI Consumers</A></B>
+
+                <P>LTI Consumers are other systems (eg. Moodle, Sakai) that can "consume" OASIS Content.</P><br>
+            </div>
+            <div class='span5'>
+
+            </div>
+        </div>
+
+
     <div class='row'>
+        <div class='span5'>
 
-      <div class='span5'>
-        <B><A HREF='{{ cf.url }}admin/edit_messages'>Messages</A></B>
+            <B><A HREF='{{ cf.url }}admin/userfeeds'>User Account Feeds</A></B>
 
-        <P>Configure messages to display to the users in various parts
-          of OASIS.</P><br>
-      </div>
-      <div class='span5'>
+            <P>User Accounts. Can contact external systems to look up user account details.</P><br>
+        </div>
+        <div class='span5'>
 
-        <B><A HREF='{{ cf.url }}admin/groups'>Groups</A></B>
+            <B><A HREF='{{ cf.url }}admin/sysstats'>System Statistics</A></B>
 
-        <P>Set up groups of users, optionally linking them to enrolment
-          feeds.</P><br>
-      </div>
-
+            <P>Monitor how the system is running.</P><br>
+        </div>
     </div>
-    <div class='row'>
-      <div class='span5'>
-
-        <B><A HREF='{{ cf.url }}admin/periods'>Time Periods</A></B>
-
-        <P>Configure enrolment time periods to match your
-          terms/semesters.</P>
-      </div>
-
-      <div class='span5'>
-
-        <B><A HREF='{{ cf.url }}admin/feeds'>Group Feeds</A></B>
-
-        <P>Enrolment feed settings, how to match students to
-          courses.</P><br>
-      </div>
-
-      <BR/>
-
     </div>
-    <div class='row'>
-  <div class='span5'>
-
-        <B><A HREF='{{ cf.url }}admin/userfeeds'>User Account Feeds</A></B>
-
-        <P>User Accounts. Can contact external systems to look up user account details.</P><br>
-      </div>
-          <div class='span5'>
-
-        <B><A HREF='{{ cf.url }}admin/sysstats'>System Statistics</A></B>
-
-        <P>Monitor how the system is running.</P><br>
-      </div>
-    </div>
-  </div>
-  <b>DB Version: {{ db_version }}</b>
-  <div></div>
-  <div id='chart' style="height: 120px;"></div>
-  <br>
-  <P>or Return to <B><A HREF='{{ cf.url }}setup/top'>Setup</A></B> menu.</P>
-  <BR/>
+    <b>DB Version: {{ db_version }}</b>
+    <div></div>
+    <div id='chart' style="height: 120px;"></div>
+    <br>
+    <P>or Return to <B><A HREF='{{ cf.url }}setup/top'>Setup</A></B> menu.</P>
+    <BR/>
 
 {% endblock body %}
 {% block pagetitle %}Setup{% endblock %}

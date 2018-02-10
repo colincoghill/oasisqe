@@ -17,4 +17,24 @@ BEGIN;
 
 update config SET "value" = '3.9.6' WHERE "name" = 'dbversion';
 
+-- take username max length away
+ALTER TABLE users ALTER COLUMN "uname" TYPE character varying;
+
+
+-- keep track of LTI consumers
+CREATE TABLE lti_consumers (
+    "id" SERIAL PRIMARY KEY,
+    "short_name" character varying(20) unique NOT NULL,
+    "title" character varying(250),
+    "shared_secret" character varying,
+    "consumer_key" character varying,
+    "comments" character varying,
+    "active" BOOLEAN default FALSE,
+    "lastseen" timestamp with time ZONE
+);
+
+
+CREATE INDEX lti_consumers_shortname ON lti_consumers USING btree (short_name);
+CREATE INDEX lti_consumers_consumer_key ON lti_consumers USING btree (consumer_key);
+
 COMMIT;

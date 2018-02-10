@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>LTI Embed</title>
+</head>
+<body>
+<h1>Hello {{ lti.nickname }}.</h1>
+Hello, I'm from LTI and I'm here to help
+<table>
+    <tr><th>lti_args</th><td>{{  lti.lti_args }}</td></tr>
+    <tr><th>lti_kwargs</th><td><pre>{{  lti.lti_kwargs }}</pre></td></tr>
+    <tr><th>name</th><td>{{  lti.name }}</td></tr>
+    <tr><th>nickname</th><td>{{  lti.nickname }}</td></tr>
+    <tr><th>role</th><td>{{  lti.role }}</td></tr>
+    <tr><th>user_id</th><td>{{  lti.user_id }}</td></tr>
+</table>
+<table>
+    {% for k,v in session.iteritems() %}
+        <tr><th>{{ k }}</th><td>{{ v }}</td></tr>
+    {% endfor %}
+</table>
+</body>
+</html>
