@@ -44,6 +44,16 @@
                       rows="6"
                       class="input-block-level">{{ lti_consumer.comments }}</textarea>
 
+          <label>User Mapping</label>
+          <pre>* Match OASIS user email with LTI email
+          * Match OASIS username with LTI username
+
+          If username coming from  LTI Consumer is unrecognised:
+          * Create new OASIS account that cannot login directly
+          * Create OASIS account that can login directly, using email address as username
+          * Do not allow login, display an error message "[included]"
+              * can account be enrolled in local course?</pre>
+
             <label>Enabled:
               <input name='active' type='checkbox' value='active'
                   {% if lti_consumer.active %} checked{% endif %}>

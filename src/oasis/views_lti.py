@@ -15,25 +15,28 @@ MYPATH = os.path.dirname(__file__)
 
 from oasis import app,csrf,audit
 from logging import getLogger
-from .lib import Users2
+from .lib import Users2, LTIConsumers
 
 L = getLogger("oasisqe")
 
 
-app.config['PYLTI_CONFIG'] = {
-    'consumers': {
-        'bananas': {
-            "secret": 'squirrel'
+def update_lti_config():
+    """ pylti library wants LTI configuration set in an app variable"""
+
+    lti_consumers = LTIConsumers.all_list(active=True)
+    consumers = dict()
+    for consumer in lti_consumers:
+        consumers[consumer.consumer_key] = {
+            'secret': consumer.shared_secret
         }
-        # Feel free to add more key/secret pairs for other consumers.
-    },
-    'roles': {
-        # Maps values sent in the lti launch value of "roles" to a group
-        # Allows you to check LTI.is_role('admin') for your user
-        'admin': ['Administrator', 'urn:lti:instrole:ims/lis/Administrator'],
-        'student': ['Student', 'urn:lti:instrole:ims/lis/Student']
+
+    app.config['PYLTI_CONFIG'] = {
+        'consumers': consumers,
+        'roles': {
+            'admin': ['Administrator', 'urn:lti:instrole:ims/lis/Administrator'],
+            'student': ['Student', 'urn:lti:instrole:ims/lis/Student']
+        }
     }
-}
 
 
 def error(exception=None):
@@ -81,3 +84,6 @@ def lti_launch(lti):
         "lti_launch.html",
         lti=lti,
         session=session)
+
+
+update_lti_config()

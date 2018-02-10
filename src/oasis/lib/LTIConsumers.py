@@ -125,11 +125,16 @@ class LTIConsumer(object):
 
 
 
-def all_list():
+def all_list(active=False):
     """
         Return a list of all LTI Consumers
     """
-    sql = """SELECT "id" FROM "lti_consumers";"""
+
+    if active:
+        sql = """SELECT "id" FROM "lti_consumers" WHERE active=TRUE;"""
+    else:
+        sql = """SELECT "id" FROM "lti_consumers";"""
+
     ret = run_sql(sql)
     if not ret:
         return []

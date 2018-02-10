@@ -15,8 +15,17 @@ Hello, I'm from LTI and I'm here to help
     <tr><th>role</th><td>{{  lti.role }}</td></tr>
     <tr><th>user_id</th><td>{{  lti.user_id }}</td></tr>
 </table>
+
+<h2>Your Session</h2>
 <table>
     {% for k,v in session.iteritems() %}
+        <tr><th>{{ k }}</th><td>{{ v }}</td></tr>
+    {% endfor %}
+</table>
+
+<h2>LTI Fields</h2>
+<table>
+    {% for k,v in lti.__dict__.iteritems() %}
         <tr><th>{{ k }}</th><td>{{ v }}</td></tr>
     {% endfor %}
 </table>
