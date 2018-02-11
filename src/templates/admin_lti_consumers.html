@@ -1,0 +1,78 @@
+{% extends "page_nav.html" %}
+{% block body %}
+    <div>
+    <br/>
+
+    <p>Return to <a href="{{ cf.url }}admin/top">Admin Top
+        </a></p>
+
+    <H2>LTI Consumers</H2>
+
+
+    <p>LTI Consumers are other systems (eg. Moodle, Sakai) that can "consume" OASIS Content. You can use this
+        feature to embed OASIS content into them.
+        <br>
+        <br>
+    </p>
+
+    <div class='container-fluid well'>
+
+        <div class='container-fluid well'>
+
+
+            <h4>LTI Consumers</h4>
+            <table class='table table-condensed datatable'>
+                <thead>
+                <tr>
+                    <th>Consumer Key</th>
+                    <th>Title</th>
+                    <th>Active</th>
+                    <th>Last Seen</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for consumer in lti_consumers %}
+                    <tr><td>{{ consumer.consumer_key }}</td>
+                        <th>{{ consumer.title }}</th>
+                        <td>{{ consumer.active }}</td>
+                        <td>{{ consumer.last_seen }}</td>
+                        <td><a class='btn btn-mini'
+                               href='{{ cf.url }}admin/edit_lti_consumer/{{ consumer.id }}'>Edit</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            <br/> <br/>
+            <a class='btn btn-small' href='{{ cf.url }}admin/add_lti_consumer'>Add LTI Consumer</a>
+            <br/> <br/>
+        </div>
+    </div>
+
+    <p>Return to <a href="{{ cf.url }}admin/top">Admin Top
+        </a></p>
+
+    <br/>
+    <br/>
+    <br/>
+    <br/>
+    </div>
+
+{% endblock body %}
+{% block js %}
+    <script>
+
+        $(function () {
+            $(".datatable").dataTable({
+                        "bPaginate": false,
+                        "bLengthChange": false,
+                        "bFilter": false
+                    }
+            );
+        });
+
+
+    </script>
+{% endblock js %}
+{% block pagetitle %}Server Admin{% endblock %}

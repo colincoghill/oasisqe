@@ -18,6 +18,7 @@ MarkupSafe==1.0
 openpyxl==2.5.0
 pyasn1==0.4.2
 pyinotify==0.9.6
+pylti==0.5.1
 pyOpenSSL==17.5.0
 python-memcached==1.59
 Werkzeug==0.14.1

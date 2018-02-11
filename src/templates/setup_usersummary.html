@@ -14,11 +14,16 @@
 
       <h2>User Account Summary</h2>
 
-      <p>For {{ user.uname }} ({{ user.fullname }})</p>
+      <p>For {{ user.uname }}</p>
 
       <p>Email: {{ user.email }}</p>
 
       <p>Student ID: {{ user.student_id }}</p>
+
+        <p>Given Name: {{  user.givenname }}</p>
+    <p>Family Name: {{  user.familyname }}</p>
+    <p>Display Name: {{  user.display_name }}</p>
+    <p>Source: {{  user.source }}</p>
 
       <p><A class='btn btn-small'
             HREF='{{ cf.url }}setup/useraudit/{{ user.id }}'>View

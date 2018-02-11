@@ -92,7 +92,10 @@ def logout():
     """
     if "user_id" in session:
         user_id = session["user_id"]
-        username = session["username"]
+        if "username" in session:
+            username = session["username"]
+        else:
+            username = "unknown"
         session.pop("user_id")
         session.clear()
         audit(1, user_id, user_id, "UserAuth", "%s logged out" % username)

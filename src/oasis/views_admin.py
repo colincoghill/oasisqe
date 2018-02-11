@@ -15,7 +15,7 @@ from flask import render_template, \
     request, redirect, abort, url_for, flash
 
 from logging import getLogger
-from oasis.lib import Courses, Setup, Periods, Feeds, External, UFeeds, OaConfig
+from oasis.lib import Courses, Setup, Periods, Feeds, External, UFeeds, OaConfig, LTIConsumers
 
 MYPATH = os.path.dirname(__file__)
 from .lib import DB, Groups
@@ -46,6 +46,97 @@ def admin_feeds():
         "admin_group_feeds.html",
         feeds=feeds
     )
+
+
+@app.route("/admin/lti_consumers")
+@require_perm('sysadmin')
+def admin_lti_consumers():
+    """ Present menu page of LTI consumer options """
+
+    lti_consumers = LTIConsumers.all_list()
+    return render_template(
+        "admin_lti_consumers.html",
+        lti_consumers=lti_consumers
+    )
+
+
+@app.route("/admin/add_lti_consumer")
+@require_perm('sysadmin')
+def admin_add_lti_consumer():
+    """ Present page to add an LTI Consumer to the system """
+    return render_template(
+        "admin_edit_lti_consumer.html",
+        lti_consumer={'id': 0},
+    )
+
+
+@app.route("/admin/edit_lti_consumer/<int:ltic_id>")
+@require_perm('sysadmin')
+def admin_edit_lti_consumer(ltic_id):
+    """ Present page to edit an LTI Consumer"""
+    try:
+        lti_consumer = LTIConsumers.LTIConsumer(ltic_id=ltic_id)
+    except KeyError:
+        return abort(404)
+
+    return render_template(
+        "admin_edit_lti_consumer.html",
+        lti_consumer=lti_consumer
+    )
+
+
+@app.route("/admin/edit_lti_consumer_submit/<int:ltic_id>", methods=["POST", ])
+@require_perm('sysadmin')
+def admin_edit_lti_consumer_submit(ltic_id):
+    """ Submit edit lti consumer form """
+    if "cancel" in request.form:
+        flash("Edit cancelled!")
+        return redirect(url_for("admin_lti_consumers"))
+
+    consumer_key = request.form.get('consumer_key', '')
+    title = request.form.get('title', '')
+    shared_secret = request.form.get('shared_secret', '')
+    comments = request.form.get('comments', '')
+    active = request.form.get('active', 'inactive') == 'active'
+
+    if ltic_id == 0:  # It's a new one being created
+        lti_consumer = LTIConsumers.LTIConsumer(
+            ltic_id=0,
+            consumer_key=consumer_key,
+            title=title,
+            shared_secret=shared_secret,
+            comments=comments,
+            active=active
+        )
+    else:
+        try:
+            lti_consumer = LTIConsumers.LTIConsumer(ltic_id=ltic_id)
+        except KeyError:
+            return abort(404)
+
+    lti_consumer.id = ltic_id
+    lti_consumer.consumer_key = consumer_key
+    lti_consumer.title = title
+    lti_consumer.shared_secret = shared_secret
+    lti_consumer.comments = comments
+    lti_consumer.active = active
+
+    if consumer_key == "":
+        flash("Can't Save: Consumer Key must be supplied")
+        return render_template(
+            "admin_edit_lti_consumer.html",
+            lti_consumer = lti_consumer
+        )
+    try:
+        lti_consumer.save()
+    except ValueError as err:  # Probably a duplicate or something
+        flash("Can't Save: %s" % err)
+        return render_template(
+            "admin_edit_lti_consumer.html",
+            lti_consumer=lti_consumer
+        )
+    flash("Changes saved", category='success')
+    return redirect(url_for("admin_lti_consumers"))
 
 
 @app.route("/admin/sysstats")

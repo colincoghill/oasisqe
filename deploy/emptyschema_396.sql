@@ -19,7 +19,7 @@ CREATE TABLE audit (
 
 CREATE TABLE users (
     "id" SERIAL PRIMARY KEY,
-    "uname" character varying(12),
+    "uname" character varying(256),
     "passwd" character varying(250),
     "givenname" character varying(80),
     "familyname" character varying(80),
@@ -29,7 +29,9 @@ CREATE TABLE users (
     "source" character varying,
     "expiry" timestamp ,
     "confirmation_code" character varying,
-    "confirmed" character varying
+    "confirmed" character varying,
+    "display_name" character varying,
+    "last_seen" timestamp with time zone
 );
 
 INSERT INTO users (uname, passwd, givenname, source, confirmed)
@@ -187,6 +189,25 @@ CREATE TABLE ugroups (
     "period" integer references periods("id"),
     "feedargs" character varying DEFAULT '',
     "active" boolean default TRUE
+);
+
+CREATE TABLE lti_consumers (
+    "id" SERIAL PRIMARY KEY,
+    "title" character varying(250),
+    "shared_secret" character varying,
+    "consumer_key" character varying,
+    "comments" character varying,
+    "active" BOOLEAN default FALSE,
+    "last_seen" timestamp with time ZONE
+);
+
+CREATE TABLE lti_course_params (
+    "course_id" INTEGER,
+    "lti_enabled" BOOLEAN default FALSE,
+    "lti_consumer" INTEGER,
+    "lti_coursename" CHARACTER VARYING,
+    "lti_auto_add_user" BOOLEAN default FALSE,
+    "lti_instructor_access" BOOLEAN default FALSE
 );
 
 CREATE TABLE marklog (
@@ -374,5 +395,7 @@ CREATE INDEX topics_course ON topics USING btree (course);
 CREATE INDEX userexams_lastchange_idx ON userexams USING btree (lastchange);
 CREATE INDEX usergroups_groupid ON usergroups USING btree (groupid);
 CREATE INDEX usergroups_userid ON usergroups USING btree (userid);
+CREATE INDEX users_email ON users USING btree (email);
 CREATE INDEX users_uname_passwd ON users USING btree (uname, passwd);
+CREATE INDEX lti_consumers_consumer_key ON lti_consumers USING btree (consumer_key);
 
