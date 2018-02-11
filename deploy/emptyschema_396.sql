@@ -395,6 +395,7 @@ CREATE INDEX topics_course ON topics USING btree (course);
 CREATE INDEX userexams_lastchange_idx ON userexams USING btree (lastchange);
 CREATE INDEX usergroups_groupid ON usergroups USING btree (groupid);
 CREATE INDEX usergroups_userid ON usergroups USING btree (userid);
+CREATE INDEX users_email ON users USING btree (email);
 CREATE INDEX users_uname_passwd ON users USING btree (uname, passwd);
 CREATE INDEX lti_consumers_consumer_key ON lti_consumers USING btree (consumer_key);
 

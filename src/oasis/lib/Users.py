@@ -57,7 +57,7 @@ def incr_version():
 
 def get_user_record(user_id):
     """ Fetch info about the user
-        returns  {'id', 'uname', 'givenname', 'lastname', 'fullname'}
+        returns  {'id', 'uname', 'givenname', 'lastname', 'fullname', and more!}
     """
     # TODO: clear the cache entry when we change any of these values
     key = "user-%s-record" % (user_id,)
@@ -65,12 +65,14 @@ def get_user_record(user_id):
     if obj:
         return json.loads(obj)
     sql = """SELECT id, uname, givenname, familyname, student_id,
-                    acctstatus, email, expiry, source, confirmed
+                    acctstatus, email, expiry, source, confirmed, display_name
                     FROM users
                     WHERE id=%s"""
     params = [user_id, ]
     ret = run_sql(sql, params)
     if ret:
+        fullname = ""
+        display_name = ""
         row = ret[0]
         if row[1]:
             uname = unicode(row[1], 'utf-8')
@@ -84,17 +86,24 @@ def get_user_record(user_id):
             familyname = unicode(row[3], 'utf-8')
         else:
             familyname = u""
+        if row[10]:
+            display_name = unicode(row[10], 'utf-8')
+        if len(givenname)>0 or len(familyname) > 0:
+            fullname = u"%s %s" % (givenname, familyname)
+
         user_rec = {'id': user_id,
                     'uname': uname,
                     'givenname': givenname,
                     'familyname': familyname,
-                    'fullname': u"%s %s" % (givenname, familyname),
+                    'fullname': fullname,
                     'student_id': ret[0][4],
                     'acctstatus': ret[0][5],
                     'email': ret[0][6],
                     'expiry': ret[0][7],
                     'source': ret[0][8],
-                    'confirmed': ret[0][9]}
+                    'confirmed': ret[0][9],
+                    'display_name': display_name
+                    }
         if ret[0][9] is True \
                 or ret[0][9] == "true" \
                 or ret[0][9] == "TRUE" \
@@ -105,11 +114,14 @@ def get_user_record(user_id):
         else:
             user_rec['confirmed'] = False
 
-        if not user_rec['fullname']:
-            if user_rec['email']:
-                user_rec['fullname'] = user_rec['email']
+        if not display_name:
+            if len(fullname) > 0:
+                user_rec['display_name'] = fullname
+            elif len(user_rec['email']) > 0:
+                user_rec['display_name'] = user_rec['email']
             else:
-                user_rec['fullname'] = "Unknown"
+                user_rec['display_name'] = "Unknown"
+
         MC.set(key, json.dumps(user_rec))
         return user_rec
 
@@ -180,7 +192,7 @@ def create(uname, passwd, givenname, familyname, acctstatus, studentid,
                                   acctstatus, student_id, email, expiry,
                                   source, confirmation_code, confirmed, display_name)
                VALUES (%s, %s, %s, %s, %s, %s,
-                       %s, %s, %s, %s, %s);""",
+                       %s, %s, %s, %s, %s, %s);""",
             [uname, passwd, givenname, familyname,
              acctstatus, studentid, email, expiry,
              source, confirm_code, confirm, display_name])
@@ -221,6 +233,20 @@ def find(search, limit=20):
         Search username then student ID then surname then first name.
         Return results in that order.
     """
+    # exact search first
+    ret = run_sql("""SELECT id FROM users
+                        WHERE uname = %s
+                        OR student_id = %s
+                        OR email = %s LIMIT %s;""",
+                  [search, search, search, limit])
+    res = []
+    if ret:
+        res = [user[0] for user in ret]
+
+    if res:
+        return res
+
+    # Then look for similar
     ret = run_sql("""SELECT id FROM users
                         WHERE LOWER(uname) LIKE LOWER(%s)
                         OR LOWER(familyname) LIKE LOWER(%s)
@@ -228,7 +254,7 @@ def find(search, limit=20):
                         OR student_id LIKE %s
                         OR LOWER(email) LIKE LOWER(%s) LIMIT %s;""",
                   [search, search, search, search, search, limit])
-    res = []
+
     if ret:
         res = [user[0] for user in ret]
     return res
@@ -328,6 +354,18 @@ def set_givenname(uid, name):
 def set_familyname(uid, name):
     """ Update Family Name."""
     run_sql("""UPDATE "users" SET familyname = %s WHERE "id" = %s;""", [name, uid])
+    incr_version()
+
+
+def set_display_name(uid, name):
+    """ Update Display Name."""
+    run_sql("""UPDATE "users" SET display_name = %s WHERE "id" = %s;""", [name, uid])
+    incr_version()
+
+
+def update_last_seen(uid,):
+    """ Update Last Seen to now."""
+    run_sql("""UPDATE "users" SET last_seen = NOW() WHERE "id" = %s;""", [uid,])
     incr_version()
 
 

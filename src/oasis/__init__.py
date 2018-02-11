@@ -86,8 +86,10 @@ def template_context():
     else:
         username = None
 
-    if "user_fullname" in session:
+    if "user_fullname" in session and session['user_fullname']:
         user_fullname = session['user_fullname']
+    elif "user_display_name" in session:
+        user_fullname = session['user_display_name']
     else:
         user_fullname = None
     today = datetime.date.today()
@@ -308,6 +310,7 @@ def login_local_submit():
     session['user_givenname'] = user['givenname']
     session['user_familyname'] = user['familyname']
     session['user_fullname'] = user['fullname']
+    session['user_display_name'] = user['display_name']
     session['user_authtype'] = "local"
 
     audit(1, user_id, user_id, "UserAuth",
@@ -434,6 +437,7 @@ def login_email_passreset(code):
     session['user_givenname'] = user['givenname']
     session['user_familyname'] = user['familyname']
     session['user_fullname'] = user['fullname']
+    session['user_display_name'] = user['display_name']
     session['user_authtype'] = "local"
     audit(1, uid, uid, "UserAuth",
           "%s logged in using password reset email" % (session['username'],))

@@ -60,6 +60,8 @@ def _auth_user(lti, app):
     session['user_givenname'] = user['givenname']
     session['user_familyname'] = user['familyname']
     session['user_fullname'] = user['fullname']
+    session['user_display_name'] = user['display_name']
+
     session['user_authtype'] = "ltiauth"
 
     audit(1, user_id, user_id, "UserAuth",

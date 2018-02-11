@@ -26,6 +26,10 @@ ALTER TABLE users ADD COLUMN "last_seen" timestamp with time zone;
 -- store the user's 'fullname' separately.
 ALTER TABLE users ADD COLUMN "display_name" character varying;
 
+-- using email as an identifier more, make it quicker to search
+CREATE INDEX users_email ON users USING btree (email);
+
+
 -- keep track of LTI consumers
 CREATE TABLE lti_consumers (
     "id" SERIAL PRIMARY KEY,
