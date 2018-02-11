@@ -25,6 +25,11 @@ Install
 
    tar -zxf oasis3.9.6.tgz
 
+5. Refresh dependencies::
+
+   cd /opt/oasisqe/3.9/src
+   pip install -r requirements.txt
+
 
 Configure
 ---------
