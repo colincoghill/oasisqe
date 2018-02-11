@@ -12,9 +12,9 @@ In 2012 it became clear that the code needed some work - it is still very succes
 
 I have taken the OASIS v3.6 code base, developed mostly in 2001-2004 (by me), and gone through, removing old components, refreshing the look and feel, and fixing security issues. This has been a major piece of work, requiring a rewrite of approximately 1/3 of the code.
 
-The plan is to release this code as a series of OSS releases, as I get enough features of the original system active to be useful to other people.
 
-This code has been developed mostly under the auspices of The University of Auckland, and is used successfully by us. The University does not, however, otherwise endorse it or commit to any support of other users.
+This code has been developed mostly under the auspices of The University of Auckland, and is used successfully by them. The University does not, however, otherwise endorse it or commit to any support of other users.
+
 
 
 .. toctree::

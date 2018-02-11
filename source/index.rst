@@ -11,8 +11,7 @@ This is very much a *work in progress*, until it is finished, you can try the (v
     http://www.oasisqe.com/downloads/docs/OASIS%20User%20Manual%20Ed%201%20Dec%202004.doc
 
 
-This documentation is being written for OASIS version 3.9.2, which is not yet
-released. Target release date is: 1st July, 2013.
+This documentation covers OASIS version 3.9.6, which was released 11th Feb 2017.
 
 Chapters:
 =========

@@ -1,6 +1,26 @@
 Changelog
 =========
 
+
+v3.9.6
+------
+
+11th Feb 2017
+
+It's been a few years. Lots of small bug fixes and tuning.
+
+Major Changes
+^^^^^^^^^^^^^
+
+  * LTI single-signon support. EXPERIMENTAL
+  * Installation on Ubuntu Xenial (16.04)
+  * Vagrant support to make developing easier
+  * Dependencies (JQuery, Flask, and others) updated to current versions.
+  
+
+
+
+
 v3.9.3
 ------
 10th July 2013

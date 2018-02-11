@@ -11,7 +11,9 @@ Sections:
 .. toctree::
    :maxdepth: 2
 
+   admin_configuration
    admin_feeds
+   admin_lti
    admin_courses
    admin_oasisdb
 
