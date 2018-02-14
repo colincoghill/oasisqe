@@ -67,4 +67,3 @@ If you have any suggestions or improvements, please contact me.
 
 Colin Coghill
  ( colin@colincoghill.com )
-
