@@ -1,3 +1,4 @@
 /.idea
 *.pyc
+/.vagrant
 docs/manual/build
