@@ -35,9 +35,10 @@ RUN mkdir /etc/supervisor.d
 
 COPY docker/supervisord.conf /etc/supervisord.conf
 COPY docker/supervisor-apache2.ini /etc/supervisor.d/apache2.ini
+COPY docker/supervisor-oasisqe.ini /etc/supervisor.d/oasisqe.ini
 
 RUN mkdir -p /run/apache2
 
-EXPOSE 80
+EXPOSE 80 8000
 
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]

@@ -5,6 +5,7 @@ decorator==4.2.1
 enum34==1.1.6
 Flask==0.12.2
 Flask-WTF==0.14.2
+gunicorn==19
 html5lib==1.0.1
 idna==2.6
 ipaddress==1.0.19

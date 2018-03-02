@@ -11,8 +11,8 @@ services:
         build: ./docker/postgresql
         ports:
             - "5432:5432"
-        volumes:
-            - ./:/var/lib/postgresql/data
+              #        volumes:
+                #            - ./:/var/lib/postgresql/data
         environment:
             POSTGRES_DB: oasisqe
             POSTGRES_USER: oasisqe
@@ -20,8 +20,8 @@ services:
 
     oasisqe:
         build: ./src
-        volumes:
-            - ./:/var/www/html
+        #        volumes:
+        #            - ./:/var/www/html
         ports:
             - "80:80"
         depends_on:
@@ -30,8 +30,8 @@ services:
         
     memcached:
           build: ./docker/memcached
-          volumes:
-            - ./:/var/lib/memcached
+          #          volumes:
+          #            - ./:/var/lib/memcached
           ports:
             - "11211:11211"
 
