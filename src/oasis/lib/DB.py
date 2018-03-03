@@ -1409,7 +1409,7 @@ def erase_existing():
     """ Remove the existing database. DANGEROUS
     """
 
-    with open(os.path.join(os.path.dirname(OaConfig.homedir), "deploy", "eraseexisting.sql")) as f:
+    with open(os.path.join(os.path.dirname(OaConfig.homedir), "src/sql", "eraseexisting.sql")) as f:
         sql = f.read()
     print "Removing existing tables."
     run_sql(sql)
@@ -1419,7 +1419,7 @@ def clean_install_3_6():
     """ Install a fresh blank v3.6 schema.
     """
 
-    with open(os.path.join(os.path.dirname(OaConfig.homedir), "deploy", "emptyschema_36x.sql")) as f:
+    with open(os.path.join(os.path.dirname(OaConfig.homedir), "src/sql", "emptyschema_36x.sql")) as f:
         sql = f.read()
 
     run_sql(sql)
@@ -1430,7 +1430,7 @@ def clean_install_3_9_1():
     """ Install a fresh blank v3.9.1 schema.
     """
 
-    with open(os.path.join(os.path.dirname(OaConfig.homedir), "deploy", "emptyschema_391.sql")) as f:
+    with open(os.path.join(os.path.dirname(OaConfig.homedir), "src/sql", "emptyschema_391.sql")) as f:
         sql = f.read()
 
     run_sql(sql)
@@ -1441,7 +1441,7 @@ def clean_install_3_9_2():
     """ Install a fresh blank v3.9.2 schema.
     """
 
-    with open(os.path.join(os.path.dirname(OaConfig.homedir), "deploy", "emptyschema_392.sql")) as f:
+    with open(os.path.join(os.path.dirname(OaConfig.homedir), "src/sql", "emptyschema_392.sql")) as f:
         sql = f.read()
 
     run_sql(sql)
@@ -1452,7 +1452,7 @@ def clean_install_3_9_3():
     """ Install a fresh blank v3.9.3 schema.
     """
 
-    with open(os.path.join(os.path.dirname(OaConfig.homedir), "deploy", "emptyschema_393.sql")) as f:
+    with open(os.path.join(os.path.dirname(OaConfig.homedir), "src/sql", "emptyschema_393.sql")) as f:
         sql = f.read()
 
     run_sql(sql)
@@ -1463,7 +1463,7 @@ def clean_install_3_9_4():
     """ Install a fresh blank v3.9.4 schema.
     """
 
-    with open(os.path.join(os.path.dirname(OaConfig.homedir), "deploy", "emptyschema_394.sql")) as f:
+    with open(os.path.join(os.path.dirname(OaConfig.homedir), "src/sql", "emptyschema_394.sql")) as f:
         sql = f.read()
 
     run_sql(sql)
@@ -1473,7 +1473,7 @@ def clean_install_3_9_4():
 def clean_install_3_9_5():
     """ Install a fresh blank v3.9.5 schema.
     """
-    with open(os.path.join(os.path.dirname(OaConfig.homedir), "deploy", "emptyschema_395.sql")) as f:
+    with open(os.path.join(os.path.dirname(OaConfig.homedir), "src/sql", "emptyschema_395.sql")) as f:
         sql = f.read()
 
     run_sql(sql)
@@ -1483,7 +1483,7 @@ def clean_install_3_9_5():
 def clean_install_3_9_6():
     """ Install a fresh blank v3.9.6 schema.
     """
-    with open(os.path.join(os.path.dirname(OaConfig.homedir), "deploy", "emptyschema_396.sql")) as f:
+    with open(os.path.join(os.path.dirname(OaConfig.homedir), "src/sql", "emptyschema_396.sql")) as f:
         sql = f.read()
 
     run_sql(sql)
@@ -1493,7 +1493,7 @@ def clean_install_3_9_6():
 def upgrade_3_6_to_3_9_5(options):
     """ Given a 3.6 database, upgrade it to 3.9.3
     """
-    with open(os.path.join(os.path.dirname(OaConfig.homedir), "deploy", "migrate_36x_to_392.sql")) as f:
+    with open(os.path.join(os.path.dirname(OaConfig.homedir), "src/sql", "migrate_36x_to_392.sql")) as f:
         sql = f.read()
 
     run_sql(sql)
@@ -1501,16 +1501,16 @@ def upgrade_3_6_to_3_9_5(options):
 
     calc_stats()
 
-    with open(os.path.join(os.path.dirname(OaConfig.homedir), "deploy", "migrate_392_to_393.sql")) as f:
+    with open(os.path.join(os.path.dirname(OaConfig.homedir), "src/sql", "migrate_392_to_393.sql")) as f:
         sql = f.read()
     run_sql(sql)
     print "Migrated table structure from 3.9.2 to 3.9.3"
 
-    with open(os.path.join(os.path.dirname(OaConfig.homedir), "deploy", "migrate_393_to_394.sql")) as f:
+    with open(os.path.join(os.path.dirname(OaConfig.homedir), "src/sql", "migrate_393_to_394.sql")) as f:
         sql = f.read()
     run_sql(sql)
     print "Migrated table structure from 3.9.3 to 3.9.4"
-    with open(os.path.join(os.path.dirname(OaConfig.homedir), "deploy", "migrate_394_to_395.sql")) as f:
+    with open(os.path.join(os.path.dirname(OaConfig.homedir), "src/sql", "migrate_394_to_395.sql")) as f:
         sql = f.read()
     run_sql(sql)
     print "Migrated table structure from 3.9.4 to 3.9.5"
@@ -1522,21 +1522,21 @@ def upgrade_3_6_to_3_9_5(options):
 def upgrade_3_9_1_to_3_9_5(_):
     """ Given a 3.9.1 database, upgrade it to 3.9.4.
     """
-    with open(os.path.join(os.path.dirname(OaConfig.homedir), "deploy", "migrate_391_to_392.sql")) as f:
+    with open(os.path.join(os.path.dirname(OaConfig.homedir), "src/sql", "migrate_391_to_392.sql")) as f:
         sql = f.read()
     run_sql(sql)
     print "Migrated table structure from 3.9.1 to 3.9.2"
 
-    with open(os.path.join(os.path.dirname(OaConfig.homedir), "deploy", "migrate_392_to_393.sql")) as f:
+    with open(os.path.join(os.path.dirname(OaConfig.homedir), "src/sql", "migrate_392_to_393.sql")) as f:
         sql = f.read()
     run_sql(sql)
     print "Migrated table structure from 3.9.2 to 3.9.3"
 
-    with open(os.path.join(os.path.dirname(OaConfig.homedir), "deploy", "migrate_393_to_394.sql")) as f:
+    with open(os.path.join(os.path.dirname(OaConfig.homedir), "src/sql", "migrate_393_to_394.sql")) as f:
         sql = f.read()
     run_sql(sql)
     print "Migrated table structure from 3.9.3 to 3.9.4"
-    with open(os.path.join(os.path.dirname(OaConfig.homedir), "deploy", "migrate_394_to_395.sql")) as f:
+    with open(os.path.join(os.path.dirname(OaConfig.homedir), "src/sql", "migrate_394_to_395.sql")) as f:
         sql = f.read()
     run_sql(sql)
     print "Migrated table structure from 3.9.4 to 3.9.5"
@@ -1545,16 +1545,16 @@ def upgrade_3_9_1_to_3_9_5(_):
 def upgrade_3_9_2_to_3_9_5(_):
     """ Given a 3.9.2 database, upgrade it to 3.9.4.
     """
-    with open(os.path.join(os.path.dirname(OaConfig.homedir), "deploy", "migrate_392_to_393.sql")) as f:
+    with open(os.path.join(os.path.dirname(OaConfig.homedir), "src/sql", "migrate_392_to_393.sql")) as f:
         sql = f.read()
     run_sql(sql)
     print "Migrated table structure from 3.9.2 to 3.9.3"
 
-    with open(os.path.join(os.path.dirname(OaConfig.homedir), "deploy", "migrate_393_to_394.sql")) as f:
+    with open(os.path.join(os.path.dirname(OaConfig.homedir), "src/sql", "migrate_393_to_394.sql")) as f:
         sql = f.read()
     run_sql(sql)
     print "Migrated table structure from 3.9.3 to 3.9.4"
-    with open(os.path.join(os.path.dirname(OaConfig.homedir), "deploy", "migrate_394_to_395.sql")) as f:
+    with open(os.path.join(os.path.dirname(OaConfig.homedir), "src/sql", "migrate_394_to_395.sql")) as f:
         sql = f.read()
     run_sql(sql)
     print "Migrated table structure from 3.9.4 to 3.9.5"
@@ -1563,11 +1563,11 @@ def upgrade_3_9_2_to_3_9_5(_):
 def upgrade_3_9_3_to_3_9_5(_):
     """ Given a 3.9.3 database, upgrade it to 3.9.5.
     """
-    with open(os.path.join(os.path.dirname(OaConfig.homedir), "deploy", "migrate_393_to_394.sql")) as f:
+    with open(os.path.join(os.path.dirname(OaConfig.homedir), "src/sql", "migrate_393_to_394.sql")) as f:
         sql = f.read()
     run_sql(sql)
     print "Migrated table structure from 3.9.3 to 3.9.4"
-    with open(os.path.join(os.path.dirname(OaConfig.homedir), "deploy", "migrate_394_to_395.sql")) as f:
+    with open(os.path.join(os.path.dirname(OaConfig.homedir), "src/sql", "migrate_394_to_395.sql")) as f:
         sql = f.read()
     run_sql(sql)
     print "Migrated table structure from 3.9.4 to 3.9.5"
@@ -1576,7 +1576,7 @@ def upgrade_3_9_3_to_3_9_5(_):
 def upgrade_3_9_4_to_3_9_5(_):
     """ Given a 3.9.4 database, upgrade it to 3.9.5.
     """
-    with open(os.path.join(os.path.dirname(OaConfig.homedir), "deploy", "migrate_394_to_395.sql")) as f:
+    with open(os.path.join(os.path.dirname(OaConfig.homedir), "src/sql", "migrate_394_to_395.sql")) as f:
         sql = f.read()
     run_sql(sql)
     print "Migrated table structure from 3.9.4 to 3.9.5"
@@ -1585,7 +1585,7 @@ def upgrade_3_9_4_to_3_9_5(_):
 def upgrade_3_9_5_to_3_9_6(_):
     """ Given a 3.9.5 database, upgrade it to 3.9.6.
     """
-    with open(os.path.join(os.path.dirname(OaConfig.homedir), "deploy", "migrate_395_to_396.sql")) as f:
+    with open(os.path.join(os.path.dirname(OaConfig.homedir), "src/sql", "migrate_395_to_396.sql")) as f:
         sql = f.read()
     run_sql(sql)
     print "Migrated table structure from 3.9.5 to 3.9.6"
