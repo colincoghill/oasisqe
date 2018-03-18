@@ -9,16 +9,30 @@
 # just using its settings and DB layer to run sql directly.
 
 import os
+import os.path
 import sys
 from optparse import OptionParser
 
-# we should be SOMETHING/scripts/oasisdb, find APPDIR
-# and add "SOMETHING" to our path
-APPDIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+# find installed copy of OASIS
+UPTWO=os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+APPDIR=None
 
-# if you need to override the location, change it here:
+if "OASISLIB" in os.environ:
+   APPDIR = os.environ["OASISLIB"]
+elif os.path.isdir("/opt/oasisqe/3.9/src/oasis"):
+   APPDIR = "/opt/oasisqe/3.9/src"
+elif os.path.isdir("/opt/oasisqe/3.9/oasis"):
+   APPDIR = "/opt/oasisqe/3.9"
+elif os.path.isdir("%s/%s"%(UPTWO,"/oasis")):
+   APPDIR = UPTWO
+elif os.path.isdir("%s/%s"%(UPTWO,"/src/oasis")):
+   APPDIR = UPTWO+"/src"
 
-# APPDIR = "/opt/oasisqe/3.9/src"
+if not APPDIR:
+    print "Unable to find installed OASIS code, normally at /opt/oasisqe/3.9/src"
+    print "You can specify it in the OASIS lib environment variable on the commandline: "
+    print "          OASISLIB=/opt/oasisqe/3.9/src oasisdb"
+    exit(1)
 
 print "using copy of OASIS installed at %s" % APPDIR
 
