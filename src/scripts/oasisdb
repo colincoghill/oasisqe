@@ -4,15 +4,125 @@
 
 # Script to look at the OASIS database and make any fixes or
 # upgrades if needed. Will prompt before doing anything too dangerous.
+#
+# We try to be as independant of the installed version of OASIS as possible,
+# just using its settings and DB layer to run sql directly.
 
 import os
 import sys
 from optparse import OptionParser
 
-# we should be SOMETHING/bin/oasisdb, find APPDIR
-# and add "SOMETHING/src" to our path
+# we should be SOMETHING/scripts/oasisdb, find APPDIR
+# and add "SOMETHING" to our path
 APPDIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-sys.path.append(os.path.join(APPDIR, "src"))
+
+# if you need to override the location, change it here:
+
+# APPDIR = "/opt/oasisqe/3.9/src"
+
+print "using copy of OASIS installed at %s" % APPDIR
+
+sys.path.append(APPDIR)
+
+
+def _get_exams(db):
+    """ Return a list of exam IDs """
+    ret = db.run_sql("SELECT exam FROM exams ORDER BY exam;")
+    if ret:
+        return [int(row[0]) for row in ret]
+    print "ERROR: Unable to query exams table"
+    return []
+
+def _get_exam_students(db, exam):
+    """ Return a list of user IDs """
+    if exam:
+        ret = db.run_sql("SELECT student FROM examquestions WHERE exam=%s GROUP BY student;", (exam,))
+    else:
+        ret = db.run_sql("SELECT student FROM examquestions WHERE exam>=1 GROUP BY student;")
+
+    return [int(row[0]) for row in ret]
+
+def _get_student_exams(db, student):
+    """ Return a list of exam IDs """
+    ret = db.run_sql("SELECT exam FROM examquestions WHERE student=%s GROUP BY exam;", (student,))
+    return [int(row[0]) for row in ret]
+
+def _get_exam_questions(db, exam, student):
+    """ Return a list of exam IDs """
+    ret = db.run_sql("SELECT position, question FROM examquestions WHERE exam=%s AND student=%s;", (exam,student))
+    return [(int(row[0]), int(row[1])) for row in ret]
+
+def check_assess_duplication_1(db):
+    """ Check assessments to see if questions have been reused from the same assessment,
+        giving identical questions/answers.
+    """
+    count = 0
+    progress = 0
+    exams = _get_exams(db)
+    for exam in exams:
+        students = _get_exam_students(db, exam)
+        progress += 1
+        if progress == 10:
+            progress = 0
+            print
+        print ".",
+        for student in students:
+            questions = _get_exam_questions(db, exam, student)
+            qinstances = [qid for (pos, qid) in questions]
+            uniques = set(qinstances)
+            if len(uniques) < len(qinstances):
+                print 
+                print "Assessment %s, user %s, Type 1 Duplication: %s" % (exam, student, qinstances)
+                count += 1
+    print 
+    return count
+
+def check_assess_duplication_2(db):
+    """ Check assessments to see if questions have been reused from a previous assessment 
+        (and thus may have answers already filled in.)
+    """
+    count = 0
+    progress = 0
+    students = _get_exam_students(db, exam=None)
+    for student in students:
+        exams = _get_student_exams(db, student)
+        progress += 1
+        if progress == 25:
+            progress = 0
+            print
+        print ".",
+        qinstances = []
+        for exam in exams:
+            qids = [qid for (pos,qid) in _get_exam_questions(db, exam, student)]
+            qinstances += qids
+        uniques = set(qinstances)
+        if len(uniques) < len(qinstances):
+            print
+            print "Assessment %s, user %s, Type 2 Duplication: %s" % (exam, student, qinstances)
+            count += 1
+    print
+    return count
+
+def check_assess_duplication_3(db):
+    """ Check assessments to see if questions have been reused from practice
+        (potentially having answers already filled in)
+    """
+    return 0
+
+def do_diagnose_db(db):
+    """ Check the database for some problems that may have occurred in the past.
+    """
+    print "Checking Assessments for duplication type 1"
+    count = check_assess_duplication_1(db) 
+    print "%d found" % count
+
+    print "Checking Assessments for duplication type 2"
+    count = check_assess_duplication_2(db) 
+    print "%d found" % count
+
+#    print "Checking Assessments for duplication type 3"
+#    count = check_assess_duplication_3(db) 
+#    print "%d found" % count
 
 
 def do_list_courses(db):
@@ -126,7 +236,7 @@ Commands:
     show courses        - List the courses in the database.
     resetpw             - Change the admin password.
     calcstats           - Refresh statistics calculation over whole database.
-
+    diagnose            - Check the database for potential problems.
     init                - Set up the OASIS table structure in the database.
     upgrade             - Upgrade an older OASIS database to the newest version.
 """
@@ -306,6 +416,10 @@ if __name__ == "__main__":
 
     if args[0] == 'status':
         do_status(DB)
+        sys.exit()
+
+    if args[0] == 'diagnose':
+        do_diagnose_db(DB)
         sys.exit()
 
     if args[0] == 'resetpw':
