@@ -56,6 +56,14 @@ def _get_exam_students(db, exam):
 
     return [int(row[0]) for row in ret]
 
+def _get_student_all_variations(db, student):
+    """
+    Fetch all question variations a student as seen as a dictionary
+    """
+    ret = db.run_sql("SELECT qtemplate, variation, version, exam FROM questions WHERE student=%s ORDER BY qtemplate, variation, version;", (student,))
+    return [(int(row[0]), int(row[1]), int(row[2]), int(row[3])) for row in ret]
+
+
 def _get_student_exams(db, student):
     """ Return a list of exam IDs """
     ret = db.run_sql("SELECT exam FROM examquestions WHERE student=%s GROUP BY exam;", (student,))
@@ -121,22 +129,43 @@ def check_assess_duplication_3(db):
     """ Check assessments to see if questions have been reused from practice
         (potentially having answers already filled in)
     """
-    return 0
+    # questions    (student, qtemplate, variation, version, exam)
+    count = 0
+    progress = 0
+    students = _get_exam_students(db, exam=None)
+    for student in students:
+        variations = _get_student_all_variations(db, student)   # [[qtemplate, variation, version, exam], ]
+        progress += 1
+        if progress == 25:
+            progress = 0
+            print
+        print ".",
+        cur = [0,0,0,0]
+        for var in variations:
+            if var[0] == cur[0] and var[1] == cur[1] and var[2] == cur[2]:
+                print
+                print "User %s, Type 3 Duplication: variation (%s,%s,%s,%s) with variation (%s,%s,%s,%s)" % (student, var[0], var[1], var[2], var[3], cur[0], cur[1], cur[2], cur[3])
+                count += 1
+    print
+    return count
+
+
 
 def do_diagnose_db(db):
     """ Check the database for some problems that may have occurred in the past.
     """
+
     print "Checking Assessments for duplication type 1"
-    count = check_assess_duplication_1(db) 
+    count = check_assess_duplication_1(db)
     print "%d found" % count
 
     print "Checking Assessments for duplication type 2"
-    count = check_assess_duplication_2(db) 
+    count = check_assess_duplication_2(db)
     print "%d found" % count
 
-#    print "Checking Assessments for duplication type 3"
-#    count = check_assess_duplication_3(db) 
-#    print "%d found" % count
+    print "Checking Assessments for duplication type 3"
+    count = check_assess_duplication_3(db)
+    print "%d found" % count
 
 
 def do_list_courses(db):
