@@ -94,7 +94,7 @@ def check_assess_duplication_1(db):
             uniques = set(qinstances)
             if len(uniques) < len(qinstances):
                 print 
-                print "Assessment %s, user %s, Type 1 Duplication: %s" % (exam, student, qinstances)
+                print "Assessment %s, user %s, Type 1 Duplication: %s (question reused in same assessment)" % (exam, student, qinstances)
                 count += 1
     print 
     return count
@@ -120,7 +120,7 @@ def check_assess_duplication_2(db):
         uniques = set(qinstances)
         if len(uniques) < len(qinstances):
             print
-            print "Assessment %s, user %s, Type 2 Duplication: %s" % (exam, student, qinstances)
+            print "User %s, Type 2 Duplication: %s (question reused across exams)" % (exam, student, qinstances)
             count += 1
     print
     return count
@@ -144,11 +144,10 @@ def check_assess_duplication_3(db):
         for var in variations:
             if var[0] == cur[0] and var[1] == cur[1] and var[2] == cur[2]:
                 print
-                print "User %s, Type 3 Duplication: variation (%s,%s,%s,%s) with variation (%s,%s,%s,%s)" % (student, var[0], var[1], var[2], var[3], cur[0], cur[1], cur[2], cur[3])
+                print "User %s, Type 3 Duplication: variation (%s,%s,%s,%s) with variation (%s,%s,%s,%s) (question from practice reused in assessment)" % (student, var[0], var[1], var[2], var[3], cur[0], cur[1], cur[2], cur[3])
                 count += 1
     print
     return count
-
 
 
 def do_diagnose_db(db):
