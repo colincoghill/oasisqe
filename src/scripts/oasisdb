@@ -120,7 +120,7 @@ def check_assess_duplication_2(db):
         uniques = set(qinstances)
         if len(uniques) < len(qinstances):
             print
-            print "User %s, Type 2 Duplication: %s (question reused across exams)" % (exam, student, qinstances)
+            print "User %s, Type 2 Duplication: %s (question reused across exams)" % (student, qinstances)
             count += 1
     print
     return count
