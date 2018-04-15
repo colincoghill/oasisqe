@@ -12,7 +12,8 @@ echo "Provisioning OASISDEV" >> /tmp/provision.notes
 
 BASEDIR=/opt/oasisqe/3.9
 LOGDIR=/var/log/oasisqe
-
+BINDIR=/opt/oasisqe/3.9/src/scripts
+OASISLIB=${BASEDIR}
 
 APTOPTS=-y
 
@@ -45,7 +46,7 @@ apt-get install ${APTOPTS} python-psycopg2 python-bcrypt python-lxml python-pill
 apt-get install ${APTOPTS} --no-install-recommends python-pip
 
 # Upgrade pip
-pip install --upgrade pip
+pip install --upgrade pip==9
 pip install --upgrade setuptools
 
 # Install OASIS python requirements
@@ -62,7 +63,7 @@ chown oasisqe ${LOGDIR}
 touch ${LOGDIR}/main.log
 chown oasisqe ${LOGDIR}/main.log
 
-cp ${BASEDIR}/deploy/sampleconfig.ini /etc/oasisqe.ini
+cp ${BASEDIR}/docs/examples/sampleconfig.ini /etc/oasisqe.ini
 sed -i "s/pass: SECRET/pass: ${DBPASS}/g" /etc/oasisqe.ini
 sed -i "s/statichost: http:\/\/localhost/statichost: http:\/\/localhost:8082/g" /etc/oasisqe.ini
 sed -i "s/url: http:\/\/localhost\/oasis/url: http:\/\/localhost:8082\/oasis/g" /etc/oasisqe.ini
@@ -73,18 +74,19 @@ su postgres -c "psql postgres <<EOF
 EOF"
 
 su postgres  -c "createdb -O oasisqe oasisqe"
-su oasisqe -c "/opt/oasisqe/3.9/bin/oasisdb init"
+su oasisqe -c "${BINDIR}/oasisdb init"
 
-cp ${BASEDIR}/deploy/apache24config.sample /etc/apache2/sites-available/oasisqe.conf
+cp ${BASEDIR}/docs/examples/apache24config.sample /etc/apache2/sites-available/oasisqe.conf
+export PYTHON_PATH=${BASEDIR}/src
 a2ensite oasisqe
 
 service apache2 reload
 
-su oasisqe -c "${BASEDIR}/bin/create_test_topic EXAMPLE101 Samples"
+su oasisqe -c "${BINDIR}/create_test_topic EXAMPLE101 Samples"
 echo
 echo 
 echo OASISQE deployed to http://localhost:8082/oasis
 echo
 echo "********************************************"
-su oasisqe -c "${BASEDIR}/bin/reset_admin_password devtest"
+su oasisqe -c "${BINDIR}/reset_admin_password devtest"
 echo "********************************************"

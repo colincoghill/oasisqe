@@ -31,7 +31,7 @@ chown oasisqe /var/log/oasisqe
 touch /var/log/oasisqe/main.log
 chown oasisqe /var/log/oasisqe/main.log
 
-cp /opt/oasisqe/3.9/deploy/sampleconfig.ini /etc/oasisqe.ini
+cp /opt/oasisqe/3.9/docs/example/sampleconfig.ini /etc/oasisqe.ini
 sed -i "s/pass: SECRET/pass: ${DBPASS}/g" /etc/oasisqe.ini
 sed -i "s/statichost: http:\/\/localhost/statichost: http:\/\/localhost:8080/g" /etc/oasisqe.ini
 sed -i "s/url: http:\/\/localhost\/oasis/url: http:\/\/localhost:8080\/oasis/g" /etc/oasisqe.ini
@@ -44,7 +44,7 @@ EOF"
 su postgres  -c "createdb -O oasisqe oasisqe"
 su oasisqe -c "/opt/oasisqe/3.9/bin/oasisdb init"
 
-cp /opt/oasisqe/3.9/deploy/apache24config.sample /etc/apache2/sites-available/oasisqe.conf
+cp /opt/oasisqe/3.9/docs/examples/apache24config.sample /etc/apache2/sites-available/oasisqe.conf
 a2ensite oasisqe
 
 service apache2 reload

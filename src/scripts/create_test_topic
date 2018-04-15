@@ -13,8 +13,28 @@
 import sys
 import os
 
-APPDIR = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), "src")
+# find installed copy of OASIS
+UPTWO=os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+APPDIR=None
 
+if "OASISLIB" in os.environ:
+   APPDIR = os.environ["OASISLIB"]
+elif os.path.isdir("/opt/oasisqe/3.9/src/oasis"):
+   APPDIR = "/opt/oasisqe/3.9/src"
+elif os.path.isdir("/opt/oasisqe/3.9/oasis"):
+   APPDIR = "/opt/oasisqe/3.9"
+elif os.path.isdir("%s/%s"%(UPTWO,"/oasis")):
+   APPDIR = UPTWO
+elif os.path.isdir("%s/%s"%(UPTWO,"/src/oasis")):
+   APPDIR = UPTWO+"/src"
+
+if not APPDIR:
+    print "Unable to find installed OASIS code, normally at /opt/oasisqe/3.9/src"
+    print "You can specify it in the OASIS lib environment variable on the commandline: "
+    print "          OASISLIB=/opt/oasisqe/3.9/src oasisdb"
+    exit(1)
+
+print "using copy of OASIS installed at %s" % APPDIR
 sys.path.append(APPDIR)
 
 from oasis.lib import Topics, Users, Courses
