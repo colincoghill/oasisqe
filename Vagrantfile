@@ -23,17 +23,14 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     config.vm.provision "devxenial", type: "shell", path: "src/scripts/provision_oasisdev_xenial.sh"
   end
 
-  config.vm.define "test" do |test|
+  config.vm.define "build" do |build|
     config.vm.box = "ubuntu/xenial64"
     config.vm.provider "virtualbox" do |v|
-      v.name = "oasistest"
-      v.memory = 1024
-      v.cpus = 2
+      v.name = "oasisbuild"
+      v.memory = 2048
+      v.cpus = 4
     end
-    config.vm.network :forwarded_port, guest: 80, host: 8081
-    config.vm.network :forwarded_port, guest: 5432, host: 5435
-    config.vm.network :private_network, ip: "192.168.35.3"
-    config.vm.provision "test", type: "shell", path: "src/scripts/provision_oasistest_xenial.sh"
+    config.vm.provision "build", type: "shell", path: "src/scripts/provision_oasisbuild_xenial.sh"
   end
 
 

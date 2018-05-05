@@ -1,0 +1,45 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[dev-packages]
+locust = "*"
+nose = "*"
+six = "*"
+
+[packages]
+"psycopg2-binary" = "*"
+"beautifulsoup4" = "*"
+blinker = "*"
+chardet = "*"
+decorator = "*"
+"enum34" = "*"
+"html5lib" = "*"
+idna = "*"
+ipaddress = "*"
+itsdangerous = "*"
+jdcal = "*"
+ldap = "*"
+"ldap3" = "*"
+openpyxl = "*"
+"pyasn1" = "*"
+pyinotify = "*"
+python-memcached = "*"
+Flask = "*"
+Flask-WTF = "*"
+"Jinja2" = "*"
+MarkupSafe = "*"
+PyLTI = "*"
+pyOpenSSL = "*"
+Werkzeug = "*"
+WTForms = "*"
+bcrypt = "*"
+pillow = "*"
+lxml = "*"
+
+[requires]
+python_version = "2.7.12"
+
+[scripts]
+oasisdb = "scripts/oasisdb"
