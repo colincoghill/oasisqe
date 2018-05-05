@@ -22,7 +22,7 @@ apt-get update
 apt-get upgrade
 
 # PostgreSQL
-apt-get install ${APTOPTS} postgresql-client libmemcache git make
+apt-get install ${APTOPTS} postgresql-client git make memcached
 
 # Ubuntu pip is a bit old, but installing it means we can use it to install a newer one
 apt-get install ${APTOPTS} --no-install-recommends python-pip
