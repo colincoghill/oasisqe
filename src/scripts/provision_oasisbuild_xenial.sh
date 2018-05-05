@@ -31,5 +31,3 @@ apt-get install ${APTOPTS} --no-install-recommends python-pip
 # Install OASIS python requirements
 make build
 
-# and pack it up ready for use
-tar -zcvf /tmp/${VERSION}.tgz build
