@@ -9,36 +9,38 @@
 # on a clean install of that OS
 
 SRC=$1
-BDIR=$2
+DEST=$2
 
 sudo pip install pipenv
 export PIPENV_VENV_IN_PROJECT=1
 
-mkdir -p ${BDIR}
+sudo mkdir -p ${DEST}
 
-cp -R ${SRC}/src/oasis ${BDIR}
-cp -R ${SRC}/src/scripts ${BDIR}
-cp -R ${SRC}/src/fonts ${BDIR}
-cp -R ${SRC}/src/static ${BDIR}
-cp -R ${SRC}/src/templates ${BDIR}
-cp -R ${SRC}/src/sql ${BDIR}
-mkdir ${BDIR}/bin
+sudo cp -R ${SRC}/src/oasis ${DEST}
+sudo cp -R ${SRC}/src/scripts ${DEST}
+sudo cp -R ${SRC}/src/fonts ${DEST}
+sudo cp -R ${SRC}/src/static ${DEST}
+sudo cp -R ${SRC}/src/templates ${DEST}
+sudo cp -R ${SRC}/src/sql ${DEST}
+sudo mkdir ${DEST}/bin
 
-cp ${SRC}/src/Pipfile ${BDIR}
-cp ${SRC}/src/Pipfile.lock ${BDIR}
+sudo cp ${SRC}/src/Pipfile ${DEST}
+sudo cp ${SRC}/src/Pipfile.lock ${DEST}
 
-cd ${BDIR}
+sudo chown -R vagrant ${DEST}
+
+cd ${DEST}
 
 PIP_IGNORE_INSTALLED=1 pipenv install 
 
 cat << EOF > bin/oasisdb
 #!/bin/bash
-export OASISLIB=${BDIR}
-source ${BDIR}/.venv/bin/activate
-${BDIR}/scripts/oasisdb \$@
+export OASISLIB=${DEST}
+source ${DEST}/.venv/bin/activate
+${DEST}/scripts/oasisdb \$@
 EOF
 
 chmod +x bin/oasisdb
 
-echo "Built into ${BDIR}"
+echo "Built into ${DEST}"
 

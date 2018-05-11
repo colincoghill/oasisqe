@@ -4,10 +4,10 @@ VERSION=$(shell git describe --tags)
 build-xenial:
 	echo "Building ${VERSION} for Ubuntu Xenial"
 	vagrant up buildxenial
-	vagrant ssh buildxenial -c "mnt/src/build/build-xenial.sh /home/vagrant/mnt /home/vagrant/${VERSION}"
-	vagrant ssh buildxenial -c "tar -zcvf mnt/${VERSION}-xenial.tgz ${VERSION}"
-	rm -f oasis-xenial.tgz
-	ln -s ${VERSION}-xenial.tgz oasisqe-xenial.tgz
+	vagrant ssh buildxenial -c "mnt/src/build/build-xenial.sh /home/vagrant/mnt /opt/oasisqe/3.9"
+	vagrant ssh buildxenial -c "cd /opt/oasisqe; tar -zcvf /home/vagrant/mnt/${VERSION}-xenial.tgz 3.9"
+	rm -f /home/vagrant/mnt/oasisqe-xenial.tgz
+	ln -s /home/vagrant/mnt/${VERSION}-xenial.tgz /home/vagrant/mnt/oasisqe-xenial.tgz
 
 
 test-xenial:

@@ -1,10 +1,8 @@
 #!/bin/bash
 
-# Sets up Ubuntu (Xenial) to build OASIS
+# Sets up Ubuntu (Xenial) to test OASIS
 #
-# We want to install a minimal clean system then let pip and compiler do their
-# stuff to produce a directory full of stuff that, hopefully, works on other
-# people's Xenial installs.
+# Install it, configured for testing
 
 
 APTOPTS=-y

@@ -1,16 +1,14 @@
 #!/bin/bash
 
-# Sets up Ubuntu (Xenial) to build OASIS
+# Sets up Ubuntu (Xenial) to run OASIS
 #
-# We want to install a minimal clean system then let pip and compiler do their
-# stuff to produce a directory full of stuff that, hopefully, works on other
-# people's Xenial installs.
+# At the moment we need to install some dependencies, but eventually
+# aim to have it packaged as a .deb  that does that automatically
 
 
 APTOPTS=-y
 
 cd ${BASEDIR}
-VERSION=`git describe --tags` 
 
 apt-get update
 apt-get upgrade
@@ -23,3 +21,5 @@ apt-get install ${APTOPTS} --no-install-recommends python-pip
 
 # upgrade pip, xenial version is a bit old
 pip install -U pip
+
+sudo mkdir -p /opt/oasisqe
