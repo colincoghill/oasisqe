@@ -1,51 +1,43 @@
-# -*- mode: ruby -*-
-# vi: set ft=ruby :
 
-# Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
-VAGRANTFILE_API_VERSION = "2"
-
-Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-
-  config.vm.box = "ubuntu/xenial64"
-
-  config.vm.synced_folder ".", "/opt/oasisqe/3.9"
+Vagrant.configure(2) do |config|
 
   config.vm.define "devxenial" do |devxenial|
-      config.vm.box = "ubuntu/xenial64"
-      config.vm.provider "virtualbox" do |v|
-      v.name = "devxenial"
+      devxenial.vm.box = "ubuntu/xenial64"
+      devxenial.vm.provider "libvirt" do |v|
+      v.name = "dev"
       v.memory = 2048
       v.cpus = 2
     end
-    config.vm.network :forwarded_port, guest: 80, host: 8082
-    config.vm.network :forwarded_port, guest: 5432, host: 5436
-    config.vm.network :private_network, ip: "192.168.35.4"
-    config.vm.provision "devxenial", type: "shell", path: "src/scripts/provision_oasisdev_xenial.sh"
+    devxenial.vm.network :forwarded_port, guest: 80, host: 8082
+    devxenial.vm.network :forwarded_port, guest: 5432, host: 5436
+    devxenial.vm.network :private_network, ip: "192.168.35.2"
+    devxenial.vm.synced_folder ".", "/opt/oasisqe/3.9"
+    devxenial.vm.provision "devxenial", type: "shell", path: "src/scripts/provision_devxenial.sh"
   end
 
-  config.vm.define "build" do |build|
-    config.vm.box = "ubuntu/xenial64"
-    config.vm.provider "virtualbox" do |v|
-      v.name = "oasisbuild"
+  config.vm.define "buildxenial" do |build|
+    build.vm.box = "ubuntu/xenial64"
+    build.vm.synced_folder ".", "/home/vagrant/mnt"
+    build.vm.provider "libvirt" do |v|
+      v.name = "buildxenial"
       v.memory = 2048
       v.cpus = 4
     end
-    config.vm.provision "build", type: "shell", path: "src/scripts/provision_oasisbuild_xenial.sh"
+    build.vm.provision "build", type: "shell", path: "src/scripts/provision_xenial.sh"
   end
 
-
-  config.vm.define "testtrusty" do |test|
-    config.vm.box = "ubuntu/trusty64"
-    config.vm.provider "virtualbox" do |v|
-      v.name = "oasistest"
-      v.memory = 1024
+  config.vm.define "testxenial" do |testxenial|
+    testxenial.vm.box = "ubuntu/xenial64"
+    testxenial.vm.provider "libvirt" do |v|
+      v.name = "testxenial"
+      v.memory = 2024
       v.cpus = 2
     end
-    config.vm.network :forwarded_port, guest: 80, host: 8083
-    config.vm.network :forwarded_port, guest: 5432, host: 5437
-    config.vm.network :private_network, ip: "192.168.35.2"
-    config.vm.provision "test", type: "shell", path: "src/scripts/provision_oasistest_trusty.sh"
+    testxenial.vm.network :forwarded_port, guest: 80, host: 8083
+    testxenial.vm.network :forwarded_port, guest: 5432, host: 5437
+    testxenial.vm.network :private_network, ip: "192.168.35.5"
+    testxenial.vm.synced_folder ".", "/home/vagrant/mnt"
+    testxenial.vm.provision "test", type: "shell", path: "src/scripts/test_xenial.sh"
   end
-
 
 end

@@ -1,7 +1,7 @@
 #!/bin/sh -e
 
 # Usage:
-#    build.sh SRCDIR
+#    build.sh SRCDIR DSTDIR
 
 # builds OASIS into current dir. uses a python virtualenv (pipenv) and pulls in dependencies
 # the intent is you'd run this under a clean (vagrant?) install of target OS to get the
@@ -9,25 +9,27 @@
 # on a clean install of that OS
 
 SRC=$1
-BDIR=`pwd`
+BDIR=$2
 
-pip install pipenv
+sudo pip install pipenv
 export PIPENV_VENV_IN_PROJECT=1
 
 mkdir -p ${BDIR}
 
-cp -R ${SRC}/src/oasis .
-cp -R ${SRC}/src/scripts .
-cp -R ${SRC}/src/fonts .
-cp -R ${SRC}/src/static .
-cp -R ${SRC}/src/templates .
-cp -R ${SRC}/src/sql .
-mkdir bin
+cp -R ${SRC}/src/oasis ${BDIR}
+cp -R ${SRC}/src/scripts ${BDIR}
+cp -R ${SRC}/src/fonts ${BDIR}
+cp -R ${SRC}/src/static ${BDIR}
+cp -R ${SRC}/src/templates ${BDIR}
+cp -R ${SRC}/src/sql ${BDIR}
+mkdir ${BDIR}/bin
 
-cp ${SRC}/src/Pipfile .
-cp ${SRC}/src/Pipfile.lock .
+cp ${SRC}/src/Pipfile ${BDIR}
+cp ${SRC}/src/Pipfile.lock ${BDIR}
 
-PIP_IGNORE_INSTALLED=1 pipenv install
+cd ${BDIR}
+
+PIP_IGNORE_INSTALLED=1 pipenv install 
 
 cat << EOF > bin/oasisdb
 #!/bin/bash
@@ -40,4 +42,3 @@ chmod +x bin/oasisdb
 
 echo "Built into ${BDIR}"
 
-cd ..
