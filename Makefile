@@ -1,7 +1,7 @@
 VERSION=$(shell git describe --tags)
 
 
-build-xenial:
+buildxenial:
 	echo "Building ${VERSION} for Ubuntu Xenial"
 	vagrant up buildxenial
 	vagrant ssh buildxenial -c "mnt/src/build/build-xenial.sh /home/vagrant/mnt /opt/oasisqe/3.9"
@@ -10,13 +10,18 @@ build-xenial:
 	ln -s /home/vagrant/mnt/${VERSION}-xenial.tgz /home/vagrant/mnt/oasisqe-xenial.tgz
 
 
-test-xenial:
+testxenial:
 	echo "Testing on Ubuntu Xenial"
 	vagrant up testxenial
 	vagrant ssh testxenial
 
+devxenial:
+	echo "Building dev environment on Ubuntu Xenial"
+	vagrant up devxenial
+	vagrant ssh devxenial
 
 clean:
 	vagrant destroy buildxenial
 	vagrant destroy testxenial
+	vagrant destroy devxenial
 

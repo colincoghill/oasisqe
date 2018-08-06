@@ -1,18 +1,19 @@
 # Config file for Apache 2.4
 
-    WSGIDaemonProcess oasis user=oasisqe group=www-data processes=5 threads=15 python-path=/opt/oasisqe/3.9/src
+    WSGIDaemonProcess oasis user=oasisqe group=www-data processes=5 threads=15 python-path=/opt/oasisqe/3.9
 
-    WSGIScriptAlias /oasis /opt/oasisqe/3.9/src/oasis.wsgi
+    WSGIScriptAlias /oasis /opt/oasisqe/3.9/oasis.wsgi
     WSGIPythonOptimize 1
+    WSGIPythonHome /opt/oasisqe/3.9/.venv
 
-    <Directory /opt/oasisqe/3.9/src>
+    <Directory /opt/oasisqe/3.9>
         WSGIProcessGroup oasis
         WSGIApplicationGroup %{GLOBAL}
 
         Require all granted
     </Directory>
 
-    Alias /oasis/static /opt/oasisqe/3.9/src/static
+    Alias /oasis/static /opt/oasisqe/3.9/static
     <Location /oasis/static>
        Options Indexes FollowSymLinks MultiViews
        SetHandler default-handler

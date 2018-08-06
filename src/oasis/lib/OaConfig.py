@@ -22,6 +22,9 @@ mydir = os.path.dirname(os.path.realpath(__file__))
 if not cp.read(os.path.join(os.path.sep, mydir, "defaults.ini")):
     sys.exit("Unable to read configuration defaults %s/defaults.ini" % mydir)
 
+if not os.path.isfile("/etc/oasisqe.ini"):
+    sys.exit("Unable to read configuration %s"%(os.path.join(os.path.sep, 'etc', 'oasisqe.ini')))
+
 cp.read([os.path.join(mydir, 'defaults.ini'), os.path.join(os.path.sep, 'etc', 'oasisqe.ini')])
 
 parentURL = cp.get("web", "url")
