@@ -10,10 +10,11 @@
 date > /tmp/provision.notes
 echo "Provisioning OASISDEV" >> /tmp/provision.notes
 
-BASEDIR=/opt/oasisqe/3.9
+SRC=/opt/oasisqe/src
 LOGDIR=/var/log/oasisqe
-BINDIR=/opt/oasisqe/3.9/src/scripts
-OASISLIB=${BASEDIR}
+DEST=/opt/oasisqe/3.9
+BINDIR=${DEST}/bin
+OASISLIB=${DEST}
 
 APTOPTS=-y
 
@@ -25,7 +26,7 @@ debconf-set-selections <<< "postfix postfix/main_mailer_type string 'Internet Si
 sed -i '/xenial-backports/{s/^/#/}' /etc/apt/sources.list
 sed -i '/deb-src/{s/^/#/}' /etc/apt/sources.list
 
-cd ${BASEDIR}
+cd ${DEST}
 
 apt-get update
 apt-get upgrade
@@ -46,14 +47,41 @@ apt-get install ${APTOPTS} python-psycopg2 python-bcrypt python-lxml python-pill
 apt-get install ${APTOPTS} --no-install-recommends python-pip
 
 # Upgrade pip
-pip install --upgrade pip==9
+pip install --upgrade pip
 pip install --upgrade setuptools
 
-# Install OASIS python requirements
-pip install -r src/requirements.txt
-# Install extra requirements for development/testing
-pip install -r src/requirements-dev.txt
+sudo pip install pipenv
+export PIPENV_VENV_IN_PROJECT=1
 
+sudo mkdir -p ${DEST}
+
+sudo cp -R ${SRC}/src/oasis ${DEST}
+sudo cp -R ${SRC}/src/scripts ${DEST}
+sudo cp -R ${SRC}/src/fonts ${DEST}
+sudo cp -R ${SRC}/src/static ${DEST}
+sudo cp -R ${SRC}/src/templates ${DEST}
+sudo cp -R ${SRC}/src/sql ${DEST}
+sudo mkdir ${BINDIR}
+
+sudo cp ${SRC}/src/Pipfile ${DEST}
+sudo cp ${SRC}/src/Pipfile.lock ${DEST}
+
+sudo chown -R vagrant ${DEST}
+
+cd ${DEST}
+
+PIP_IGNORE_INSTALLED=1 pipenv install
+
+cat << EOF > bin/oasisdb
+#!/bin/bash
+export OASISLIB=${DEST}
+source ${DEST}/.venv/bin/activate
+${DEST}/scripts/oasisdb \$@
+EOF
+
+chmod +x bin/oasisdb
+
+echo "Built into ${DEST}"
 adduser --disabled-login --disabled-password --gecos OASIS oasisqe
 
 DBPASS=`uuidgen`
@@ -77,14 +105,14 @@ su postgres  -c "createdb -O oasisqe oasisqe"
 su oasisqe -c "${BINDIR}/oasisdb init"
 
 cp ${BASEDIR}/docs/examples/apache24config.sample /etc/apache2/sites-available/oasisqe.conf
-export PYTHON_PATH=${BASEDIR}/src
+export PYTHON_PATH=${DEST}
 a2ensite oasisqe
 
 service apache2 reload
 
 su oasisqe -c "${BINDIR}/create_test_topic EXAMPLE101 Samples"
 echo
-echo 
+echo
 echo OASISQE deployed to http://localhost:8082/oasis
 echo
 echo "********************************************"

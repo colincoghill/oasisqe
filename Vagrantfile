@@ -11,8 +11,8 @@ Vagrant.configure(2) do |config|
     devxenial.vm.network :forwarded_port, guest: 80, host: 8082
     devxenial.vm.network :forwarded_port, guest: 5432, host: 5436
     devxenial.vm.network :private_network, ip: "192.168.35.2"
-    devxenial.vm.synced_folder ".", "/opt/oasisqe/3.9"
-    devxenial.vm.provision "devxenial", type: "shell", path: "src/scripts/provision_devxenial.sh"
+    devxenial.vm.synced_folder ".", "/opt/oasisqe/src"
+    devxenial.vm.provision "devxenial", type: "shell", path: "src/scripts/provision_oasisdev_xenial.sh"
   end
 
   config.vm.define "buildxenial" do |build|
