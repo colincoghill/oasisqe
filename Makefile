@@ -20,8 +20,14 @@ devxenial:
 	vagrant up devxenial
 	vagrant ssh devxenial
 
+devstretch:
+	echo "Building dev environment on Debian Stretch"
+	vagrant up devstretch
+	vagrant ssh devstretch
+
 clean:
 	vagrant destroy buildxenial
 	vagrant destroy testxenial
 	vagrant destroy devxenial
+	vagrant destroy devstretch
 

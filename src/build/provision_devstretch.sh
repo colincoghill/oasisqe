@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Sets up Ubuntu (Xenial) to run OASIS with a useful "developer" configuration.
+# Sets up Debian (Stretch) to run OASIS with a useful "developer" configuration.
 #
 # Assumes oasis code is mounted at /opt/oasisqe/3.9  (Vagrant should do this)
 # This is not appropriate for running a production site. It may be insecure.
@@ -18,7 +18,7 @@ export LOGDIR=/var/log/oasisqe
 BINDIR=${DEST}/bin
 OASISLIB=${DEST}
 
-/bin/bash ${SRC}/src/build/install_systemdeps_xenial.sh
+/bin/bash ${SRC}/src/build/install_systemdeps_stretch.sh
 /bin/bash ${SRC}/src/build/setup_dev_pythonenv.sh
 
 echo "Configuring for Development"
@@ -34,8 +34,8 @@ chown oasisqe ${LOGDIR}/main.log
 
 cp ${SRC}/docs/examples/sampleconfig.ini /etc/oasisqe.ini
 sed -i "s/pass: SECRET/pass: ${DBPASS}/g" /etc/oasisqe.ini
-sed -i "s/statichost: http:\/\/localhost/statichost: http:\/\/localhost:8080/g" /etc/oasisqe.ini
-sed -i "s/url: http:\/\/localhost\/oasis/url: http:\/\/localhost:8080\/oasis/g" /etc/oasisqe.ini
+sed -i "s/statichost: http:\/\/localhost/statichost: http:\/\/localhost:8081/g" /etc/oasisqe.ini
+sed -i "s/url: http:\/\/localhost\/oasis/url: http:\/\/localhost:8081\/oasis/g" /etc/oasisqe.ini
 
 su postgres -c "psql postgres <<EOF
   create user oasisqe;
@@ -55,7 +55,7 @@ source ${DEST}/.venv/bin/activate
 su oasisqe -c "${BINDIR}/create_test_topic EXAMPLE101 Samples"
 echo
 echo
-echo OASISQE deployed to http://localhost:8080/oasis
+echo OASISQE deployed to http://localhost:8081/oasis
 echo
 echo "********************************************"
 su oasisqe -c "${BINDIR}/reset_admin_password devtest"

@@ -4,7 +4,7 @@
 #
 
 date > /tmp/provision.notes
-echo "Installing dependencies for OASIS on Ubuntu Xenial" >> /tmp/provision.notes
+echo "Installing dependencies for OASIS on Debian Stretch" >> /tmp/provision.notes
 
 APTOPTS=-y
 
@@ -13,7 +13,7 @@ debconf-set-selections <<< "postfix postfix/mailname string local.dev"
 debconf-set-selections <<< "postfix postfix/main_mailer_type string 'Internet Site'"
 
 # Remove repos we don't need
-sed -i '/xenial-backports/{s/^/#/}' /etc/apt/sources.list
+#sed -i '/xenial-backports/{s/^/#/}' /etc/apt/sources.list
 sed -i '/deb-src/{s/^/#/}' /etc/apt/sources.list
 
 sudo mkdir -p ${DEST}
@@ -37,7 +37,7 @@ apt-get install ${APTOPTS} pwgen
 # We'd prefer these by pip, but they like to compile stuff during install so need lots of dev things installed.
 apt-get install ${APTOPTS} python-psycopg2 python-bcrypt python-lxml python-pillow
 
-# Ubuntu pip is a bit old, but installing it means we can use it to install a newer one
+# Debian pip is a bit old, but installing it means we can use it to install a newer one
 apt-get install ${APTOPTS} --no-install-recommends python-pip
 
 # Upgrade pip
@@ -50,4 +50,4 @@ pip install --upgrade setuptools
 
 pip install pipenv
 
-echo "Ubuntu Xenial System Dependencies installed"
+echo "Debian Stretch System Dependencies installed"

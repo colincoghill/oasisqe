@@ -24,7 +24,7 @@ echo "Configuring for Build"
 
 adduser --disabled-login --disabled-password --gecos OASIS oasisqe
 
-DBPASS=`uuidgen`
+DBPASS=`pwgen 16`
 
 mkdir -p "${DEST}/config"
 
