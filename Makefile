@@ -20,6 +20,11 @@ devxenial:
 	vagrant up devxenial
 	vagrant ssh devxenial
 
+devbionic:
+	echo "Building dev environment on Ubuntu Bionic"
+	vagrant up devbionic
+	vagrant ssh devbionic
+
 devstretch:
 	echo "Building dev environment on Debian Stretch"
 	vagrant up devstretch
@@ -29,5 +34,6 @@ clean:
 	vagrant destroy buildxenial
 	vagrant destroy testxenial
 	vagrant destroy devxenial
+	vagrant destroy devbionic
 	vagrant destroy devstretch
 

@@ -16,6 +16,21 @@ Vagrant.configure(2) do |config|
     devxenial.vm.provision "devxenial", type: "shell", path: "src/build/provision_devxenial.sh"
   end
 
+  # Ubuntu 18.04 LTS
+  config.vm.define "devbionic" do |devbionic|
+      devbionic.vm.box = "ubuntu/bionic64"
+      devbionic.vm.provider "libvirt" do |v|
+      v.name = "dev"
+      v.memory = 2048
+      v.cpus = 2
+    end
+    devbionic.vm.network :forwarded_port, guest: 80, host: 8088
+    devbionic.vm.network :forwarded_port, guest: 5432, host: 5438
+    devbionic.vm.network :private_network, ip: "192.168.35.8"
+    devbionic.vm.synced_folder ".", "/opt/oasisqe/src"
+    devbionic.vm.provision "devxenial", type: "shell", path: "src/build/provision_devbionic.sh"
+  end
+
   # Debian 9.5 stable
   config.vm.define "devstretch" do |devstretch|
       devstretch.vm.box = "debian/contrib-stretch64" # contrib- has guest additions for synced_folder
