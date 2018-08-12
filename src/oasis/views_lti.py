@@ -4,7 +4,21 @@
 # http://www.gnu.org/licenses/agpl-3.0.html
 
 """ Views for LTI related requests.
-    Using LTI, other elearning applications can embed OASIS practice questions
+    Using LTI, other elearning applications can embed OASIS practice questions and assessments.
+
+    We use the PyLTI library from  https://github.com/mitodl/pylti
+
+    We take the email address given by the LTI consumer and associate the request with a local
+    account with the same email.  If one is not found, we create a local account with that
+    email address and default access and use that. 
+
+    Implemented:
+
+       Launching a practice question
+       Launching an assessment
+
+    Not Implemented:
+       Returning the results
 """
 
 import os
