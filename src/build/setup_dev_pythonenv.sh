@@ -3,12 +3,12 @@
 # Intended to be called by provision_ scripts.
 #
 # Assumes OASIS src is installed in ${SRC}
-# Will install a pipenv into ${DEST} and copy OASIS files into it
-# suitable for packaging up into a build installer
-#
+# Will install a pipenv into ${DEST} and symlink OASIS files into it
+# suitable for development as the files can be edited on the host
+# and changes will apear "live". (may need to reload apache2 to get them)
 
 date > /tmp/provision.notes
-echo "Linking OASIS to pipenv in Xenial" >> /tmp/provision.notes
+echo "Linking OASIS to pipenv" >> /tmp/provision.notes
 
 BINDIR=${DEST}/bin
 OASISLIB=${DEST}
@@ -59,5 +59,5 @@ python ${DEST}/scripts/reset_admin_password \$@
 EOF
 chmod +x ${BINDIR}/reset_admin_password
 
-echo "Built into pipenv ${DEST}"
+echo "Linked into pipenv ${DEST}"
 

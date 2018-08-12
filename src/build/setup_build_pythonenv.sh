@@ -3,12 +3,12 @@
 # Intended to be called by provision_ scripts.
 #
 # Assumes OASIS src is installed in ${SRC}
-# Will install a pipenv into ${DEST} and symlink OASIS files into it
-# suitable for running in a dev enviroment
-#
+# Will install a pipenv into ${DEST} and copy OASIS files into it
+# The intent is that they can then be packaged up for distribution
+# or testing.
 
 date > /tmp/provision.notes
-echo "Installing OASIS to pipenv in Xenial" >> /tmp/provision.notes
+echo "Installing OASIS to pipenv" >> /tmp/provision.notes
 
 BINDIR=${DEST}/bin
 OASISLIB=${DEST}
