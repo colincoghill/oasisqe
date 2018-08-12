@@ -22,11 +22,11 @@ def setup():
     print "Removing existing tables."
     DB.run_sql(sql)
 
-    with open(os.path.join(OaConfig.homedir, "sql", "emptyschema_395.sql")) as f:
+    with open(os.path.join(OaConfig.homedir, "sql", "emptyschema_396.sql")) as f:
         sql = f.read()
 
     DB.run_sql(sql)
-    print "Installed v3.9.5 table structure."
+    print "Installed v3.9.6 table structure."
 
 
 def teardown():
