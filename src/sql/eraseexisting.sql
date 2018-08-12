@@ -47,6 +47,9 @@ DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS userfeeds;
 DROP TABLE IF EXISTS config;
 
+DROP TABLE IF EXISTS lti_consumers;
+DROP TABLE IF EXISTS lti_course_params;
+
 DROP SEQUENCE IF EXISTS users_version_seq;
 DROP SEQUENCE IF EXISTS courses_version_seq;
 DROP SEQUENCE IF EXISTS audit_id_seq;
@@ -60,6 +63,7 @@ DROP SEQUENCE IF EXISTS groupcourses_id_seq;
 DROP SEQUENCE IF EXISTS grouptypes_type_seq;
 DROP SEQUENCE IF EXISTS groups_id_seq;
 DROP SEQUENCE IF EXISTS guesses_id_seq;
+DROP SEQUENCE IF EXISTS lti_consumers_id_seq;
 DROP SEQUENCE IF EXISTS marklog_id_seq;
 DROP SEQUENCE IF EXISTS marks_id_seq;
 DROP SEQUENCE IF EXISTS permissiondesc_permission_seq;
