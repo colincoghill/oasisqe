@@ -30,9 +30,11 @@ sudo chown -R vagrant ${DEST}
 
 cd ${DEST}
 
-PIP_IGNORE_INSTALLED=1 pipenv install
+PIP_IGNORE_INSTALLED=1 pipenv install --dev
 
 sudo mkdir ${BINDIR}
+
+echo "OASISLIB=${OASISLIB}" >> ${DEST}/.env
 
 # binaries need a wrapper to find our pipenv
 cat << EOF > ${BINDIR}/oasisdb

@@ -34,6 +34,8 @@ PIP_IGNORE_INSTALLED=1 pipenv install
 
 sudo mkdir ${BINDIR}
 
+echo "OASISLIB=${OASISLIB}" >> ${DEST}/.env
+
 # binaries need a wrapper to find our pipenv
 cat << EOF > ${BINDIR}/oasisdb
 #!/bin/bash

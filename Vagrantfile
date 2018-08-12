@@ -72,8 +72,37 @@ Vagrant.configure(2) do |config|
     testxenial.vm.network :forwarded_port, guest: 80, host: 8083
     testxenial.vm.network :forwarded_port, guest: 5432, host: 5438
     testxenial.vm.network :private_network, ip: "192.168.35.5"
-    testxenial.vm.synced_folder ".", "/home/vagrant/mnt"
-    testxenial.vm.provision "test", type: "shell", path: "src/build/test_xenial.sh"
+    testxenial.vm.synced_folder ".", "/opt/oasisqe/src"
+    testxenial.vm.provision "test", type: "shell", path: "src/build/provision_testxenial.sh"
   end
+
+  config.vm.define "testbionic" do |testbionic|
+    testbionic.vm.box = "ubuntu/bionic64"
+    testbionic.vm.provider "libvirt" do |v|
+      v.name = "testbionic"
+      v.memory = 2024
+      v.cpus = 2
+    end
+    testbionic.vm.network :forwarded_port, guest: 80, host: 8089
+    testbionic.vm.network :forwarded_port, guest: 5432, host: 5439
+    testbionic.vm.network :private_network, ip: "192.168.35.9"
+    testbionic.vm.synced_folder ".", "/opt/oasisqe/src"
+    testbionic.vm.provision "test", type: "shell", path: "src/build/provision_testbionic.sh"
+  end
+
+  config.vm.define "teststretch" do |teststretch|
+    teststretch.vm.box = "debian/contrib-stretch64"
+    teststretch.vm.provider "libvirt" do |v|
+      v.name = "teststretch"
+      v.memory = 2024
+      v.cpus = 2
+    end
+    teststretch.vm.network :forwarded_port, guest: 80, host: 8090
+    teststretch.vm.network :forwarded_port, guest: 5432, host: 5440
+    teststretch.vm.network :private_network, ip: "192.168.35.10"
+    teststretch.vm.synced_folder ".", "/opt/oasisqe/src"
+    teststretch.vm.provision "test", type: "shell", path: "src/build/provision_teststretch.sh"
+  end
+
 
 end

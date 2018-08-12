@@ -13,7 +13,14 @@ buildxenial:
 testxenial:
 	echo "Testing on Ubuntu Xenial"
 	vagrant up testxenial
-	vagrant ssh testxenial
+
+testbionic:
+	echo "Testing on Ubuntu Bionic"
+	vagrant up testbionic
+
+teststretch:
+	echo "Testing on Ubuntu Stretch"
+	vagrant up teststretch
 
 devxenial:
 	echo "Building dev environment on Ubuntu Xenial"
@@ -30,9 +37,10 @@ devstretch:
 	vagrant up devstretch
 	vagrant ssh devstretch
 
-clean:
+cleanvm:
 	vagrant destroy buildxenial
 	vagrant destroy testxenial
+	vagrant destroy testbionic
 	vagrant destroy devxenial
 	vagrant destroy devbionic
 	vagrant destroy devstretch
