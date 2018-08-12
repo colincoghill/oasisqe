@@ -17,12 +17,12 @@ def setup():
     if not DB.check_safe():
         print "Attempt to erase database with data."
         sys.exit(-1)
-    with open(os.path.join(os.path.dirname(OaConfig.homedir), "deploy", "eraseexisting.sql")) as f:
+    with open(os.path.join(OaConfig.homedir, "sql", "eraseexisting.sql")) as f:
         sql = f.read()
     print "Removing existing tables."
     DB.run_sql(sql)
 
-    with open(os.path.join(os.path.dirname(OaConfig.homedir), "deploy", "emptyschema_395.sql")) as f:
+    with open(os.path.join(OaConfig.homedir, "sql", "emptyschema_395.sql")) as f:
         sql = f.read()
 
     DB.run_sql(sql)
@@ -33,7 +33,7 @@ def teardown():
     """
         Remove testing configuration file and otherwise clean up.
     """
-    with open(os.path.join(os.path.dirname(OaConfig.homedir), "deploy", "eraseexisting.sql")) as f:
+    with open(os.path.join(OaConfig.homedir, "sql", "eraseexisting.sql")) as f:
         sql = f.read()
     print "Removing tables."
     DB.run_sql(sql)
