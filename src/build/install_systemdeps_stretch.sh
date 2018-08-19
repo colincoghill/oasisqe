@@ -1,4 +1,5 @@
 #!/bin/bash
+set -eu
 
 # Install the system dependencies needed by OASIS
 #
@@ -16,11 +17,8 @@ debconf-set-selections <<< "postfix postfix/main_mailer_type string 'Internet Si
 #sed -i '/xenial-backports/{s/^/#/}' /etc/apt/sources.list
 sed -i '/deb-src/{s/^/#/}' /etc/apt/sources.list
 
-sudo mkdir -p ${DEST}
-cd ${DEST}
-
 apt-get update
-apt-get upgrade
+apt-get upgrade ${APTOPTS}
 
 # Apache
 apt-get install ${APTOPTS} apache2 libapache2-mod-wsgi

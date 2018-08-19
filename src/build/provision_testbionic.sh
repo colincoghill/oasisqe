@@ -1,4 +1,5 @@
 #!/bin/bash
+set -eu
 
 # Sets up Ubuntu (Bionic) to run OASIS self-tests. And then runs them
 #
@@ -15,6 +16,9 @@ export DEST=/opt/oasisqe/3.9
 
 export LOGDIR=/var/log/oasisqe
 
+mkdir -p ${DEST}/bin
+cd ${DEST}
+
 BINDIR=${DEST}/bin
 OASISLIB=${DEST}
 
@@ -23,7 +27,12 @@ OASISLIB=${DEST}
 
 echo "Configuring for Testing"
 
-adduser --disabled-login --disabled-password --gecos OASIS oasisqe
+if $(grep -q oasis /etc/passwd)
+then
+  echo "oasisqe user already exists"
+else
+  adduser --disabled-login --disabled-password --gecos OASIS oasisqe
+fi
 
 DBPASS=`pwgen -s 16`
 
@@ -34,8 +43,8 @@ chown oasisqe ${LOGDIR}/main.log
 
 cp ${SRC}/docs/examples/sampleconfig.ini /etc/oasisqe.ini
 sed -i "s/pass: SECRET/pass: ${DBPASS}/g" /etc/oasisqe.ini
-sed -i "s/statichost: http:\/\/localhost/statichost: http:\/\/localhost:8089/g" /etc/oasisqe.ini
-sed -i "s/url: http:\/\/localhost\/oasis/url: http:\/\/localhost:8089\/oasis/g" /etc/oasisqe.ini
+sed -i "s/statichost: http:\/\/localhost/statichost: http:\/\/localhost:8086/g" /etc/oasisqe.ini
+sed -i "s/url: http:\/\/localhost\/oasis/url: http:\/\/localhost:8086\/oasis/g" /etc/oasisqe.ini
 
 su postgres -c "psql postgres <<EOF
   create user oasisqe;
@@ -51,11 +60,12 @@ a2ensite oasisqe
 
 service apache2 reload
 
+export PS1=${PS1:-}
 source ${DEST}/.venv/bin/activate
 su oasisqe -c "${BINDIR}/create_test_topic EXAMPLE101 Samples"
 echo
 echo
-echo OASISQE deployed to http://localhost:8089/oasis
+echo OASISQE deployed to http://localhost:8086/oasis
 echo
 echo "********************************************"
 su oasisqe -c "${BINDIR}/reset_admin_password devtest"

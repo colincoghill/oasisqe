@@ -1,4 +1,5 @@
 #!/bin/bash
+set -eu
 
 # Intended to be called by provision_ scripts.
 #
@@ -12,6 +13,9 @@ echo "Installing OASIS to pipenv" >> /tmp/provision.notes
 
 BINDIR=${DEST}/bin
 OASISLIB=${DEST}
+
+mkdir -p ${DEST}/bin
+cd ${DEST}
 
 export PIPENV_VENV_IN_PROJECT=1
 
@@ -31,8 +35,6 @@ sudo chown -R vagrant ${DEST}
 cd ${DEST}
 
 PIP_IGNORE_INSTALLED=1 pipenv install
-
-sudo mkdir ${BINDIR}
 
 echo "OASISLIB=${OASISLIB}" >> ${DEST}/.env
 

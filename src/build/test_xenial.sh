@@ -1,4 +1,5 @@
 #!/bin/bash
+set -eu
 
 # Sets up Ubuntu (Xenial) to test OASIS
 #

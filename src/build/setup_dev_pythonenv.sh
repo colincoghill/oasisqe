@@ -1,4 +1,5 @@
 #!/bin/bash
+set -eu
 
 # Intended to be called by provision_ scripts.
 #
@@ -13,26 +14,27 @@ echo "Linking OASIS to pipenv" >> /tmp/provision.notes
 BINDIR=${DEST}/bin
 OASISLIB=${DEST}
 
+mkdir -p ${DEST}/bin
+cd ${DEST}
+
 export PIPENV_VENV_IN_PROJECT=1
 
-sudo ln -s ${SRC}/src/oasis ${DEST}
-sudo ln -s ${SRC}/src/scripts ${DEST}
-sudo ln -s ${SRC}/src/fonts ${DEST}
-sudo ln -s ${SRC}/src/static ${DEST}
-sudo ln -s ${SRC}/src/templates ${DEST}
-sudo ln -s ${SRC}/src/sql ${DEST}
-sudo ln -s ${SRC}/src/oasis.wsgi ${DEST}
+sudo ln -sf ${SRC}/src/oasis ${DEST}
+sudo ln -sf ${SRC}/src/scripts ${DEST}
+sudo ln -sf ${SRC}/src/fonts ${DEST}
+sudo ln -sf ${SRC}/src/static ${DEST}
+sudo ln -sf ${SRC}/src/templates ${DEST}
+sudo ln -sf ${SRC}/src/sql ${DEST}
+sudo ln -sf ${SRC}/src/oasis.wsgi ${DEST}
 
-sudo ln -s ${SRC}/src/Pipfile ${DEST}
-sudo ln -s ${SRC}/src/Pipfile.lock ${DEST}
+sudo ln -sf ${SRC}/src/Pipfile ${DEST}
+sudo ln -sf ${SRC}/src/Pipfile.lock ${DEST}
 
 sudo chown -R vagrant ${DEST}
 
 cd ${DEST}
 
 PIP_IGNORE_INSTALLED=1 pipenv install --dev
-
-sudo mkdir ${BINDIR}
 
 echo "OASISLIB=${OASISLIB}" >> ${DEST}/.env
 

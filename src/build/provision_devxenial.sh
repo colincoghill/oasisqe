@@ -1,4 +1,5 @@
 #!/bin/bash
+set -eu
 
 # Sets up Ubuntu (Xenial) to run OASIS with a useful "developer" configuration.
 #
@@ -18,6 +19,9 @@ export LOGDIR=/var/log/oasisqe
 BINDIR=${DEST}/bin
 OASISLIB=${DEST}
 
+mkdir -p ${DEST}/bin
+cd ${DEST}
+
 /bin/bash ${SRC}/src/build/install_systemdeps_xenial.sh
 /bin/bash ${SRC}/src/build/setup_dev_pythonenv.sh
 
@@ -34,8 +38,8 @@ chown oasisqe ${LOGDIR}/main.log
 
 cp ${SRC}/docs/examples/sampleconfig.ini /etc/oasisqe.ini
 sed -i "s/pass: SECRET/pass: ${DBPASS}/g" /etc/oasisqe.ini
-sed -i "s/statichost: http:\/\/localhost/statichost: http:\/\/localhost:8080/g" /etc/oasisqe.ini
-sed -i "s/url: http:\/\/localhost\/oasis/url: http:\/\/localhost:8080\/oasis/g" /etc/oasisqe.ini
+sed -i "s/statichost: http:\/\/localhost/statichost: http:\/\/localhost:8081/g" /etc/oasisqe.ini
+sed -i "s/url: http:\/\/localhost\/oasis/url: http:\/\/localhost:8081\/oasis/g" /etc/oasisqe.ini
 
 su postgres -c "psql postgres <<EOF
   create user oasisqe;
@@ -51,11 +55,12 @@ a2ensite oasisqe
 
 service apache2 reload
 
+export PS1=${PS1:-}
 source ${DEST}/.venv/bin/activate
 su oasisqe -c "${BINDIR}/create_test_topic EXAMPLE101 Samples"
 echo
 echo
-echo OASISQE deployed to http://localhost:8080/oasis
+echo OASISQE deployed to http://localhost:8081/oasis
 echo
 echo "********************************************"
 su oasisqe -c "${BINDIR}/reset_admin_password devtest"

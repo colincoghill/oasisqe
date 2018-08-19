@@ -1,4 +1,5 @@
 #!/bin/bash
+set -eu
 
 # Sets OASIS up on Ubuntu (Xenial) with default config and all dependencies.
 #
@@ -13,6 +14,9 @@ echo "Building OASIS on Xenial" >> /tmp/provision.notes
 
 export SRC=/opt/oasisqe/src
 export DEST=/opt/oasisqe/3.9
+
+mkdir -p ${DEST}/bin
+cd ${DEST}
 
 BINDIR=${DEST}/bin
 OASISLIB=${DEST}
@@ -30,8 +34,8 @@ mkdir -p "${DEST}/config"
 
 cp ${SRC}/docs/examples/sampleconfig.ini ${DEST}/config/oasisqe.ini
 sed -i "s/pass: SECRET/pass: ${DBPASS}/g" ${DEST}/config/oasisqe.ini
-sed -i "s/statichost: http:\/\/localhost/statichost: http:\/\/localhost:8082/g" ${DEST}/config/oasisqe.ini
-sed -i "s/url: http:\/\/localhost\/oasis/url: http:\/\/localhost:8082\/oasis/g" ${DEST}/config/oasisqe.ini
+sed -i "s/statichost: http:\/\/localhost/statichost: http:\/\/localhost/g" ${DEST}/config/oasisqe.ini
+sed -i "s/url: http:\/\/localhost\/oasis/url: http:\/\/localhost\/oasis/g" ${DEST}/config/oasisqe.ini
 
 cp ${SRC}/docs/examples/apache24config.sample ${DEST}/config/oasisqe-apache.conf
 echo
