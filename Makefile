@@ -22,6 +22,10 @@ teststretch:
 	echo "Testing on Ubuntu Stretch"
 	vagrant up teststretch
 
+testtrusty:
+	echo "Testing on Ubuntu Trusty"
+	vagrant up testtrusty
+
 devxenial:
 	echo "Building dev environment on Ubuntu Xenial"
 	vagrant up devxenial
@@ -37,11 +41,19 @@ devstretch:
 	vagrant up devstretch
 	vagrant ssh devstretch
 
+devtrusty:
+	echo "Building dev environment on Ubuntu Trusty"
+	vagrant up devtrusty
+	vagrant ssh devtrusty
+
 cleanvm:
 	vagrant destroy buildxenial
 	vagrant destroy testxenial
 	vagrant destroy testbionic
+	vagrant destroy testtrusty
+	vagrant destroy teststretch
 	vagrant destroy devxenial
 	vagrant destroy devbionic
 	vagrant destroy devstretch
+	vagrant destroy devtrusty
 
