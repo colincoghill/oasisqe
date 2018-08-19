@@ -36,7 +36,8 @@ MC = MCPool('127.0.0.1:11211', 3)
 def run_sql(sql, params=None, quiet=False):
     # type: (str, list, bool) -> list
     """ Execute SQL commands using the dbpool"""
-    L.debug("SQL: %s ;(%s)", sql, params)
+    if not quiet:
+        L.debug("SQL: %s ;(%s)", sql, params)
     conn = dbpool.start()
     res = conn.run_sql(sql, params)
     dbpool.finish(conn)
@@ -72,7 +73,6 @@ def get_q_viewtime(question):
     """ Return the time that the question was first viewed
         as a human readable string.
     """
-    # type: (int) -> str or None
     assert isinstance(question, int)
     ret = run_sql("""SELECT "firstview"
                      FROM "questions"
@@ -1392,7 +1392,6 @@ def is_oasis_db():
 def public_tables():
     """ Return a list of names of all tables in schema ("public" is default)
     """
-    # type: (None) -> list(str)
     ret = run_sql("SELECT * FROM pg_stat_user_tables;")
     return [row[2] for row in ret]
 
@@ -1400,7 +1399,6 @@ def public_tables():
 def num_records(table_name):
     """ How many rows are in the given table.
     """
-    # type: (str) -> int
     ret = run_sql('SELECT count(*) FROM "%s";' % table_name)
     return int(ret[0][0])
 
@@ -1695,7 +1693,7 @@ def do_repair(repair=True):
             if repair:
                 # Swap archived and duration fields
                 sql = "UPDATE exams SET duration = %s, archived = %s WHERE exam = %s;"
-                params= [exam['archived'], exam['duration'], exam['exam_id']]
+                params = [exam['archived'], exam['duration'], exam['exam_id']]
                 L.warn("Repairing swapped duration, archived field in exams (archived=%s,duration=%s,exam=%s" % params)
                 run_sql(sql,params)
             else:

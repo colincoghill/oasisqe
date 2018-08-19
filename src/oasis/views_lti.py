@@ -47,16 +47,16 @@ def error(exception=None):
                            exception=exception)
 
 
-def _auth_user(lti, app):
+def _auth_user(_lti, _app):
     """ Given an lti object, find or create the local user account, then set up the session."""
 
     global session
     # Do we know them by name/username?
     # If not, then by email?
-    username = lti.name
+    username = _lti.name
     user_id = Users2.uid_by_uname(username)
     if not username:
-        username = lti.email
+        username = _lti.email
         user_id = Users2.uid_by_email(username)
 
     if not user_id:
@@ -87,28 +87,28 @@ def _auth_user(lti, app):
 @app.route("/lti", methods=["POST", "GET"])
 @lti(request='any', error=error, app=app)
 @csrf.exempt
-def lti_launch(lti):
+def lti_launch(_lti):
     """
     Just testing at the moment
     :return:
     """
-    session = _auth_user(lti, app)
+    _session = _auth_user(_lti, app)
 
     return render_template(
         "lti_launch.html",
-        lti=lti,
-        session=session)
+        lti=_lti,
+        session=_session)
 
 
 @app.route("/lti/main", methods=["POST", "GET"])
 @lti(request='any', error=error, app=app)
 @csrf.exempt
-def lti_main(lti):
+def lti_main(_lti):
     """
     Authenticate the user and send them to Top Menu
     :return:
     """
-    _auth_user(lti, app)
+    _auth_user(_lti, app)
 
     return redirect(url_for("main_top"))
 
@@ -116,48 +116,48 @@ def lti_main(lti):
 @app.route("/lti/practice", methods=["POST", "GET"])
 @lti(request='any', error=error, app=app)
 @csrf.exempt
-def lti_practice(lti):
+def lti_practice(_lti):
     """
     Authenticate the user and send them to Practice
     :return:
     """
-    _auth_user(lti, app)
+    _auth_user(_lti, app)
     return redirect(url_for("practice_top"))
 
 
 @app.route("/lti/practice/subcategory/<int:topic_id>", methods=["POST", "GET"])
 @lti(request='any', error=error, app=app, topic_id=False)
 @csrf.exempt
-def lti_practice_topic(topic_id, lti=lti):
+def lti_practice_topic(topic_id, _lti=lti):
     """
     Authenticate the user and send them to Practice Topic
     :return:
     """
-    _auth_user(lti, app)
+    _auth_user(_lti, app)
     return redirect(url_for("practice_choose_question", topic_id=topic_id))
 
 
 @app.route("/lti/assess", methods=["POST", "GET"])
 @lti(request='any', error=error, app=app)
 @csrf.exempt
-def lti_assess(lti):
+def lti_assess(_lti):
     """
     Authenticate the user and send them to Assessments
     :return:
     """
-    _auth_user(lti, app)
+    _auth_user(_lti, app)
     return redirect(url_for("assess_top"))
 
 
 @app.route("/lti/assess/startexam/<int:course_id>/<int:exam_id>", methods=["POST", "GET"])
 @lti(request='any', error=error, app=app, topic_id=False)
 @csrf.exempt
-def lti_assess_startexam(course_id, exam_id, lti=lti):
+def lti_assess_startexam(course_id, exam_id, _lti=lti):
     """
     Authenticate the user and send them to the Assessment
     :return:
     """
-    _auth_user(lti, app)
+    _auth_user(_lti, app)
     return redirect(url_for("assess_startexam", course_id=course_id, exam_id=exam_id))
 
 
