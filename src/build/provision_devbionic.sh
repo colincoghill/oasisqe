@@ -41,6 +41,12 @@ sed -i "s/pass: SECRET/pass: ${DBPASS}/g" /etc/oasisqe.ini
 sed -i "s/statichost: http:\/\/localhost/statichost: http:\/\/localhost:8082/g" /etc/oasisqe.ini
 sed -i "s/url: http:\/\/localhost\/oasis/url: http:\/\/localhost:8082\/oasis/g" /etc/oasisqe.ini
 
+
+# set postgres to let us connect over the network (or from vagrant host)
+echo "listen_addresses = '*'" >> /etc/postgresql/10/main/postgresql.conf
+echo "host   oasisqe   oasisqe    0.0.0.0/0   md5" >> /etc/postgresql/10/main/pg_hba.conf
+service postgresql restart
+
 su postgres -c "psql postgres <<EOF
   create user oasisqe;
   alter user oasisqe with password '${DBPASS}';
