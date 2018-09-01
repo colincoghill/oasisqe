@@ -3,7 +3,7 @@
   <div>
     <br/>
 
-    <p>Return to <a href="{{ cf.url }}admin/feeds">Enrolment Feeds</a></p>
+    <p>Return to <a href="{{ cf.url }}admin/lti_consumers">LTI Consumers</a></p>
 
     <div class="row">
       <div class="span2 help-block">
@@ -36,6 +36,11 @@
             <label>Shared Secret</label>
             <input placeholder="1234" name='shared_secret'
                    class="input-medium" value="{{ lti_consumer.shared_secret }}"
+                   type="text">
+
+            <label>Username Attribute</label>
+            <input placeholder="email" name='username_attribute'
+                   class="input-medium" value="{{ lti_consumer.username_attribute }}"
                    type="text">
 
             <label for='comments'>Comments: (optional)</label>

@@ -97,6 +97,7 @@ def admin_edit_lti_consumer_submit(ltic_id):
     title = request.form.get('title', '')
     shared_secret = request.form.get('shared_secret', '')
     comments = request.form.get('comments', '')
+    username_attribute = request.form.get('username_attribute', 'email')
     active = request.form.get('active', 'inactive') == 'active'
 
     if ltic_id == 0:  # It's a new one being created
@@ -105,6 +106,7 @@ def admin_edit_lti_consumer_submit(ltic_id):
             consumer_key=consumer_key,
             title=title,
             shared_secret=shared_secret,
+            username_attribute=username_attribute,
             comments=comments,
             active=active
         )
@@ -118,6 +120,7 @@ def admin_edit_lti_consumer_submit(ltic_id):
     lti_consumer.consumer_key = consumer_key
     lti_consumer.title = title
     lti_consumer.shared_secret = shared_secret
+    lti_consumer.username_attribute = username_attribute
     lti_consumer.comments = comments
     lti_consumer.active = active
 

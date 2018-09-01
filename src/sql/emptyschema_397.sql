@@ -196,6 +196,7 @@ CREATE TABLE lti_consumers (
     "title" character varying(250),
     "shared_secret" character varying,
     "consumer_key" character varying,
+    "username_attribute" character varying default 'name',
     "comments" character varying,
     "active" BOOLEAN default FALSE,
     "last_seen" timestamp with time ZONE
@@ -376,7 +377,7 @@ CREATE TABLE config (
     "name" character varying(50) unique primary key,
     "value" text
 );
-INSERT INTO config ("name", "value") VALUES ('dbversion', '3.9.6');
+INSERT INTO config ("name", "value") VALUES ('dbversion', '3.9.7');
 
 CREATE SEQUENCE users_version_seq START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;
 CREATE SEQUENCE courses_version_seq START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;

@@ -114,12 +114,15 @@
 
         </div>
         <div class='row'>
+            {% if cf.lti_enabled %}
             <div class='span5'>
 
                 <B><A HREF='{{ cf.url }}admin/lti_consumers'>LTI Consumers</A></B>
 
                 <P>LTI Consumers are other systems (eg. Moodle, Sakai) that can "consume" OASIS Content.</P><br>
+
             </div>
+            {% endif %}
             <div class='span5'>
 
             </div>

@@ -33,9 +33,7 @@ from .lib import Users2, LTIConsumers, OaConfig
 
 L = getLogger("oasisqe")
 
-
 LTIConsumers.update_lti_config()
-
 
 
 def error(exception=None):
@@ -43,25 +41,34 @@ def error(exception=None):
     :param exception: optional exception
     :return: the error.html template rendered
     """
+
     return render_template('lti_error.html',
                            exception=exception)
 
 
-def _auth_user(_lti, _app):
+def _auth_user(lti, app):
     """ Given an lti object, find or create the local user account, then set up the session."""
 
     global session
-    # Do we know them by name/username?
-    # If not, then by email?
-    username = _lti.name
-    user_id = Users2.uid_by_uname(username)
-    if not username:
-        username = _lti.email
-        user_id = Users2.uid_by_email(username)
 
+    lti_consumer = LTIConsumers.LTIConsumer(consumer_key=lti.key)
+    username_attribute = lti_consumer.username_attribute
+
+    try:
+        username = getattr(lti, u"%s"%username_attribute)
+        if not username:
+            abort(400, "'%s' field was empty" % username_attribute)
+
+    except AttributeError:
+        L.error("Unable to lookup lti attribute '%s' for username mapping" % username_attribute)
+        abort(400, "Expecting '%s' in LTI params" % username_attribute)
+
+    user_id = Users2.uid_by_uname(username)
     if not user_id:
         audit(1, user_id, user_id, "UserAuth",
               "Created user %s because of LTI request for unknown user" % username)
+        L.info("creating OASIS user %s for LTI (%s: %s) " % (username, lti.key, lti_consumer.title))
+        # uname, passwd, givenname, familyname, acctstatus, studentid, email = None
         Users2.create(username, 'lti-nologin-direct', '', '', 1, '', username, None, 'lti', '', True)
         user_id = Users2.uid_by_uname(username)
 
@@ -87,28 +94,28 @@ def _auth_user(_lti, _app):
 @app.route("/lti", methods=["POST", "GET"])
 @lti(request='any', error=error, app=app)
 @csrf.exempt
-def lti_launch(_lti):
+def lti_launch(lti):
     """
     Just testing at the moment
     :return:
     """
-    _session = _auth_user(_lti, app)
+    _session = _auth_user(lti, app)
 
     return render_template(
         "lti_launch.html",
-        lti=_lti,
+        lti=lti,
         session=_session)
 
 
 @app.route("/lti/main", methods=["POST", "GET"])
 @lti(request='any', error=error, app=app)
 @csrf.exempt
-def lti_main(_lti):
+def lti_main(lti):
     """
     Authenticate the user and send them to Top Menu
     :return:
     """
-    _auth_user(_lti, app)
+    _auth_user(lti, app)
 
     return redirect(url_for("main_top"))
 
@@ -116,48 +123,48 @@ def lti_main(_lti):
 @app.route("/lti/practice", methods=["POST", "GET"])
 @lti(request='any', error=error, app=app)
 @csrf.exempt
-def lti_practice(_lti):
+def lti_practice(lti):
     """
     Authenticate the user and send them to Practice
     :return:
     """
-    _auth_user(_lti, app)
+    _auth_user(lti, app)
     return redirect(url_for("practice_top"))
 
 
 @app.route("/lti/practice/subcategory/<int:topic_id>", methods=["POST", "GET"])
 @lti(request='any', error=error, app=app, topic_id=False)
 @csrf.exempt
-def lti_practice_topic(topic_id, _lti=lti):
+def lti_practice_topic(topic_id, lti=lti):
     """
     Authenticate the user and send them to Practice Topic
     :return:
     """
-    _auth_user(_lti, app)
+    _auth_user(lti, app)
     return redirect(url_for("practice_choose_question", topic_id=topic_id))
 
 
 @app.route("/lti/assess", methods=["POST", "GET"])
 @lti(request='any', error=error, app=app)
 @csrf.exempt
-def lti_assess(_lti):
+def lti_assess(lti):
     """
     Authenticate the user and send them to Assessments
     :return:
     """
-    _auth_user(_lti, app)
+    _auth_user(lti, app)
     return redirect(url_for("assess_top"))
 
 
 @app.route("/lti/assess/startexam/<int:course_id>/<int:exam_id>", methods=["POST", "GET"])
 @lti(request='any', error=error, app=app, topic_id=False)
 @csrf.exempt
-def lti_assess_startexam(course_id, exam_id, _lti=lti):
+def lti_assess_startexam(course_id, exam_id, lti=lti):
     """
     Authenticate the user and send them to the Assessment
     :return:
     """
-    _auth_user(_lti, app)
+    _auth_user(lti, app)
     return redirect(url_for("assess_startexam", course_id=course_id, exam_id=exam_id))
 
 

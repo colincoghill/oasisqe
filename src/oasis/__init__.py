@@ -111,6 +111,8 @@ def template_context():
         'open_registration': OaConfig.open_registration,
         'enable_local_login': OaConfig.enable_local_login,
         'enable_webauth_login': OaConfig.enable_webauth_login,
+        'enable_lti_login': OaConfig.enable_lti_login,
+        'lti_enabled': OaConfig.lti_enabled
     }}
 
 

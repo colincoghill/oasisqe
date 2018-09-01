@@ -236,7 +236,7 @@ def cmd_options():
     descr = """OASIS Database Tool. Requires a configured OASIS setup,
     and can be used to initialize/upgrade the OASIS database."""
     usage = "%prog [--help] [--version] [command ...]"
-    version = "%prog 3.9.6"
+    version = "%prog 3.9.7"
     oparser = OptionParser(usage=usage,
                            version=version,
                            description=descr)
@@ -254,8 +254,8 @@ def cmd_options():
     oparser.add_option("--oasis-ver",
                        dest='oaver',
                        metavar="X.Y.Z",
-                       default='3.9.6',
-                       help='work with a specific OASIS version. (default 3.9.6)')
+                       default='3.9.7',
+                       help='work with a specific OASIS version. (default 3.9.7)')
     oparser.add_option("-v", "--verbose",
                        dest='verbose',
                        default=False,
@@ -355,9 +355,12 @@ def do_init(db, c_opts):
         elif c_opts.oaver == '3.9.6':
             DB.erase_existing()  # might be some dregs, like sequences or views
             DB.clean_install_3_9_6()
+        elif c_opts.oaver == '3.9.7':
+            DB.erase_existing()  # might be some dregs, like sequences or views
+            DB.clean_install_3_9_7()
         else:
             print "Unknown database version (%s)" % (c_opts.oaver,)
-            print "Available options:    3.6   3.9.1   3.9.2   3.9.3   3.9.4   3.9.5   3.9.6"
+            print "Available options:  3.6 3.9.1 3.9.2 3.9.3 3.9.4 3.9.5 3.9.6 3.9.7"
             sys.exit()
         if not c_opts.noresetadmin:
             DB.generate_admin_passwd()
@@ -397,9 +400,12 @@ def do_init(db, c_opts):
         elif c_opts.oaver == '3.9.6':
             DB.erase_existing()  # might be some dregs, like sequences or views
             DB.clean_install_3_9_6()
+        elif c_opts.oaver == '3.9.7':
+            DB.erase_existing()  # might be some dregs, like sequences or views
+            DB.clean_install_3_9_7()
         else:
             print "Unknown database version (%s)" % (c_opts.oaver,)
-            print "Available options:   3.6   3.9.1   3.9.2   3.9.3   3.9.4   3.9.5  3.9.6"
+            print "Available options: 3.6 3.9.1 3.9.2 3.9.3 3.9.4 3.9.5 3.9.6 3.9.7"
             sys.exit()
         if not c_opts.noresetadmin:
             DB.generate_admin_passwd()

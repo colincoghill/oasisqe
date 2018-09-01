@@ -16,6 +16,7 @@ from oasis import app
 #    "id" SERIAL PRIMARY KEY,
 #    "title" character varying(250),
 #    "shared_secret" character varying,
+#    "username_attribute" character varying,
 #    "consumer_key" character varying,
 #    "comments" character varying,
 #    "active" BOOLEAN default FALSE,
@@ -27,7 +28,7 @@ class LTIConsumer(object):
     """
 
     def __init__(self, ltic_id=None, consumer_key=None,
-                 title=None, shared_secret=None,
+                 title=None, shared_secret=None, username_attribute=None,
                  comments=None, active=None):
         """ If just id is provided, load existing database
             record or raise KeyError.
@@ -44,9 +45,12 @@ class LTIConsumer(object):
                     self._fetch_by_consumer_key(consumer_key)
 
         else:  # create new
+            if not username_attribute:
+                username_attribute = "name"
             self.ltic_id = 0
             self.title = title
             self.shared_secret = shared_secret
+            self.username_attribute = username_attribute
             self.consumer_key = consumer_key
             self.comments = comments
             self.last_seen = None
@@ -58,7 +62,7 @@ class LTIConsumer(object):
         """ If an existing record exists with this id, load it and
             return.
         """
-        sql = """SELECT "id", "title", "shared_secret", "consumer_key", "comments", "active", "last_seen"
+        sql = """SELECT "id", "title", "shared_secret", "consumer_key", "comments", "active", "last_seen", "username_attribute"
                  FROM "lti_consumers"
                  WHERE "id"=%s;"""
         params = [ltic_id, ]
@@ -73,6 +77,7 @@ class LTIConsumer(object):
         self.comments = ret[0][4]
         self.active = ret[0][5]
         self.last_seen = ret[0][6]
+        self.username_attribute = ret[0][7]
         self.new = False
         return
 
@@ -81,7 +86,7 @@ class LTIConsumer(object):
         """ If an existing record exists with this consumer_key, load it and
             return.
         """
-        sql = """SELECT "id", "title", "shared_secret", "consumer_key", "comments", "active", "last_seen"
+        sql = """SELECT "id", "title", "shared_secret", "consumer_key", "comments", "active", "last_seen", "username_attribute"
                  FROM "lti_consumers"
                  WHERE "consumer_key"=%s;"""
         params = [consumer_key, ]
@@ -96,6 +101,7 @@ class LTIConsumer(object):
         self.comments = ret[0][4]
         self.active = ret[0][5]
         self.last_seen = ret[0][6]
+        self.username_attribute = ret[0][7]
         self.new = False
         return
 
@@ -117,11 +123,12 @@ class LTIConsumer(object):
         sql = """UPDATE "lti_consumers"
                  SET "title" = %s,
                      "shared_secret" = %s,
+                     "username_attribute" = %s,
                      "consumer_key" = %s,
                      "comments" = %s,
                      "active" = %s
                  WHERE "id" = %s;"""
-        params = [self.title, self.shared_secret, self.consumer_key,
+        params = [self.title, self.shared_secret, self.username_attribute, self.consumer_key,
                   self.comments, self.active, self.id]
 
         run_sql(sql, params)

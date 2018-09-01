@@ -1488,6 +1488,16 @@ def clean_install_3_9_6():
     print "Installed v3.9.6 table structure."
 
 
+def clean_install_3_9_7():
+    """ Install a fresh blank v3.9.7 schema.
+    """
+    with open(os.path.join(OaConfig.homedir, "sql", "emptyschema_397.sql")) as f:
+        sql = f.read()
+
+    run_sql(sql)
+    print "Installed v3.9.7 table structure."
+
+
 def upgrade_3_6_to_3_9_5(options):
     """ Given a 3.6 database, upgrade it to 3.9.3
     """
@@ -1589,6 +1599,15 @@ def upgrade_3_9_5_to_3_9_6(_):
     print "Migrated table structure from 3.9.5 to 3.9.6"
 
 
+def upgrade_3_9_6_to_3_9_7(_):
+    """ Given a 3.9.6 database, upgrade it to 3.9.7.
+    """
+    with open(os.path.join(OaConfig.homedir, "sql", "migrate_396_to_397.sql")) as f:
+        sql = f.read()
+    run_sql(sql)
+    print "Migrated table structure from 3.9.6 to 3.9.7"
+
+
 def do_upgrade(options):
     """ Upgrade the database from an older version of OASIS.
     """
@@ -1597,29 +1616,41 @@ def do_upgrade(options):
     if dbver == "3.6":
         upgrade_3_6_to_3_9_5(options)
         upgrade_3_9_5_to_3_9_6(options)
+        upgrade_3_9_6_to_3_9_7(options)
         return
     if dbver == "3.9.1":
         upgrade_3_9_1_to_3_9_5(options)
         upgrade_3_9_5_to_3_9_6(options)
+        upgrade_3_9_6_to_3_9_7(options)
         return
     if dbver == "3.9.2":
         upgrade_3_9_2_to_3_9_5(options)
         upgrade_3_9_5_to_3_9_6(options)
+        upgrade_3_9_6_to_3_9_7(options)
         return
     if dbver == "3.9.3":
         upgrade_3_9_3_to_3_9_5(options)
         upgrade_3_9_5_to_3_9_6(options)
+        upgrade_3_9_6_to_3_9_7(options)
         return
     if dbver == "3.9.4":
         upgrade_3_9_4_to_3_9_5(options)
         upgrade_3_9_5_to_3_9_6(options)
+        upgrade_3_9_6_to_3_9_7(options)
         return
     if dbver == "3.9.5":
         do_repair()
+        dbver = get_db_version() # we had a bug where a 3.9.6 db thought it was 3.9.5
+    if dbver == "3.9.5":
         upgrade_3_9_5_to_3_9_6(options)
+        upgrade_3_9_6_to_3_9_7(options)
         return
     if dbver == "3.9.6":
-        print "Your database is already the latest version (3.9.6)"
+        do_repair()
+        upgrade_3_9_6_to_3_9_7(options)
+        return
+    if dbver == "3.9.7":
+        print "Your database is already the latest version (3.9.7)"
     return
 
 
@@ -1707,5 +1738,22 @@ def do_repair(repair=True):
 
     else:
         L.info("No bad records found.")
+
+    # version 3.9.6 deployment scripts set up the database thinking version was 3.9.5. Didn't cause
+    # major problems, but confused later upgrades
+    ver = get_db_version()
+    if ver == "3.9.5":
+        try: # this table is added in 3.9.6
+            run_sql("""SELECT 1 from lti_consumers;""")
+            # we got here so it exists, we're actually 3.9.6
+            L.info("DB thinks it's version 3.9.5 but has lti_consumers, which was added in 3.9.6")
+            if repair:
+                L.warn("Setting database version to 3.9.6")
+                run_sql("""update config SET "value" = '3.9.6' WHERE "name" = 'dbversion';""")
+            bad_found += 1
+
+        except psycopg2.DatabaseError:
+            # actually 3.9.5, no worries
+            pass
 
     return bad_found
