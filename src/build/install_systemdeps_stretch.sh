@@ -33,7 +33,7 @@ apt-get install ${APTOPTS} postfix unzip memcached
 apt-get install ${APTOPTS} pwgen
 
 # We'd prefer these by pip, but they like to compile stuff during install so need lots of dev things installed.
-apt-get install ${APTOPTS} python-psycopg2 python-bcrypt python-lxml python-pillow
+apt-get install ${APTOPTS} python-psycopg2 python-bcrypt python-lxml python-pillow python-ldap
 
 # Debian pip is a bit old, but installing it means we can use it to install a newer one
 apt-get install ${APTOPTS} --no-install-recommends python-pip
