@@ -8,6 +8,7 @@ date > /tmp/provision.notes
 echo "Installing dependencies for OASIS on Debian Stretch" >> /tmp/provision.notes
 
 APTOPTS=-y
+export DEBIAN_FRONTEND=noninteractive
 
 # pre-answer interactive configuration for Postfix
 debconf-set-selections <<< "postfix postfix/mailname string local.dev"
