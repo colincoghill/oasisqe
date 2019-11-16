@@ -120,7 +120,7 @@
                     <option value="">--</option>
                     {% for course in all_course_topics %}
                         <optgroup label='{{ course.course }}'>
-                            {% for k,v in course.topics.iteritems() %}
+                            {% for k,v in course.topics.items() %}
                                 <option value='{{ v.id }}'>{{ v.title }}</option>
                             {% endfor %}
                         </optgroup>

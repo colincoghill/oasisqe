@@ -102,7 +102,7 @@ def process_save(qt_id, topic_id, request, session, version):
         try:
             newmodule = int(form['newmodule'])
         except (ValueError, TypeError):
-            L.warn("QEditor: invalid value for newmodule received. Ignoring. '%s'" % form['newmodule'])
+            L.warning("QEditor: invalid value for newmodule received. Ignoring. '%s'" % form['newmodule'])
         else:
             DB.update_qt_marker(qt_id, newmodule)
 
@@ -110,7 +110,7 @@ def process_save(qt_id, topic_id, request, session, version):
         try:
             newmaxscore = float(form['newmaxscore'])
         except (ValueError, TypeError):
-            L.warn("QEditor: invalid value for newmaxscore received. Ignoring. '%s'" % form['newmaxscore'])
+            L.warning("QEditor: invalid value for newmaxscore received. Ignoring. '%s'" % form['newmaxscore'])
             newmaxscore = None
         DB.update_qt_maxscore(qt_id, newmaxscore)
 

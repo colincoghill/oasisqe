@@ -34,7 +34,7 @@ sudo chown -R vagrant ${DEST}
 
 cd ${DEST}
 
-PIP_IGNORE_INSTALLED=1 pipenv install --dev
+PIP_IGNORE_INSTALLED=1 pipenv --python 3.6 install --dev
 
 echo "OASISLIB=${OASISLIB}" >> ${DEST}/.env
 

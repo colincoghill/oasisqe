@@ -13,7 +13,7 @@ import tempfile
 import json
 import zipfile
 import shutil
-from StringIO import StringIO
+from io import StringIO
 
 from logging import getLogger
 
@@ -334,7 +334,7 @@ def import_qts_from_zip(data, topic_id):
             zfile.extractall(qdir)
             data = open("%s/info.json" % qdir, "r").read()
             info = json.loads(data)
-            qtids = info['qtemplates'].keys()
+            qtids = list(info['qtemplates'].keys())
             qtids.sort()
             for qtid in qtids:
                 qtemplate = info['qtemplates'][qtid]['qtemplate']

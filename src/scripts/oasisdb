@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 
@@ -28,12 +28,12 @@ elif os.path.isdir("%s/%s"%(UPTWO,"/src/oasis")):
    APPDIR = UPTWO+"/src"
 
 if not APPDIR:
-    print "Unable to find installed OASIS code, normally at /opt/oasisqe/3.9/src"
-    print "You can specify it in the OASIS lib environment variable on the commandline: "
-    print "          OASISLIB=/opt/oasisqe/3.9/src oasisdb"
+    print("Unable to find installed OASIS code, normally at /opt/oasisqe/3.9/src")
+    print("You can specify it in the OASIS lib environment variable on the commandline: ")
+    print("          OASISLIB=/opt/oasisqe/3.9/src oasisdb")
     exit(1)
 
-print "using copy of OASIS installed at %s" % APPDIR
+print("using copy of OASIS installed at %s" % APPDIR)
 
 sys.path.append(APPDIR)
 
@@ -43,7 +43,7 @@ def _get_exams(db):
     ret = db.run_sql("SELECT exam FROM exams ORDER BY exam;")
     if ret:
         return [int(row[0]) for row in ret]
-    print "ERROR: Unable to query exams table"
+    print("ERROR: Unable to query exams table")
     return []
 
 def _get_exam_students(db, exam):
@@ -85,17 +85,17 @@ def check_assess_duplication_1(db):
         progress += 1
         if progress == 10:
             progress = 0
-            print
-        print ".",
+            print()
+        print(".", end=' ')
         for student in students:
             questions = _get_exam_questions(db, exam, student)
             qinstances = [qid for (pos, qid) in questions]
             uniques = set(qinstances)
             if len(uniques) < len(qinstances):
-                print 
-                print "Assessment %s, user %s, Type 1 Duplication: %s (question reused in same assessment)" % (exam, student, qinstances)
+                print() 
+                print("Assessment %s, user %s, Type 1 Duplication: %s (question reused in same assessment)" % (exam, student, qinstances))
                 count += 1
-    print 
+    print() 
     return count
 
 def check_assess_duplication_2(db):
@@ -110,18 +110,18 @@ def check_assess_duplication_2(db):
         progress += 1
         if progress == 25:
             progress = 0
-            print
-        print ".",
+            print()
+        print(".", end=' ')
         qinstances = []
         for exam in exams:
             qids = [qid for (pos,qid) in _get_exam_questions(db, exam, student)]
             qinstances += qids
         uniques = set(qinstances)
         if len(uniques) < len(qinstances):
-            print
-            print "User %s, Type 2 Duplication: %s (question reused across exams)" % (student, qinstances)
+            print()
+            print("User %s, Type 2 Duplication: %s (question reused across exams)" % (student, qinstances))
             count += 1
-    print
+    print()
     return count
 
 def check_assess_duplication_3(db):
@@ -137,15 +137,15 @@ def check_assess_duplication_3(db):
         progress += 1
         if progress == 25:
             progress = 0
-            print
-        print ".",
+            print()
+        print(".", end=' ')
         cur = [0,0,0,0]
         for var in variations:
             if var[0] == cur[0] and var[1] == cur[1] and var[2] == cur[2]:
-                print
-                print "User %s, Type 3 Duplication: variation (%s,%s,%s,%s) with variation (%s,%s,%s,%s) (question from practice reused in assessment)" % (student, var[0], var[1], var[2], var[3], cur[0], cur[1], cur[2], cur[3])
+                print()
+                print("User %s, Type 3 Duplication: variation (%s,%s,%s,%s) with variation (%s,%s,%s,%s) (question from practice reused in assessment)" % (student, var[0], var[1], var[2], var[3], cur[0], cur[1], cur[2], cur[3]))
                 count += 1
-    print
+    print()
     return count
 
 
@@ -153,17 +153,17 @@ def do_diagnose_db(db):
     """ Check the database for some problems that may have occurred in the past.
     """
 
-    print "Checking Assessments for duplication type 1"
+    print("Checking Assessments for duplication type 1")
     count = check_assess_duplication_1(db)
-    print "%d found" % count
+    print("%d found" % count)
 
-    print "Checking Assessments for duplication type 2"
+    print("Checking Assessments for duplication type 2")
     count = check_assess_duplication_2(db)
-    print "%d found" % count
+    print("%d found" % count)
 
-    print "Checking Assessments for duplication type 3"
+    print("Checking Assessments for duplication type 3")
     count = check_assess_duplication_3(db)
-    print "%d found" % count
+    print("%d found" % count)
 
 
 def do_list_courses(db):
@@ -177,11 +177,11 @@ def do_list_courses(db):
     courses = [{'id': row[0], 'name': row[1], 'title': row[2]}
                for row
                in ret]
-    print "Course listing"
+    print("Course listing")
     for course in courses:
-        print '%(id)s: %(name)s  (%(title)s)' % course
+        print('%(id)s: %(name)s  (%(title)s)' % course)
     else:
-        print "There are no courses in the database."
+        print("There are no courses in the database.")
 
 
 def do_list_users(db):
@@ -199,15 +199,15 @@ def do_list_users(db):
               'email': row[4],
               'confirmed': row[5]}
              for row in ret]
-    print "User listing"
+    print("User listing")
     for user in users:
         if user['confirmed']:
             user['conf'] = "[email confirmed]"
         else:
             user['conf'] = "[email unconfirmed]"
-        print "%(id)s: %(uname)s  (%(givenname)s %(familyname)s) %(email)s %(conf)s" % user
+        print("%(id)s: %(uname)s  (%(givenname)s %(familyname)s) %(email)s %(conf)s" % user)
     else:
-        print "There are no users in the database."
+        print("There are no users in the database.")
 
 
 def do_show(db, c_args):
@@ -221,11 +221,11 @@ def do_show(db, c_args):
     elif c_args[1] == "users":
         return do_list_users(db)
 
-    print "Usage:  oasisdb show <item>"
-    print
-    print "Where item is one of:"
-    print "   courses      List all courses in the database"
-    print "   users        List all users in the database"
+    print("Usage:  oasisdb show <item>")
+    print()
+    print("Where item is one of:")
+    print("   courses      List all courses in the database")
+    print("   users        List all users in the database")
 
 
 
@@ -269,7 +269,7 @@ def show_help():
     """ Show script usage help.
     """
     parser.print_help()
-    print """
+    print("""
 Commands:
     help                - Provide information about a specific command.
     status              - Show some status information about the database.
@@ -280,7 +280,7 @@ Commands:
     diagnose            - Check the database for potential problems.
     init                - Set up the OASIS table structure in the database.
     upgrade             - Upgrade an older OASIS database to the newest version.
-"""
+""")
 
 
 def do_status(db):
@@ -289,38 +289,38 @@ def do_status(db):
 
     from oasis.lib import OaConfig
 
-    print "Connecting to database:"
-    print "  host: ", OaConfig.dbhost
-    print "  database: ", OaConfig.dbname
-    print "  username: ", OaConfig.dbuname
-    print
+    print("Connecting to database:")
+    print("  host: ", OaConfig.dbhost)
+    print("  database: ", OaConfig.dbname)
+    print("  username: ", OaConfig.dbuname)
+    print()
 
     what = db.is_oasis_db()
     if what == "empty":
-        print "Empty database detected."
-        print ""
-        print "You can install a new one with:     oasisdb init"
+        print("Empty database detected.")
+        print("")
+        print("You can install a new one with:     oasisdb init")
         sys.exit()
 
     if what == "no":
-        print "This appears not to be an OASIS database. Please make sure you"
-        print "have the correct database settings in the configuration."
+        print("This appears not to be an OASIS database. Please make sure you")
+        print("have the correct database settings in the configuration.")
         sys.exit()
 
-    print "There is already an OASIS database here."
+    print("There is already an OASIS database here.")
     ver = db.get_db_version()
-    print "Detected DB Version", ver
-    print
+    print("Detected DB Version", ver)
+    print()
     safe = DB.check_safe()
     if safe:
-        print
-        print "However it does not contain much data so may be safe to erase:"
-        print "    oasisdb init --erase-existing "
+        print()
+        print("However it does not contain much data so may be safe to erase:")
+        print("    oasisdb init --erase-existing ")
         sys.exit()
 
-    print "It contains data, please be SURE you have the correct database"
-    print "settings and wish to erase the existing data"
-    print "before using the   --erase-existing   option."
+    print("It contains data, please be SURE you have the correct database")
+    print("settings and wish to erase the existing data")
+    print("before using the   --erase-existing   option.")
     sys.exit()
 
 
@@ -331,8 +331,8 @@ def do_init(db, c_opts):
 
     what = db.is_oasis_db()
     if what == "empty":
-        print "Empty database detected, installing a clean setup:"
-        print ""
+        print("Empty database detected, installing a clean setup:")
+        print("")
 
         if c_opts.oaver == '3.6':
             DB.erase_existing()  # might be some dregs, like sequences or views
@@ -359,24 +359,24 @@ def do_init(db, c_opts):
             DB.erase_existing()  # might be some dregs, like sequences or views
             DB.clean_install_3_9_7()
         else:
-            print "Unknown database version (%s)" % (c_opts.oaver,)
-            print "Available options:  3.6 3.9.1 3.9.2 3.9.3 3.9.4 3.9.5 3.9.6 3.9.7"
+            print("Unknown database version (%s)" % (c_opts.oaver,))
+            print("Available options:  3.6 3.9.1 3.9.2 3.9.3 3.9.4 3.9.5 3.9.6 3.9.7")
             sys.exit()
         if not c_opts.noresetadmin:
             DB.generate_admin_passwd()
-        print "Remember to restart OASIS if it's currently running."
-        print "On Linux you can use:      sudo service apache2 restart"
+        print("Remember to restart OASIS if it's currently running.")
+        print("On Linux you can use:      sudo service apache2 restart")
         sys.exit()
 
     if what == "no":
-        print "This appears not to be an OASIS database. Please make sure you"
-        print "have the correct database settings in the configuration."
+        print("This appears not to be an OASIS database. Please make sure you")
+        print("have the correct database settings in the configuration.")
         sys.exit()
 
-    print "There is already an OASIS database here."
+    print("There is already an OASIS database here.")
     ver = db.get_db_version()
-    print "Detected DB Version", ver
-    print
+    print("Detected DB Version", ver)
+    print()
     safe = db.check_safe()
     if c_opts.eraseall:
         if c_opts.oaver == '3.6':
@@ -404,31 +404,31 @@ def do_init(db, c_opts):
             DB.erase_existing()  # might be some dregs, like sequences or views
             DB.clean_install_3_9_7()
         else:
-            print "Unknown database version (%s)" % (c_opts.oaver,)
-            print "Available options: 3.6 3.9.1 3.9.2 3.9.3 3.9.4 3.9.5 3.9.6 3.9.7"
+            print("Unknown database version (%s)" % (c_opts.oaver,))
+            print("Available options: 3.6 3.9.1 3.9.2 3.9.3 3.9.4 3.9.5 3.9.6 3.9.7")
             sys.exit()
         if not c_opts.noresetadmin:
             DB.generate_admin_passwd()
-        print "Remember to restart OASIS if it's currently running."
-        print "On Linux you can use:      sudo service apache2 restart"
+        print("Remember to restart OASIS if it's currently running.")
+        print("On Linux you can use:      sudo service apache2 restart")
         sys.exit()
 
     if safe:
-        print
-        print "However it does not contain much data so may be safe to erase."
-        print "To do so:     oasisdb init --erase-existing  "
+        print()
+        print("However it does not contain much data so may be safe to erase.")
+        print("To do so:     oasisdb init --erase-existing  ")
         sys.exit()
 
-    print "It contains data, please be SURE you have the correct database"
-    print "settings and wish to erase the existing data"
-    print "before using   the   --erase-existing   option."
+    print("It contains data, please be SURE you have the correct database")
+    print("settings and wish to erase the existing data")
+    print("before using   the   --erase-existing   option.")
     sys.exit()
 
 
 def do_help():
     """ Display more help about a command
     """
-    print " Not Implemented"
+    print(" Not Implemented")
     sys.exit()
 
 

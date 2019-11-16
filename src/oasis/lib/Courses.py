@@ -19,7 +19,7 @@ L = getLogger("oasisqe")
 def set_name(course_id, name):
     """ Set the name of a course."""
     assert isinstance(course_id, int)
-    assert isinstance(name, str) or isinstance(name, unicode)
+    assert isinstance(name, str)
     run_sql("UPDATE courses SET title = %s WHERE course = %s;", [name, course_id])
     key = "course-%s-name" % course_id
     MC.delete(key)
@@ -29,7 +29,7 @@ def set_title(course_id, title):
     # type: (int, str) -> None
     """ Set the title of a course."""
     assert isinstance(course_id, int)
-    assert isinstance(title, str) or isinstance(title, unicode)
+    assert isinstance(title, str)
     run_sql("UPDATE courses SET description = %s WHERE course = %s;",
             [title, course_id])
     key = "course-%s-title" % course_id
@@ -80,7 +80,7 @@ def set_prac_vis(cid, visibility):
         :type visibility: string
     """
     assert isinstance(cid, int)
-    assert isinstance(visibility, str) or isinstance(visibility, unicode)
+    assert isinstance(visibility, str)
 
     run_sql("UPDATE courses SET practice_visibility = %s WHERE course = %s;",
             [visibility, cid])
@@ -89,7 +89,7 @@ def set_prac_vis(cid, visibility):
 def set_assess_vis(cid, visibility):
     """ Who can do assessments."""
     assert isinstance(cid, int)
-    assert isinstance(visibility, str) or isinstance(visibility, unicode)
+    assert isinstance(visibility, str)
 
     run_sql("UPDATE courses SET assess_visibility = %s WHERE course = %s;",
             [visibility, cid])
@@ -98,7 +98,7 @@ def set_assess_vis(cid, visibility):
 def get_users(course_id):
     """ Return a list of users in the course"""
     allusers = []
-    for g_id, group in Groups.active_by_course(course_id).iteritems():
+    for g_id, group in Groups.active_by_course(course_id).items():
         allusers.append(group.members())
     return allusers
 
@@ -134,8 +134,7 @@ def get_course_list(only_active=True, sortedby="name"):
     for course in courses:
         clist.append(courses[course])
 
-    clist.sort(lambda f, s: cmp(f[sortedby], s[sortedby]))
-    return clist
+    return sorted(clist, key=lambda k: k[sortedby])
 
 
 def get_courses_dict(only_active=False):
@@ -247,7 +246,7 @@ def create(name, description, owner, coursetype):
     key = "courses-all"
     MC.delete(key)
     if res:
-        L.warn("Courses.create('%s','%s',%d,%d)" % (name, description, owner, coursetype))
+        L.warning("Courses.create('%s','%s',%d,%d)" % (name, description, owner, coursetype))
         return int(res[0][0])
     L.error("create('%s','%s',%d,%d) Fail" % (name, description, owner, coursetype))
     return 0

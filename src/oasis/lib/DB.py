@@ -10,12 +10,12 @@
 """
 
 import psycopg2
-import cPickle
+import pickle
 import datetime
 import json
 import os
-import OaConfig
-import Pool
+from . import OaConfig
+from . import Pool
 from logging import getLogger
 
 L = getLogger("oasisqe.db")
@@ -27,7 +27,7 @@ IntegrityError = psycopg2.IntegrityError
 dbpool = Pool.DbPool(OaConfig.oasisdbconnectstring, 3)
 
 
-from Pool import MCPool
+from .Pool import MCPool
 
 # Get a pool of memcache connections to use
 MC = MCPool('127.0.0.1:11211', 3)
@@ -198,7 +198,7 @@ def save_guess(q_id, part, value):
     """ Store the guess in the database."""
     assert isinstance(q_id, int)
     assert isinstance(part, int)
-    assert isinstance(value, unicode)
+    assert isinstance(value, str)
     L.info("Saving guess for qid %s:  %s = %s " % (q_id, part, value))
     # noinspection PyComparisonWithNone
     if value is not None:  # "" is legit
@@ -248,7 +248,7 @@ def get_qt_by_embedid(embed_id):
     """ Find the question template with the given embed_id,
         or raise KeyError if not found.
     """
-    assert isinstance(embed_id, unicode)
+    assert isinstance(embed_id, str)
     sql = "SELECT qtemplate FROM qtemplates WHERE embed_id = %s LIMIT 1;"
     params = [embed_id, ]
     ret = run_sql(sql, params)
@@ -305,7 +305,7 @@ def get_qtemplate(qt_id, version=None):
 def update_qt_embedid(qt_id, embed_id):
     """ Set the QTemplate's embed_id"""
     assert isinstance(qt_id, int)
-    assert isinstance(embed_id, unicode) or isinstance(embed_id, str)
+    assert isinstance(embed_id, str)
     if embed_id == "":
         embed_id = None
     sql = "UPDATE qtemplates SET embed_id = %s WHERE qtemplate = %s;"
@@ -366,7 +366,7 @@ def get_qt_marker(qt_id):
     ret = run_sql("SELECT marker FROM qtemplates WHERE qtemplate = %s;", [qt_id, ])
     if ret:
         return int(ret[0][0])
-    L.warn("Request for unknown question template %s." % qt_id)
+    L.warning("Request for unknown question template %s." % qt_id)
 
 
 def get_qt_owner(qt_id):
@@ -377,7 +377,7 @@ def get_qt_owner(qt_id):
     ret = run_sql("SELECT owner FROM qtemplates WHERE qtemplate = %s;", [qt_id, ])
     if ret:
         return ret[0][0]
-    L.warn("Request for unknown question template %s." % qt_id)
+    L.warning("Request for unknown question template %s." % qt_id)
 
 
 def get_qt_name(qt_id):
@@ -391,7 +391,7 @@ def get_qt_name(qt_id):
     if ret:
         MC.set(key, ret[0][0], expiry=360)  # 6 minutes
         return ret[0][0]
-    L.warn("Request for unknown question template %s." % qt_id)
+    L.warning("Request for unknown question template %s." % qt_id)
 
 
 def get_qt_embedid(qt_id):
@@ -405,7 +405,7 @@ def get_qt_embedid(qt_id):
         if not embed_id:
             embed_id = ""
         return embed_id
-    L.warn("Request for unknown question template %s." % qt_id)
+    L.warning("Request for unknown question template %s." % qt_id)
 
 
 def get_qt_atts(qt_id, version=1000000000):
@@ -431,7 +431,7 @@ def get_q_att_mimetype(qt_id, name, variation, version=1000000000):
     assert isinstance(qt_id, int)
     assert isinstance(version, int)
     assert isinstance(variation, int)
-    assert isinstance(name, str) or isinstance(name, unicode)
+    assert isinstance(name, str)
     if version == 1000000000:
         version = get_qt_version(qt_id)
 
@@ -455,7 +455,7 @@ def get_qt_att_mimetype(qt_id, name, version=1000000000):
     """
     assert isinstance(qt_id, int)
     assert isinstance(version, int)
-    assert isinstance(name, str) or isinstance(name, unicode)
+    assert isinstance(name, str)
     if version == 1000000000:
         version = get_qt_version(qt_id)
 
@@ -484,11 +484,11 @@ def get_q_att(qt_id, name, variation, version=1000000000):
     assert isinstance(qt_id, int)
     assert isinstance(version, int)
     assert isinstance(variation, int)
-    assert isinstance(name, str) or isinstance(name, unicode)
+    assert isinstance(name, str)
     if version == 1000000000:
         version = get_qt_version(qt_id)
     if not version or not qt_id:
-        L.warn("Request for unknown qt version. get_qt_att(%s, %s, %s, %s)" % (qt_id, name, variation, version))
+        L.warning("Request for unknown qt version. get_qt_att(%s, %s, %s, %s)" % (qt_id, name, variation, version))
         return None
 
     ret = run_sql("""SELECT "qtemplate", "data"
@@ -510,7 +510,7 @@ def get_qt_att(qt_id, name, version=1000000000):
     """
     assert isinstance(qt_id, int)
     assert isinstance(version, int)
-    assert isinstance(name, str) or isinstance(name, unicode)
+    assert isinstance(name, str)
     if version == 1000000000:
         version = get_qt_version(qt_id)
 
@@ -640,11 +640,11 @@ def get_qt_variations(qt_id, version=1000000000):
                           WHERE "qtemplate" = %s
                             AND "version" <= %s)""", [qt_id, qt_id, version])
     if not res:
-        L.warn("No Variation found for qtid=%d, version=%d" % (qt_id, version))
+        L.warning("No Variation found for qtid=%d, version=%d" % (qt_id, version))
         return []
     for row in res:
         result = str(row[1])
-        ret[row[0]] = cPickle.loads(result)
+        ret[row[0]] = pickle.loads(result)
     return ret
 
 
@@ -666,16 +666,16 @@ def get_qt_variation(qt_id, variation, version=1000000000):
                             AND "version" <= %s);""",
                   [qt_id, variation, qt_id, version])
     if not res:
-        L.warn("Request for unknown qt variation. (%s, %s, %s)" %
+        L.warning("Request for unknown qt variation. (%s, %s, %s)" %
                (qt_id, variation, version))
         return None
     result = None
     data = None
     try:
         result = str(res[0][0])
-        data = cPickle.loads(result)
+        data = pickle.loads(result)
     except TypeError:
-        L.warn("Type error trying to cpickle.loads(%s) for (%s, %s, %s)" %
+        L.warning("Type error trying to cpickle.loads(%s) for (%s, %s, %s)" %
                (type(result), qt_id, variation, version))
     return data
 
@@ -694,7 +694,7 @@ def get_qt_num_variations(qt_id, version=1000000000):
     try:
         num = int(ret[0][0])
     except BaseException as err:
-        L.warn("No Variation found for qtid=%d, version=%d: %s" %
+        L.warning("No Variation found for qtid=%d, version=%d: %s" %
                (qt_id, version, err))
         return 0
     return num
@@ -704,12 +704,12 @@ def create_q_att(qt_id, variation, name, mimetype, data, version):
     """ Create a new Question Attachment using given data."""
     assert isinstance(qt_id, int)
     assert isinstance(variation, int)
-    assert isinstance(name, str) or isinstance(name, unicode)
-    assert isinstance(mimetype, str) or isinstance(mimetype, unicode)
-    assert isinstance(data, str) or isinstance(data, unicode)
+    assert isinstance(name, str)
+    assert isinstance(mimetype, str)
+    assert isinstance(data, str)
     assert isinstance(version, int)
     if not name and not data:
-        L.warn("Refusing to create empty attachment for question %s" % qt_id)
+        L.warning("Refusing to create empty attachment for question %s" % qt_id)
         return
     safe_data = psycopg2.Binary(data)
     run_sql("""INSERT INTO "qattach"
@@ -722,16 +722,16 @@ def create_q_att(qt_id, variation, name, mimetype, data, version):
 def create_qt_att(qt_id, name, mime_type, data, version):
     """ Create a new Question Template Attachment using given data."""
     assert isinstance(qt_id, int)
-    assert isinstance(name, str) or isinstance(name, unicode)
-    assert isinstance(mime_type, str) or isinstance(mime_type, unicode)
-    assert isinstance(data, str) or isinstance(data, unicode)
+    assert isinstance(name, str)
+    assert isinstance(mime_type, str)
+    assert isinstance(data, str)
     assert isinstance(version, int)
     key = "qtemplateattach/%d/%s/%d" % (qt_id, name, version)
     MC.delete(key)
     if not data:
         data = ""
     L.info("QT Attachment upload '%s' '%s' %s bytes" % (name, mime_type, len(data)))
-    if isinstance(data, unicode):
+    if isinstance(data, str):
         data = data.encode("utf8")
     safe_data = psycopg2.Binary(data)
     run_sql("""INSERT INTO qtattach (qtemplate, mimetype, name, data, version)
@@ -743,7 +743,7 @@ def create_qt_att(qt_id, name, mime_type, data, version):
 def create_q(qt_id, name, student, status, variation, version, exam):
     """ Add a question (instance) to the database."""
     assert isinstance(qt_id, int)
-    assert isinstance(name, str) or isinstance(name, unicode)
+    assert isinstance(name, str)
     assert isinstance(student, int)
     assert isinstance(status, int)
     assert isinstance(variation, int)
@@ -762,7 +762,7 @@ def create_q(qt_id, name, student, status, variation, version, exam):
 def update_qt_title(qt_id, title):
     """ Update the title of a question template. """
     assert isinstance(qt_id, int)
-    assert isinstance(title, str) or isinstance(title, unicode)
+    assert isinstance(title, str)
     key = "qtemplate-%d-name" % qt_id
     MC.delete(key)
     sql = "UPDATE qtemplates SET title = %s WHERE qtemplate = %s;"
@@ -892,13 +892,13 @@ def copy_qt_all(qt_id):
                       newversion)
     try:
         variations = get_qt_variations(qt_id)
-        for variation in variations.keys():
+        for variation in list(variations.keys()):
             add_qt_variation(newid,
                              variation,
                              variations[variation],
                              newversion)
     except AttributeError as err:
-        L.warn("Copying a qtemplate %s with no variations. '%s'" % (qt_id, err))
+        L.warning("Copying a qtemplate %s with no variations. '%s'" % (qt_id, err))
     return newid
 
 
@@ -932,7 +932,7 @@ def add_qt_variation(qt_id, variation, data, version):
     assert isinstance(qt_id, int)
     assert isinstance(variation, int)
     assert isinstance(version, int)
-    pick = cPickle.dumps(data)
+    pick = pickle.dumps(data)
     safe_data = psycopg2.Binary(pick)
     run_sql("INSERT INTO qtvariations (qtemplate, variation, data, version) "
             "VALUES (%s, %s, %s, %s)",
@@ -942,8 +942,8 @@ def add_qt_variation(qt_id, variation, data, version):
 def create_qt(owner, title, desc, marker, score_max, status, topic_id=None):
     """ Create a new Question Template. """
     assert isinstance(owner, int)
-    assert isinstance(title, str) or isinstance(title, unicode)
-    assert isinstance(desc, str) or isinstance(desc, unicode)
+    assert isinstance(title, str)
+    assert isinstance(desc, str)
     assert isinstance(marker, int)
     assert isinstance(score_max, float) or score_max is None
     assert isinstance(status, int)
@@ -972,7 +972,7 @@ def _serialize_courseexaminfo(info):
     """
     fmt = '%Y-%m-%d %H:%M:%S'
     safe = {}
-    for k, exam in info.iteritems():
+    for k, exam in info.items():
         safe[k] = exam
         safe[k]['start'] = exam['start'].strftime(fmt)
         safe[k]['end'] = exam['end'].strftime(fmt)
@@ -984,7 +984,7 @@ def _deserialize_courseexaminfo(obj):
     fmt = '%Y-%m-%d %H:%M:%S'
     safe = json.loads(obj)
     info = {}
-    for k, exam in safe.iteritems():
+    for k, exam in safe.items():
         info[k] = exam
         info[k]['start'] = datetime.datetime.strptime(exam['start'], fmt)
         info[k]['end'] = datetime.datetime.strptime(exam['end'], fmt)
@@ -1217,8 +1217,8 @@ def get_q_stats_class(course, qt_id):
 def set_message(name, message):
     """Store a message
     """
-    assert isinstance(name, str) or isinstance(name, unicode)
-    assert isinstance(message, str) or isinstance(message, unicode)
+    assert isinstance(name, str)
+    assert isinstance(message, str)
 
     ret = run_sql("SELECT COUNT(message) FROM messages WHERE name = %s;",
                   [name, ])
@@ -1236,7 +1236,7 @@ def get_message(name):
     # type: (str) -> str
     """Retrieve a message
     """
-    assert isinstance(name, str) or isinstance(name, unicode)
+    assert isinstance(name, str)
 
     ret = run_sql("SELECT message FROM messages WHERE name=%s;",
                   [name, ])
@@ -1348,22 +1348,22 @@ def check_safe():
         return True
 
     users = num_records("users")
-    print '%s user records' % users
+    print('%s user records' % users)
     qtemplates = num_records("qtemplates")
-    print '%s question templates' % qtemplates
+    print('%s question templates' % qtemplates)
     exams = num_records("exams")
-    print '%s assessments' % exams
+    print('%s assessments' % exams)
 
     if users > 2:
-        print "Contains non-default data."
+        print("Contains non-default data.")
         return False
 
     if qtemplates > 1:
-        print "Contains non-default data."
+        print("Contains non-default data.")
         return False
 
     if exams > 0:
-        print "Contains non-default data."
+        print("Contains non-default data.")
         return False
 
     return True
@@ -1409,7 +1409,7 @@ def erase_existing():
 
     with open(os.path.join(OaConfig.homedir, "sql", "eraseexisting.sql")) as f:
         sql = f.read()
-    print "Removing existing tables."
+    print("Removing existing tables.")
     run_sql(sql)
 
 
@@ -1421,7 +1421,7 @@ def clean_install_3_6():
         sql = f.read()
 
     run_sql(sql)
-    print "Installed v3.6.x table structure."
+    print("Installed v3.6.x table structure.")
 
 
 def clean_install_3_9_1():
@@ -1432,7 +1432,7 @@ def clean_install_3_9_1():
         sql = f.read()
 
     run_sql(sql)
-    print "Installed v3.9.1 table structure."
+    print("Installed v3.9.1 table structure.")
 
 
 def clean_install_3_9_2():
@@ -1443,7 +1443,7 @@ def clean_install_3_9_2():
         sql = f.read()
 
     run_sql(sql)
-    print "Installed v3.9.2 table structure."
+    print("Installed v3.9.2 table structure.")
 
 
 def clean_install_3_9_3():
@@ -1454,7 +1454,7 @@ def clean_install_3_9_3():
         sql = f.read()
 
     run_sql(sql)
-    print "Installed v3.9.3 table structure."
+    print("Installed v3.9.3 table structure.")
 
 
 def clean_install_3_9_4():
@@ -1465,7 +1465,7 @@ def clean_install_3_9_4():
         sql = f.read()
 
     run_sql(sql)
-    print "Installed v3.9.4 table structure."
+    print("Installed v3.9.4 table structure.")
 
 
 def clean_install_3_9_5():
@@ -1475,7 +1475,7 @@ def clean_install_3_9_5():
         sql = f.read()
 
     run_sql(sql)
-    print "Installed v3.9.5 table structure."
+    print("Installed v3.9.5 table structure.")
 
 
 def clean_install_3_9_6():
@@ -1485,7 +1485,7 @@ def clean_install_3_9_6():
         sql = f.read()
 
     run_sql(sql)
-    print "Installed v3.9.6 table structure."
+    print("Installed v3.9.6 table structure.")
 
 
 def clean_install_3_9_7():
@@ -1495,7 +1495,7 @@ def clean_install_3_9_7():
         sql = f.read()
 
     run_sql(sql)
-    print "Installed v3.9.7 table structure."
+    print("Installed v3.9.7 table structure.")
 
 
 def upgrade_3_6_to_3_9_5(options):
@@ -1505,23 +1505,23 @@ def upgrade_3_6_to_3_9_5(options):
         sql = f.read()
 
     run_sql(sql)
-    print "Migrated table structure from 3.6 to 3.9.2"
+    print("Migrated table structure from 3.6 to 3.9.2")
 
     calc_stats()
 
     with open(os.path.join(OaConfig.homedir, "sql", "migrate_392_to_393.sql")) as f:
         sql = f.read()
     run_sql(sql)
-    print "Migrated table structure from 3.9.2 to 3.9.3"
+    print("Migrated table structure from 3.9.2 to 3.9.3")
 
     with open(os.path.join(OaConfig.homedir, "sql", "migrate_393_to_394.sql")) as f:
         sql = f.read()
     run_sql(sql)
-    print "Migrated table structure from 3.9.3 to 3.9.4"
+    print("Migrated table structure from 3.9.3 to 3.9.4")
     with open(os.path.join(OaConfig.homedir, "sql", "migrate_394_to_395.sql")) as f:
         sql = f.read()
     run_sql(sql)
-    print "Migrated table structure from 3.9.4 to 3.9.5"
+    print("Migrated table structure from 3.9.4 to 3.9.5")
 
     if not options.noresetadmin:
         generate_admin_passwd()  # 3.6 passwords were in a slightly less secure format
@@ -1533,21 +1533,21 @@ def upgrade_3_9_1_to_3_9_5(_):
     with open(os.path.join(OaConfig.homedir, "sql", "migrate_391_to_392.sql")) as f:
         sql = f.read()
     run_sql(sql)
-    print "Migrated table structure from 3.9.1 to 3.9.2"
+    print("Migrated table structure from 3.9.1 to 3.9.2")
 
     with open(os.path.join(OaConfig.homedir, "sql", "migrate_392_to_393.sql")) as f:
         sql = f.read()
     run_sql(sql)
-    print "Migrated table structure from 3.9.2 to 3.9.3"
+    print("Migrated table structure from 3.9.2 to 3.9.3")
 
     with open(os.path.join(OaConfig.homedir, "sql", "migrate_393_to_394.sql")) as f:
         sql = f.read()
     run_sql(sql)
-    print "Migrated table structure from 3.9.3 to 3.9.4"
+    print("Migrated table structure from 3.9.3 to 3.9.4")
     with open(os.path.join(OaConfig.homedir, "sql", "migrate_394_to_395.sql")) as f:
         sql = f.read()
     run_sql(sql)
-    print "Migrated table structure from 3.9.4 to 3.9.5"
+    print("Migrated table structure from 3.9.4 to 3.9.5")
 
 
 def upgrade_3_9_2_to_3_9_5(_):
@@ -1556,16 +1556,16 @@ def upgrade_3_9_2_to_3_9_5(_):
     with open(os.path.join(OaConfig.homedir, "sql", "migrate_392_to_393.sql")) as f:
         sql = f.read()
     run_sql(sql)
-    print "Migrated table structure from 3.9.2 to 3.9.3"
+    print("Migrated table structure from 3.9.2 to 3.9.3")
 
     with open(os.path.join(OaConfig.homedir, "sql", "migrate_393_to_394.sql")) as f:
         sql = f.read()
     run_sql(sql)
-    print "Migrated table structure from 3.9.3 to 3.9.4"
+    print("Migrated table structure from 3.9.3 to 3.9.4")
     with open(os.path.join(OaConfig.homedir, "sql", "migrate_394_to_395.sql")) as f:
         sql = f.read()
     run_sql(sql)
-    print "Migrated table structure from 3.9.4 to 3.9.5"
+    print("Migrated table structure from 3.9.4 to 3.9.5")
 
 
 def upgrade_3_9_3_to_3_9_5(_):
@@ -1574,11 +1574,11 @@ def upgrade_3_9_3_to_3_9_5(_):
     with open(os.path.join(OaConfig.homedir, "sql", "migrate_393_to_394.sql")) as f:
         sql = f.read()
     run_sql(sql)
-    print "Migrated table structure from 3.9.3 to 3.9.4"
+    print("Migrated table structure from 3.9.3 to 3.9.4")
     with open(os.path.join(OaConfig.homedir, "sql", "migrate_394_to_395.sql")) as f:
         sql = f.read()
     run_sql(sql)
-    print "Migrated table structure from 3.9.4 to 3.9.5"
+    print("Migrated table structure from 3.9.4 to 3.9.5")
 
 
 def upgrade_3_9_4_to_3_9_5(_):
@@ -1587,7 +1587,7 @@ def upgrade_3_9_4_to_3_9_5(_):
     with open(os.path.join(OaConfig.homedir, "sql", "migrate_394_to_395.sql")) as f:
         sql = f.read()
     run_sql(sql)
-    print "Migrated table structure from 3.9.4 to 3.9.5"
+    print("Migrated table structure from 3.9.4 to 3.9.5")
 
 
 def upgrade_3_9_5_to_3_9_6(_):
@@ -1596,7 +1596,7 @@ def upgrade_3_9_5_to_3_9_6(_):
     with open(os.path.join(OaConfig.homedir, "sql", "migrate_395_to_396.sql")) as f:
         sql = f.read()
     run_sql(sql)
-    print "Migrated table structure from 3.9.5 to 3.9.6"
+    print("Migrated table structure from 3.9.5 to 3.9.6")
 
 
 def upgrade_3_9_6_to_3_9_7(_):
@@ -1605,7 +1605,7 @@ def upgrade_3_9_6_to_3_9_7(_):
     with open(os.path.join(OaConfig.homedir, "sql", "migrate_396_to_397.sql")) as f:
         sql = f.read()
     run_sql(sql)
-    print "Migrated table structure from 3.9.6 to 3.9.7"
+    print("Migrated table structure from 3.9.6 to 3.9.7")
 
 
 def do_upgrade(options):
@@ -1650,7 +1650,7 @@ def do_upgrade(options):
         upgrade_3_9_6_to_3_9_7(options)
         return
     if dbver == "3.9.7":
-        print "Your database is already the latest version (3.9.7)"
+        print("Your database is already the latest version (3.9.7)")
     return
 
 
@@ -1692,15 +1692,15 @@ def generate_admin_passwd():
     Users2.set_password(uid, passwd)
 
     Permissions.add_perm(uid, 0, 1)  # superuser
-    L.warn("Admin password reset")
-    print "Admin password reset to: ", passwd
+    L.warning("Admin password reset")
+    print("Admin password reset to: ", passwd)
     return passwd
 
 
 def calc_stats():
     """ Run stats generation over the whole database.
     """
-    print "Calculating Statistics"
+    print("Calculating Statistics")
     from oasis.lib import Stats
     Stats.do_initial_stats_update()
 
@@ -1725,7 +1725,7 @@ def do_repair(repair=True):
                 # Swap archived and duration fields
                 sql = "UPDATE exams SET duration = %s, archived = %s WHERE exam = %s;"
                 params = [exam['archived'], exam['duration'], exam['exam_id']]
-                L.warn("Repairing swapped duration, archived field in exams (archived=%s,duration=%s,exam=%s" % params)
+                L.warning("Repairing swapped duration, archived field in exams (archived=%s,duration=%s,exam=%s" % params)
                 run_sql(sql,params)
             else:
                 L.info("Exam %(exam_id)d has 'duration=%(duration)d' and 'archived=%(archived)d' swapped?" % exam)
@@ -1748,7 +1748,7 @@ def do_repair(repair=True):
             # we got here so it exists, we're actually 3.9.6
             L.info("DB thinks it's version 3.9.5 but has lti_consumers, which was added in 3.9.6")
             if repair:
-                L.warn("Setting database version to 3.9.6")
+                L.warning("Setting database version to 3.9.6")
                 run_sql("""update config SET "value" = '3.9.6' WHERE "name" = 'dbversion';""")
             bad_found += 1
 

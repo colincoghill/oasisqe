@@ -24,7 +24,7 @@ def get_practice_q(qt_id, user_id):
         qt_id = int(qt_id)
         assert qt_id > 0
     except (ValueError, TypeError, AssertionError):
-        L.warn("Called with bad qtid %s?" % qt_id)
+        L.warning("Called with bad qtid %s?" % qt_id)
     qid = DB.get_q_by_qt_student(qt_id, user_id)
     if qid is not False:
         return int(qid)
@@ -32,7 +32,7 @@ def get_practice_q(qt_id, user_id):
     try:
         qid = int(qid)
     except (ValueError, TypeError):
-        L.warn("generateQuestion(%s,%s) Fail: returned %s" % (qt_id, user_id, qid))
+        L.warning("generateQuestion(%s,%s) Fail: returned %s" % (qt_id, user_id, qid))
     else:
         DB.set_q_viewtime(qid)
     return qid
@@ -41,12 +41,6 @@ def get_practice_q(qt_id, user_id):
 def get_sorted_questions(course_id, topic_id, user_id=None):
     """ Return a list of questions, sorted by position
     """
-
-    def cmp_question_position(a, b):
-        """Order questions by the absolute value of their positions
-           since we use -'ve to indicate hidden.
-        """
-        return cmp(abs(a['position']), abs(b['position']))
 
     questionlist = General.get_q_list(topic_id, user_id, numdone=False)
     if questionlist:
@@ -65,7 +59,7 @@ def get_sorted_questions(course_id, topic_id, user_id=None):
                 # uninteresting so put them at the bottom.
                 if question['position'] == 0:
                     question['position'] = -10000
-            questionlist.sort(cmp_question_position)
+            questionlist.sort(key=lambda k: abs(k['position']))
     else:
         questionlist = []
     return questionlist
@@ -75,11 +69,6 @@ def get_sorted_qlist_wstats(course_id, topic_id, user_id=None):
     """ Return a list of questions, sorted by position. With
         some statistics (may be expensive to calculate).
     """
-    def cmp_question_position(a, b):
-        """Order questions by the absolute value of their positions
-           since we use -'ve to indicate hidden.
-        """
-        return cmp(abs(a['position']), abs(b['position']))
 
     questionlist = General.get_q_list(topic_id, user_id, numdone=False)
     if not questionlist:
@@ -88,7 +77,7 @@ def get_sorted_qlist_wstats(course_id, topic_id, user_id=None):
     # the user has prevew permission.
     questions = [question for question in questionlist
                  if question['position'] > 0]
-    questions.sort(cmp_question_position)
+    questions.sort(key=lambda k: abs(k['position']))
     for question in questions:
         try:
             question['maxscore'] = DB.get_qt_maxscore(question['qtid'])
@@ -192,7 +181,7 @@ def get_next_prev_pos(qt_id, topic_id):
 def mark_q(user_id, topic_id, q_id, request):
     """Mark the question and return the results"""
     answers = {}
-    for i in request.form.keys():
+    for i in list(request.form.keys()):
         part = re.search(r"^Q_(\d+)_ANS_(\d+)$", i)
         if part:
             newqid = int(part.groups()[0])
@@ -202,20 +191,20 @@ def mark_q(user_id, topic_id, q_id, request):
                 answers["G%d" % part] = value
                 DB.save_guess(newqid, part, value)
             else:
-                L.warn("received guess for wrong question? (%d,%d,%d,%s)" %
+                L.warning("received guess for wrong question? (%d,%d,%d,%s)" %
                        (user_id, topic_id, q_id, request.form))
     try:
         marks = General.mark_q(q_id, answers)
         DB.set_q_status(q_id, 3)    # 3 = marked
         DB.set_q_marktime(q_id)
     except OaMarkerError:
-        L.warn("Marker Error - (%d, %d, %d, %s)" %
+        L.warning("Marker Error - (%d, %d, %d, %s)" %
                (user_id, topic_id, q_id, request.form))
         marks = {}
     q_body = General.render_mark_results(q_id, marks)
     parts = [int(var[1:])
-             for var in marks.keys()
-             if re.search(r"^A([0-9]+)$", var) > 0]
+             for var in list(marks.keys())
+             if int(re.search(r"^A([0-9]+)$", var)) > 0]
     parts.sort()
     total = 0.0
     for part in parts:

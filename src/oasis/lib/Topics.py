@@ -62,7 +62,7 @@ def get_name(topic_id):
 def set_name(topic_id, name):
     """Set the name of a topic."""
     assert isinstance(topic_id, int)
-    assert isinstance(name, str) or isinstance(name, unicode)
+    assert isinstance(name, str)
     run_sql("UPDATE topics SET title = %s WHERE topic = %s;", [name, topic_id])
     key = "topic-%s-record" % topic_id
     MC.delete(key)
@@ -81,7 +81,7 @@ def set_pos(topic_id, pos):
     try:
         pos = int(pos)
     except ValueError:
-        L.warn("Topic->set_pos(%s, %s): Not a valid position, ignoring." % (topic_id, pos))
+        L.warning("Topic->set_pos(%s, %s): Not a valid position, ignoring." % (topic_id, pos))
         return
     run_sql("""UPDATE topics
                SET position = %s

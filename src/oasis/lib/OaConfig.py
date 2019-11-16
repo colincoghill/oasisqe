@@ -13,9 +13,9 @@ import os
 import sys
 import logging
 
-from ConfigParser import SafeConfigParser
+from configparser import ConfigParser
 
-cp = SafeConfigParser()
+cp = ConfigParser()
 
 mydir = os.path.dirname(os.path.realpath(__file__))
 
@@ -53,7 +53,7 @@ oasisdbconnectstring = "host=%s port=%s dbname=%s user=%s password='%s'" % \
                        (dbhost, dbport, dbname, dbuname, dbpass)
 
 email = cp.get("web", "email")
-contact_url = cp.get("web", "contact_url", False)
+contact_url = cp.get("web", "contact_url", fallback=False)
 if len(contact_url) < 3:
     contact_url = False
 memcache_enable = cp.getboolean("cache", "memcache_enable")

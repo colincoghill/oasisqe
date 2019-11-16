@@ -55,7 +55,7 @@ def _auth_user(lti, app):
     username_attribute = lti_consumer.username_attribute
 
     try:
-        username = getattr(lti, u"%s"%username_attribute)
+        username = getattr(lti, "%s"%username_attribute)
         if not username:
             abort(400, "'%s' field was empty" % username_attribute)
 

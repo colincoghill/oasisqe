@@ -172,7 +172,7 @@ def practice_do_question(topic_id, position):
         L.debug("Practice choosing random from: %s" % repr(choices))
         qt_id = random.choice(choices)
     else:
-        L.warn("Access to non existent practice topic %s question %s" % (topic_id, position))
+        L.warning("Access to non existent practice topic %s question %s" % (topic_id, position))
         return render_template(
             "practicequestionerror.html",
             mesg="Error accessing question.",
@@ -232,7 +232,7 @@ def practice_do_question(topic_id, position):
         )
 
     q_body = General.render_q_html(q_id)
-    q_body = q_body.replace(r"\240", u" ")  # TODO: why is this here?
+    q_body = q_body.replace(r"\240", " ")  # TODO: why is this here?
 
     return render_template(
         "practicedoquestion.html",
@@ -322,7 +322,7 @@ def practice_do_question_id(topic_id, qt_id):
         )
 
     q_body = General.render_q_html(q_id)
-    q_body = q_body.replace(r"\240", u" ")  # TODO: why is this here?
+    q_body = q_body.replace(r"\240", " ")  # TODO: why is this here?
 
     return render_template(
         "practicedoquestion.html",

@@ -1,4 +1,4 @@
-#!/usr/bin/python2.7
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
 """ Create a topic for testing.
@@ -29,12 +29,12 @@ elif os.path.isdir("%s/%s"%(UPTWO,"/src/oasis")):
    APPDIR = UPTWO+"/src"
 
 if not APPDIR:
-    print "Unable to find installed OASIS code, normally at /opt/oasisqe/3.9/src"
-    print "You can specify it in the OASIS lib environment variable on the commandline: "
-    print "          OASISLIB=/opt/oasisqe/3.9/src oasisdb"
+    print("Unable to find installed OASIS code, normally at /opt/oasisqe/3.9/src")
+    print("You can specify it in the OASIS lib environment variable on the commandline: ")
+    print("          OASISLIB=/opt/oasisqe/3.9/src oasisdb")
     exit(1)
 
-print "using copy of OASIS installed at %s" % APPDIR
+print(("using copy of OASIS installed at %s" % APPDIR))
 sys.path.append(APPDIR)
 
 from oasis.lib import Topics, Users, Courses
@@ -51,7 +51,7 @@ def create_course(coursename):
     """
     course = Courses.get_course_by_name(coursename)
     if course:
-        print "Course %(name)s found: %(id)s" % course
+        print(("Course %(name)s found: %(id)s" % course))
     else:
         cid = Courses.create(coursename, "Testing", Users.uid_by_uname('admin'), 1)
         course = Courses.get_course(cid)
@@ -59,15 +59,15 @@ def create_course(coursename):
         courserepeat = 1  # indefinite 
         Courses.create_config(cid, coursetemplate, courserepeat)
         if not course:
-            print "Failed to create course %s. Unexpected." % coursename
+            print(("Failed to create course %s. Unexpected." % coursename))
             sys.exit(0)
-        print "Course created: %(id)s" % course
+        print(("Course created: %(id)s" % course))
     return course
 
 
 if len(sys.argv) < 3:
-    print "Usage: "
-    print "    create_test_topic <coursename> <topicname>"
+    print("Usage: ")
+    print("    create_test_topic <coursename> <topicname>")
     sys.exit(1)
 
 # sys.argv[1]    # coursename
@@ -75,4 +75,4 @@ if len(sys.argv) < 3:
 
 _course = create_course(sys.argv[1])
 _topic = create_topic(_course, sys.argv[2])
-print "Topic %s created" % _topic
+print(("Topic %s created" % _topic))

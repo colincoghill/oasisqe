@@ -148,8 +148,8 @@ class TestQEngine(TestCase):
         self.assertEqual(res, html)
 
         tmpl = "The value is <VAL A> <VAL Arthur>"
-        qvars = {"A": u"\x9f", "a": 5, "Arthur": 3}
-        html = u"""The value is \x9f 3"""
+        qvars = {"A": "\x9f", "a": 5, "Arthur": 3}
+        html = """The value is \x9f 3"""
         res = General.gen_q_html(qvars, tmpl)
         self.assertEqual(res, html)
 

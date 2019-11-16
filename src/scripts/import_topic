@@ -1,4 +1,4 @@
-#!/usr/bin/python2.7
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
 """ Given an oa_export.zip file, import the contained questions into a topic.
@@ -19,8 +19,8 @@ from oasis.lib import Users, External, Topics
 
 
 if len(sys.argv) < 2:
-    print "Usage: "
-    print "    import_topic <filename.zip> [TOPIC_ID]"
+    print("Usage: ")
+    print("    import_topic <filename.zip> [TOPIC_ID]")
     sys.exit(1)
 
 filename = sys.argv[1]

@@ -99,8 +99,8 @@ def template_context():
     else:
         auth_type = "none"
     return {'cf': {
-        'static': OaConfig.staticURL + u"/static/",
-        'url': OaConfig.parentURL + u"/",
+        'static': OaConfig.staticURL + "/static/",
+        'url': OaConfig.parentURL + "/",
         'username': username,
         'userfullname': user_fullname,
         'email': OaConfig.email,

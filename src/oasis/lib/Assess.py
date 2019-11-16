@@ -45,12 +45,12 @@ def mark_exam(user_id, exam_id):
             DB.set_q_status(q_id, 3)    # 3 = marked
             DB.set_q_marktime(q_id)
         except OaMarkerError:
-            L.warn("Marker Error in question %s, exam %s, student %s!" %
+            L.warning("Marker Error in question %s, exam %s, student %s!" %
                    (q_id, exam_id, user_id))
             return False
         parts = [int(var[1:])
-                 for var in marks.keys()
-                 if re.search("^A([0-9]+)$", var) > 0]
+                 for var in list(marks.keys())
+                 if int(re.search("^A([0-9]+)$", var)) > 0]
         parts.sort()
 
         # Then calculate the mark
@@ -136,8 +136,8 @@ def render_own_marked_exam(student, exam):
         pos = DB.get_qt_exam_pos(exam, qtemplate)
         marks = General.mark_q(question, answers)
         parts = [int(var[1:])
-                 for var in marks.keys()
-                 if re.search("^A([0-9]+$)", var) > 0]
+                 for var in list(marks.keys())
+                 if int(re.search("^A([0-9]+$)", var)) > 0]
         parts.sort()
         marking = []
         for part in parts:
@@ -176,7 +176,7 @@ def get_exam_list_sorted(user_id, prev_years=False):
         try:
             exams += [Exams.get_exam_struct(e, user_id)
                       for e in Courses.get_exams(cid, prev_years=prev_years)]
-        except KeyError, err:
+        except KeyError as err:
             L.error("Failed fetching exam list for user %s: %s" %
                     (user_id, err))
     exams.sort(key=lambda y: y['start_epoch'], reverse=True)

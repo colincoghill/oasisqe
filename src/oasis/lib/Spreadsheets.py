@@ -27,7 +27,7 @@ def exam_results_as_spreadsheet(course_id, group, exam_id):
         uids.add(user_id)
         if user_id not in totals:
             totals[user_id] = 0.0
-        for qt, val in results[user_id].iteritems():
+        for qt, val in results[user_id].items():
             totals[user_id] += val['score']
 
     questions = Exams.get_qts_list(exam_id)
@@ -58,7 +58,7 @@ def exam_results_as_spreadsheet(course_id, group, exam_id):
     ws.cell(row=4, column=col).value = "Total"
 
     row = 5
-    sortusers = users.keys()
+    sortusers = list(users.keys())
     sortusers.sort(key=lambda us: users[us]['familyname'])
 
     for user_id in sortusers:

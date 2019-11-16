@@ -76,11 +76,11 @@ class TestLogin(TestCase):
 
         with self.app.test_client() as c:
             s = c.get("askldjfhklawehrgfjkl")
-            self.assertEquals(s.status, "404 NOT FOUND")
+            self.assertEqual(s.status, "404 NOT FOUND")
 
         with self.app.test_client() as c:
             s = c.get('main/top', follow_redirects=True)
-            self.assertNotEquals(s.status, "404 NOT FOUND")
+            self.assertNotEqual(s.status, "404 NOT FOUND")
             # Not logged in, back at login page
             self.assertIn("a local OASIS-only account", s.data)
 

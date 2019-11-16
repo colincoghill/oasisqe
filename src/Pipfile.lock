@@ -1,11 +1,11 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "6fd9a1418627e566d35c46cbb4c5f34af76604e3d19f1cee0b76b4f3b2b1f7ad"
+            "sha256": "912c9bb76817271b06a5c0e7d4252c311952c63d6c7892089f919a583b9fe6e0"
         },
         "pipfile-spec": 6,
         "requires": {
-            "python_version": "2.7"
+            "python_version": "3.6.8"
         },
         "sources": [
             {
@@ -16,14 +16,6 @@
         ]
     },
     "default": {
-        "backports.functools-lru-cache": {
-            "hashes": [
-                "sha256:0bada4c2f8a43d533e4ecb7a12214d9420e66eb206d54bf2d682581ca4b80848",
-                "sha256:8fde5f188da2d593bd5bc0be98d9abc46c95bb8a9dde93429570192ee6cc2d4a"
-            ],
-            "markers": "python_version < '3'",
-            "version": "==1.6.1"
-        },
         "bcrypt": {
             "hashes": [
                 "sha256:0258f143f3de96b7c14f762c770f5fc56ccd72f8a1857a451c1cd9a655d9ac89",
@@ -321,10 +313,10 @@
         },
         "openpyxl": {
             "hashes": [
-                "sha256:1d53801678e18d7fe38c116f1ad0c2383a654670c4c8806105b611c92d92f2e3"
+                "sha256:a3ee361d3ff04af6048d594775b3a54ffdf215d40fa5c6c78b2a41c0d0b020d3"
             ],
             "index": "pypi",
-            "version": "==2.6.4"
+            "version": "==3.0.1"
         },
         "pillow": {
             "hashes": [
@@ -513,14 +505,6 @@
             ],
             "index": "pypi",
             "version": "==1.1.1"
-        },
-        "funcsigs": {
-            "hashes": [
-                "sha256:330cc27ccbf7f1e992e69fef78261dc7c6569012cf397db8d3de0234e6c937ca",
-                "sha256:a7bb0f2cf3a3fd1ab2732cb49eba4252c2af4240442415b4abce3b87022a8f50"
-            ],
-            "markers": "python_version < '3.3'",
-            "version": "==1.0.2"
         },
         "gevent": {
             "hashes": [

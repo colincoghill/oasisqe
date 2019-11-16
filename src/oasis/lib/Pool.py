@@ -13,8 +13,8 @@
 # to make sure a replacement works as well.
 
 
-import Queue
-import OaConfig
+import queue
+from . import OaConfig
 from logging import getLogger
 import psycopg2
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
@@ -40,7 +40,7 @@ class DbConn(object):
         self.conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
         L.info("DB Encoding is %s" % self.conn.encoding)
         if not self.conn:
-            L.warn("DB relogin failed!")
+            L.warning("DB relogin failed!")
 
     def run_sql(self, sql, params=None, quiet=False):
         """ Execute SQL commands over the connection. """
@@ -85,7 +85,7 @@ class DbPool(object):
 
     def __init__(self, connectstring, size):
         self.size = size
-        self.connqueue = Queue.Queue(size)
+        self.connqueue = queue.Queue(size)
         for _ in range(0, size):
             self.connqueue.put(DbConn(connectstring))
 
@@ -228,7 +228,7 @@ class MCPool(object):
            connections to put in the pool.
         """
 
-        self.connqueue = Queue.Queue(size)
+        self.connqueue = queue.Queue(size)
         self.size = size
         for _ in range(0, size):
             try:
@@ -243,7 +243,7 @@ class MCPool(object):
     def get(self, key):
         """Get an item from the cache. """
         if self.connqueue.qsize() < 3:
-            L.warn("Memcache Pool getting low! %d" % self.connqueue.qsize())
+            L.warning("Memcache Pool getting low! %d" % self.connqueue.qsize())
         dbc = self.connqueue.get(True)
         res = dbc.get(key)
         self.connqueue.put(dbc)

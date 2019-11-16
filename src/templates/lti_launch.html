@@ -20,14 +20,14 @@ Hello, I'm from LTI and I'm here to help
 
 <h2>Your Session</h2>
 <table>
-    {% for k,v in session.iteritems() %}
+    {% for k,v in session.items() %}
         <tr><th>{{ k }}</th><td>{{ v }}</td></tr>
     {% endfor %}
 </table>
 
 <h2>LTI Fields</h2>
 <table>
-    {% for k,v in lti.__dict__.iteritems() %}
+    {% for k,v in lti.__dict__.items() %}
         <tr><th>{{ k }}</th><td>{{ v }}</td></tr>
     {% endfor %}
 </table>

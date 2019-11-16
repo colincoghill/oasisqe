@@ -75,21 +75,21 @@ def get_user_record(user_id):
         display_name = ""
         row = ret[0]
         if row[1]:
-            uname = unicode(row[1], 'utf-8')
+            uname = str(row[1])
         else:
-            uname = u""
+            uname = ""
         if row[2]:
-            givenname = unicode(row[2], 'utf-8')
+            givenname = str(row[2])
         else:
-            givenname = u""
+            givenname = ""
         if row[3]:
-            familyname = unicode(row[3], 'utf-8')
+            familyname = str(row[3],)
         else:
-            familyname = u""
+            familyname = ""
         if row[10]:
-            display_name = unicode(row[10], 'utf-8')
+            display_name = str(row[10])
         if len(givenname)>0 or len(familyname) > 0:
-            fullname = u"%s %s" % (givenname, familyname)
+            fullname = "%s %s" % (givenname, familyname)
 
         user_rec = {'id': user_id,
                     'uname': uname,
@@ -128,7 +128,7 @@ def get_user_record(user_id):
 
 def set_password(user_id, clearpass):
     """ Updates a users password. """
-    hashed = bcrypt.hashpw(clearpass.encode('utf8'), bcrypt.gensalt(10))
+    hashed = bcrypt.hashpw(clearpass.encode('utf-8'), bcrypt.gensalt(10)).decode("utf-8")
     sql = """UPDATE "users" SET "passwd" = %s WHERE "id" = %s;"""
     params = [hashed, user_id]
     try:
@@ -156,7 +156,7 @@ def verify_password(uname, clearpass):
         raise
     stored_pw = ret[0][1]
     if len(stored_pw) > 40:  # it's not MD5
-        hashed = bcrypt.hashpw(clearpass.encode('utf8'), stored_pw.encode('utf8'))
+        hashed = bcrypt.hashpw(clearpass.encode('utf-8'), stored_pw.encode('utf-8')).decode("utf-8")
         if stored_pw == hashed:
             # All good, they matched with bcrypt
             return user_id
@@ -287,7 +287,7 @@ def get_groups(user):
     if ret:
         groups = [int(row[0]) for row in ret]
         return groups
-    L.warn("Request for unknown user or user in no groups.")
+    L.warning("Request for unknown user or user in no groups.")
     return []
 
 

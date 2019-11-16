@@ -313,7 +313,7 @@ def cadmin_exam_results(course_id, exam_id):
             uids.add(user_id)
             if user_id not in totals:
                 totals[user_id] = 0.0
-            for qt, val in results[group.id][user_id].iteritems():
+            for qt, val in list(results[group.id][user_id].items()):
                 totals[user_id] += val['score']
 
     questions = Exams.get_qts_list(exam_id)
@@ -571,7 +571,7 @@ def cadmin_editgroup_member(course_id, group_id):
         abort(404)
 
     done = False
-    cmds = request.form.keys()
+    cmds = list(request.form.keys())
     #  "remove_UID", only know how to remove for now.
     for cmd in cmds:
         if '_' in cmd:
@@ -764,7 +764,7 @@ def cadmin_edit_topic(course_id, topic_id):
         'name': Topics.get_name(topic_id)
     }
     questions = [question
-                 for question in Topics.get_qts(topic_id).values()]
+                 for question in list(Topics.get_qts(topic_id).values())]
     for question in questions:
         question['embed_id'] = DB.get_qt_embedid(question['id'])
         if question['embed_id']:
@@ -779,7 +779,7 @@ def cadmin_edit_topic(course_id, topic_id):
                    if satisfy_perms(user_id, int(crse['id']),
                                     ("questionedit", "courseadmin",
                                     "sysadmin"))]
-    all_courses.sort(lambda f, s: cmp(f['name'], s['name']))
+    all_courses.sort(key=lambda f: f['name'])
 
     all_course_topics = []
     for crse in all_courses:
@@ -812,7 +812,7 @@ def cadmin_view_qtemplate_history(course_id, topic_id, qt_id):
     }
     qtemplate = DB.get_qtemplate(qt_id)
     year = datetime.now().year
-    years = range(year, year-6, -1)
+    years = list(range(year, year-6, -1))
 
     return render_template(
         "courseadmin_viewqtemplate.html",
@@ -838,7 +838,7 @@ def cadmin_view_topic(course_id, topic_id):
         'position': Topics.get_pos(topic_id),
         'name': Topics.get_name(topic_id)
     }
-    questions = [question for question in Topics.get_qts(topic_id).values()]
+    questions = [question for question in list(Topics.get_qts(topic_id).values())]
     for question in questions:
         question['embed_id'] = DB.get_qt_embedid(question['id'])
         if question['embed_id']:
@@ -852,7 +852,7 @@ def cadmin_view_topic(course_id, topic_id):
                    for crse in Courses.get_course_list()
                    if satisfy_perms(user_id, int(crse['id']),
                                     ("questionedit", "courseadmin", "sysadmin"))]
-    all_courses.sort(lambda f, s: cmp(f['name'], s['name']))
+    all_courses.sort(key=lambda k: k['name'])
 
     all_course_topics = []
     for crse in all_courses:

@@ -8,7 +8,7 @@
 """
 
 import os
-import StringIO
+import io
 import datetime
 
 from flask import render_template, session, \
@@ -312,7 +312,7 @@ def qedit_raw_attach(qt_id, fname):
         mimetype = "text/plain"
     if mimetype == "text/html":
         mimetype = "text/plain"
-    sio = StringIO.StringIO(data)
+    sio = io.StringIO(data)
     return send_file(sio, mimetype, as_attachment=True, attachment_filename=fname)
 
 
@@ -418,7 +418,7 @@ def qedit_qe2_save(topic_id, qt_id):
     # Let the question editor deal with the rest
     try:
         QEditor2.process_save(qt_id, topic_id, request, session, version)
-    except KeyError, e:
+    except KeyError as e:
         abort(400)
 
     flash("Question changes saved")

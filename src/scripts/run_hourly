@@ -1,4 +1,4 @@
-#!/usr/bin/python2.7
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
 import sys
@@ -13,9 +13,9 @@ sys.path.append(APPDIR)
 
 from oasis.lib import Feeds
 
-print "Running hourly feeds"
+print("Running hourly feeds")
 
 feeds = Feeds.active_hourly()
 for feed in feeds:
-    print "-", feed.name
+    print(("-", feed.name))
     feed.run()

@@ -18,12 +18,6 @@ def get_q_list(topic_id):
     """
     # TODO: Duplicated in General.get_q_list ?
 
-    def cmp_question_position(a, b):
-        """Order questions by the absolute value of their positions
-           since we use -'ve to indicate hidden.
-        """
-        return cmp(abs(a['position']), abs(b['position']))
-
     questionlist = General.get_q_list(topic_id, None, False)
     if questionlist:
         # At the moment we use -'ve positions to indicate that a question is
@@ -33,7 +27,7 @@ def get_q_list(topic_id):
             # so put them at the bottom.
             if question['position'] == 0:
                 question['position'] = -10000
-        questionlist.sort(cmp_question_position)
+        questionlist.sort(key=lambda k: abs(k["position"]))
     else:
         questionlist = []
 
@@ -44,7 +38,7 @@ def exam_available_q_list(course_id):
     """ Return a list of questions that can be used to create an assessment
     """
     topics = Courses.get_topics_all(course_id, archived=0, numq=False)
-    for num, topic in topics.iteritems():
+    for num, topic in list(topics.items()):
         topic_id = topics[num]['id']
         topics[num]['questions'] = get_q_list(topic_id)
     return topics

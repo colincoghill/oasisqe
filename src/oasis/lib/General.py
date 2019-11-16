@@ -12,7 +12,7 @@
 from PIL import Image, ImageDraw, ImageFont
 import re
 import random
-from StringIO import StringIO
+from io import StringIO
 import math
 import sys
 import traceback
@@ -80,8 +80,7 @@ def get_q_list(tid, uid=None, numdone=True):
                       'position': qtemplates[qtid]['position'],
                       'done': num})
         # Sort them by position
-    qlist.sort(lambda f, s: cmp(f["position"], s["position"]))
-    return qlist
+    return sorted(qlist, key=lambda k: k["position"])
 
 
 def get_q_att(qid, name):
@@ -117,11 +116,11 @@ def gen_exam_q(exam, position, student):
     """
     qtemplates = DB.get_exam_qts_in_pos(exam, position)
     if not qtemplates:
-        L.warn("DB.get_exam_qts_in_pos(%s,%s) returned a non list." %
+        L.warning("DB.get_exam_qts_in_pos(%s,%s) returned a non list." %
                (exam, position))
         return False
     if len(qtemplates) < 1:
-        L.warn("DB.get_exam_qts_in_pos(%s,%s) returned an empty list." %
+        L.warning("DB.get_exam_qts_in_pos(%s,%s) returned an empty list." %
                (exam, position))
         return False
     whichqtemplate = random.randint(1, len(qtemplates))
@@ -141,7 +140,7 @@ def gen_q(qtid, student=0, exam=0, position=0, variation=None):
     if variation is None and numvars > 0:
         variation = random.randint(1, numvars)
     if numvars == 0:
-        L.warn("No question variations (qtid=%d)" % qtid)
+        L.warning("No question variations (qtid=%d)" % qtid)
         Audit.audit(3, student, qtid, "General", "Failed to generate question %s for %s, exam %s" % (qtid, student, exam))
         return False
     q_id = gen_q_from_var(qtid, student, exam, position, version, variation)
@@ -251,7 +250,7 @@ def gen_q_html(qvars, html):
         (match, repl) = handle_listbox(html, i, qvars)
         if match:
             html = html.replace(match, repl)
-    for v in qvars.keys():
+    for v in list(qvars.keys()):
         html = html.replace("<VAL %s>" % (v,),
                             '%s' % (qvars[v]))
         html = html.replace("<IMG SRC %s>" % (v,),
@@ -267,18 +266,18 @@ def gen_q_image(qvars, image):
     imgdraw = ImageDraw.Draw(img)
     font = ImageFont.truetype("%s/fonts/Courier_New.ttf" % OaConfig.homedir, 14)
     coords = [int(name[1:])
-              for name in qvars.keys()
-              if re.search("^X([0-9]+)$", name) > 0]
+              for name in list(qvars.keys())
+              if int(re.search("^X([0-9]+)$", name)) > 0]
     for coord in coords:
         (xcoord, ycoord, value) = (qvars["X%d" % coord],
                                    qvars["Y%d" % coord],
                                    qvars["Z%d" % coord])
         if (xcoord > -1) and (ycoord > -1):
-            value = unicode(value, "utf-8")    # convert to unicode
+            value = str(value, "utf-8")    # convert to unicode
             try:
                 imgdraw.text((int(xcoord), int(ycoord)), value, font=font, fill="black")
             except UnicodeEncodeError as err:
-                L.warn(u"Unicode error generating image: %s [%s]." % (err, value))
+                L.warning("Unicode error generating image: %s [%s]." % (err, value))
     data = StringIO("")
     img.save(data, "GIF")
     return data.getvalue()
@@ -439,24 +438,24 @@ def render_q_html(q_id, readonly=False):
         q_id = int(q_id)
         assert q_id > 0
     except (ValueError, TypeError, AssertionError):
-        L.warn("renderQuestionHTML(%s,%s) called with bad qid?" % (q_id, readonly))
+        L.warning("renderQuestionHTML(%s,%s) called with bad qid?" % (q_id, readonly))
     qt_id = DB.get_q_parent(q_id)
     try:
         qt_id = int(qt_id)
         assert qt_id > 0
     except (ValueError, TypeError, AssertionError):
-        L.warn("renderQuestionHTML(%s,%s), getparent failed? " % (q_id, readonly))
+        L.warning("renderQuestionHTML(%s,%s), getparent failed? " % (q_id, readonly))
     variation = DB.get_q_variation(q_id)
     version = DB.get_q_version(q_id)
     data = DB.get_q_att(qt_id, "qtemplate.html", variation, version)
     if not data:
-        L.warn("Unable to retrieve qtemplate for q_id: %s" % q_id)
+        L.warning("Unable to retrieve qtemplate for q_id: %s" % q_id)
         return "QuestionError"
     try:
-        out = unicode(data, "utf-8")
+        out = str(data, "utf-8")
     except UnicodeDecodeError:
         try:
-            out = unicode(DB.get_q_att(qt_id, "qtemplate.html", variation, version),
+            out = str(DB.get_q_att(qt_id, "qtemplate.html", variation, version),
                           "latin-1")
         except UnicodeDecodeError as err:
             L.error("unicode error decoding qtemplate for q_id %s: %s" % (q_id, err))
@@ -477,7 +476,7 @@ def render_q_html(q_id, readonly=False):
         out = out.replace("<INPUT ", "<INPUT READONLY ")
         out = out.replace("<SELECT ", "<SELECT DISABLED=DISABLED STYLE='color: black;'")
     guesses = DB.get_q_guesses(q_id)
-    for guess in guesses.keys():
+    for guess in list(guesses.keys()):
         # noinspection PyComparisonWithNone,PyPep8
         if guesses[guess] == None:  # If it's 0 we want to leave it alone
             guesses[guess] = ""
@@ -548,11 +547,11 @@ def mark_q_standard(qvars, answers):
         if numerical answer is within tolerance% of the answer, it gets 1 mark.
     """
     if not qvars:
-        L.warn("error: No qvars provided!")
+        L.warning("error: No qvars provided!")
         qvars = {}
     parts = [var[1:]
-             for var in qvars.keys()
-             if re.search("^A([0-9]+$)", var) > 0]
+             for var in list(qvars.keys())
+             if int(re.search("^A([0-9]+$)", var)) > 0]
     marks = {}
     for part in parts:
         try:
@@ -632,8 +631,8 @@ def mark_q_script(qvars, script, answer):
         except (KeyError, ValueError, TypeError):  # Guess not
             pass
     parts = [int(var[1:])
-             for var in qvars.keys()
-             if re.search("^A([0-9]+)$", var) > 0]
+             for var in list(qvars.keys())
+             if int(re.search("^A([0-9]+)$", var)) > 0]
     # Set up the functions scripts can call
     qvars["__builtins__"] = {'MyFuncs': OqeSmartmarkFuncs,
                              'withinTolerance': script_funcs.within_tolerance,
@@ -700,7 +699,7 @@ def mark_q_script(qvars, script, answer):
         if not part == 0:
             marks["M%d" % part] = qvars["M%d" % part]
         comment = qvars["C%d" % part]
-        for v in qvars.keys():
+        for v in list(qvars.keys()):
             comment = comment.replace("<VAL %s>" % v,
                                       '%s' % qvars[v])
             comment = comment.replace("<IMG SRC %s>" % v,
@@ -708,7 +707,7 @@ def mark_q_script(qvars, script, answer):
             comment = comment.replace("<ATT SRC %s>" % v,
                                       '<A HREF="$OaQID$%s" TARGET="_new">(View in New Window)</a>' % qvars[v])
             # Run twice to cope with basic nesting.
-        for v in qvars.keys():
+        for v in list(qvars.keys()):
             comment = comment.replace("<VAL %s>" % v, '%s' % qvars[v])
             comment = comment.replace("<IMG SRC %s>" % v, '<IMG SRC="$OaQID$%s" />' % qvars[v])
             comment = comment.replace("<ATT SRC %s>" % v,
@@ -723,30 +722,30 @@ def mark_q_script(qvars, script, answer):
 
 def render_mark_results_standard(qid, marks):
     """Display a nice little HTML table showing the marking for the question. """
-    out = u""
+    out = ""
     parts = [int(var[1:])
-             for var in marks.keys()
-             if re.search("^A([0-9]+)$", var) > 0]
+             for var in list(marks.keys())
+             if int(re.search("^A([0-9]+)$", var)) > 0]
     parts.sort()
-    out += u"<table class='results'><TR>"
-    out += u"<TH>Part</th><th>Your Answer</th>"
-    out += u"<th>Correct Answer</th><th>Tolerance</th>"
-    out += u"<th>Marks</th><th>Comment</th></tr>"
+    out += "<table class='results'><TR>"
+    out += "<TH>Part</th><th>Your Answer</th>"
+    out += "<th>Correct Answer</th><th>Tolerance</th>"
+    out += "<th>Marks</th><th>Comment</th></tr>"
     total = 0.0
     for part in parts:
         if marks['C%d' % (part,)] == 'Correct':
             marks['C%d' % (part,)] = "<b><font color='darkgreen'>Correct</font></b>"
-        out += u"<TR><TD>%d</TD><TD>%s</TD><TD>%s</TD><TD>%g%%</TD><TD>%.1f</TD><TD>%s</TD></TR>" % (
+        out += "<TR><TD>%d</TD><TD>%s</TD><TD>%s</TD><TD>%g%%</TD><TD>%.1f</TD><TD>%s</TD></TR>" % (
             part, htmlesc(marks['G%d' % part]), marks['A%d' % part], marks['T%d' % part],
             marks['M%d' % (part,)], marks['C%d' % (part,)])
         if ('M%d' % part) in marks:
             total += float(marks['M%d' % (part,)])
-    out += u"<tr><th>&nbsp;</th><th>&nbsp;</th><th>&nbsp;</th><th>&nbsp;</th><TH>Total:</th><td>%s</td></tr>" % total
+    out += "<tr><th>&nbsp;</th><th>&nbsp;</th><th>&nbsp;</th><th>&nbsp;</th><TH>Total:</th><td>%s</td></tr>" % total
     if 'C0' in marks:
-        out += u"<tr><td colspan='6'>&nbsp;</td></tr>"
-        out += u"<tr><th>&nbsp;</th><th valign='top'>Overall Comment:</th><td colspan='4'>%s</td></tr>" % (
+        out += "<tr><td colspan='6'>&nbsp;</td></tr>"
+        out += "<tr><th>&nbsp;</th><th valign='top'>Overall Comment:</th><td colspan='4'>%s</td></tr>" % (
             marks['C0'],)
-    out += u"</table>\n<hr />"
+    out += "</table>\n<hr />"
     out += render_q_html(qid, readonly=True)
     return out
 
@@ -776,20 +775,20 @@ def render_mark_results_script(qtid, qid, marks, script):
                              'resultsHTML': reshtml}
     qvars['markeroutput'] = marks
     guesses = [int(var[1:])
-               for var in marks.keys()
-               if re.search(r"^G([0-9]+)$", var) > 0]
+               for var in list(marks.keys())
+               if int(re.search(r"^G([0-9]+)$", var)) > 0]
     answers = [int(var[1:])
-               for var in marks.keys()
-               if re.search(r"^A([0-9]+)$", var) > 0]
+               for var in list(marks.keys())
+               if int(re.search(r"^A([0-9]+)$", var)) > 0]
     tolerances = [int(var[1:])
-                  for var in marks.keys()
-                  if re.search(r"^T([0-9]+)$", var) > 0]
+                  for var in list(marks.keys())
+                  if int(re.search(r"^T([0-9]+)$", var)) > 0]
     scores = [int(var[1:])
-              for var in marks.keys()
-              if re.search(r"^M([0-9]+)$", var) > 0]
+              for var in list(marks.keys())
+              if int(re.search(r"^M([0-9]+)$", var)) > 0]
     comments = [int(var[1:])
-                for var in marks.keys()
-                if re.search(r"^C([0-9]+)$", var) > 0]
+                for var in list(marks.keys())
+                if int(re.search(r"^C([0-9]+)$", var)) > 0]
     qvars['guesses'] = {}
     qvars['answers'] = {}
     qvars['tolerances'] = {}
@@ -806,7 +805,7 @@ def render_mark_results_script(qtid, qid, marks, script):
     for comment in comments:
         qvars['comments'][comment] = marks['C%d' % comment]
     qvars['numparts'] = len(answers)
-    qvars['parts'] = range(1, len(answers) + 1)
+    qvars['parts'] = list(range(1, len(answers) + 1))
     try:
         exec(script, qvars)
     except BaseException:
@@ -819,7 +818,7 @@ def render_mark_results_script(qtid, qid, marks, script):
     if 'resultsHTML' in qvars:
         if len(qvars['resultsHTML']) > 2:
             reshtml = qvars['resultsHTML']
-            for v in qvars.keys():
+            for v in list(qvars.keys()):
                 reshtml = reshtml.replace("<IMG SRC %s>" % v,
                                           '<IMG SRC="$OaQID$%s" />' % qvars[v])
             reshtml = reshtml.replace("$OaQID$", "%d/" % qid)
@@ -860,7 +859,7 @@ def mark_q(qid, answers):
     qvars = DB.get_qt_variation(qtid, variation, version)
     if not qvars:
         qvars = {}
-        L.warn("markQuestion(%s, %s) unable to retrieve variables." % (qid, answers))
+        L.warning("markQuestion(%s, %s) unable to retrieve variables." % (qid, answers))
     qvars['OaQID'] = int(qid)
     marktype = DB.get_qt_marker(qtid)
     if marktype == 1:    # standard
@@ -950,7 +949,7 @@ def get_exam_q(exam, page, user_id):
         qid = int(qid)
         assert qid > 0
     except (ValueError, TypeError, AssertionError):
-        L.warn("generateExamQuestion(%s,%s, %s) Failed (returned %s)" % (exam, page, user_id, qid))
+        L.warning("generateExamQuestion(%s,%s, %s) Failed (returned %s)" % (exam, page, user_id, qid))
         qid = None
     if qid:
         DB.set_q_viewtime(qid)
@@ -981,9 +980,9 @@ def remark_exam(exam, student):
         try:
             marks = mark_q(question, answers)
         except OaMarkerError:
-            L.warn("Marker Error, question %d while re-marking exam %s for student %s!" % (question, exam, student))
+            L.warning("Marker Error, question %d while re-marking exam %s for student %s!" % (question, exam, student))
             marks = {}
-        parts = [int(var[1:]) for var in marks.keys() if re.search("^A([0-9]+)$", var) > 0]
+        parts = [int(var[1:]) for var in list(marks.keys()) if int(re.search("^A([0-9]+)$", var)) > 0]
         parts.sort()
         total = 0.0
         for part in parts:
@@ -1011,8 +1010,8 @@ def remark_prac(question):
     except OaMarkerError:
         return None
     parts = [int(var[1:])
-             for var in marks.keys()
-             if re.search("^A([0-9]+)$", var) > 0]
+             for var in list(marks.keys())
+             if int(re.search("^A([0-9]+)$", var)) > 0]
     parts.sort()
     total = 0.0
     for part in parts:

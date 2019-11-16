@@ -87,7 +87,7 @@ class TestGroups(TestCase):
         groups = Courses.get_groups(course3_id)
         self.assertEqual(len(groups), 3)
 
-        self.assertListEqual(groups.keys(), [4, 5, 6])
+        self.assertListEqual(list(groups.keys()), [4, 5, 6])
 
         self.assertEqual(groups[4].members(), [])
         self.assertEqual(groups[5].members(), [])

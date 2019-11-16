@@ -1,4 +1,4 @@
-#!/usr/bin/python2.7
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
 """ Given a topic ID, export the questions in that topic to a zip file
@@ -18,8 +18,8 @@ sys.path.append(APPDIR)
 from oasis.lib import Users, Topics, External
 
 if len(sys.argv) < 3:
-    print "Usage: "
-    print "    export_topic <TOPIC_ID> <filename>"
+    print("Usage: ")
+    print("    export_topic <TOPIC_ID> <filename>")
     sys.exit(1)
 
 
@@ -28,13 +28,13 @@ uid = Users.uid_by_uname('admin')
 tid = int(sys.argv[1])
 try:
     topic = Topics.get_topic(tid)
-except KeyError, err:
-    print "Unable to find topic %s" % tid
+except KeyError as err:
+    print(("Unable to find topic %s" % tid))
     sys.exit(1)
 
 fname = sys.argv[2]
 
-print "Topic %s found: %s" % (tid, topic['title'])
+print(("Topic %s found: %s" % (tid, topic['title'])))
 
 base, suffix = os.path.splitext(fname)
 data = External.topic_to_zip(tid)
@@ -43,4 +43,4 @@ f = open("%s" % fname, mode='w')
 f.write(data)
 f.close()
 
-print "%s created." % fname
+print(("%s created." % fname))

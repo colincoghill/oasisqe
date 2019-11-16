@@ -42,7 +42,7 @@
                 </thead>
                 <tbody>
 
-                {% for user_id, result in results[group.id].iteritems() %}
+                {% for user_id, result in results[group.id].items() %}
                     <tr>
                         <td>{{ users[user_id]['uname'] }}</td>
                         <td>{{ users[user_id]['familyname'] }}</td>

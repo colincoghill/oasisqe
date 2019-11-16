@@ -7,7 +7,7 @@
 
 import sys
 import ldap
-import ConfigParser
+import configparser
 
 
 # The server likes to respond with Windows encoded strings
@@ -52,7 +52,7 @@ def fetch_userdetails(server, binddn, password, base, username):
                 'universityid': uoaid}
 
 
-cp = ConfigParser.ConfigParser()
+cp = configparser.ConfigParser()
 cp.read(CONFIG_FILE)
 
 server = cp.get('ldap', 'server')
@@ -69,10 +69,10 @@ for username in userlist:
         user = fetch_userdetails(server, binddn, password, base, username)
         users.append(user)
     except Exception as err:
-        print "ERROR"
-        print err
+        print("ERROR")
+        print(err)
         sys.exit()
 
-print "OK"
+print("OK")
 for user in users:
-    print "%(username)s,%(name)s,%(email)s,%(universityid)s" % user
+    print("%(username)s,%(name)s,%(email)s,%(universityid)s" % user)

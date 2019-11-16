@@ -339,7 +339,7 @@ def admin_add_feed():
     """ Present page to add a feed to the system """
     try:
         scripts = External.feeds_available_group_scripts()
-    except OSError, err:
+    except OSError as err:
         flash(err)
         scripts = []
     return render_template(
@@ -674,7 +674,7 @@ def admin_course(course_id):
     course['size'] = len(Courses.get_users(course_id))
     groups = Courses.get_groups(course_id)
     choosegroups = [group
-                    for g_id, group in Groups.enrolment_groups().iteritems()
+                    for g_id, group in list(Groups.enrolment_groups().items())
                     if g_id not in groups]
     return render_template(
         "cadmin_course.html",
@@ -698,7 +698,7 @@ def admin_course_save(course_id):
     course = Courses.get_course(course_id)
     groups = Courses.get_groups(course_id)
 
-    for g_id, group in groups.iteritems():
+    for g_id, group in list(groups.items()):
         if form.get('delgroup_%s' % g_id):
             changed = True
             flash("Removing group %s" % group.name, "info")

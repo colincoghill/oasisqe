@@ -10,7 +10,7 @@
 """
 
 from datetime import datetime, timedelta
-import DB
+from . import DB
 
 
 def prac_q_count(year, month, day, hour, qtemplate):

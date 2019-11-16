@@ -141,7 +141,7 @@ def assess_assessmentpage(course_id, exam_id, page):
         Exams.touchuserexam(exam_id, user_id)
 
     form = request.form
-    for field in form.keys():
+    for field in list(form.keys()):
         qinfo = re.search(r"^Q_(\d+)_ANS_(\d+)$", field)
         if qinfo:
             q_id = int(qinfo.groups()[0])
@@ -220,7 +220,7 @@ def assess_assessmentpage(course_id, exam_id, page):
         course=course,
         course_id=course_id,
         page=page,
-        pages=range(1, numquestions + 1),
+        pages=list(range(1, numquestions + 1)),
         html=html,
         is_timed=is_timed,
         time_remain=timeleft,
@@ -244,7 +244,7 @@ def assess_presubmit(course_id, exam_id):
         if q_id:
             qids.append(q_id)
             guesses = DB.get_q_guesses(q_id)
-            keys = guesses.keys()
+            keys = list(guesses.keys())
             keys.sort()
             questions.append({
                 'guesses': [{'part': k[1:], 'guess': guesses[k]} for k in keys],
@@ -259,7 +259,7 @@ def assess_presubmit(course_id, exam_id):
         qids=qids,
         questions=questions,
         page=1,
-        pages=range(1, numquestions + 1)
+        pages=list(range(1, numquestions + 1))
     )
 
 
@@ -306,7 +306,7 @@ def assess_awaitresults(course_id, exam_id):
         if q_id:
             qids.append(q_id)
             guesses = DB.get_q_guesses(q_id)
-            keys = guesses.keys()
+            keys = list(guesses.keys())
             keys.sort()
             questions.append({
                 'guesses': [{'part': k[1:], 'guess': guesses[k]} for k in keys],
@@ -317,7 +317,7 @@ def assess_awaitresults(course_id, exam_id):
         course=course,
         exam=exam,
         questions=questions,
-        pages=range(1, numquestions + 1)
+        pages=list(range(1, numquestions + 1))
     )
 
 

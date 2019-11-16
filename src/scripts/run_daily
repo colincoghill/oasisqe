@@ -1,4 +1,4 @@
-#!/usr/bin/python2.7
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
 import sys
@@ -19,19 +19,19 @@ def refresh_group_feeds():
     """
 
     groups = Groups.groups_to_feed()
-    for g_id, group in groups.iteritems():
-        print "Group:", group.name
+    for g_id, group in list(groups.items()):
+        print(("Group:", group.name))
         (added, removed, unknown) = External.group_update_from_feed(g_id)
         if added:
-            print "Added", ",".join(added)
+            print(("Added", ",".join(added)))
         if removed:
-            print "Removed", ",".join(removed)
+            print(("Removed", ",".join(removed)))
         if unknown:
-            print "Unknown", ",".join(unknown)
+            print(("Unknown", ",".join(unknown)))
 
 
-print "Refreshing group membership from feeds"
+print("Refreshing group membership from feeds")
 refresh_group_feeds()
 
-print "Running daily stats update."
+print("Running daily stats update.")
 Stats.do_daily_stats_update()

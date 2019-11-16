@@ -14,9 +14,9 @@ import datetime
 from .DB import run_sql, MC
 from .OaTypes import todatetime
 from .Permissions import check_perm
-import DB
-import General
-import Courses
+from . import DB
+from . import General
+from . import Courses
 from logging import getLogger
 
 L = getLogger("oasisqe")
@@ -96,14 +96,14 @@ def set_type(exam, examtype):
 def set_title(exam, title):
     """ Set the title of an assessment. """
     assert isinstance(exam, int)
-    assert isinstance(title, str) or isinstance(title, unicode)
+    assert isinstance(title, str)
     run_sql("""UPDATE exams SET title = %s WHERE exam = %s;""", [title, exam])
 
 
 def set_code(exam, code):
     """ Set the code of an assessment. """
     assert isinstance(exam, int)
-    assert isinstance(code, str) or isinstance(code, unicode)
+    assert isinstance(code, str)
     run_sql("""UPDATE exams SET code = %s WHERE exam = %s;""", [code, exam])
 
 
@@ -188,21 +188,16 @@ def create(course, owner, title, examtype, duration, start, end,
     """ Add an assessment to the database."""
     assert isinstance(course, int)
     assert isinstance(owner, int)
-    assert isinstance(title, str) \
-        or isinstance(title, unicode)
+    assert isinstance(title, str)
     assert isinstance(examtype, int)
     assert isinstance(duration, int) \
         or isinstance(duration, float)
     assert isinstance(start, datetime.datetime) \
-        or isinstance(start, str) \
-        or isinstance(start, unicode)
+        or isinstance(start, str)
     assert isinstance(end, datetime.datetime) \
-        or isinstance(end, str) \
-        or isinstance(end, unicode)
-    assert isinstance(instructions, str) \
-        or isinstance(instructions, unicode)
+        or isinstance(end, str)
+    assert isinstance(instructions, str)
     assert isinstance(code, str) \
-        or isinstance(code, unicode) \
         or code is None
     assert isinstance(instant, int)
     sql = """INSERT INTO exams (title, owner, type, start, "end", description,
@@ -221,7 +216,7 @@ def create(course, owner, title, examtype, duration, start, end,
 def set_description(exam_id, description):
     """ Set the description of an assessment."""
     assert isinstance(exam_id, int)
-    assert isinstance(description, str) or isinstance(description, unicode)
+    assert isinstance(description, str)
     run_sql("""UPDATE exams SET description = %s WHERE exam = %s;""",
             [description, exam_id])
 
@@ -245,7 +240,7 @@ def get_end_time(exam, user):
 def set_end_time(exam, examend):
     """ Set the end time of an assessment. """
     assert isinstance(exam, int)
-    assert isinstance(examend, datetime.datetime) or isinstance(examend, str) or isinstance(examend, unicode)
+    assert isinstance(examend, datetime.datetime) or isinstance(examend, str)
     key = "exams-%d-endepoch" % exam
     MC.delete(key)
     run_sql("""UPDATE exams SET "end" = %s WHERE exam = %s;""", [examend, exam])
@@ -254,7 +249,7 @@ def set_end_time(exam, examend):
 def set_start_time(exam, examstart):
     """ Set the start time of an assessment."""
     assert isinstance(exam, int)
-    assert isinstance(examstart, datetime.datetime) or isinstance(examstart, str) or isinstance(examstart, unicode)
+    assert isinstance(examstart, datetime.datetime) or isinstance(examstart, str)
     key = "exams-%d-startepoch" % exam
     MC.delete(key)
     run_sql("""UPDATE exams SET "start" = %s WHERE exam = %s;""", [examstart, exam])
@@ -372,7 +367,7 @@ def get_qts_list(exam):
                                         'position': int(row[1]),
                                         'topic': int(row[3]),
                                         'topicposition': int(row[4])})
-    return [positions[p] for p in positions.keys()]
+    return [positions[p] for p in list(positions.keys())]
 
 
 def get_num_done(exam, group=None):
@@ -435,7 +430,7 @@ def _serialize_examstruct(exam):
 
 def _deserialize_examstruct(obj):
     """ Deserialize a serialized exam structure. """
-    assert isinstance(obj, str) or isinstance(obj, unicode)
+    assert isinstance(obj, str)
     date_fmt = '%Y-%m-%d %H:%M:%S'
     exam = json.loads(obj)
     exam['start'] = datetime.datetime.strptime(exam['start'], date_fmt)

@@ -24,7 +24,7 @@ def do_topic_update(course, request):
 
     form = request.form
     if form:
-        for i in form.keys():
+        for i in list(form.keys()):
             if i not in ["csrf_token", ]:
                 parts = i.split('_')
                 if len(parts) > 1:
@@ -100,7 +100,7 @@ def save_perms(request, cid, user_id):
 
     form = request.form
     if form:    # we received a form submission, work out changes and save them
-        fields = [field for field in form.keys() if field[:5] == "perm_"]
+        fields = [field for field in list(form.keys()) if field[:5] == "perm_"]
         newperms = {}
 
         for field in fields:
@@ -195,7 +195,7 @@ def exam_edit_submit(request, user_id, cid, exam_id):
     aend = aend.replace(hour=endhour, minute=endmin)
 
     qns = {}
-    for k in request.form.keys():
+    for k in list(request.form.keys()):
 
         v = request.form.getlist(k)
         if k.startswith("question_"):
@@ -218,7 +218,7 @@ def exam_edit_submit(request, user_id, cid, exam_id):
         Exams.set_code(exam_id, code)
         Exams.set_instant(exam_id, instant)
 
-    for pos, qts in qns.iteritems():
+    for pos, qts in qns.items():
         if pos:
             DB.update_exam_qt_in_pos(exam_id, int(pos), qts)
 
@@ -227,12 +227,6 @@ def exam_edit_submit(request, user_id, cid, exam_id):
 
 def _get_q_list_sorted(topic):
     # TODO: Is this duplicated elsewhere?
-    def cmp_question_position(a, b):
-        """Order questions by the absolute value of their positions
-           since we use -'ve to indicate hidden.
-        """
-
-        return cmp(abs(a['position']), abs(b['position']))
 
     questionlist = General.get_q_list(topic, None, False)
 
@@ -244,7 +238,7 @@ def _get_q_list_sorted(topic):
             # so put them at the bottom.
             if question['position'] == 0:
                 question['position'] = -10000
-        questionlist.sort(cmp_question_position)
+        questionlist.sort(key=lambda k: abs(k["position"]))
     else:
         questionlist = []
 
@@ -256,7 +250,7 @@ def get_create_exam_q_list(course):
     """
 
     topics = Courses.get_topics_all(course, archived=0, numq=False)
-    for num, topic in topics.iteritems():
+    for num, topic in topics.items():
         topic_id = topics[num]['id']
         topics[num]['questions'] = _get_q_list_sorted(topic_id)
     return topics

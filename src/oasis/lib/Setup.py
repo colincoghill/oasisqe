@@ -9,7 +9,7 @@
 
 from flask import flash
 from oasis.lib import DB, Topics, Courses
-import StringIO
+import io
 from oasis.lib import External
 from flask import send_file, abort
 from logging import getLogger
@@ -45,7 +45,7 @@ def do_topic_page_commands(request, topic_id, user_id):
 
     # Make a list of all the commands to run
     cmdlist = []
-    for command in request.form.keys():
+    for command in list(request.form.keys()):
         if '_' in command:
             (cmd, data) = command.split('_', 2)
             value = form[command]
@@ -124,7 +124,7 @@ def do_topic_page_commands(request, topic_id, user_id):
                 if not data:
                     abort(401)
 
-                sio = StringIO.StringIO(data)
+                sio = io.StringIO(data)
                 return 2, send_file(sio, "application/oasisqe", as_attachment=True, attachment_filename="oa_export.zip")
 
     # Then new questions
@@ -167,7 +167,7 @@ def do_topic_page_commands(request, topic_id, user_id):
                 L.error("Unable to create new question (%s) (%s)" %
                         (new_title, new_position))
 
-    L.info("request.files = %s" % (repr(request.files.keys())))
+    L.info("request.files = %s" % (repr(list(request.files.keys()))))
     # Did they upload a file to import?
     if 'import_file' in request.files:
         L.info("File upload to topic %s by user %s" % (topic_id, user_id))
@@ -207,7 +207,7 @@ def get_sorted_courselist(with_stats=False, only_active=True):
     courses = Courses.get_courses_dict(only_active=only_active)
 
     inorder = []
-    for cid, course in courses.iteritems():
+    for cid, course in courses.items():
         if with_stats:
             course['students'] = Courses.get_users(cid)
             course['size'] = len(course['students'])

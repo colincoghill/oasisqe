@@ -22,7 +22,7 @@ cd ${DEST}
 BINDIR=${DEST}/bin
 OASISLIB=${DEST}
 
-/bin/bash ${SRC}/src/build/install_systemdeps_xenial.sh
+/bin/bash ${SRC}/src/build/install_systemdeps_bionic.sh
 /bin/bash ${SRC}/src/build/setup_dev_pythonenv.sh
 
 echo "Configuring for Development"

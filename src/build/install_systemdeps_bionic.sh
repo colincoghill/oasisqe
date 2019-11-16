@@ -22,7 +22,7 @@ apt-get update
 apt-get upgrade ${APTOPTS}
 
 # Apache
-apt-get install ${APTOPTS} apache2 libapache2-mod-wsgi
+apt-get install ${APTOPTS} apache2 libapache2-mod-wsgi-py3
 
 # PostgreSQL
 apt-get install ${APTOPTS} postgresql postgresql-client
@@ -34,19 +34,19 @@ apt-get install ${APTOPTS} postfix unzip memcached
 apt-get install ${APTOPTS} pwgen
 
 # We'd prefer these by pip, but they like to compile stuff during install so need lots of dev things installed.
-apt-get install ${APTOPTS} python-psycopg2 python-bcrypt python-lxml python-pillow python-ldap
+apt-get install ${APTOPTS} python3-psycopg2 python3-bcrypt python3-lxml python3-pillow python3-ldap python3-memcache
 
 # Ubuntu pip is a bit old, but installing it means we can use it to install a newer one
-apt-get install ${APTOPTS} --no-install-recommends python-pip
+apt-get install ${APTOPTS} --no-install-recommends python3-pip
 
 # Upgrade pip
-pip install --upgrade pip
+pip3 install --upgrade pip
 
 # otherwise bash gives us the previous version
 hash -r
 
-pip install --upgrade setuptools
+pip3 install --upgrade setuptools
 
-pip install pipenv
+pip3 install pipenv
 
 echo "Ubuntu Bionic System Dependencies installed"

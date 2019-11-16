@@ -6,8 +6,8 @@
 """ A collection of functions that may be called by
     scripts. eg. the __marker.py and __results.py scripts.
 """
-import DB
-from Audit import audit
+from . import DB
+from .Audit import audit
 
 
 # We don't want the scripts playing with their questionID (qid) so we have to

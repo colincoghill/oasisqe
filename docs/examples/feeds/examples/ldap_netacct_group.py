@@ -11,7 +11,7 @@
 import sys
 import ldap
 import re
-import ConfigParser
+import configparser
 
 INPUT_ENCODING = 'iso-8859-1'
 
@@ -38,7 +38,7 @@ def fetch_upids_in_ldap_group(server, binddn, password, base, groupname):
         return res
 
 
-cp = ConfigParser.ConfigParser()
+cp = configparser.ConfigParser()
 cp.read(CONFIG_FILE)
 
 server = cp.get('ldap', 'server')
@@ -51,11 +51,11 @@ groupname = sys.argv[1]
 try:
     upids = fetch_upids_in_ldap_group(server, binddn, password, base, groupname)
 except Exception as err:
-    print "ERROR"
-    print err
+    print("ERROR")
+    print(err)
     sys.exit()
 
 
-print "OK"
+print("OK")
 for upid in upids:
-    print upid
+    print(upid)
