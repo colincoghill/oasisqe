@@ -19,7 +19,7 @@ class TestTopics(TestCase):
 
         course_id = Courses.create("TEST101", "Test topic position logic", 1, 1)
 
-        self.assertDictContainsSubset(
+        self.assertTrue(
             {course_id:
                  {'active': 1,
                   'assess_visibility': 'enrol',
@@ -30,8 +30,7 @@ class TestTopics(TestCase):
                   'title': 'Test topic position logic',
                   'type': 1
                   }
-             },
-            Courses.get_courses_dict(),
+             } <= Courses.get_courses_dict()
         )
 
         topic1_id = Topics.create(course_id, "TESTTOPIC1", 1, 2)

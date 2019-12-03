@@ -59,7 +59,7 @@ def mark_q(user_id, qtid, request):
         out += General.render_mark_results(qid, marks)
         parts = [int(var[1:])
                  for var in list(marks.keys())
-                 if int(re.search("^A([0-9]+)$", var)) > 0]
+                 if int(str(re.search("^A([0-9]+)$", var))) > 0]
         parts.sort()
         total = 0.0
         for part in parts:

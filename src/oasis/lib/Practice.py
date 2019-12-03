@@ -24,7 +24,7 @@ def get_practice_q(qt_id, user_id):
         qt_id = int(qt_id)
         assert qt_id > 0
     except (ValueError, TypeError, AssertionError):
-        L.warning("Called with bad qtid %s?" % qt_id)
+        L.warning(f"Called with bad qtid {qt_id}?")
     qid = DB.get_q_by_qt_student(qt_id, user_id)
     if qid is not False:
         return int(qid)
@@ -32,7 +32,7 @@ def get_practice_q(qt_id, user_id):
     try:
         qid = int(qid)
     except (ValueError, TypeError):
-        L.warning("generateQuestion(%s,%s) Fail: returned %s" % (qt_id, user_id, qid))
+        L.warning(f"generateQuestion({qt_id},{user_id}) Fail: returned {qid}")
     else:
         DB.set_q_viewtime(qid)
     return qid
@@ -191,25 +191,23 @@ def mark_q(user_id, topic_id, q_id, request):
                 answers["G%d" % part] = value
                 DB.save_guess(newqid, part, value)
             else:
-                L.warning("received guess for wrong question? (%d,%d,%d,%s)" %
-                       (user_id, topic_id, q_id, request.form))
+                L.warning(f"received guess for wrong question? ({user_id:d},{topic_id:d},{q_id:d},{request.form})")
     try:
         marks = General.mark_q(q_id, answers)
-        DB.set_q_status(q_id, 3)    # 3 = marked
+        DB.set_q_status(q_id, 3)  # 3 = marked
         DB.set_q_marktime(q_id)
     except OaMarkerError:
-        L.warning("Marker Error - (%d, %d, %d, %s)" %
-               (user_id, topic_id, q_id, request.form))
+        L.warning(f"Marker Error - ({user_id:d}, {topic_id:d}, {q_id:d}, {request.form})")
         marks = {}
     q_body = General.render_mark_results(q_id, marks)
     parts = [int(var[1:])
              for var in list(marks.keys())
-             if int(re.search(r"^A([0-9]+)$", var)) > 0]
+             if int(str(re.search(r"^A([0-9]+)$", var))) > 0]
     parts.sort()
     total = 0.0
     for part in parts:
         if 'M%d' % (part,) in marks:
             total += float(marks['M%d' % (part,)])
-    DB.update_q_score(q_id, total)    # 3 = marked
+    DB.update_q_score(q_id, total)  # 3 = marked
     DB.set_q_status(q_id, 2)
     return q_body

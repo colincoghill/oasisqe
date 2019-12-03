@@ -291,7 +291,7 @@ def cadmin_exam_results(course_id, exam_id):
         abort(404)
 
     if not int(exam['cid']) == int(course_id):
-        flash("Assessment %s does not belong to this course." % int(exam_id))
+        flash(f"Assessment {int(exam_id)} does not belong to this course.")
         return redirect(url_for('cadmin_top', course_id=course_id))
 
     exam['start_date'] = int(date_from_py2js(exam['start']))
@@ -352,11 +352,13 @@ def cadmin_export_csv(course_id, exam_id, group_id):
     group = Groups.Group(g_id=group_id)
     output = Spreadsheets.exam_results_as_spreadsheet(course_id, group, exam_id)
 
-    response = make_response(output)
-    response.headers.add('Content-Type', "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet; charset=utf-8")
-    response.headers.add('Content-Disposition', 'attachment; filename="OASIS_%s_%s_Results.xlsx"' % (course.title, exam.title))
+    res = make_response(output)
+    res.headers.add('Content-Type',
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet; charset=utf-8")
+    res.headers.add('Content-Disposition',
+                    f'attachment; filename="OASIS_{course.title}_{exam.title}_Results.xlsx"')
 
-    return response
+    return res
 
 
 @app.route("/cadmin/<int:course_id>/exam/<int:exam_id>/view/<int:student_uid>")
@@ -430,7 +432,7 @@ def cadmin_exam_unsubmit(course_id, exam_id, student_uid):
         abort(404)
     Exams.unsubmit(exam_id, student_uid)
     user = Users2.get_user(student_uid)
-    flash("""Assessment for %s un-submitted and timer reset.""" % user['uname'])
+    flash(f"""Assessment for {user['uname']} un-submitted and timer reset.""")
     return redirect(url_for("cadmin_exam_viewmarked",
                             course_id=course_id,
                             exam_id=exam['id'],
@@ -450,7 +452,7 @@ def cadmin_edit_exam(course_id, exam_id):
         abort(404)
 
     if not int(exam['cid']) == int(course_id):
-        flash("Assessment %s does not belong to this course." % int(exam_id))
+        flash(f"Assessment {int(exam_id)} does not belong to this course.")
         return redirect(url_for('cadmin_top', course_id=course_id))
 
     exam['start_date'] = int(date_from_py2js(exam['start']))
@@ -539,15 +541,15 @@ def cadmin_editgroup_addperson(course_id, group_id):
     try:
         new_uid = Users2.uid_by_uname(new_uname)
     except KeyError:
-        flash("User '%s' Not Found" % new_uname)
+        flash(f"User '{new_uname}' Not Found")
     else:
         if not new_uid:
-            flash("User '%s' Not Found" % new_uname)
+            flash(f"User '{new_uname}' Not Found")
         elif new_uid in group.members():
-            flash("%s is already in the group." % new_uname)
+            flash(f"{new_uname} is already in the group.")
         else:
             group.add_member(new_uid)
-            flash("Added %s to group." % (new_uname,))
+            flash(f"Added {new_uname} to group.")
 
     return redirect(url_for('cadmin_editgroup',
                             course_id=course_id,
@@ -579,9 +581,9 @@ def cadmin_editgroup_member(course_id, group_id):
             if op == "remove":
                 uid = int(uid)
                 user = Users2.get_user(uid)
-                L.info("courseadmin: user %s removed from group %s by %s" % (uid, group_id, cur_user))
+                L.info(f"courseadmin: user {uid} removed from group {group_id} by {cur_user}")
                 group.remove_member(uid)
-                flash("%s removed from group" % user['uname'])
+                flash(f"{user['uname']} removed from group")
                 done = True
 
     if not done:
@@ -608,15 +610,15 @@ def cadmin_assign_coord(course_id):
     try:
         new_uid = Users2.uid_by_uname(new_uname)
     except KeyError:
-        flash("User '%s' Not Found" % new_uname)
+        flash(f"User '{new_uname}' Not Found")
     else:
         if not new_uid:
             flash("User '%s' Not Found" % new_uname)
         else:
-            L.info("courseadmin: user %s assigned as coordinator to course %s by %s" % (new_uid, course_id, cur_user))
+            L.info(f"courseadmin: user {new_uid} assigned as coordinator to course {course_id} by {cur_user}")
             Permissions.add_perm(new_uid, course_id, 3)  # courseadmin
             Permissions.add_perm(new_uid, course_id, 4)  # coursecoord
-            flash("%s can now control the course." % (new_uname,))
+            flash(f"{new_uname} can now control the course.")
 
     return redirect(url_for('cadmin_config', course_id=course_id))
 
@@ -633,14 +635,14 @@ def cadmin_remove_coord(course_id, coordname):
     try:
         new_uid = Users2.uid_by_uname(coordname)
     except KeyError:
-        flash("User '%s' Not Found" % coordname)
+        flash(f"User '{coordname}' Not Found")
     else:
         if not new_uid:
-            flash("User '%s' Not Found" % coordname)
+            flash(f"User '{coordname}' Not Found")
         else:
             Permissions.delete_perm(new_uid, course_id, 3)  # courseadmin
             Permissions.delete_perm(new_uid, course_id, 4)  # coursecoord
-            flash("%s can no longer control the course." % (coordname,))
+            flash(f"{coordname} can no longer control the course.")
 
     return redirect(url_for('cadmin_config', course_id=course_id))
 
@@ -679,7 +681,7 @@ def cadmin_deactivate(course_id):
         abort(404)
 
     Courses.set_active(course_id, False)
-    flash("Course %s marked as inactive" % (course['name'],))
+    flash(f"Course {course['name']} marked as inactive")
     return redirect(url_for("cadmin_config", course_id=course_id))
 
 
@@ -699,7 +701,7 @@ def cadmin_group_detach(course_id, group_id):
 
     group = Groups.Group(g_id=group_id)
     Courses.del_group(group_id, course_id)
-    flash("Group %s removed from course" % (group.name,))
+    flash(f"Group {group.name} removed from course")
     return redirect(url_for("cadmin_config", course_id=course_id))
 
 
@@ -718,7 +720,7 @@ def cadmin_activate(course_id):
         abort(404)
 
     Courses.set_active(course_id, True)
-    flash("Course %s marked as active" % (course['name']))
+    flash(f"Course {course['name']} marked as active")
     return redirect(url_for("cadmin_config", course_id=course_id))
 
 
@@ -899,7 +901,7 @@ def cadmin_topic_save(course_id, topic_id):
             return result
 
     flash("Error saving Topic Information!")
-    L.error("Error saving Topic Information %s" % repr(request.form))
+    L.error(f"Error saving Topic Information {repr(request.form)}")
     return redirect(url_for('cadmin_edit_topic',
                             course_id=course_id,
                             topic_id=topic_id))
@@ -958,5 +960,5 @@ def cadmin_course_add_group(course_id):
 
     Courses.add_group(group_id, course_id)
     group = Groups.Group(group_id)
-    flash("Group %s added" % (group.name,))
+    flash(f"Group {group.name} added")
     return redirect(url_for('cadmin_config', course_id=course_id))

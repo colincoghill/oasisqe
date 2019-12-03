@@ -267,7 +267,7 @@ def gen_q_image(qvars, image):
     font = ImageFont.truetype("%s/fonts/Courier_New.ttf" % OaConfig.homedir, 14)
     coords = [int(name[1:])
               for name in list(qvars.keys())
-              if int(re.search("^X([0-9]+)$", name)) > 0]
+              if int(str(re.search("^X([0-9]+)$", name))) > 0]
     for coord in coords:
         (xcoord, ycoord, value) = (qvars["X%d" % coord],
                                    qvars["Y%d" % coord],
@@ -550,8 +550,7 @@ def mark_q_standard(qvars, answers):
         L.warning("error: No qvars provided!")
         qvars = {}
     parts = [var[1:]
-             for var in list(qvars.keys())
-             if int(re.search("^A([0-9]+$)", var)) > 0]
+             for var in list(qvars.keys()) if int(str(re.search("^A([0-9]+$)", var))) > 0]
     marks = {}
     for part in parts:
         try:
@@ -632,7 +631,7 @@ def mark_q_script(qvars, script, answer):
             pass
     parts = [int(var[1:])
              for var in list(qvars.keys())
-             if int(re.search("^A([0-9]+)$", var)) > 0]
+             if int(str(re.search("^A([0-9]+)$", var))) > 0]
     # Set up the functions scripts can call
     qvars["__builtins__"] = {'MyFuncs': OqeSmartmarkFuncs,
                              'withinTolerance': script_funcs.within_tolerance,
@@ -725,7 +724,7 @@ def render_mark_results_standard(qid, marks):
     out = ""
     parts = [int(var[1:])
              for var in list(marks.keys())
-             if int(re.search("^A([0-9]+)$", var)) > 0]
+             if int(str(re.search("^A([0-9]+)$", var))) > 0]
     parts.sort()
     out += "<table class='results'><TR>"
     out += "<TH>Part</th><th>Your Answer</th>"
@@ -776,19 +775,19 @@ def render_mark_results_script(qtid, qid, marks, script):
     qvars['markeroutput'] = marks
     guesses = [int(var[1:])
                for var in list(marks.keys())
-               if int(re.search(r"^G([0-9]+)$", var)) > 0]
+               if int(str(re.search(r"^G([0-9]+)$", var))) > 0]
     answers = [int(var[1:])
                for var in list(marks.keys())
-               if int(re.search(r"^A([0-9]+)$", var)) > 0]
+               if int(str(re.search(r"^A([0-9]+)$", var))) > 0]
     tolerances = [int(var[1:])
                   for var in list(marks.keys())
-                  if int(re.search(r"^T([0-9]+)$", var)) > 0]
+                  if int(str(re.search(r"^T([0-9]+)$", var))) > 0]
     scores = [int(var[1:])
               for var in list(marks.keys())
-              if int(re.search(r"^M([0-9]+)$", var)) > 0]
+              if int(str(re.search(r"^M([0-9]+)$", var))) > 0]
     comments = [int(var[1:])
                 for var in list(marks.keys())
-                if int(re.search(r"^C([0-9]+)$", var)) > 0]
+                if int(str(re.search(r"^C([0-9]+)$", var))) > 0]
     qvars['guesses'] = {}
     qvars['answers'] = {}
     qvars['tolerances'] = {}
@@ -982,7 +981,7 @@ def remark_exam(exam, student):
         except OaMarkerError:
             L.warning("Marker Error, question %d while re-marking exam %s for student %s!" % (question, exam, student))
             marks = {}
-        parts = [int(var[1:]) for var in list(marks.keys()) if int(re.search("^A([0-9]+)$", var)) > 0]
+        parts = [int(var[1:]) for var in list(marks.keys()) if int(str(re.search("^A([0-9]+)$", var))) > 0]
         parts.sort()
         total = 0.0
         for part in parts:
@@ -1011,7 +1010,7 @@ def remark_prac(question):
         return None
     parts = [int(var[1:])
              for var in list(marks.keys())
-             if int(re.search("^A([0-9]+)$", var)) > 0]
+             if int(str(re.search("^A([0-9]+)$", var))) > 0]
     parts.sort()
     total = 0.0
     for part in parts:

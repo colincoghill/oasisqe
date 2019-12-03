@@ -26,7 +26,6 @@ IntegrityError = psycopg2.IntegrityError
 # doesn't overload the server if there're a lot of us
 dbpool = Pool.DbPool(OaConfig.oasisdbconnectstring, 3)
 
-
 from .Pool import MCPool
 
 # Get a pool of memcache connections to use
@@ -667,7 +666,7 @@ def get_qt_variation(qt_id, variation, version=1000000000):
                   [qt_id, variation, qt_id, version])
     if not res:
         L.warning("Request for unknown qt variation. (%s, %s, %s)" %
-               (qt_id, variation, version))
+                  (qt_id, variation, version))
         return None
     result = None
     data = None
@@ -676,7 +675,7 @@ def get_qt_variation(qt_id, variation, version=1000000000):
         data = pickle.loads(result)
     except TypeError:
         L.warning("Type error trying to cpickle.loads(%s) for (%s, %s, %s)" %
-               (type(result), qt_id, variation, version))
+                  (type(result), qt_id, variation, version))
     return data
 
 
@@ -695,7 +694,7 @@ def get_qt_num_variations(qt_id, version=1000000000):
         num = int(ret[0][0])
     except BaseException as err:
         L.warning("No Variation found for qtid=%d, version=%d: %s" %
-               (qt_id, version, err))
+                  (qt_id, version, err))
         return 0
     return num
 
@@ -754,7 +753,7 @@ def create_q(qt_id, name, student, status, variation, version, exam):
                   [qt_id, name, student, status, variation, version, exam])
     if not res:
         L.error("CreateQuestion(%d, %s, %d, %s, %d, %d, %d) may have failed." % (
-                qt_id, name, student, status, variation, version, exam))
+            qt_id, name, student, status, variation, version, exam))
         return None
     return res[0][0]
 
@@ -1157,7 +1156,7 @@ def get_student_q_practice_stats(user_id, qt_id, num=3):
             try:
                 age = int(age)
                 ageseconds = age
-                if age > 63000000:    # more than two years
+                if age > 63000000:  # more than two years
                     age = "more than 2 years"
                 else:
                     age = secs_to_human(age)
@@ -1170,7 +1169,7 @@ def get_student_q_practice_stats(user_id, qt_id, num=3):
                 'ageseconds': ageseconds
             })
 
-        return stats[::-1]   # reverse it so they're in time order
+        return stats[::-1]  # reverse it so they're in time order
     return None
 
 
@@ -1205,7 +1204,7 @@ def get_q_stats_class(course, qt_id):
                          'stddev': float(i[2]),
                          'max': float(i[3]),
                          'min': float(i[4])}
-            else:   # empty stddev from e.g. only 1 count
+            else:  # empty stddev from e.g. only 1 count
                 stats = {'count': int(i[0]),
                          'avg': float(i[1]),
                          'stddev': 0.0,
@@ -1509,76 +1508,40 @@ def upgrade_3_6_to_3_9_5(options):
 
     calc_stats()
 
-    with open(os.path.join(OaConfig.homedir, "sql", "migrate_392_to_393.sql")) as f:
-        sql = f.read()
-    run_sql(sql)
-    print("Migrated table structure from 3.9.2 to 3.9.3")
-
-    with open(os.path.join(OaConfig.homedir, "sql", "migrate_393_to_394.sql")) as f:
-        sql = f.read()
-    run_sql(sql)
-    print("Migrated table structure from 3.9.3 to 3.9.4")
-    with open(os.path.join(OaConfig.homedir, "sql", "migrate_394_to_395.sql")) as f:
-        sql = f.read()
-    run_sql(sql)
-    print("Migrated table structure from 3.9.4 to 3.9.5")
+    upgrade_3_9_2_to_3_9_5(options)
 
     if not options.noresetadmin:
         generate_admin_passwd()  # 3.6 passwords were in a slightly less secure format
 
 
-def upgrade_3_9_1_to_3_9_5(_):
+def upgrade_3_9_1_to_3_9_5(options):
     """ Given a 3.9.1 database, upgrade it to 3.9.4.
     """
     with open(os.path.join(OaConfig.homedir, "sql", "migrate_391_to_392.sql")) as f:
         sql = f.read()
     run_sql(sql)
     print("Migrated table structure from 3.9.1 to 3.9.2")
-
-    with open(os.path.join(OaConfig.homedir, "sql", "migrate_392_to_393.sql")) as f:
-        sql = f.read()
-    run_sql(sql)
-    print("Migrated table structure from 3.9.2 to 3.9.3")
-
-    with open(os.path.join(OaConfig.homedir, "sql", "migrate_393_to_394.sql")) as f:
-        sql = f.read()
-    run_sql(sql)
-    print("Migrated table structure from 3.9.3 to 3.9.4")
-    with open(os.path.join(OaConfig.homedir, "sql", "migrate_394_to_395.sql")) as f:
-        sql = f.read()
-    run_sql(sql)
-    print("Migrated table structure from 3.9.4 to 3.9.5")
+    upgrade_3_9_2_to_3_9_5(options)
 
 
-def upgrade_3_9_2_to_3_9_5(_):
+def upgrade_3_9_2_to_3_9_5(options):
     """ Given a 3.9.2 database, upgrade it to 3.9.4.
     """
     with open(os.path.join(OaConfig.homedir, "sql", "migrate_392_to_393.sql")) as f:
         sql = f.read()
     run_sql(sql)
     print("Migrated table structure from 3.9.2 to 3.9.3")
-
-    with open(os.path.join(OaConfig.homedir, "sql", "migrate_393_to_394.sql")) as f:
-        sql = f.read()
-    run_sql(sql)
-    print("Migrated table structure from 3.9.3 to 3.9.4")
-    with open(os.path.join(OaConfig.homedir, "sql", "migrate_394_to_395.sql")) as f:
-        sql = f.read()
-    run_sql(sql)
-    print("Migrated table structure from 3.9.4 to 3.9.5")
+    upgrade_3_9_3_to_3_9_5(options)
 
 
-def upgrade_3_9_3_to_3_9_5(_):
+def upgrade_3_9_3_to_3_9_5(options):
     """ Given a 3.9.3 database, upgrade it to 3.9.5.
     """
     with open(os.path.join(OaConfig.homedir, "sql", "migrate_393_to_394.sql")) as f:
         sql = f.read()
     run_sql(sql)
     print("Migrated table structure from 3.9.3 to 3.9.4")
-    with open(os.path.join(OaConfig.homedir, "sql", "migrate_394_to_395.sql")) as f:
-        sql = f.read()
-    run_sql(sql)
-    print("Migrated table structure from 3.9.4 to 3.9.5")
+    upgrade_3_9_4_to_3_9_5(options)
 
 
 def upgrade_3_9_4_to_3_9_5(_):
@@ -1640,7 +1603,7 @@ def do_upgrade(options):
         return
     if dbver == "3.9.5":
         do_repair()
-        dbver = get_db_version() # we had a bug where a 3.9.6 db thought it was 3.9.5
+        dbver = get_db_version()  # we had a bug where a 3.9.6 db thought it was 3.9.5
     if dbver == "3.9.5":
         upgrade_3_9_5_to_3_9_6(options)
         upgrade_3_9_6_to_3_9_7(options)
@@ -1725,16 +1688,17 @@ def do_repair(repair=True):
                 # Swap archived and duration fields
                 sql = "UPDATE exams SET duration = %s, archived = %s WHERE exam = %s;"
                 params = [exam['archived'], exam['duration'], exam['exam_id']]
-                L.warning("Repairing swapped duration, archived field in exams (archived=%s,duration=%s,exam=%s" % params)
-                run_sql(sql,params)
+                L.warning(
+                    "Repairing swapped duration, archived field in exams (archived=%s,duration=%s,exam=%s" % params)
+                run_sql(sql, params)
             else:
                 L.info("Exam %(exam_id)d has 'duration=%(duration)d' and 'archived=%(archived)d' swapped?" % exam)
 
     if bad_found:
         if repair:
-            L.info("%d records repaired." % bad_found)
+            L.info(f"{bad_found:d} records repaired.")
         else:
-            L.info("%d out of %d bad records found." % (bad_found, len(exams)))
+            L.info(f"{bad_found:d} out of {len(exams):d} bad records found.")
 
     else:
         L.info("No bad records found.")
@@ -1743,7 +1707,7 @@ def do_repair(repair=True):
     # major problems, but confused later upgrades
     ver = get_db_version()
     if ver == "3.9.5":
-        try: # this table is added in 3.9.6
+        try:  # this table is added in 3.9.6
             run_sql("""SELECT 1 from lti_consumers;""")
             # we got here so it exists, we're actually 3.9.6
             L.info("DB thinks it's version 3.9.5 but has lti_consumers, which was added in 3.9.6")

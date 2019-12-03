@@ -128,7 +128,7 @@ def admin_edit_lti_consumer_submit(ltic_id):
         flash("Can't Save: Consumer Key must be supplied")
         return render_template(
             "admin_edit_lti_consumer.html",
-            lti_consumer = lti_consumer
+            lti_consumer=lti_consumer
         )
     try:
         lti_consumer.save()

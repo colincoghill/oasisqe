@@ -23,15 +23,13 @@ def mark_exam(user_id, exam_id):
     """
     numquestions = Exams.get_num_questions(exam_id)
     status = Exams.get_user_status(user_id, exam_id)
-    L.info("Marking assessment %s for %s, status is %s" % (exam_id, user_id, status))
+    L.info(f"Marking assessment {exam_id} for {user_id}, status is {status}")
     examtotal = 0.0
     errors = 0
     for position in range(1, numquestions + 1):
         q_id = General.get_exam_q(exam_id, position, user_id)
         if not q_id:
-            L.critical("Unable to retrieve exam question page %s, exam %s, for user %s" % (position, exam_id, user_id
-                                                                                           )
-                       )
+            L.critical(f"Unable to retrieve exam question page {position}, exam {exam_id}, for user {user_id}")
             errors += 1
             continue
         answers = DB.get_q_guesses(q_id)
@@ -45,12 +43,11 @@ def mark_exam(user_id, exam_id):
             DB.set_q_status(q_id, 3)    # 3 = marked
             DB.set_q_marktime(q_id)
         except OaMarkerError:
-            L.warning("Marker Error in question %s, exam %s, student %s!" %
-                   (q_id, exam_id, user_id))
+            L.warning(f"Marker Error in question {q_id}, exam {exam_id}, student {user_id}!")
             return False
         parts = [int(var[1:])
                  for var in list(marks.keys())
-                 if int(re.search("^A([0-9]+)$", var)) > 0]
+                 if int(str(re.search("^A([0-9]+)$", var))) > 0]
         parts.sort()
 
         # Then calculate the mark
@@ -71,8 +68,7 @@ def mark_exam(user_id, exam_id):
 
     if errors:
         return False
-    L.info("user %s scored %s total on exam %s" %
-           (user_id, examtotal, exam_id))
+    L.info(f"user {user_id} scored {examtotal} total on exam {exam_id}")
     return True
 
 
@@ -137,7 +133,7 @@ def render_own_marked_exam(student, exam):
         marks = General.mark_q(question, answers)
         parts = [int(var[1:])
                  for var in list(marks.keys())
-                 if int(re.search("^A([0-9]+$)", var)) > 0]
+                 if int(str(re.search("^A([0-9]+$)", var))) > 0]
         parts.sort()
         marking = []
         for part in parts:
@@ -177,7 +173,6 @@ def get_exam_list_sorted(user_id, prev_years=False):
             exams += [Exams.get_exam_struct(e, user_id)
                       for e in Courses.get_exams(cid, prev_years=prev_years)]
         except KeyError as err:
-            L.error("Failed fetching exam list for user %s: %s" %
-                    (user_id, err))
+            L.error(f"Failed fetching exam list for user {user_id}: {err}")
     exams.sort(key=lambda y: y['start_epoch'], reverse=True)
     return exams

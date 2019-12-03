@@ -22,12 +22,12 @@
 """
 
 import os
-from flask import render_template,redirect,url_for, abort,session
+from flask import render_template, redirect, url_for, abort, session
 from pylti.flask import lti
 
 MYPATH = os.path.dirname(__file__)
 
-from oasis import app,csrf,audit
+from oasis import app, csrf, audit
 from logging import getLogger
 from .lib import Users2, LTIConsumers, OaConfig
 
@@ -55,19 +55,19 @@ def _auth_user(lti, app):
     username_attribute = lti_consumer.username_attribute
 
     try:
-        username = getattr(lti, "%s"%username_attribute)
+        username = getattr(lti, f"{username_attribute}")
         if not username:
-            abort(400, "'%s' field was empty" % username_attribute)
+            abort(400, f"'{username_attribute}' field was empty")
 
     except AttributeError:
-        L.error("Unable to lookup lti attribute '%s' for username mapping" % username_attribute)
-        abort(400, "Expecting '%s' in LTI params" % username_attribute)
+        L.error(f"Unable to lookup lti attribute '{username_attribute}' for username mapping")
+        abort(400, f"Expecting '{username_attribute}' in LTI params")
 
     user_id = Users2.uid_by_uname(username)
     if not user_id:
         audit(1, user_id, user_id, "UserAuth",
-              "Created user %s because of LTI request for unknown user" % username)
-        L.info("creating OASIS user %s for LTI (%s: %s) " % (username, lti.key, lti_consumer.title))
+              f"Created user {username} because of LTI request for unknown user")
+        L.info(f"creating OASIS user {username} for LTI ({lti.key}: {lti_consumer.title}) ")
         # uname, passwd, givenname, familyname, acctstatus, studentid, email = None
         Users2.create(username, 'lti-nologin-direct', '', '', 1, '', username, None, 'lti', '', True)
         user_id = Users2.uid_by_uname(username)
@@ -86,7 +86,7 @@ def _auth_user(lti, app):
     session['user_authtype'] = "ltiauth"
 
     audit(1, user_id, user_id, "UserAuth",
-          "%s successfully logged in via ltiauth" % session['username'])
+          f"{session['username']} successfully logged in via ltiauth")
 
     return session
 

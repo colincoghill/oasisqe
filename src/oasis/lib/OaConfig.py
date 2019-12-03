@@ -23,7 +23,7 @@ if not cp.read(os.path.join(os.path.sep, mydir, "defaults.ini")):
     sys.exit("Unable to read configuration defaults %s/defaults.ini" % mydir)
 
 if not os.path.isfile("/etc/oasisqe.ini"):
-    sys.exit("Unable to read configuration %s"%(os.path.join(os.path.sep, 'etc', 'oasisqe.ini')))
+    sys.exit("Unable to read configuration %s" % (os.path.join(os.path.sep, 'etc', 'oasisqe.ini')))
 
 cp.read([os.path.join(mydir, 'defaults.ini'), os.path.join(os.path.sep, 'etc', 'oasisqe.ini')])
 
@@ -73,4 +73,4 @@ enable_local_login = cp.getboolean("web", "enable_local_login")
 enable_webauth_login = cp.getboolean("web", "enable_webauth_login")
 webauth_ignore_domain = cp.getboolean("web", "webauth_ignore_domain")
 enable_lti_login = cp.getboolean("web", "enable_lti_login")
-lti_enabled =  enable_lti_login
+lti_enabled = enable_lti_login
