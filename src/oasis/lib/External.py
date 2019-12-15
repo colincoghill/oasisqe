@@ -86,7 +86,7 @@ def feeds_run_user_script(filename, args=None):
         raise IOError("Invalid user script file %s" % safe_fname)
 
     cmd = [full_path, ] + args
-    output = subprocess.check_output(cmd)
+    output = subprocess.check_output(cmd).decode("utf-8")
     return output
 
 
