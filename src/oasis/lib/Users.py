@@ -128,9 +128,9 @@ def get_user_record(user_id):
 
 def set_password(user_id, clearpass):
     """ Updates a users password. """
-    hashed = bcrypt.hashpw(clearpass.encode('utf-8'), bcrypt.gensalt(10)).decode("utf-8")
+    hashed = bcrypt.hashpw(clearpass.encode('utf-8'), bcrypt.gensalt(10))
     sql = """UPDATE "users" SET "passwd" = %s WHERE "id" = %s;"""
-    params = [hashed, user_id]
+    params = [hashed.decode('utf-8'), user_id]
     try:
         run_sql(sql, params)
     except IOError as err:
@@ -155,9 +155,9 @@ def verify_password(uname, clearpass):
         L.error("Error fetching user record %s" % uname)
         raise
     stored_pw = ret[0][1]
+    L.info("stored pw = [%s]"%repr(stored_pw))
     if len(stored_pw) > 40:  # it's not MD5
-        hashed = bcrypt.hashpw(clearpass.encode('utf-8'), stored_pw.encode('utf-8')).decode("utf-8")
-        if stored_pw == hashed:
+        if bcrypt.checkpw(clearpass.encode('utf-8'), stored_pw.encode('utf-8')):
             # All good, they matched with bcrypt
             return user_id
 
