@@ -138,6 +138,7 @@ def process_save(qt_id, topic_id, request, session, version):
 
 def parse_datfile(datfile):
     """Convert the given datfile into a list of dictionaries of variables."""
+    assert isinstance(datfile, str)
     varbs = []
     for line in datfile.split('\n')[1:]:
         if len(line) > 2:

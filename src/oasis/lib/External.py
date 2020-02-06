@@ -13,7 +13,7 @@ import tempfile
 import json
 import zipfile
 import shutil
-from io import StringIO
+from io import BytesIO
 
 from logging import getLogger
 
@@ -284,7 +284,7 @@ def qts_to_zip(qt_ids, extra_info=None):
                 mtype = ""
             data = DB.get_qt_att(qt_id, name)
             if not data:
-                data = ""
+                data = b""
             info["qtemplates"][qt_id]["attachments"].append([name, mtype, len(data)])
             subdir = os.path.join(qtdir, "attach", name)
             outf = open(subdir, "wb")
@@ -294,7 +294,7 @@ def qts_to_zip(qt_ids, extra_info=None):
                       os.path.join("%s" % qt_id, "attach", name),
                       zipfile.ZIP_DEFLATED)
 
-    infof = open(os.path.join(qdir, "info.json"), "wb")
+    infof = open(os.path.join(qdir, "info.json"), "w")
     infof.write(json.dumps(info))
     infof.close()
     arc.write(os.path.join(qdir, "info.json"),
@@ -323,14 +323,13 @@ def import_qts_from_zip(data, topic_id):
     # eg.    unzip to huge size
     # add digital signatures?
 
-    sdata = StringIO(data)
+    sdata = BytesIO(data)
     tmpd = tempfile.mkdtemp(prefix="oa")
     qdir = os.path.join(tmpd, "oasisqe")
     os.mkdir(qdir)
     num = 0
     try:
         with zipfile.ZipFile(sdata, "r") as zfile:
-
             zfile.extractall(qdir)
             data = open("%s/info.json" % qdir, "r").read()
             info = json.loads(data)
@@ -357,10 +356,11 @@ def import_qts_from_zip(data, topic_id):
     #            print "%s attachments" % len(attachments)
                 for att in attachments:
                     (att_name, att_type, att_size) = att
-                    data = open("%s/%s/attach/%s" % (qdir, qtemplate['id'], att_name)).read()
+                    with open("%s/%s/attach/%s" % (qdir, qtemplate['id'], att_name), 'rb') as inf:
+                        data = inf.read()
                     DB.create_qt_att(newid, att_name, att_type, data, 1)
                     if att_name == "datfile.txt" or att_name == "datfile.dat" or att_name == "datfile" or att_name == "_datfile" or att_name == "__datfile":
-                        qvars = QEditor.parse_datfile(data)
+                        qvars = QEditor.parse_datfile(str(data))
                         for row in range(0, len(qvars)):
                             DB.add_qt_variation(newid, row + 1, qvars[row], 1)
     except zipfile.BadZipfile:

@@ -498,7 +498,7 @@ def get_q_att(qt_id, name, variation, version=1000000000):
                         AND "version" = %s;""",
                   [qt_id, name, variation, version])
     if ret:
-        data = str(ret[0][1])
+        data = bytes(ret[0][1])
         return data
     return get_qt_att(qt_id, name, version)
 
@@ -525,7 +525,7 @@ def get_qt_att(qt_id, name, version=1000000000):
                             AND name = %s);""",
                   [qt_id, name, qt_id, version, name])
     if ret:
-        data = str(ret[0][0])
+        data = bytes(ret[0][0])
 
         return data
 
@@ -642,7 +642,7 @@ def get_qt_variations(qt_id, version=1000000000):
         L.warning("No Variation found for qtid=%d, version=%d" % (qt_id, version))
         return []
     for row in res:
-        result = str(row[1])
+        result = row[1]
         ret[row[0]] = pickle.loads(result)
     return ret
 
@@ -671,7 +671,7 @@ def get_qt_variation(qt_id, variation, version=1000000000):
     result = None
     data = None
     try:
-        result = str(res[0][0])
+        result = res[0][0]
         data = pickle.loads(result)
     except TypeError:
         L.warning("Type error trying to cpickle.loads(%s) for (%s, %s, %s)" %
@@ -705,8 +705,9 @@ def create_q_att(qt_id, variation, name, mimetype, data, version):
     assert isinstance(variation, int)
     assert isinstance(name, str)
     assert isinstance(mimetype, str)
-    assert isinstance(data, str)
+    assert isinstance(data, bytes)
     assert isinstance(version, int)
+
     if not name and not data:
         L.warning("Refusing to create empty attachment for question %s" % qt_id)
         return
@@ -723,15 +724,13 @@ def create_qt_att(qt_id, name, mime_type, data, version):
     assert isinstance(qt_id, int)
     assert isinstance(name, str)
     assert isinstance(mime_type, str)
-    assert isinstance(data, str)
+    assert isinstance(data, bytes)
     assert isinstance(version, int)
     key = "qtemplateattach/%d/%s/%d" % (qt_id, name, version)
     MC.delete(key)
     if not data:
-        data = ""
+        data = b""
     L.info("QT Attachment upload '%s' '%s' %s bytes" % (name, mime_type, len(data)))
-    if isinstance(data, str):
-        data = data.encode("utf8")
     safe_data = psycopg2.Binary(data)
     run_sql("""INSERT INTO qtattach (qtemplate, mimetype, name, data, version)
                VALUES (%s, %s, %s, %s, %s);""",

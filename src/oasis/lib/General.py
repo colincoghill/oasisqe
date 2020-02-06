@@ -185,10 +185,10 @@ def gen_q_from_var(qt_id, student, exam, position, version, variation):
     if not htmlexists:
         if not qvars:
             qvars = DB.get_qt_variation(qt_id, variation, version)
-        html = DB.get_qt_att(qt_id, "qtemplate.html", version)
+        html = str(DB.get_qt_att(qt_id, "qtemplate.html", version), 'utf-8')
         if html:
             qvars['Oasis_qid'] = q_id
-            newhtml = gen_q_html(qvars, html)
+            newhtml = gen_q_html(qvars, html).encode()
             L.info("generating new qattach qtemplate.html for %s" % q_id)
             DB.create_q_att(qt_id,
                             variation,

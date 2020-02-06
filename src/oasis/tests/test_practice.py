@@ -19,7 +19,7 @@ csrf_token_input = re.compile(
 
 
 def get_csrf_token(data):
-
+    assert isinstance(data, str)
     match = csrf_token_input.search(data)
     if match:
         return match.groups()[0]
@@ -49,7 +49,8 @@ class TestPractice(TestCase):
             client = self.app.test_client()
 
         s = client.get('/login/local/')
-        token = get_csrf_token(s.data)
+        data = s.get_data(as_text=True)
+        token = get_csrf_token(data)
         self.assertIsNotNone(token)
         return client.post('/login/local/submit', data=dict(
             username=username,
@@ -66,13 +67,15 @@ class TestPractice(TestCase):
         with self.app.test_client() as c:
 
             s = self.login(ADMIN_UNAME, self.adminpass, client=c)
-            self.assertNotIn("CSRF token missing or incorrect", s.data)
+            data = s.get_data(as_text=True)
+            self.assertNotIn("CSRF token missing or incorrect", data)
             self.assertEqual(s.status, "200 OK")
-            self.assertIn("<div id='whoami'>Admin </div>", s.data)
+            self.assertIn("<div id='whoami'>Admin </div>", data)
 
             s = c.get('/practice/top', follow_redirects=True)
+            data = s.get_data(as_text=True)
             self.assertEqual(s.status, "200 OK")
-            self.assertIn("Choose A Course", s.data)
+            self.assertIn("Choose A Course", data)
 
     def test_practice_course_list(self):
         """ Check the list of courses is reasonably ok
@@ -83,10 +86,11 @@ class TestPractice(TestCase):
             self.login(ADMIN_UNAME, self.adminpass, client=c)
 
             s = c.get('/practice/top', follow_redirects=True)
+            data = s.get_data(as_text=True)
             self.assertEqual(s.status, "200 OK")
-            self.assertIn("Choose A Course", s.data)
+            self.assertIn("Choose A Course", data)
 
-            self.assertNotIn("TESTCOURSE1", s.data)
+            self.assertNotIn("TESTCOURSE1", data)
 
             # create a course, set it visible, is it there?
             course_id = Courses.create("TESTCOURSE1", "unit tests", 1, 1)
@@ -95,11 +99,12 @@ class TestPractice(TestCase):
             Courses.set_prac_vis(course_id, "all")
 
             s = c.get('/practice/top', follow_redirects=True)
+            data = s.get_data(as_text=True)
             self.assertEqual(s.status, "200 OK")
-            self.assertIn("Choose A Course", s.data)
+            self.assertIn("Choose A Course", data)
 
-            self.assertIn("TESTCOURSE1", s.data)
-            self.assertNotIn("TESTCOURSE2", s.data)
+            self.assertIn("TESTCOURSE1", data)
+            self.assertNotIn("TESTCOURSE2", data)
 
             # create a second course, set it visible, is it there?
             course_id = Courses.create("TESTCOURSE2", "unit tests", 1, 1)
@@ -108,11 +113,12 @@ class TestPractice(TestCase):
             Courses.set_prac_vis(course_id, "all")
 
             s = c.get('/practice/top', follow_redirects=True)
+            data = s.get_data(as_text=True)
             self.assertEqual(s.status, "200 OK")
-            self.assertIn("Choose A Course", s.data)
+            self.assertIn("Choose A Course", data)
 
-            self.assertIn("TESTCOURSE1", s.data)
-            self.assertIn("TESTCOURSE2", s.data)
+            self.assertIn("TESTCOURSE1", data)
+            self.assertIn("TESTCOURSE2", data)
 
             # create a third course, set it not visible
             course_id = Courses.create("TESTCOURSE3", "unit tests", 1, 1)
@@ -121,13 +127,14 @@ class TestPractice(TestCase):
             Courses.set_prac_vis(course_id, "none")
 
             s = c.get('/practice/top', follow_redirects=True)
+            data = s.get_data(as_text=True)
             self.assertEqual(s.status, "200 OK")
-            self.assertIn("Choose A Course", s.data)
+            self.assertIn("Choose A Course", data)
 
-            self.assertIn("TESTCOURSE1", s.data)
-            self.assertIn("TESTCOURSE2", s.data)
+            self.assertIn("TESTCOURSE1", data)
+            self.assertIn("TESTCOURSE2", data)
             # admin can still see it
-            self.assertIn("TESTCOURSE3", s.data)
+            self.assertIn("TESTCOURSE3", data)
 
     def test_practice_topic_list(self):
 
@@ -136,10 +143,11 @@ class TestPractice(TestCase):
             self.login(ADMIN_UNAME, self.adminpass, client=c)
 
             s = c.get('/practice/top', follow_redirects=True)
+            data = s.get_data(as_text=True)
             self.assertEqual(s.status, "200 OK")
-            self.assertIn("Choose A Course", s.data)
+            self.assertIn("Choose A Course", data)
 
-            self.assertNotIn("TESTCOURSE10", s.data)
+            self.assertNotIn("TESTCOURSE10", data)
 
             course_id = Courses.create("TESTCOURSE10", "unit tests", 1, 1)
             Courses.create_config(course_id, "casual", 1)
@@ -147,12 +155,13 @@ class TestPractice(TestCase):
             Courses.set_prac_vis(course_id, "all")
 
             s = c.get('/practice/top', follow_redirects=True)
+            data = s.get_data(as_text=True)
             self.assertEqual(s.status, "200 OK")
-            self.assertIn("Choose A Course", s.data)
+            self.assertIn("Choose A Course", data)
 
-            self.assertIn("TESTCOURSE10", s.data)
+            self.assertIn("TESTCOURSE10", data)
 
             s = c.get('/practice/coursequestions/%s' % course_id)
-
-            self.assertIn("<h2>TESTCOURSE10 (unit tests)</h2>", s.data)
-            self.assertIn("Select a Topic", s.data)
+            data = s.get_data(as_text=True)
+            self.assertIn("<h2>TESTCOURSE10 (unit tests)</h2>", data)
+            self.assertIn("Select a Topic", data)

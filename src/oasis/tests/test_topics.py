@@ -18,19 +18,16 @@ class TestTopics(TestCase):
         """
 
         course_id = Courses.create("TEST101", "Test topic position logic", 1, 1)
-
-        self.assertTrue(
-            {course_id:
-                 {'active': 1,
+        courses = Courses.get_courses_dict()
+        self.assertTrue(course_id in courses.keys())
+        self.assertTrue(courses[course_id] == {'active': 1,
                   'assess_visibility': 'enrol',
                   'id': course_id,
                   'name': 'TEST101',
                   'owner': 1,
                   'practice_visibility': 'all',
                   'title': 'Test topic position logic',
-                  'type': 1
-                  }
-             } <= Courses.get_courses_dict()
+                  'type': 1}
         )
 
         topic1_id = Topics.create(course_id, "TESTTOPIC1", 1, 2)
@@ -207,12 +204,12 @@ class TestTopics(TestCase):
         ver = DB.get_qt_version(qt1_id)
         self.assertGreater(ver, 0)
 
-        data = "2\n|1\n|2\n"
+        data = b"2\n|1\n|2\n"
         qvars = [{'A1': "2"}, {'A1': "3"}]
         for row in range(0, len(qvars)):
             DB.add_qt_variation(qt1_id, row + 1, qvars[row], ver)
-        DB.create_qt_att(qt1_id, "datfile.dat", "text/plain", data , ver)
-        DB.create_qt_att(qt1_id, "qtemplate.html", "text/html", "What is <VAL A1>? <ANSWER 1>", ver)
+        DB.create_qt_att(qt1_id, "datfile.dat", "text/plain", data, ver)
+        DB.create_qt_att(qt1_id, "qtemplate.html", "text/html", b"What is <VAL A1>? <ANSWER 1>", ver)
 
         q_id = DB.get_q_by_qt_student(qt1_id, 1)
         self.assertFalse(q_id)  # Not generated yet
@@ -242,12 +239,12 @@ class TestTopics(TestCase):
         ver = DB.get_qt_version(qt1_id)
         self.assertGreater(ver, 0)
 
-        data = "2\n|1\n|2\n"
+        data = b"2\n|1\n|2\n"
         qvars = [{'A1': "2"}, {'A1': "3"}]
         for row in range(0, len(qvars)):
             DB.add_qt_variation(qt1_id, row + 1, qvars[row], ver)
         DB.create_qt_att(qt1_id, "datfile.dat", "text/plain", data, ver)
-        DB.create_qt_att(qt1_id, "qtemplate.html", "text/html", "What is <VAL A1>? <ANSWER 1>", ver)
+        DB.create_qt_att(qt1_id, "qtemplate.html", "text/html", b"What is <VAL A1>? <ANSWER 1>", ver)
 
         qt2_id = DB.create_qt(1, "TESTQ2", "Test question 2", 0, 5.0, 1, topic_id=topic1_id)
         self.assertIsNotNone(qt2_id)
@@ -255,12 +252,12 @@ class TestTopics(TestCase):
         ver = DB.get_qt_version(qt2_id)
         self.assertGreater(ver, 0)
 
-        data = "2\n|6\n|7\n"
+        data = b"2\n|6\n|7\n"
         qvars = [{'A1': "6"}, {'A1': "7"}]
         for row in range(0, len(qvars)):
             DB.add_qt_variation(qt2_id, row + 1, qvars[row], ver)
         DB.create_qt_att(qt2_id, "datfile.dat", "text/plain", data, ver)
-        DB.create_qt_att(qt2_id, "qtemplate.html", "text/html", "Question 2: What is <VAL A1>? <ANSWER 1>", ver)
+        DB.create_qt_att(qt2_id, "qtemplate.html", "text/html", b"Question 2: What is <VAL A1>? <ANSWER 1>", ver)
 
         qt3_id = DB.create_qt(1, "TESTQ3", "Test question 3", 0, 5.0, 1, topic_id=topic1_id)
         self.assertIsNotNone(qt3_id)
@@ -268,17 +265,16 @@ class TestTopics(TestCase):
         ver = DB.get_qt_version(qt3_id)
         self.assertGreater(ver, 0)
 
-        data = "3\n|9\n|10\n|11\n"
+        data = b"3\n|9\n|10\n|11\n"
         qvars = [{'A1': "9"}, {'A1': "10"}, {'A1': "11"}]
         for row in range(0, len(qvars)):
             DB.add_qt_variation(qt3_id, row + 1, qvars[row], ver)
         DB.create_qt_att(qt3_id, "datfile.dat", "text/plain", data, ver)
-        DB.create_qt_att(qt3_id, "qtemplate.html", "text/html", "Question 3: What is <VAL A1>? <ANSWER 1>", ver)
+        DB.create_qt_att(qt3_id, "qtemplate.html", "text/html", b"Question 3: What is <VAL A1>? <ANSWER 1>", ver)
 
         data = External.topic_to_zip(topic1_id)
-        f = open("%s" % self.test_question_fname, mode='w')
-        f.write(data)
-        f.close()
+        with open("%s" % self.test_question_fname, mode='wb') as f:
+            f.write(data)
 
     def test_import_questions(self):
         """ Import the questions made in export_questions"""
@@ -287,6 +283,7 @@ class TestTopics(TestCase):
         topic1_id = Topics.create(course_id, "TESTQUESTIONS1", 1, 2)
         self.assertGreater(topic1_id, 0)
 
-        data = open(self.test_question_fname).read()
+        with open(self.test_question_fname, 'rb') as f:
+            data = f.read()
         numread = External.import_qts_from_zip(data, topic1_id)
         self.assertEqual(numread, 3)

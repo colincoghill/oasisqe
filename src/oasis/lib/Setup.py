@@ -212,5 +212,5 @@ def get_sorted_courselist(with_stats=False, only_active=True):
             course['students'] = Courses.get_users(cid)
             course['size'] = len(course['students'])
         inorder.append((course['name'], course))
-    inorder.sort()
+    inorder.sort(key=lambda k: k[0])
     return inorder

@@ -20,7 +20,7 @@ csrf_token_input = re.compile(
 
 
 def get_csrf_token(data):
-
+    assert isinstance(data, str)
     match = csrf_token_input.search(data)
     if match:
         return match.groups()[0]
@@ -48,9 +48,9 @@ class TestLogin(TestCase):
 
         if not client:
             client = self.app.test_client()
-
         s = client.get('/login/local/')
-        token = get_csrf_token(s.data)
+        data = s.get_data(as_text=True)
+        token = get_csrf_token(data)
         self.assertIsNotNone(token)
         return client.post('/login/local/submit', data=dict(
             username=username,
@@ -65,9 +65,9 @@ class TestLogin(TestCase):
         """
 
         s = self.login_no_csrf(ADMIN_UNAME, self.adminpass)
-        self.assertIn("CSRF token is missing", s.data)
+        self.assertIn("CSRF token is missing", str(s.data))
         s = self.login(ADMIN_UNAME, self.adminpass)
-        self.assertNotIn("CSRF token is missingt", s.data)
+        self.assertNotIn("CSRF token is missingt", str(s.data))
 
     def test_bypass_login(self):
         """ Can we bypass the login page?
@@ -80,29 +80,32 @@ class TestLogin(TestCase):
 
         with self.app.test_client() as c:
             s = c.get('main/top', follow_redirects=True)
+            data = s.get_data(as_text=True)
             self.assertNotEqual(s.status, "404 NOT FOUND")
             # Not logged in, back at login page
-            self.assertIn("a local OASIS-only account", s.data)
+            self.assertIn("a local OASIS-only account", data)
 
         with self.app.test_client() as c:
             s = self.login(ADMIN_UNAME, self.adminpass, client=c)
-            self.assertNotIn("CSRF token is missing", s.data)
-            L.error(s.data)
+            data = s.get_data(as_text=True)
+            self.assertNotIn("CSRF token is missing", data)
+            L.error(data)
             s = c.get('main/top', follow_redirects=True)
             self.assertEqual(s.status, "200 OK")
             L.error(repr(s))
 
             # Main top level page
-            self.assertIn("The latest news and information about OASIS", s.data)
+            self.assertIn("The latest news and information about OASIS", str(s.data))
 
     def test_main_top(self):
 
         with self.app.test_client(use_cookies=True) as c:
             s = self.login(ADMIN_UNAME, self.adminpass, client=c)
             s = c.get('/main/top')
+            data = s.get_data(as_text=True)
             # main top level page
-            self.assertNotIn("CSRF token is missing", s.data)
-            self.assertIn("The latest news and information about OASIS", s.data)
+            self.assertNotIn("CSRF token is missing", data)
+            self.assertIn("The latest news and information about OASIS", data)
 
     def test_user_stuff(self):
         """ Try some Users.py functions
