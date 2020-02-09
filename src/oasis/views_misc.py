@@ -221,7 +221,7 @@ def qedit_raw_edit(topic_id, qt_id):
         except KeyError:
             html = "[question html goes here]"
 
-    qtemplate['html'] = html
+    qtemplate['html'] = html.decode("utf-8")
     attachnames = DB.get_qt_atts(qt_id, version=qtemplate['version'])
     attachments = [
         {

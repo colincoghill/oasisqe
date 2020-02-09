@@ -30,13 +30,13 @@ def create_new(qt_id, name):
     DB.create_qt_att(qt_id,
                      "qtemplate.html",
                      "application/oasis-html",
-                     "empty",
+                     b"empty",
                      1)
     # The datfile contains a list of variations.
     DB.create_qt_att(qt_id,
                      "datfile.txt",
                      "application/oasis-dat",
-                     "0",
+                     b"0",
                      1)
     return
 
@@ -60,7 +60,7 @@ def process_save(qt_id, topic_id, request, session, version):
     if not ('newattachmentname' in form and
             form['newattachmentname'] == "qtemplate.html"):
         if 'newhtml' in form:
-            html = form['newhtml'].encode("utf8")
+            html = form['newhtml'].encode('utf-8')
             DB.create_qt_att(qt_id,
                              "qtemplate.html",
                              "text/plain",
