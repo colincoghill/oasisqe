@@ -1,3 +1,15 @@
+
+:warning: **Warning**:
+THIS PROJECT IS NO LONGER BEING DEVELOPED.
+
+Feel free to use it, but be aware there will likely be security issues.
+
+I am still interested in this project and if anyone else wishes to work with/on it, I'm happy to contribute, just I 
+no longer have contact with anyone who's using it and no evidence that anyone does, 
+so it's unmaintained for now. Send me an email. colin@colincoghill.com
+
+
+
 oasisqe
 =======
 
